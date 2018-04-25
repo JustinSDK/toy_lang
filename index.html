@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="首次嘗試打造的玩具語言，可用的指令組合都在底下的費式數列範例。">
+    <meta property="og:locale" content="zh_TW">
+    <meta property="og:title" content="Toy">
+    <meta property="og:type" content="programming">
+    <meta property="og:url" content="https://openhome.cc/Gossip/Computation/toy_lang/index.html">
+    <meta property="og:image" content="https://openhome.cc/Gossip/images/caterpillar_small.jpg">
+    <meta property="og:site_name" content="OPENHOME.CC">
+    <meta property="og:description" content="首次嘗試打造的玩具語言，可用的指令組合都在底下的費式數列範例。">    
+    <title>Toy</title>
+    <style type="text/css">
+        textarea {
+           width:100%;
+           height:300px;
+           resize:none;
+           overflow:auto;
+        }   
+    </style> 
+  </head>
+  <body>
+      <img src="https://openhome.cc/Gossip/images/caterpillar_small.jpg">
+
+      首次嘗試打造的玩具語言，可用的指令組合都在底下的費式數列範例。<br></br>
+      <textarea id="code">print 'Fibonacci number\n'
+n = 10
+fn1 = 1
+fn2 = 1
+print fn1
+print ' '
+print fn2
+print ' '
+until0 n
+    fn = fn2 + fn1
+    print fn
+    print ' '
+    fn1 = fn2
+    fn2 = fn
+    n = n - 1
+end
+print '\n'</textarea>
+<br><br>
+<button id="run">執行</button>
+<br><br>
+<textarea id="tty" style="background: #000;color:#fff;"></textarea>
+<script type="module">
+    import {Tokenizer} from './js/tokenizer.js';
+    import {AST, Context} from './js/ast.js';
+    document.getElementById('run').addEventListener('click', _ => {
+        let code = document.getElementById('code').value;
+        let tty = document.getElementById('tty');
+        tty.textContent = new AST(new Tokenizer(code))
+                            .evaluate(new Context())
+                            .outputs
+                            .map(output => `${output}`.replace('\\n', '\n'))
+                            .join('');
+    });
+</script>
+  </body>
+</html>
