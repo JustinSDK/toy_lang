@@ -88,7 +88,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['variable', {
         parse(arg) {
-            let matched = /^-*[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(arg);
+            let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(arg);
             if(matched) {
                 if(matched[0].charAt(0) === '-') {
                     return ARG_PARSERS.get('expression').parse(`0 ${arg}`)
@@ -107,7 +107,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['add', {
         parse(arg) {
-            let matched = /(-*[a-zA-Z_0-9]+)\s*\+\s*(.+)/.exec(arg);
+            let matched = /(-?[a-zA-Z_0-9]+)\s*\+\s*(.+)/.exec(arg);
             return matched !== null ?
                     new Add(
                         ARG_PARSERS.get('expression').parse(matched[1]), 
@@ -118,7 +118,7 @@ const ARG_PARSERS =  new Map([
     }],    
     ['substract', {
         parse(arg) {
-            let matched = /(-*[a-zA-Z_0-9]+)\s*\-\s*(.+)/.exec(arg);
+            let matched = /(-?[a-zA-Z_0-9]+)\s*\-\s*(.+)/.exec(arg);
             return matched !== null ? 
                     new Substract(
                         ARG_PARSERS.get('expression').parse(matched[1]), 
