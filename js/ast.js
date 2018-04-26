@@ -75,7 +75,7 @@ const LINE_PARSERS = new Map([
 const ARG_PARSERS =  new Map([
     ['text', {
         parse(arg) {
-            let matched = /^'(.*)'/.exec(arg);
+            let matched = /^'(.*)'$/.exec(arg);
             return matched !== null ? 
                       new Text(matched[1]) : 
                       ARG_PARSERS.get('num').parse(arg);
@@ -83,7 +83,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['num', {
         parse(arg) {
-            let matched = /^[0-9]+/.exec(arg);
+            let matched = /^[0-9]+$/.exec(arg);
             return matched !== null ? new Num(parseFloat(arg)) : ARG_PARSERS.get('variable').parse(arg);
         }        
     }],
@@ -103,7 +103,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['expression', {
         parse(arg) {
-            let matched = /(^-?[a-zA-Z_0-9.]+)\s*(\+|\-)\s*(.+)/.exec(arg);
+            let matched = /(^-?[a-zA-Z_0-9.]+)\s*(\+|\-)\s*(.+)$/.exec(arg);
             if(matched) {
                 let left = ARG_PARSERS.get('num').parse(matched[1]);
                 let right = ARG_PARSERS.get('expression').parse(matched[3]);
