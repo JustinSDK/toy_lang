@@ -44,19 +44,19 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             return new Assign(
                 new Variable(lines.tail[0]), 
-                ARG_PARSERS.get('expression').parse(lines.tail[1])
+                ARG_PARSERS.get('text').parse(lines.tail[1])
             );
         }
     }],    
     ['print', {
         parse(lines) {
-            return new Print(ARG_PARSERS.get('expression').parse(lines.tail[0]));
+            return new Print(ARG_PARSERS.get('text').parse(lines.tail[0]));
         }
     }],
     ['until0', {
         parse(lines) {
             return new UntilZero(
-                ARG_PARSERS.get('expression').parse(lines[0].tail[0]), 
+                ARG_PARSERS.get('num').parse(lines[0].tail[0]), 
                 LINE_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
@@ -73,59 +73,46 @@ const LINE_PARSERS = new Map([
 ]);
 
 const ARG_PARSERS =  new Map([
-    ['expression', {
-        parse(arg) {
-            return ARG_PARSERS.get('text').parse(arg);
-        }
-    }],
     ['text', {
         parse(arg) {
             let matched = /^'(.*)'/.exec(arg);
             return matched !== null ? 
                       new Text(matched[1]) : 
-                      ARG_PARSERS.get('variable').parse(arg);
+                      ARG_PARSERS.get('num').parse(arg);
         }
+    }],
+    ['num', {
+        parse(arg) {
+            let matched = /^[0-9]+/.exec(arg);
+            return matched !== null ? new Num(parseFloat(arg)) : ARG_PARSERS.get('variable').parse(arg);
+        }        
     }],
     ['variable', {
         parse(arg) {
             let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(arg);
             if(matched) {
                 if(matched[0].charAt(0) === '-') {
-                    return ARG_PARSERS.get('expression').parse(`0 ${arg}`)
+                    return ARG_PARSERS.get('expression').parse(`0 ${arg}`);
                 } else {
                     return new Variable(arg);
                 }
+            } else {
+                return ARG_PARSERS.get('expression').parse(arg);
             }
-
-            return ARG_PARSERS.get('add').parse(arg);
         }
     }],
-    ['add', {
+    ['expression', {
         parse(arg) {
-            let matched = /^(-?[a-zA-Z_0-9.]+)\s*\+\s*(.+)/.exec(arg);
-            return matched !== null ?
-                    new Add(
-                        ARG_PARSERS.get('expression').parse(matched[1]), 
-                        ARG_PARSERS.get('expression').parse(matched[2])
-                    ) :
-                    ARG_PARSERS.get('substract').parse(arg);
+            let matched = /(^-?[a-zA-Z_0-9.]+)\s*(\+|\-)\s*(.+)/.exec(arg);
+            if(matched) {
+                let left = ARG_PARSERS.get('num').parse(matched[1]);
+                let right = ARG_PARSERS.get('expression').parse(matched[3]);
+                return matched[2] === '+' ? new Add(left, right) : new Substract(left, right);
+            } 
+            else {
+                return ARG_PARSERS.get('num').parse(arg);
+            }
         }
-    }],    
-    ['substract', {
-        parse(arg) {
-            let matched = /^(-?[a-zA-Z_0-9.]+)\s*\-\s*(.+)/.exec(arg);
-            return matched !== null ? 
-                    new Substract(
-                        ARG_PARSERS.get('expression').parse(matched[1]), 
-                        ARG_PARSERS.get('expression').parse(matched[2])
-                    ) :
-                    ARG_PARSERS.get('num').parse(arg);
-        }
-    }],
-    ['num', {
-        parse(arg) {
-            return new Num(parseFloat(arg));
-        }        
     }]
 ]);
 
