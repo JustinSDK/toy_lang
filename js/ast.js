@@ -1,6 +1,6 @@
 export {Context, AST};
 
-const CMD_PARSERS = new Map([
+const STMT_PARSERS = new Map([
     ['var', {
         parse(lines) {
             return new Sequence(
@@ -67,7 +67,7 @@ const TOKEN_PARSERS = new Map([
                 return Sequence.nothing;
             }
     
-            return CMD_PARSERS.get(lines[0].head).parse(lines);   
+            return STMT_PARSERS.get(lines[0].head).parse(lines);   
         }
     }]    
 ]);
@@ -195,14 +195,14 @@ class Print {
 }
 
 class UntilZero {
-    constructor(expression, cmd) {
+    constructor(expression, stmt) {
         this.expression = expression;
-        this.cmd = cmd;
+        this.stmt = stmt;
     }
 
     evaluate(context) {
         if(this.expression.evaluate(context).value !== 0) {
-            let ctx = this.cmd.evaluate(context);
+            let ctx = this.stmt.evaluate(context);
             return this.evaluate(ctx);
         }
 
@@ -211,13 +211,13 @@ class UntilZero {
 }
 
 class Sequence {
-    constructor(firstCmd, secondCmd) {
-        this.firstCmd = firstCmd;
-        this.secondCmd = secondCmd;
+    constructor(firstStmt, secondStmt) {
+        this.firstStmt = firstStmt;
+        this.secondStmt = secondStmt;
     }
 
     evaluate(context) {
-        return this.secondCmd.evaluate(this.firstCmd.evaluate(context));
+        return this.secondStmt.evaluate(this.firstStmt.evaluate(context));
     }
 }
 
