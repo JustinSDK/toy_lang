@@ -83,7 +83,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['num', {
         parse(arg) {
-            let matched = /^[0-9]+.?[0-9]*$/.exec(arg);
+            let matched = /^-?[0-9]+.?[0-9]*$/.exec(arg);
             return matched !== null ? new Num(parseFloat(arg)) : ARG_PARSERS.get('variable').parse(arg);
         }        
     }],
