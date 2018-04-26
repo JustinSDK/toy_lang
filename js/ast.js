@@ -1,10 +1,10 @@
 export {Context, AST};
 
 const STMT_PARSERS = new Map([
-    ['var', {
+    ['assign', {
         parse(lines) {
             return new Sequence(
-                TOKEN_PARSERS.get('var').parse(lines[0]),
+                TOKEN_PARSERS.get('assign').parse(lines[0]),
                 TOKEN_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
@@ -40,7 +40,7 @@ const STMT_PARSERS = new Map([
 ]);
 
 const TOKEN_PARSERS = new Map([
-    ['var', {
+    ['assign', {
         parse(tokens) {
             return new Assign(
                 new Variable(tokens.tail[0]), 

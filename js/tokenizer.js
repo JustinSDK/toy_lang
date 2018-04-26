@@ -19,7 +19,7 @@ class Tokenizer {
                         .map(line => {
                             let assign = /([a-zA-Z_]+[a-zA-Z_0-9]*)\s*=\s*(.*)/.exec(line);
                             if(assign) {
-                                return new Tokens(['var', assign[1], assign[2]]);
+                                return new Tokens(['assign', assign[1], assign[2]]);
                             }
                             
                             if(line.startsWith('end')) {
