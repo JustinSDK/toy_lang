@@ -42,7 +42,7 @@ const STMT_PARSERS = new Map([
 const TOKEN_PARSERS = new Map([
     ['var', {
         parse(tokens) {
-            return new Var(
+            return new Assign(
                 new Variable(tokens.tail[0]), 
                 ARG_PARSERS.get('expression').parse(tokens.tail[1])
             );
@@ -166,7 +166,7 @@ class Variable {
     }
 }
 
-class Var {
+class Assign {
     constructor(variable, expression) {
         this.variable = variable;
         this.expression = expression;
