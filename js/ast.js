@@ -4,16 +4,16 @@ const STMT_PARSERS = new Map([
     ['assign', {
         parse(lines) {
             return new Sequence(
-                TOKEN_PARSERS.get('assign').parse(lines[0]),
-                TOKEN_PARSERS.get('sequence').parse(lines.slice(1))
+                LINE_PARSERS.get('assign').parse(lines[0]),
+                LINE_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],
     ['print', {
         parse(lines) {
             return new Sequence(
-                TOKEN_PARSERS.get('print').parse(lines[0]),
-                TOKEN_PARSERS.get('sequence').parse(lines.slice(1))
+                LINE_PARSERS.get('print').parse(lines[0]),
+                LINE_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],
@@ -32,32 +32,32 @@ const STMT_PARSERS = new Map([
             }
     
             return new Sequence(
-                 TOKEN_PARSERS.get('until0').parse(lines),
-                 TOKEN_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
+                 LINE_PARSERS.get('until0').parse(lines),
+                 LINE_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
             );
         }
     }]
 ]);
 
-const TOKEN_PARSERS = new Map([
+const LINE_PARSERS = new Map([
     ['assign', {
-        parse(tokens) {
+        parse(lines) {
             return new Assign(
-                new Variable(tokens.tail[0]), 
-                ARG_PARSERS.get('expression').parse(tokens.tail[1])
+                new Variable(lines.tail[0]), 
+                ARG_PARSERS.get('expression').parse(lines.tail[1])
             );
         }
     }],    
     ['print', {
-        parse(tokens) {
-            return new Print(ARG_PARSERS.get('expression').parse(tokens.tail[0]));
+        parse(lines) {
+            return new Print(ARG_PARSERS.get('expression').parse(lines.tail[0]));
         }
     }],
     ['until0', {
         parse(lines) {
             return new UntilZero(
                 ARG_PARSERS.get('expression').parse(lines[0].tail[0]), 
-                TOKEN_PARSERS.get('sequence').parse(lines.slice(1))
+                LINE_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],
@@ -251,7 +251,7 @@ class Substract {
 
 class AST {
     constructor(tokenizer) {
-        this.ast = TOKEN_PARSERS.get('sequence').parse(tokenizer.tokenize());
+        this.ast = LINE_PARSERS.get('sequence').parse(tokenizer.tokenize());
     }
 
     evaluate(context) {
