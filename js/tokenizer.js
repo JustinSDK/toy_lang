@@ -22,6 +22,7 @@ class Tokenizer {
                                 return new Tokens(['assign', assign[1], assign[2]]);
                             }
                             
+                            // 'end' is an empty statement
                             if(line.startsWith('end')) {
                                 return new Tokens(['empty']);
                             }
