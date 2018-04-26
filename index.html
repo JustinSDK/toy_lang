@@ -29,9 +29,9 @@
       <div>
             <strong>&lt;primitive&gt;&nbsp; ::= ([0-9]+) | ('.*')<br>
                 &lt;variable&gt;&nbsp;&nbsp; ::= ([a-zA-Z_]+[a-zA-Z_0-9]*)<br>
-                &lt;factor&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= (-?) &lt;primitive&gt; | (-?)
+                &lt;term&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= (-?) &lt;primitive&gt; | (-?)
                 &lt;variable&gt; | &lt;expression&gt;<br>
-                &lt;expression&gt; ::= &lt;factor&gt; { (+|-) &lt;factor&gt; }<br>
+                &lt;expression&gt; ::= &lt;term&gt; { (+|-) &lt;term&gt; }<br>
                 &lt;assign&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= &lt;variable&gt; =
                 &lt;expression&gt;<br>
                 &lt;print&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "print"
