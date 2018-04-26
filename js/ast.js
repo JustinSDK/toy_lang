@@ -64,7 +64,7 @@ const TOKEN_PARSERS = new Map([
     ['sequence', {
         parse(lines) {
             if(lines.length === 0 || lines[0].head === 'end') {
-                return Sequence.nothing;
+                return Sequence.EMPTY;
             }
     
             return STMT_PARSERS.get(lines[0].head).parse(lines);   
@@ -221,7 +221,7 @@ class Sequence {
     }
 }
 
-Sequence.nothing = {
+Sequence.EMPTY = {
     evaluate(context) {
         return context;
     }
