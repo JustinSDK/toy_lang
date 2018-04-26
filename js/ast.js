@@ -26,7 +26,7 @@ const STMT_PARSERS = new Map([
     
                 let keyword = lines[0].head;
                 let rpts = keyword === 'until0' ? until0 + 1 : 
-                    (keyword === 'end' ? until0 - 1 : until0);
+                    (keyword === 'empty' ? until0 - 1 : until0);
                 
                 return linesAfterUntil0(lines.slice(1), rpts)
             }
@@ -63,7 +63,7 @@ const TOKEN_PARSERS = new Map([
     }],
     ['sequence', {
         parse(lines) {
-            if(lines.length === 0 || lines[0].head === 'end') {
+            if(lines.length === 0 || lines[0].head === 'empty') {
                 return Sequence.EMPTY;
             }
     

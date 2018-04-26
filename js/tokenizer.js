@@ -23,7 +23,7 @@ class Tokenizer {
                             }
                             
                             if(line.startsWith('end')) {
-                                return new Tokens(['end']);
+                                return new Tokens(['empty']);
                             }
 
                             let matched = /(\w+)\s*(.*)/.exec(line);
