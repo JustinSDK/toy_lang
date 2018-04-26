@@ -3,7 +3,7 @@ export {Context, AST};
 const STMT_PARSERS = new Map([
     ['assign', {
         parse(lines) {
-            return new Sequence(
+            return new StmtSequence(
                 LINE_PARSERS.get('assign').parse(lines[0]),
                 LINE_PARSERS.get('sequence').parse(lines.slice(1))
             );
@@ -11,7 +11,7 @@ const STMT_PARSERS = new Map([
     }],
     ['print', {
         parse(lines) {
-            return new Sequence(
+            return new StmtSequence(
                 LINE_PARSERS.get('print').parse(lines[0]),
                 LINE_PARSERS.get('sequence').parse(lines.slice(1))
             );
@@ -31,7 +31,7 @@ const STMT_PARSERS = new Map([
                 return linesAfterUntil0(lines.slice(1), rpts)
             }
     
-            return new Sequence(
+            return new StmtSequence(
                  LINE_PARSERS.get('until0').parse(lines),
                  LINE_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
             );
@@ -64,7 +64,7 @@ const LINE_PARSERS = new Map([
     ['sequence', {
         parse(lines) {
             if(lines.length === 0 || lines[0].head === 'empty') {
-                return Sequence.EMPTY;
+                return StmtSequence.EMPTY;
             }
     
             return STMT_PARSERS.get(lines[0].head).parse(lines);   
@@ -210,7 +210,7 @@ class UntilZero {
     }    
 }
 
-class Sequence {
+class StmtSequence {
     constructor(firstStmt, secondStmt) {
         this.firstStmt = firstStmt;
         this.secondStmt = secondStmt;
@@ -221,7 +221,7 @@ class Sequence {
     }
 }
 
-Sequence.EMPTY = {
+StmtSequence.EMPTY = {
     evaluate(context) {
         return context;
     }
