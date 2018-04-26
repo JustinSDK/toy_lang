@@ -24,9 +24,9 @@ const STMT_PARSERS = new Map([
                     return lines;
                 }
     
-                let keyword = lines[0].head;
-                let rpts = keyword === 'until0' ? until0 + 1 : 
-                    (keyword === 'empty' ? until0 - 1 : until0);
+                let stmt = lines[0].head;
+                let rpts = stmt === 'until0' ? until0 + 1 : 
+                    (stmt === 'empty' ? until0 - 1 : until0);
                 
                 return linesAfterUntil0(lines.slice(1), rpts)
             }
