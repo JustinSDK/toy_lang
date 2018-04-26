@@ -73,10 +73,10 @@ const LINE_PARSERS = new Map([
 ]);
 
 const ARG_PARSERS =  new Map([
-    ['num', {
+    ['expression', {
         parse(arg) {
-            return new Num(parseFloat(arg));
-        }        
+            return ARG_PARSERS.get('text').parse(arg);
+        }
     }],
     ['text', {
         parse(arg) {
@@ -100,11 +100,6 @@ const ARG_PARSERS =  new Map([
             return ARG_PARSERS.get('add').parse(arg);
         }
     }],
-    ['expression', {
-        parse(arg) {
-            return ARG_PARSERS.get('text').parse(arg);
-        }
-    }],
     ['add', {
         parse(arg) {
             let matched = /(-?[a-zA-Z_0-9.]+)\s*\+\s*(.+)/.exec(arg);
@@ -126,7 +121,12 @@ const ARG_PARSERS =  new Map([
                     ) :
                     ARG_PARSERS.get('num').parse(arg);
         }
-    }] 
+    }],
+    ['num', {
+        parse(arg) {
+            return new Num(parseFloat(arg));
+        }        
+    }]
 ]);
 
 class Context {
