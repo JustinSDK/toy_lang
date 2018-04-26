@@ -80,7 +80,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['text', {
         parse(arg) {
-            let matched = /'(.*)'/.exec(arg);
+            let matched = /^'(.*)'/.exec(arg);
             return matched !== null ? 
                       new Text(matched[1]) : 
                       ARG_PARSERS.get('variable').parse(arg);
@@ -102,7 +102,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['add', {
         parse(arg) {
-            let matched = /(-?[a-zA-Z_0-9.]+)\s*\+\s*(.+)/.exec(arg);
+            let matched = /^(-?[a-zA-Z_0-9.]+)\s*\+\s*(.+)/.exec(arg);
             return matched !== null ?
                     new Add(
                         ARG_PARSERS.get('expression').parse(matched[1]), 
@@ -113,7 +113,7 @@ const ARG_PARSERS =  new Map([
     }],    
     ['substract', {
         parse(arg) {
-            let matched = /(-?[a-zA-Z_0-9.]+)\s*\-\s*(.+)/.exec(arg);
+            let matched = /^(-?[a-zA-Z_0-9.]+)\s*\-\s*(.+)/.exec(arg);
             return matched !== null ? 
                     new Substract(
                         ARG_PARSERS.get('expression').parse(matched[1]), 
