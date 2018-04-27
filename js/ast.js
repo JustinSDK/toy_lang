@@ -1,3 +1,5 @@
+import {Stack} from './util.js';
+import {ExprTokenizer} from './tokenizer.js';
 export {Context, AST};
 
 const STMT_PARSERS = new Map([
@@ -103,19 +105,34 @@ const ARG_PARSERS =  new Map([
     }],
     ['expression', {
         parse(arg) {
-
-            let matched = /(^-?[a-zA-Z_0-9\.]+)\s*(\+|\-)\s*(.+)$/.exec(arg);
-            if(matched) {
-                let left = ARG_PARSERS.get('num').parse(matched[1]);
-                let right = ARG_PARSERS.get('expression').parse(matched[3]);
-                return matched[2] === '+' ? new Add(left, right) : new Substract(left, right);
-            } 
-            else {
-                return ARG_PARSERS.get('num').parse(arg);
-            }
+            let tokens = new ExprTokenizer(arg).postfixTokens().tokens;
+            return tokens.reduce((stack, token) => {
+                if('+-*/'.indexOf(token) !== -1) {
+                    return reduce(stack, token);
+                } else {
+                    return stack.push(ARG_PARSERS.get('num').parse(token));
+                }
+            }, new Stack()).top;
         }
     }]
 ]);
+
+function reduce(stack, token) {
+    let right = stack.top;
+    let s1 = stack.pop();
+    let left = s1.top;
+    let s2 = s1.pop();
+    switch(token) {
+        case '+':
+            return s2.push(new Add(left, right));
+        case '-':
+            return s2.push(new Substract(left, right));
+        case '*':
+            return s2.push(new Multiply(left, right));
+        case '/':
+            return s2.push(new Divide(left, right));                                                           
+    }
+}
 
 class Context {
     constructor(outputs = [], variables = new Map()) {
@@ -234,6 +251,28 @@ class Substract {
 
     evaluate(context) {
         return new Num(this.left.evaluate(context).value - this.right.evaluate(context).value);
+    }
+}
+
+class Multiply {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Num(this.left.evaluate(context).value * this.right.evaluate(context).value);
+    }
+}
+
+class Divide {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Num(this.left.evaluate(context).value / this.right.evaluate(context).value);
     }
 }
 
