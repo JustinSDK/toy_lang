@@ -81,14 +81,11 @@ const ARG_PARSERS =  new Map([
         parse(arg) {
             let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(arg);
             if(matched) {
-                if(matched[0].charAt(0) === '-') {
-                    return ARG_PARSERS.get('expression').parse(`0 ${arg}`);
-                } else {
-                    return new Variable(arg);
-                }
-            } else {
-                return ARG_PARSERS.get('expression').parse(arg);
-            }
+                return matched[0].charAt(0) === '-' ? 
+                           ARG_PARSERS.get('expression').parse(`0 ${arg}`) : 
+                           new Variable(arg);
+            } 
+            return ARG_PARSERS.get('expression').parse(arg);
         }
     }],
     ['expression', {
