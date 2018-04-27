@@ -3,27 +3,42 @@ import {ExprTokenizer} from './tokenizer.js';
 export {Context, AST};
 
 const STMT_PARSERS = new Map([
+    ['sequence', {
+        parse(lines) {
+            if(lines.length === 0 || lines[0].head === 'empty') {
+                return StmtSequence.EMPTY;
+            }
+    
+            return STMT_PARSERS.get(lines[0].head).parse(lines);   
+        }
+    }],    
     ['assign', {
         parse(lines) {
             return new StmtSequence(
-                LINE_PARSERS.get('assign').parse(lines[0]),
-                LINE_PARSERS.get('sequence').parse(lines.slice(1))
+                new Assign(
+                    new Variable(lines[0].tail[0]), 
+                    ARG_PARSERS.get('text').parse(lines[0].tail[1])
+                ),
+                STMT_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],
     ['print', {
         parse(lines) {
             return new StmtSequence(
-                LINE_PARSERS.get('print').parse(lines[0]),
-                LINE_PARSERS.get('sequence').parse(lines.slice(1))
+                new Print(ARG_PARSERS.get('text').parse(lines[0].tail[0])),
+                STMT_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],
     ['until0', {
         parse(lines) {
             return new StmtSequence(
-                 LINE_PARSERS.get('until0').parse(lines),
-                 LINE_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
+                 new UntilZero(
+                    ARG_PARSERS.get('num').parse(lines[0].tail[0]), 
+                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                 ),
+                 STMT_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
             );
         }
     }]
@@ -40,39 +55,6 @@ function linesAfterUntil0(lines, until0 = 1) {
     
     return linesAfterUntil0(lines.slice(1), rpts)
 }
-
-const LINE_PARSERS = new Map([
-    ['assign', {
-        parse(lines) {
-            return new Assign(
-                new Variable(lines.tail[0]), 
-                ARG_PARSERS.get('text').parse(lines.tail[1])
-            );
-        }
-    }],    
-    ['print', {
-        parse(lines) {
-            return new Print(ARG_PARSERS.get('text').parse(lines.tail[0]));
-        }
-    }],
-    ['until0', {
-        parse(lines) {
-            return new UntilZero(
-                ARG_PARSERS.get('num').parse(lines[0].tail[0]), 
-                LINE_PARSERS.get('sequence').parse(lines.slice(1))
-            );
-        }
-    }],
-    ['sequence', {
-        parse(lines) {
-            if(lines.length === 0 || lines[0].head === 'empty') {
-                return StmtSequence.EMPTY;
-            }
-    
-            return STMT_PARSERS.get(lines[0].head).parse(lines);   
-        }
-    }]    
-]);
 
 const ARG_PARSERS =  new Map([
     ['text', {
@@ -278,7 +260,7 @@ class Divide {
 
 class AST {
     constructor(tokenizer) {
-        this.ast = LINE_PARSERS.get('sequence').parse(tokenizer.tokenize());
+        this.ast = STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
     }
 
     evaluate(context) {
