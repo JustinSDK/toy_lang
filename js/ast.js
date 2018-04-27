@@ -19,18 +19,6 @@ const STMT_PARSERS = new Map([
     }],
     ['until0', {
         parse(lines) {
-            function linesAfterUntil0(lines, until0 = 1) {
-                if(until0 === 0) {
-                    return lines;
-                }
-    
-                let stmt = lines[0].head;
-                let rpts = stmt === 'until0' ? until0 + 1 : 
-                    (stmt === 'empty' ? until0 - 1 : until0);
-                
-                return linesAfterUntil0(lines.slice(1), rpts)
-            }
-    
             return new StmtSequence(
                  LINE_PARSERS.get('until0').parse(lines),
                  LINE_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
@@ -38,6 +26,18 @@ const STMT_PARSERS = new Map([
         }
     }]
 ]);
+
+function linesAfterUntil0(lines, until0 = 1) {
+    if(until0 === 0) {
+        return lines;
+    }
+
+    let stmt = lines[0].head;
+    let rpts = stmt === 'until0' ? until0 + 1 : 
+        (stmt === 'empty' ? until0 - 1 : until0);
+    
+    return linesAfterUntil0(lines.slice(1), rpts)
+}
 
 const LINE_PARSERS = new Map([
     ['assign', {
