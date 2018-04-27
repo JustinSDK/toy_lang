@@ -2,7 +2,7 @@ import {Stack} from './util.js';
 export {StmtTokenizer, ExprTokenizer};
 
 class Statement {
-    constructor(type, tokens = []) {
+    constructor(type, tokens) {
         this.type = type;
         this.tokens = tokens;
     }
@@ -25,7 +25,7 @@ class StmtTokenizer {
                             
                             // 'end' is an empty statement
                             if(line.startsWith('end')) {
-                                return new Statement('empty');
+                                return new Statement('empty', [line]);
                             }
 
                             let matched = /(\w+)\s*(.*)/.exec(line);
