@@ -16,8 +16,8 @@ const STMT_PARSERS = new Map([
         parse(stmts) {
             return new StmtSequence(
                 new Assign(
-                    new Variable(stmts[0].tokens[0]), 
-                    ARG_PARSERS.get('arg').parse(stmts[0].tokens[2])
+                    new Variable(stmts[0].variableName()), 
+                    ARG_PARSERS.get('arg').parse(stmts[0].assigned())
                 ),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
@@ -26,7 +26,7 @@ const STMT_PARSERS = new Map([
     ['print', {
         parse(stmts) {
             return new StmtSequence(
-                new Print(ARG_PARSERS.get('arg').parse(stmts[0].tokens[1])),
+                new Print(ARG_PARSERS.get('arg').parse(stmts[0].argument())),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
@@ -35,7 +35,7 @@ const STMT_PARSERS = new Map([
         parse(stmts) {
             return new StmtSequence(
                  new UntilZero(
-                    ARG_PARSERS.get('num').parse(stmts[0].tokens[1]), 
+                    ARG_PARSERS.get('num').parse(stmts[0].argument()), 
                     STMT_PARSERS.get('sequence').parse(stmts.slice(1))
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterUntil0(stmts.slice(1)))

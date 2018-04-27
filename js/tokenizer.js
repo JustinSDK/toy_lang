@@ -8,6 +8,30 @@ class Statement {
     }
 }
 
+class AssignStatement extends Statement {
+    constructor(type, tokens) {
+        super(type, tokens);
+    }
+
+    variableName() {
+        return this.tokens[0];
+    }
+
+    assigned() {
+        return this.tokens[2];
+    }
+}
+
+class OneArgStatement extends Statement {
+    constructor(type, tokens) {
+        super(type, tokens);
+    }
+
+    argument() {
+        return this.tokens[1];
+    }
+}
+
 class StmtTokenizer {
     constructor(code) {
         this.code = code;
@@ -20,7 +44,7 @@ class StmtTokenizer {
                         .map(line => {
                             let assign = /([a-zA-Z_]+[a-zA-Z_0-9]*)\s*(=)\s*(.*)/.exec(line);
                             if(assign) {
-                                return new Statement('assign', [assign[1], assign[2], assign[3]]);
+                                return new AssignStatement('assign', [assign[1], assign[2], assign[3]]);
                             }
                             
                             // 'end' is an empty statement
@@ -29,7 +53,7 @@ class StmtTokenizer {
                             }
 
                             let matched = /(\w+)\s*(.*)/.exec(line);
-                            return new Statement(matched[1], [matched[1], matched[2]]);
+                            return new OneArgStatement(matched[1], [matched[1], matched[2]]);
                         });
     }
 }
