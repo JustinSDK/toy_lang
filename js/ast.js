@@ -17,7 +17,7 @@ const STMT_PARSERS = new Map([
             return new StmtSequence(
                 new Assign(
                     new Variable(stmts[0].tail[0]), 
-                    ARG_PARSERS.get('text').parse(stmts[0].tail[1])
+                    ARG_PARSERS.get('arg').parse(stmts[0].tail[1])
                 ),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
@@ -26,7 +26,7 @@ const STMT_PARSERS = new Map([
     ['print', {
         parse(stmts) {
             return new StmtSequence(
-                new Print(ARG_PARSERS.get('text').parse(stmts[0].tail[0])),
+                new Print(ARG_PARSERS.get('arg').parse(stmts[0].tail[0])),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
@@ -57,6 +57,12 @@ function linesAfterUntil0(lines, until0 = 1) {
 }
 
 const ARG_PARSERS =  new Map([
+    ['arg', {
+        parse(arg) {
+            // pattern matching from text
+            return ARG_PARSERS.get('text').parse(arg);
+        }
+    }],
     ['text', {
         parse(arg) {
             let matched = /^'(.*)'$/.exec(arg);
@@ -91,9 +97,8 @@ const ARG_PARSERS =  new Map([
             return tokens.reduce((stack, token) => {
                 if('+-*/'.indexOf(token) !== -1) {
                     return reduce(stack, token);
-                } else {
-                    return stack.push(ARG_PARSERS.get('num').parse(token));
-                }
+                } 
+                return stack.push(ARG_PARSERS.get('num').parse(token));
             }, new Stack()).top;
         }
     }]
