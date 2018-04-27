@@ -16,7 +16,7 @@ const STMT_PARSERS = new Map([
             return new StmtSequence(
                 new Assign(
                     new Variable(stmts[0].variableName()), 
-                    ARG_PARSERS.get('value').parse(stmts[0])
+                    VALUE_PARSERS.get('value').parse(stmts[0])
                 ),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
@@ -25,7 +25,7 @@ const STMT_PARSERS = new Map([
     ['print', {
         parse(stmts) {
             return new StmtSequence(
-                new Print(ARG_PARSERS.get('value').parse(stmts[0])),
+                new Print(VALUE_PARSERS.get('value').parse(stmts[0])),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
@@ -34,7 +34,7 @@ const STMT_PARSERS = new Map([
         parse(stmts) {
             return new StmtSequence(
                  new UntilZero(
-                    ARG_PARSERS.get('num').parse(stmts[0]), 
+                    VALUE_PARSERS.get('num').parse(stmts[0]), 
                     STMT_PARSERS.get('sequence').parse(stmts.slice(1))
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterUntil0(stmts.slice(1)))
@@ -55,29 +55,29 @@ function linesAfterUntil0(stmts, until0 = 1) {
     return linesAfterUntil0(stmts.slice(1), rpts)
 }
 
-const ARG_PARSERS =  new Map([
+const VALUE_PARSERS =  new Map([
     ['value', {
         parse(stmt) {
             // pattern matching from text
-            return ARG_PARSERS.get('text').parse(stmt);
+            return VALUE_PARSERS.get('text').parse(stmt);
         }
     }],
     ['text', {
         parse(stmt) {
             let text = stmt.textToken();
-            return text === null ? ARG_PARSERS.get('num').parse(stmt) : new Text(text);
+            return text === null ? VALUE_PARSERS.get('num').parse(stmt) : new Text(text);
         }
     }],
     ['num', {
         parse(stmt) {
             let number = stmt.numberToken();
-            return number === null ? ARG_PARSERS.get('variable').parse(stmt) : new Num(parseFloat(number));
+            return number === null ? VALUE_PARSERS.get('variable').parse(stmt) : new Num(parseFloat(number));
         }        
     }],
     ['variable', {
         parse(stmt) {
             let variable = stmt.variableToken();
-            return variable === null ? ARG_PARSERS.get('expression').parse(stmt) : new Variable(variable);
+            return variable === null ? VALUE_PARSERS.get('expression').parse(stmt) : new Variable(variable);
         }
     }],
     ['expression', {
