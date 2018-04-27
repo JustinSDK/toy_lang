@@ -5,11 +5,11 @@ export {Context, AST};
 const STMT_PARSERS = new Map([
     ['sequence', {
         parse(stmts) {
-            if(stmts.length === 0 || stmts[0].head === 'empty') {
+            if(stmts.length === 0 || stmts[0].type === 'empty') {
                 return StmtSequence.EMPTY;
             }
     
-            return STMT_PARSERS.get(stmts[0].head).parse(stmts);   
+            return STMT_PARSERS.get(stmts[0].type).parse(stmts);   
         }
     }],    
     ['assign', {
@@ -49,7 +49,7 @@ function linesAfterUntil0(lines, until0 = 1) {
         return lines;
     }
 
-    let stmt = lines[0].head;
+    let stmt = lines[0].type;
     let rpts = stmt === 'until0' ? until0 + 1 : 
         (stmt === 'empty' ? until0 - 1 : until0);
     

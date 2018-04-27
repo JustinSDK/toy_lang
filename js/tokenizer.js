@@ -4,7 +4,7 @@ export {StmtTokenizer, ExprTokenizer};
 class Statement {
     constructor(tokens) {
         this.tokens = tokens;
-        this.head = tokens[0];
+        this.type = tokens[0];
         this.tail = tokens.slice(1);
     }
 }
