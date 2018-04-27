@@ -41,11 +41,11 @@ class ExprTokenizer {
     }
 
     infixTokens() {
-        return new Statement(expr_tokens(this.expr));
+        return expr_tokens(this.expr);
     }
 
     postfixTokens() {
-        return new Statement(toPostfix(this.infixTokens().tokens));
+        return toPostfix(this.infixTokens());
     }
 }
 

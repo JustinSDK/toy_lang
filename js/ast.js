@@ -87,7 +87,7 @@ const ARG_PARSERS =  new Map([
     }],
     ['expression', {
         parse(arg) {
-            let tokens = new ExprTokenizer(arg).postfixTokens().tokens;
+            let tokens = new ExprTokenizer(arg).postfixTokens();
             return tokens.reduce((stack, token) => {
                 if('+-*/'.indexOf(token) !== -1) {
                     return reduce(stack, token);
