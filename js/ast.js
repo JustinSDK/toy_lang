@@ -1,5 +1,4 @@
 import {Stack} from './util.js';
-import {ExprTokenizer} from './tokenizer.js';
 export {Context, AST};
 
 const STMT_PARSERS = new Map([
@@ -17,7 +16,7 @@ const STMT_PARSERS = new Map([
             return new StmtSequence(
                 new Assign(
                     new Variable(stmts[0].variableName()), 
-                    ARG_PARSERS.get('arg').parse(stmts[0].assigned())
+                    ARG_PARSERS.get('value').parse(stmts[0])
                 ),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
@@ -26,7 +25,7 @@ const STMT_PARSERS = new Map([
     ['print', {
         parse(stmts) {
             return new StmtSequence(
-                new Print(ARG_PARSERS.get('arg').parse(stmts[0].argument())),
+                new Print(ARG_PARSERS.get('value').parse(stmts[0])),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
@@ -35,7 +34,7 @@ const STMT_PARSERS = new Map([
         parse(stmts) {
             return new StmtSequence(
                  new UntilZero(
-                    ARG_PARSERS.get('num').parse(stmts[0].argument()), 
+                    ARG_PARSERS.get('num').parse(stmts[0]), 
                     STMT_PARSERS.get('sequence').parse(stmts.slice(1))
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterUntil0(stmts.slice(1)))
@@ -44,58 +43,52 @@ const STMT_PARSERS = new Map([
     }]
 ]);
 
-function linesAfterUntil0(lines, until0 = 1) {
+function linesAfterUntil0(stmts, until0 = 1) {
     if(until0 === 0) {
-        return lines;
+        return stmts;
     }
 
-    let stmt = lines[0].type;
+    let stmt = stmts[0].type;
     let rpts = stmt === 'until0' ? until0 + 1 : 
         (stmt === 'empty' ? until0 - 1 : until0);
     
-    return linesAfterUntil0(lines.slice(1), rpts)
+    return linesAfterUntil0(stmts.slice(1), rpts)
 }
 
 const ARG_PARSERS =  new Map([
-    ['arg', {
-        parse(arg) {
+    ['value', {
+        parse(stmt) {
             // pattern matching from text
-            return ARG_PARSERS.get('text').parse(arg);
+            return ARG_PARSERS.get('text').parse(stmt);
         }
     }],
     ['text', {
-        parse(arg) {
-            let matched = /^'(.*)'$/.exec(arg);
-            return matched !== null ? 
-                      new Text(matched[1]) : 
-                      ARG_PARSERS.get('num').parse(arg);
+        parse(stmt) {
+            let text = stmt.textToken();
+            return text === null ? ARG_PARSERS.get('num').parse(stmt) : new Text(text);
         }
     }],
     ['num', {
-        parse(arg) {
-            let matched = /^-?[0-9]+\.?[0-9]*$/.exec(arg);
-            return matched !== null ? new Num(parseFloat(arg)) : ARG_PARSERS.get('variable').parse(arg);
+        parse(stmt) {
+            let number = stmt.numberToken();
+            return number === null ? ARG_PARSERS.get('variable').parse(stmt) : new Num(parseFloat(number));
         }        
     }],
     ['variable', {
-        parse(arg) {
-            let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(arg);
-            if(matched) {
-                return matched[0].charAt(0) === '-' ? 
-                           ARG_PARSERS.get('expression').parse(`0 ${arg}`) : 
-                           new Variable(arg);
-            } 
-            return ARG_PARSERS.get('expression').parse(arg);
+        parse(stmt) {
+            let variable = stmt.variableToken();
+            return variable === null ? ARG_PARSERS.get('expression').parse(stmt) : new Variable(variable);
         }
     }],
     ['expression', {
-        parse(arg) {
-            let tokens = new ExprTokenizer(arg).postfixTokens();
+        parse(stmt) {
+            let tokens = stmt.expressionPostfixTokens();
             return tokens.reduce((stack, token) => {
                 if('+-*/'.indexOf(token) !== -1) {
                     return reduce(stack, token);
                 } 
-                return stack.push(ARG_PARSERS.get('num').parse(token));
+                let number = parseFloat(token);
+                return stack.push(Number.isNaN(number) ? new Variable(token) : new Num(number));
             }, new Stack()).top;
         }
     }]
@@ -151,6 +144,9 @@ class Variable {
     }
 
     evaluate(context) {
+        if(this.name.charAt(0) === '-') {
+            return context.variables.get(this.name.slice(1)) * -1;
+        }
         return context.variables.get(this.name);
     }
 }

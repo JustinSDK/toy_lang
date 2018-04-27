@@ -1,10 +1,45 @@
 import {Stack} from './util.js';
 export {StmtTokenizer, ExprTokenizer};
 
+function text(input) {
+    let matched = /^'(.*)'$/.exec(input);
+    return matched === null ? null : matched[1];
+}
+
+function number(input) {
+    let matched = /^-?[0-9]+\.?[0-9]*$/.exec(input);
+    return matched === null ? null : input;
+}    
+
+function variable(input) {
+    let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(input);
+    return matched === null ? null : input;
+}
+
+function postfixExpression(input) {
+    return new ExprTokenizer(input).postfixTokens();
+}
+
 class Statement {
     constructor(type, tokens) {
         this.type = type;
         this.tokens = tokens;
+    }
+
+    textToken() {
+        return text(this.matchingValue());
+    }
+
+    numberToken() {
+        return number(this.matchingValue());
+    }
+
+    variableToken() {
+        return variable(this.matchingValue());
+    }    
+
+    expressionPostfixTokens() {
+        return postfixExpression(this.matchingValue());
     }
 }
 
@@ -20,6 +55,10 @@ class AssignStatement extends Statement {
     assigned() {
         return this.tokens[2];
     }
+
+    matchingValue() {
+        return this.assigned();
+    }
 }
 
 class OneArgStatement extends Statement {
@@ -29,6 +68,10 @@ class OneArgStatement extends Statement {
 
     argument() {
         return this.tokens[1];
+    }
+
+    matchingValue() {
+        return this.argument();
     }
 }
 
