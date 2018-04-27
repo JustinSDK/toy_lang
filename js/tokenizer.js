@@ -1,7 +1,7 @@
 import {Stack} from './util.js';
 export {StmtTokenizer, ExprTokenizer};
 
-class Tokens {
+class Statement {
     constructor(tokens) {
         this.tokens = tokens;
         this.head = tokens[0];
@@ -21,16 +21,16 @@ class StmtTokenizer {
                         .map(line => {
                             let assign = /([a-zA-Z_]+[a-zA-Z_0-9]*)\s*=\s*(.*)/.exec(line);
                             if(assign) {
-                                return new Tokens(['assign', assign[1], assign[2]]);
+                                return new Statement(['assign', assign[1], assign[2]]);
                             }
                             
                             // 'end' is an empty statement
                             if(line.startsWith('end')) {
-                                return new Tokens(['empty']);
+                                return new Statement(['empty']);
                             }
 
                             let matched = /(\w+)\s*(.*)/.exec(line);
-                            return new Tokens([matched[1], matched[2]]);
+                            return new Statement([matched[1], matched[2]]);
                         });
     }
 }
@@ -41,11 +41,11 @@ class ExprTokenizer {
     }
 
     infixTokens() {
-        return new Tokens(expr_tokens(this.expr));
+        return new Statement(expr_tokens(this.expr));
     }
 
     postfixTokens() {
-        return new Tokens(toPostfix(this.infixTokens().tokens));
+        return new Statement(toPostfix(this.infixTokens().tokens));
     }
 }
 

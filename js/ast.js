@@ -4,41 +4,41 @@ export {Context, AST};
 
 const STMT_PARSERS = new Map([
     ['sequence', {
-        parse(lines) {
-            if(lines.length === 0 || lines[0].head === 'empty') {
+        parse(stmts) {
+            if(stmts.length === 0 || stmts[0].head === 'empty') {
                 return StmtSequence.EMPTY;
             }
     
-            return STMT_PARSERS.get(lines[0].head).parse(lines);   
+            return STMT_PARSERS.get(stmts[0].head).parse(stmts);   
         }
     }],    
     ['assign', {
-        parse(lines) {
+        parse(stmts) {
             return new StmtSequence(
                 new Assign(
-                    new Variable(lines[0].tail[0]), 
-                    ARG_PARSERS.get('text').parse(lines[0].tail[1])
+                    new Variable(stmts[0].tail[0]), 
+                    ARG_PARSERS.get('text').parse(stmts[0].tail[1])
                 ),
-                STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
     }],
     ['print', {
-        parse(lines) {
+        parse(stmts) {
             return new StmtSequence(
-                new Print(ARG_PARSERS.get('text').parse(lines[0].tail[0])),
-                STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                new Print(ARG_PARSERS.get('text').parse(stmts[0].tail[0])),
+                STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
     }],
     ['until0', {
-        parse(lines) {
+        parse(stmts) {
             return new StmtSequence(
                  new UntilZero(
-                    ARG_PARSERS.get('num').parse(lines[0].tail[0]), 
-                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                    ARG_PARSERS.get('num').parse(stmts[0].tail[0]), 
+                    STMT_PARSERS.get('sequence').parse(stmts.slice(1))
                  ),
-                 STMT_PARSERS.get('sequence').parse(linesAfterUntil0(lines.slice(1)))
+                 STMT_PARSERS.get('sequence').parse(linesAfterUntil0(stmts.slice(1)))
             );
         }
     }]
