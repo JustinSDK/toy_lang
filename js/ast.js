@@ -103,7 +103,8 @@ const ARG_PARSERS =  new Map([
     }],
     ['expression', {
         parse(arg) {
-            let matched = /(^-?[a-zA-Z_0-9.]+)\s*(\+|\-)\s*(.+)$/.exec(arg);
+
+            let matched = /(^-?[a-zA-Z_0-9\.]+)\s*(\+|\-)\s*(.+)$/.exec(arg);
             if(matched) {
                 let left = ARG_PARSERS.get('num').parse(matched[1]);
                 let right = ARG_PARSERS.get('expression').parse(matched[3]);

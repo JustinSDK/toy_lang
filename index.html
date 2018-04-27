@@ -66,12 +66,12 @@ print '\n'</textarea>
 <br><br>
 <textarea id="tty" style="background: #000;color:#fff;"></textarea>
 <script type="module">
-    import {Tokenizer} from './js/tokenizer.js';
+    import {StmtTokenizer} from './js/tokenizer.js';
     import {AST, Context} from './js/ast.js';
     document.getElementById('run').addEventListener('click', _ => {
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
-        tty.textContent = new AST(new Tokenizer(code))
+        tty.textContent = new AST(new StmtTokenizer(code))
                             .evaluate(new Context())
                             .outputs
                             .map(output => `${output}`.replace('\\n', '\n'))
