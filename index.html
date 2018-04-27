@@ -31,7 +31,7 @@
                 &lt;variable&gt;&nbsp;&nbsp; ::= ([a-zA-Z_]+[a-zA-Z_0-9]*)<br>
                 &lt;term&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= (-?) &lt;primitive&gt; | (-?)
                 &lt;variable&gt; | &lt;expression&gt;<br>
-                &lt;expression&gt; ::= &lt;term&gt; { (+|-) &lt;term&gt; }<br>
+                &lt;expression&gt; ::= &lt;term&gt; { (+|-|*|/) &lt;term&gt; }<br>
                 &lt;assign&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= &lt;variable&gt; =
                 &lt;expression&gt;<br>
                 &lt;print&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "print"
