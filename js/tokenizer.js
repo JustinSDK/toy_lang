@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-export {StmtTokenizer, ExprTokenizer};
+export {StmtTokenizer};
 
 function text(input) {
     let matched = /^'(.*)'$/.exec(input);
