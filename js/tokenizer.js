@@ -2,10 +2,9 @@ import {Stack} from './util.js';
 export {StmtTokenizer, ExprTokenizer};
 
 class Statement {
-    constructor(tokens) {
+    constructor(type, tokens = []) {
+        this.type = type;
         this.tokens = tokens;
-        this.type = tokens[0];
-        this.tail = tokens.slice(1);
     }
 }
 
@@ -19,18 +18,18 @@ class StmtTokenizer {
                         .map(line => line.trim())
                         .filter(line => line !== '')
                         .map(line => {
-                            let assign = /([a-zA-Z_]+[a-zA-Z_0-9]*)\s*=\s*(.*)/.exec(line);
+                            let assign = /([a-zA-Z_]+[a-zA-Z_0-9]*)\s*(=)\s*(.*)/.exec(line);
                             if(assign) {
-                                return new Statement(['assign', assign[1], assign[2]]);
+                                return new Statement('assign', [assign[1], assign[2], assign[3]]);
                             }
                             
                             // 'end' is an empty statement
                             if(line.startsWith('end')) {
-                                return new Statement(['empty']);
+                                return new Statement('empty');
                             }
 
                             let matched = /(\w+)\s*(.*)/.exec(line);
-                            return new Statement([matched[1], matched[2]]);
+                            return new Statement(matched[1], [matched[1], matched[2]]);
                         });
     }
 }
