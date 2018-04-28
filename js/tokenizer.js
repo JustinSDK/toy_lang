@@ -151,19 +151,17 @@ function digest(tokens, stack = new Stack(), output = []) {
         return [stack, output];
     }
 
-    if(tokens[0] === '(') { 
-        return digest(tokens.slice(1), stack.push(tokens[0]), output);
-    }
-    else if('+-*/'.indexOf(tokens[0]) !== -1) {
-        let [s, o] = popHighPriority(tokens[0], stack, output);
-        return digest(tokens.slice(1), s.push(tokens[0]), o);
-    }
-    else if(tokens[0] === ')') {
-        let [s, o] = popAllBeforeLP(stack, output);
-        return digest(tokens.slice(1), s.pop(), o);
-    }
-    else { 
-        return digest(tokens.slice(1), stack, output.concat([tokens[0]]));
+    switch(tokens[0]) {
+        case '(':
+            return digest(tokens.slice(1), stack.push(tokens[0]), output);
+        case '+': case '-': case '*': case '/':
+            let [s1, o1] = popHighPriority(tokens[0], stack, output);
+            return digest(tokens.slice(1), s1.push(tokens[0]), o1);
+        case ')':
+            let [s2, o2] = popAllBeforeLP(stack, output);
+            return digest(tokens.slice(1), s2.pop(), o2);
+        default: 
+            return digest(tokens.slice(1), stack, output.concat([tokens[0]]));
     }
 }
 
