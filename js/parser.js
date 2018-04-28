@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-export {Context, AST};
+export {AST};
 
 const STMT_PARSERS = new Map([
     ['sequence', {
@@ -261,7 +261,7 @@ class AST {
         this.ast = STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
     }
 
-    evaluate(context) {
+    evaluate(context = new Context()) {
         return this.ast.evaluate(context);
     }
 }
