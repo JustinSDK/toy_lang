@@ -72,7 +72,7 @@ print '\n'</textarea>
     <textarea id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
     import {StmtTokenizer} from './js/tokenizer.js';
-    import {AST, Context} from './js/ast.js';
+    import {AST, Context} from './js/parser.js';
     document.getElementById('run').addEventListener('click', _ => {
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
