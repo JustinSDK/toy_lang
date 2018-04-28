@@ -152,13 +152,13 @@ class Variable {
 }
 
 class Assign {
-    constructor(variable, expression) {
+    constructor(variable, value) {
         this.variable = variable;
-        this.expression = expression;
+        this.value = value;
     }
 
     evaluate(context) {
-        let value = this.expression.evaluate(context);
+        let value = this.value.evaluate(context);
         return new Context(
             context.outputs,
             new Map(Array.from(context.variables.entries()).concat([[this.variable.name, value]]))
@@ -167,26 +167,26 @@ class Assign {
 }
 
 class Print {
-    constructor(expression) {
-        this.expression = expression;
+    constructor(value) {
+        this.value = value;
     }
 
     evaluate(context) {
         return new Context(
-            context.outputs.concat([this.expression.evaluate(context).value]),
+            context.outputs.concat([this.value.evaluate(context).value]),
             context.variables
         );
     }
 }
 
 class UntilZero {
-    constructor(expression, stmt) {
-        this.expression = expression;
+    constructor(value, stmt) {
+        this.value = value;
         this.stmt = stmt;
     }
 
     evaluate(context) {
-        if(this.expression.evaluate(context).value !== 0) {
+        if(this.value.evaluate(context).value !== 0) {
             let ctx = this.stmt.evaluate(context);
             return this.evaluate(ctx);
         }
