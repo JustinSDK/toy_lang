@@ -23,31 +23,54 @@
   </head>
   <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
     <p>首次嘗試打造的玩具語言，文法大概是這樣：</p>
-    <div> <strong>&lt;primitive&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= NUMBER |
-        ('.*')<br>
-        &lt;variable&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=
-        ([a-zA-Z_]+[a-zA-Z_0-9]*)<br>
-      </strong></div>
-    <div><strong>&lt;factor&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        ::= </strong><strong>(-?) &lt;primitive&gt; | (-?) &lt;variable&gt; |
-        &lt;expression&gt;</strong><strong> </strong></div>
-    <div><strong>&lt;term&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        ::= &lt;factor&gt; {(*|/) &lt;factor&gt;}<br>
-      </strong></div>
-    <div><strong> &lt;expression&gt;&nbsp; ::= &lt;term&gt; { (+|-) &lt;term&gt;
-        }<br>
-        &lt;assign&gt;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; ::=
-        &lt;variable&gt; = &lt;expression&gt;<br>
-        &lt;print&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        ::= "print" &lt;expression&gt;<br>
-        &lt;until0&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        ::= "until0" &lt;expression&gt; "\n" { &lt;statement&gt; } "\n" "end" <br>
-        &lt;statement&gt;&nbsp;&nbsp;&nbsp; ::= &lt;print&gt; | &lt;asign&gt; |
-        &lt;until0&gt;<br>
-        &lt;program&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= {
-        &lt;statement&gt; }&nbsp; </strong> </div>
-    <p>可用的指令組合可參考底下的費式數列範例，運算式可使用括號，你的瀏覽器必須支援 ES6 模組。</p>
-    <textarea id="code">print 'Fibonacci number\n'
+    <div><code><strong>&lt;primitive&gt;&nbsp;&nbsp; ::= NUMBER | ('.*')<br>
+          &lt;variable&gt;&nbsp;&nbsp;&nbsp; ::= ([a-zA-Z_]+[a-zA-Z_0-9]*)<br>
+        </strong></code></div>
+    <code>
+      <div><strong>&lt;factor&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= </strong><strong>(-?)
+          &lt;primitive&gt; | (-?) &lt;variable&gt; | &lt;expression&gt;</strong><strong>
+        </strong></div>
+      <div><strong>&lt;term&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          ::= &lt;factor&gt; {(*|/) &lt;factor&gt;}<br>
+        </strong></div>
+    </code>
+    <div><code><strong> &lt;expression&gt;&nbsp; ::= &lt;term&gt; { (+|-)
+          &lt;term&gt; }<br>
+          &lt;assign&gt;&nbsp;&nbsp;&nbsp; &nbsp; ::= &lt;variable&gt; =
+          &lt;expression&gt;<br>
+          &lt;print&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "print"
+          &lt;expression&gt;<br>
+          &lt;until0&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "until0"
+          &lt;expression&gt; "\n" { &lt;statement&gt; } "\n" "end" <br>
+          &lt;statement&gt;&nbsp;&nbsp; ::= &lt;print&gt; | &lt;asign&gt; |
+          &lt;until0&gt;<br>
+          &lt;program&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= { &lt;statement&gt;
+          }&nbsp; </strong></code></div>
+    <p>可用的指令組合可參考底下的範例，運算式可使用括號，你的瀏覽器必須支援 ES6 模組。</p>
+    <ul>
+      <li>九九乘法表</li>
+    </ul>
+    <pre><strong><code>i = 9
+until0 i
+    j = 8
+    a = 10 - i
+    until0 j
+        b = 10 - j
+        print b
+        print '*'
+        print a
+        print '='
+        print b * a
+        print '\t'
+        j = j - 1
+    end
+    print '\n'
+    i = i - 1
+end</code></strong></pre>
+    <ul>
+      <li>費式數列</li>
+    </ul>
+    <pre><strong><code>print 'Fibonacci numbers\n'  
 n = 10
 fn1 = 1
 fn2 = 1
@@ -63,11 +86,13 @@ until0 n
     fn2 = fn
     n = n - 1
 end
-print '\n'</textarea>
+print '\n'</code></strong></pre>
+    <ul>
+        <li>實驗室</li>
+    </ul>
+    <textarea id="code">print 'Hello, World\n'</textarea> <br>
     <br>
-    <br>
-    <button id="run">執行</button>
-    <br>
+    <button id="run">執行</button> <br>
     <br>
     <textarea id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
