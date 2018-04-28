@@ -79,7 +79,7 @@ print '\n'</textarea>
         tty.textContent = new AST(new StmtTokenizer(code))
                             .evaluate()
                             .outputs
-                            .map(output => `${output}`.replace('\\n', '\n'))
+                            .map(output => `${output}`.replace('\\n', '\n').replace('\\t', '\t'))
                             .join('');
     });
 </script> </body>
