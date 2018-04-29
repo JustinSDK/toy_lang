@@ -116,6 +116,20 @@ class Context {
         this.outputs = outputs;
         this.variables = variables;
     }
+
+    output(value) {
+        return new Context(
+            this.outputs.concat([value]),
+            this.variables
+        );
+    }
+
+    assign(variable, value) {
+        return new Context(
+            this.outputs,
+            new Map(Array.from(this.variables.entries()).concat([[variable, value]]))
+        );
+    }
 }
 
 class Num {
@@ -158,11 +172,7 @@ class Assign {
     }
 
     evaluate(context) {
-        let value = this.value.evaluate(context);
-        return new Context(
-            context.outputs,
-            new Map(Array.from(context.variables.entries()).concat([[this.variable.name, value]]))
-        );
+        return context.assign(this.variable.name, this.value.evaluate(context));
     }
 }
 
@@ -172,10 +182,7 @@ class Print {
     }
 
     evaluate(context) {
-        return new Context(
-            context.outputs.concat([this.value.evaluate(context).value]),
-            context.variables
-        );
+        return context.output(this.value.evaluate(context).value);
     }
 }
 
