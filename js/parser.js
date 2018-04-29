@@ -112,13 +112,15 @@ function reduce(stack, token) {
 }
 
 class Context {
-    constructor(outputs = [], variables = new Map()) {
+    constructor(parent = null, outputs = [], variables = new Map()) {
+        this.parent = parent;
         this.outputs = outputs;
         this.variables = variables;
     }
 
     output(value) {
         return new Context(
+            this.parent,
             this.outputs.concat([value]),
             this.variables
         );
@@ -126,6 +128,7 @@ class Context {
 
     assign(variable, value) {
         return new Context(
+            this.parent,
             this.outputs,
             new Map(Array.from(this.variables.entries()).concat([[variable, value]]))
         );
@@ -159,10 +162,15 @@ class Variable {
 
     evaluate(context) {
         if(this.name.charAt(0) === '-') {
-            return context.variables.get(this.name.slice(1)) * -1;
+            return lookUpVariable(context, this.name.slice(1)) * -1;
         }
-        return context.variables.get(this.name);
+        return lookUpVariable(context, this.name);
     }
+}
+
+function lookUpVariable(context, name) {
+    let value = context.variables.get(name);
+    return value ? value : lookUpVariable(context.parent, name);
 }
 
 class Assign {
