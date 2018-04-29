@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-export {AST};
+export {Context, AST}; 
 
 const STMT_PARSERS = new Map([
     ['sequence', {
@@ -112,8 +112,8 @@ function reduce(stack, token) {
 }
 
 class Context {
-    constructor(outputs = [], variables = new Map()) {
-        this.outputs = outputs;
+    constructor(out, variables = new Map()) {
+        this.out = out;
         this.variables = variables;
     }
 }
@@ -160,7 +160,7 @@ class Assign {
     evaluate(context) {
         let value = this.value.evaluate(context);
         return new Context(
-            context.outputs,
+            context.out,
             new Map(Array.from(context.variables.entries()).concat([[this.variable.name, value]]))
         );
     }
@@ -172,8 +172,9 @@ class Print {
     }
 
     evaluate(context) {
+        context.out(this.value.evaluate(context).value);
         return new Context(
-            context.outputs.concat([this.value.evaluate(context).value]),
+            context.out,
             context.variables
         );
     }
@@ -261,7 +262,7 @@ class AST {
         this.ast = STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
     }
 
-    evaluate(context = new Context()) {
+    evaluate(context) {
         return this.ast.evaluate(context);
     }
 }

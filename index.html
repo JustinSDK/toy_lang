@@ -97,15 +97,14 @@ print '\n'</code></strong></pre>
     <textarea id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
     import {StmtTokenizer} from './js/tokenizer.js';
-    import {AST} from './js/parser.js';
+    import {Context, AST} from './js/parser.js';
     document.getElementById('run').addEventListener('click', _ => {
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
-        tty.textContent = new AST(new StmtTokenizer(code))
-                            .evaluate()
-                            .outputs
-                            .map(output => `${output}`.replace('\\n', '\n').replace('\\t', '\t'))
-                            .join('');
+        new AST(new StmtTokenizer(code))
+              .evaluate(new Context(output => {
+                  tty.textContent += `${output}`.replace('\\n', '\n').replace('\\t', '\t');
+              }));
     });
 </script> </body>
 </html>
