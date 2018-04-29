@@ -162,7 +162,7 @@ class Variable {
 
     evaluate(context) {
         if(this.name.charAt(0) === '-') {
-            return lookUpVariable(context, this.name.slice(1)) * -1;
+            return new Num(lookUpVariable(context, this.name.slice(1)).value * -1) ;
         }
         return lookUpVariable(context, this.name);
     }
@@ -170,7 +170,7 @@ class Variable {
 
 function lookUpVariable(context, name) {
     let value = context.variables.get(name);
-    return value ? value : lookUpVariable(context.parent, name);
+    return value === undefined ? lookUpVariable(context.parent, name) : value;
 }
 
 class Assign {

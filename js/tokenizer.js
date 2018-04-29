@@ -17,7 +17,7 @@ function variable(input) {
 }
 
 function postfixExpression(input) {
-    return new ExprTokenizer(input).postfixTokens();
+    return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
 }
 
 class Statement {
