@@ -1,5 +1,5 @@
-import {Stack} from './util.js';
-export {AST};
+// import {Stack} from './util.js';
+// export {AST};
 
 const STMT_PARSERS = new Map([
     ['sequence', {
@@ -280,3 +280,83 @@ class AST {
         return this.ast.evaluate(context);
     }
 }
+
+class Func {
+    constructor(params, stmt) {
+        this.params = params;
+        this.stmt = stmt;
+    }
+
+    call(args) {
+        return new StmtSequence(assigns(this.params, args), this.stmt);
+    }
+
+    evaluate(context) {
+        return this;
+    }
+}
+
+function assigns(params, args) {
+    if(params.length === 0) {
+        return StmtSequence.EMPTY;
+    }
+    return new StmtSequence(
+                  new Assign(new Variable(params[0]), args[0]), 
+                  assigns(params.slice(1), args.slice(1))
+            );
+}
+
+class FunCall {
+    constructor(fVariable, args) {
+        this.fVariable = fVariable;
+        this.args = args;
+    }
+
+    evaluate(context) {
+        let f = this.fVariable.evaluate(context);
+        let stmt = f.call(this.args);
+        let ctx = stmt.evaluate(new Context(context, context.outputs));
+        return new Context(context.parent, ctx.outputs, context.variables);
+    }    
+}
+
+// def foo(x)
+//     print a
+//     print x
+//     y = 30
+//     print a + x + y
+// end
+//
+// a = 10
+// print 'XD'
+// foo(20)
+
+// ast example
+
+// let f_body_seq = new StmtSequence(new Print(new Variable('a'))
+// , new StmtSequence(
+//     new Print(new Variable('x')), 
+//         new StmtSequence(new Assign(new Variable('y'), new Num(30)), 
+//             new StmtSequence(new Print(
+//                 new Add(new Variable('a'), new Add(new Variable('x'), new Variable('y')))
+//                 ),  StmtSequence.EMPTY)
+//         )
+// ));
+// let foo = new Assign(
+//     new Variable('foo'), 
+//     new Func(['x'], f_body_seq)
+// );
+// let assign = new Assign(new Variable('a'), new Num(10));
+// let p = new Print(new Text('XD'));
+// let f_call = new FunCall(new Variable('foo'), [new Num(20)]);
+// let globalContext = new Context();
+// let ctx = new StmtSequence(
+//     foo, new StmtSequence(
+//         assign, new StmtSequence(
+//             p, new StmtSequence(
+//                 f_call, StmtSequence.EMPTY
+//             )
+//         )
+//     )
+// ).evaluate(globalContext);
+// console.log(ctx.outputs);
