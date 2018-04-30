@@ -20,6 +20,11 @@ function postfixExpression(input) {
     return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
 }
 
+function func(input) {
+    let matched = /^([a-zA-Z_]+[a-zA-Z_0-9])\(\s*(.*)\s*\)$/.exec(input);
+    return [matched[1]].concat(matched[2].split(/,\s*/));
+}
+
 class Statement {
     constructor(type, tokens) {
         this.type = type;
@@ -40,6 +45,10 @@ class Statement {
 
     expressionPostfixTokens() {
         return postfixExpression(this.matchingValue());
+    }
+
+    funcTokens() {
+        return func(this.matchingValue());
     }
 }
 

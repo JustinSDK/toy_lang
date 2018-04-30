@@ -11,6 +11,19 @@ const STMT_PARSERS = new Map([
             return STMT_PARSERS.get(stmts[0].type).parse(stmts);   
         }
     }],    
+    ['def', {
+        parse(stmts) {
+            let [funcName, ...params] = stmts[0].funcTokens();
+            let remains = stmts.slice(1);     
+            return new StmtSequence(
+                new Assign(
+                    new Variable('foo'), 
+                    new Func(['x'], STMT_PARSERS.get('sequence').parse(remains))
+                ),
+                STMT_PARSERS.get('sequence').parse(linesAfterDef(remains))
+            );
+        }
+    }],    
     ['assign', {
         parse(stmts) {
             return new StmtSequence(
@@ -51,6 +64,18 @@ function linesAfterUntil0(stmts, until0 = 1) {
     let stmt = stmts[0].type;
     let rpts = stmt === 'until0' ? until0 + 1 : 
         (stmt === 'empty' ? until0 - 1 : until0);
+    
+    return linesAfterUntil0(stmts.slice(1), rpts)
+}
+
+function linesAfterDef(stmts, end = 1) {
+    if(end === 0) {
+        return stmts;
+    }
+
+    let stmt = stmts[0].type;
+    let rpts = stmt === 'until0' || stmt === 'def' ? end + 1 : 
+        (stmt === 'empty' ? end - 1 : end);
     
     return linesAfterUntil0(stmts.slice(1), rpts)
 }
