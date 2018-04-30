@@ -45,12 +45,13 @@ const STMT_PARSERS = new Map([
     }],
     ['until0', {
         parse(stmts) {
+            let remains = stmts.slice(1);     
             return new StmtSequence(
                  new UntilZero(
                     VALUE_PARSERS.get('num').parse(stmts[0]), 
-                    STMT_PARSERS.get('sequence').parse(stmts.slice(1))
+                    STMT_PARSERS.get('sequence').parse(remains)
                  ),
-                 STMT_PARSERS.get('sequence').parse(linesAfterUntil0(stmts.slice(1)))
+                 STMT_PARSERS.get('sequence').parse(linesAfterUntil0(remains))
             );
         }
     }]
