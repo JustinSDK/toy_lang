@@ -1,5 +1,5 @@
-// import {Stack} from './util.js';
-// export {AST};
+import {Stack} from './util.js';
+export {AST};
 
 const STMT_PARSERS = new Map([
     ['sequence', {
