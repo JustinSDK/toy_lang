@@ -74,7 +74,7 @@ function linesAfterCurrentBlock(stmts, end = 1) {
     }
 
     let stmt = stmts[0].type;
-    let rpts = stmt === 'until0' || stmt === 'while' || stmt === 'def' ? end + 1 : 
+    let rpts = stmt === 'while' || stmt === 'def' ? end + 1 : 
         (stmt === 'empty' ? end - 1 : end);
     
     return linesAfterCurrentBlock(stmts.slice(1), rpts)
