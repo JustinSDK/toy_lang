@@ -57,7 +57,7 @@ class TokenTester {
     }
 
     booleanToken() {
-        return number(this.input);
+        return boolean(this.input);
     }    
 
     boolExprTokens() {
