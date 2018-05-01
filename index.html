@@ -22,7 +22,8 @@
     </style>
   </head>
   <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
-    <p>相關程式碼可在 <a href="https://github.com/JustinSDK/toy_lang">Github</a> 找到，這是首次嘗試打造的玩具語言，文法大概是這樣：</p>
+    <p>相關程式碼可在 <a href="https://github.com/JustinSDK/toy_lang">Github</a>
+      找到，這是首次嘗試打造的玩具語言，文法大概是這樣：</p>
     <div><code><strong>&lt;primitive&gt;&nbsp;&nbsp; ::= NUMBER | ('.*')<br>
           &lt;variable&gt;&nbsp;&nbsp;&nbsp; ::= ([a-zA-Z_]+[a-zA-Z_0-9]*)<br>
         </strong></code></div>
@@ -41,9 +42,24 @@
           &lt;print&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "print"
           &lt;expression&gt;<br>
           &lt;until0&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::= "until0"
-          &lt;expression&gt; "\n" { &lt;statement&gt; } "\n" "end" <br>
-          &lt;statement&gt;&nbsp;&nbsp; ::= &lt;print&gt; | &lt;asign&gt; |
-          &lt;until0&gt;<br>
+          &lt;expression&gt; (\n) { &lt;statement&gt; } </strong></code><code><strong><code><strong>(\n)</strong></code>
+          "end"</strong></code></div>
+    <div><code><strong>&lt;params&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ::=
+          &lt;variable&gt; {"," &lt;variable&gt; }<br>
+        </strong></code></div>
+    <div><code><strong>&lt;args&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          ::= &lt;expresion&gt; {"," &lt;expression&gt; }<br>
+        </strong></code></div>
+    <div><code><strong>&lt;func&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          ::= "def" </strong></code><code><strong>&lt;variable&gt; "(" </strong></code><code><strong><code><strong>&lt;params&gt;</strong></code>
+          ")" </strong></code><code><strong>(\n) { &lt;statement&gt; } </strong></code><code><strong><code><strong>(\n)</strong></code>
+          "end" <br>
+        </strong></code></div>
+    <div><code><strong>&lt;funcall&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= </strong></code><code><strong>&lt;variable&gt;
+          "(" &lt;args&gt; ")"<br>
+        </strong></code></div>
+    <div><code><strong> &lt;statement&gt;&nbsp;&nbsp; ::= &lt;print&gt; |
+          &lt;asign&gt; | &lt;until0&gt; | &lt;func&gt;<br>
           &lt;program&gt;&nbsp;&nbsp;&nbsp;&nbsp; ::= { &lt;statement&gt;
           }&nbsp; </strong></code></div>
     <p>可用的指令組合可參考底下的範例，運算式可使用括號，你的瀏覽器必須支援 ES6 模組。</p>
@@ -100,7 +116,7 @@ printFibonacciNumbers(20)</code></strong></pre>
     <br>
     <button id="run">執行</button> <br>
     <br>
-    <textarea readonly id="tty" style="background: #000;color:#fff;"></textarea>
+    <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
     import {StmtTokenizer} from './js/tokenizer.js';
     import {AST} from './js/parser.js';
