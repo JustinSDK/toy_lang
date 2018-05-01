@@ -160,6 +160,16 @@ class Context {
     }
 }
 
+class Text {
+    constructor(value) {
+        this.value = value;
+    }
+
+    evaluate(context) {
+        return this;
+    }
+}
+
 class Num {
     constructor(value) {
         this.value = value;
@@ -170,14 +180,14 @@ class Num {
     }
 }
 
-class Text {
+class Boolean {
     constructor(value) {
         this.value = value;
     }
 
     evaluate(context) {
         return this;
-    }
+    }    
 }
 
 class Variable {
@@ -217,6 +227,33 @@ class Print {
     evaluate(context) {
         return context.output(this.value.evaluate(context).value);
     }
+}
+
+class Equal {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Boolean(this.left.evaluate(context).value === this.right.evaluate(context).value)
+    }
+}
+
+class While {
+    constructor(boolean, stmt) {
+        this.boolean = boolean;
+        this.stmt = stmt;
+    }
+
+    evaluate(context) {
+        if(this.boolean.evaluate(context).value) {
+            let ctx = this.stmt.evaluate(context);
+            return this.evaluate(ctx);
+        }
+
+        return context;
+    }   
 }
 
 class UntilZero {
