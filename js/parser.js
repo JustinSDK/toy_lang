@@ -473,7 +473,7 @@ class FunCall {
 
     evaluate(context) {
         let f = this.fVariable.evaluate(context);
-        let stmt = f.call(this.args);
+        let stmt = f.call(this.args.map(arg => arg.evaluate(context)));
         let ctx = stmt.evaluate(new Context(context, context.outputs));
         return new Context(context.parent, ctx.outputs, context.variables);
     }    
