@@ -11,6 +11,16 @@ function number(input) {
     return matched === null ? null : input;
 }    
 
+function boolean(input) {
+    let matched = /^(true|false)$/.exec(input);
+    return matched === null ? null : input;
+}    
+
+function bool_expr(input) {
+    let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
+    return matched === null ? null : [matched[1], matched[2], matched[3]];
+}
+
 function variable(input) {
     let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(input);
     return matched === null ? null : input;
@@ -44,6 +54,14 @@ class TokenTester {
 
     numberToken() {
         return number(this.input);
+    }
+
+    booleanToken() {
+        return number(this.input);
+    }    
+
+    boolExprTokens() {
+        return bool_expr(this.input);
     }
 
     variableToken() {
@@ -151,14 +169,13 @@ class StmtTokenizer {
                             if(assign) {
                                 return new AssignStatement('assign', [assign[1], assign[2], assign[3]]);
                             }
-                            
 
                             let funcall = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(line);
                             if(funcall) {
                                 return new FuncallStatement('funcall', [funcall[1], funcall[2]]);
                             }
 
-                            let command = /^(\w+)\s*(.*)$/.exec(line);
+                            let command = /^(\w+)\s+(.*)$/.exec(line);
                             return new OneArgStatement(command[1], [command[1], command[2]]);
                         });
     }

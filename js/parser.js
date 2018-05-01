@@ -65,6 +65,18 @@ const STMT_PARSERS = new Map([
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
+    }],
+    ['while', {
+        parse(stmts) {
+            let remains = stmts.slice(1);     
+            return new StmtSequence(
+                 new While(
+                    VALUE_PARSERS.get('boolean').parse(stmts[0].tokenTester), 
+                    STMT_PARSERS.get('sequence').parse(remains)
+                 ),
+                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+            );
+        }
     }]
 ]);
 
@@ -74,13 +86,13 @@ function linesAfterCurrentBlock(stmts, end = 1) {
     }
 
     let stmt = stmts[0].type;
-    let rpts = stmt === 'until0' || stmt === 'def' ? end + 1 : 
+    let rpts = stmt === 'until0' || stmt === 'while' || stmt === 'def' ? end + 1 : 
         (stmt === 'empty' ? end - 1 : end);
     
     return linesAfterCurrentBlock(stmts.slice(1), rpts)
 }
 
-const VALUE_PARSERS =  new Map([
+const VALUE_PARSERS = new Map([
     ['value', {
         parse(tokenTester) {
             // pattern matching from text
@@ -96,15 +108,70 @@ const VALUE_PARSERS =  new Map([
     ['num', {
         parse(tokenTester) {
             let number = tokenTester.numberToken();
-            return number === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Num(parseFloat(number));
+            return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Num(parseFloat(number));
         }        
     }],
+    ['boolean', {
+        parse(tokenTester) {
+            let boolean = tokenTester.booleanToken();
+            return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Boolean(boolean === 'true');
+        }        
+    }],    
     ['variable', {
         parse(tokenTester) {
             let variable = tokenTester.variableToken();
-            return variable === null ? VALUE_PARSERS.get('expression').parse(tokenTester) : new Variable(variable);
+            return variable === null ? VALUE_PARSERS.get('bool_expr').parse(tokenTester) : new Variable(variable);
         }
     }],
+    ['bool_expr', {
+        parse(tokenTester) {
+            let boolExprTokens = tokenTester.boolExprTokens();
+            if(boolExprTokens) {
+                let [left, op, right] = boolExprTokens;
+                let leftNumber = parseFloat(left);
+                let rightNumber = parseFloat(right);
+                if(op === '==') {
+                    return new Equal(
+                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    );
+                }
+                if(op === '!=') {
+                    return new NotEqual(
+                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    );
+                }
+                if(op === '>=') {
+                    return new BiggerEqual(
+                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    );
+                }
+                if(op === '<=') {
+                    return new LessEqual(
+                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    );
+                }
+                if(op === '>') {
+                    return new BiggerThan(
+                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    );
+                }
+                if(op === '<') {
+                    return new LessThan(
+                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    );
+                }
+            }
+
+
+            return VALUE_PARSERS.get('expression').parse(tokenTester);
+        }        
+    }],    
     ['expression', {
         parse(tokenTester) {
             let tokens = tokenTester.expressionPostfixTokens();
@@ -237,6 +304,61 @@ class Equal {
 
     evaluate(context) {
         return new Boolean(this.left.evaluate(context).value === this.right.evaluate(context).value)
+    }
+}
+
+class NotEqual {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Boolean(this.left.evaluate(context).value !== this.right.evaluate(context).value)
+    }
+}
+
+class BiggerEqual {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Boolean(this.left.evaluate(context).value >= this.right.evaluate(context).value)
+    }
+}
+
+class LessEqual {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Boolean(this.left.evaluate(context).value <= this.right.evaluate(context).value)
+    }
+}
+
+class BiggerThan {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Boolean(this.left.evaluate(context).value > this.right.evaluate(context).value)
+    }
+}
+
+class LessThan {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Boolean(this.left.evaluate(context).value < this.right.evaluate(context).value)
     }
 }
 
