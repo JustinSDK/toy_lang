@@ -70,23 +70,29 @@ end</code></strong></pre>
     <ul>
       <li>費式數列</li>
     </ul>
-    <pre><strong><code>print 'Fibonacci numbers\n'  
-n = 10
-fn1 = 1
-fn2 = 1
-print fn1
-print ' '
-print fn2
-print ' '
-until0 n
-    fn = fn2 + fn1
-    print fn
+    <pre><strong><code>def printFibonacciNumbers(n)
+    print n
+    print ' Fibonacci numbers\n'
+    n = n - 2
+    fn1 = 1
+    fn2 = 1
+    print fn1
     print ' '
-    fn1 = fn2
-    fn2 = fn
-    n = n - 1
+    print fn2
+    print ' '
+    until0 n
+        fn = fn2 + fn1
+        print fn
+        print ' '
+        fn1 = fn2
+        fn2 = fn
+        n = n - 1
+    end
+    print '\n\n'
 end
-print '\n'</code></strong></pre>
+
+printFibonacciNumbers(10)
+printFibonacciNumbers(20)</code></strong></pre>
     <ul>
       <li>實驗室</li>
     </ul>
