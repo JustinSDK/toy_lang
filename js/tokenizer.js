@@ -20,35 +20,60 @@ function postfixExpression(input) {
     return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
 }
 
-function func(input) {
+function def(input) {
     let matched = /^([a-zA-Z_]+[a-zA-Z_0-9])\(\s*(.*)\s*\)$/.exec(input);
-    return [matched[1]].concat(matched[2].split(/,\s*/));
+    return [matched[1]].concat(matched[2] === '' ? [] : matched[2].split(/,\s*/));
+}
+
+function funcArguments(input) {
+    let matched = /^\(\s*(.*)\s*\)$/.exec(input);
+    if(matched[1] === '') {
+        return [];
+    }
+    return matched[1].split(/,\s*/);
+}
+
+class TokenTester {
+    constructor(input) {
+        this.input = input;
+    }
+
+    textToken() {
+        return text(this.input);
+    }
+
+    numberToken() {
+        return number(this.input);
+    }
+
+    variableToken() {
+        return variable(this.input);
+    }
+
+    expressionPostfixTokens() {
+        return postfixExpression(this.input);
+    }
+
+    defTokens() {
+        return def(this.input);
+    }    
 }
 
 class Statement {
     constructor(type, tokens) {
         this.type = type;
         this.tokens = tokens;
+        this.tokenTester = new TokenTester(this.matchingValue());
+    }
+}
+
+class EmptyStatement extends Statement {
+    constructor(type, tokens) {
+        super(type, tokens);
     }
 
-    textToken() {
-        return text(this.matchingValue());
-    }
-
-    numberToken() {
-        return number(this.matchingValue());
-    }
-
-    variableToken() {
-        return variable(this.matchingValue());
-    }    
-
-    expressionPostfixTokens() {
-        return postfixExpression(this.matchingValue());
-    }
-
-    funcTokens() {
-        return func(this.matchingValue());
+    matchingValue() {
+        return '';
     }
 }
 
@@ -75,12 +100,35 @@ class OneArgStatement extends Statement {
         super(type, tokens);
     }
 
+    funcName() {
+        return this.tokens[0];
+    }    
+
     argument() {
         return this.tokens[1];
     }
 
     matchingValue() {
         return this.argument();
+    }
+}
+
+class FuncallStatement extends Statement {
+    constructor(type, tokens) {
+        super(type, tokens);
+    }
+
+    funcName() {
+        return this.tokens[0];
+    }    
+
+    matchingValue() {
+        return this.tokens[1];
+    }
+
+    args() {
+        let argTokens = funcArguments(this.matchingValue());
+        return argTokens.map(token => new TokenTester(token));
     }
 }
 
@@ -94,18 +142,24 @@ class StmtTokenizer {
                         .map(line => line.trim())
                         .filter(line => line !== '')
                         .map(line => {
-                            let assign = /([a-zA-Z_]+[a-zA-Z_0-9]*)\s*(=)\s*(.*)/.exec(line);
+                            // 'end' is an empty statement
+                            if(line.startsWith('end')) {
+                                return new EmptyStatement('empty', [line]);
+                            }
+                            
+                            let assign = /^([a-zA-Z_]+[a-zA-Z_0-9]*)\s*(=)\s*(.*)$/.exec(line);
                             if(assign) {
                                 return new AssignStatement('assign', [assign[1], assign[2], assign[3]]);
                             }
                             
-                            // 'end' is an empty statement
-                            if(line.startsWith('end')) {
-                                return new Statement('empty', [line]);
+
+                            let funcall = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(line);
+                            if(funcall) {
+                                return new FuncallStatement('funcall', [funcall[1], funcall[2]]);
                             }
 
-                            let matched = /(\w+)\s*(.*)/.exec(line);
-                            return new OneArgStatement(matched[1], [matched[1], matched[2]]);
+                            let command = /^(\w+)\s*(.*)$/.exec(line);
+                            return new OneArgStatement(command[1], [command[1], command[2]]);
                         });
     }
 }

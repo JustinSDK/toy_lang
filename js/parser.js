@@ -13,23 +13,34 @@ const STMT_PARSERS = new Map([
     }],    
     ['def', {
         parse(stmts) {
-            let [funcName, ...params] = stmts[0].funcTokens();
+            let [funcName, ...params] = stmts[0].tokenTester.defTokens();
             let remains = stmts.slice(1);     
             return new StmtSequence(
                 new Assign(
-                    new Variable('foo'), 
-                    new Func(['x'], STMT_PARSERS.get('sequence').parse(remains))
+                    new Variable(funcName), 
+                    new Func(params, STMT_PARSERS.get('sequence').parse(remains))
                 ),
                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
     }],    
+    ['funcall', {
+        parse(stmts) {
+            return new StmtSequence(
+                new FunCall(
+                    new Variable(stmts[0].funcName()), 
+                    stmts[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
+                ),
+                STMT_PARSERS.get('sequence').parse(stmts.slice(1))
+            );
+        }
+    }],        
     ['assign', {
         parse(stmts) {
             return new StmtSequence(
                 new Assign(
                     new Variable(stmts[0].variableName()), 
-                    VALUE_PARSERS.get('value').parse(stmts[0])
+                    VALUE_PARSERS.get('value').parse(stmts[0].tokenTester)
                 ),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
@@ -38,7 +49,7 @@ const STMT_PARSERS = new Map([
     ['print', {
         parse(stmts) {
             return new StmtSequence(
-                new Print(VALUE_PARSERS.get('value').parse(stmts[0])),
+                new Print(VALUE_PARSERS.get('value').parse(stmts[0].tokenTester)),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }
@@ -48,7 +59,7 @@ const STMT_PARSERS = new Map([
             let remains = stmts.slice(1);     
             return new StmtSequence(
                  new UntilZero(
-                    VALUE_PARSERS.get('num').parse(stmts[0]), 
+                    VALUE_PARSERS.get('num').parse(stmts[0].tokenTester), 
                     STMT_PARSERS.get('sequence').parse(remains)
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
@@ -71,32 +82,32 @@ function linesAfterCurrentBlock(stmts, end = 1) {
 
 const VALUE_PARSERS =  new Map([
     ['value', {
-        parse(stmt) {
+        parse(tokenTester) {
             // pattern matching from text
-            return VALUE_PARSERS.get('text').parse(stmt);
+            return VALUE_PARSERS.get('text').parse(tokenTester);
         }
     }],
     ['text', {
-        parse(stmt) {
-            let text = stmt.textToken();
-            return text === null ? VALUE_PARSERS.get('num').parse(stmt) : new Text(text);
+        parse(tokenTester) {
+            let text = tokenTester.textToken();
+            return text === null ? VALUE_PARSERS.get('num').parse(tokenTester) : new Text(text);
         }
     }],
     ['num', {
-        parse(stmt) {
-            let number = stmt.numberToken();
-            return number === null ? VALUE_PARSERS.get('variable').parse(stmt) : new Num(parseFloat(number));
+        parse(tokenTester) {
+            let number = tokenTester.numberToken();
+            return number === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Num(parseFloat(number));
         }        
     }],
     ['variable', {
-        parse(stmt) {
-            let variable = stmt.variableToken();
-            return variable === null ? VALUE_PARSERS.get('expression').parse(stmt) : new Variable(variable);
+        parse(tokenTester) {
+            let variable = tokenTester.variableToken();
+            return variable === null ? VALUE_PARSERS.get('expression').parse(tokenTester) : new Variable(variable);
         }
     }],
     ['expression', {
-        parse(stmt) {
-            let tokens = stmt.expressionPostfixTokens();
+        parse(tokenTester) {
+            let tokens = tokenTester.expressionPostfixTokens();
             return tokens.reduce((stack, token) => {
                 if('+-*/'.indexOf(token) !== -1) {
                     return reduce(stack, token);
