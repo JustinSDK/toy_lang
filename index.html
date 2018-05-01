@@ -110,7 +110,7 @@ printFibonacciNumbers(20)</code></strong></pre>
         tty.textContent = new AST(new StmtTokenizer(code))
                             .evaluate()
                             .outputs
-                            .map(output => `${output}`.replace('\\n', '\n').replace('\\t', '\t'))
+                            .map(output => `${output}`.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
                             .join('');
     });
 </script> </body>
