@@ -54,6 +54,18 @@ const STMT_PARSERS = new Map([
             );
         }
     }],
+    ['if', {
+        parse(stmts) {
+            let remains = stmts.slice(1);     
+            return new StmtSequence(
+                 new If(
+                    VALUE_PARSERS.get('boolean').parse(stmts[0].tokenTester), 
+                    STMT_PARSERS.get('sequence').parse(remains)
+                 ),
+                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+            );
+        }
+    }],
     ['while', {
         parse(stmts) {
             let remains = stmts.slice(1);     
@@ -74,7 +86,7 @@ function linesAfterCurrentBlock(stmts, end = 1) {
     }
 
     let stmt = stmts[0].type;
-    let rpts = stmt === 'while' || stmt === 'def' ? end + 1 : 
+    let rpts = stmt === 'if' || stmt === 'while' || stmt === 'def' ? end + 1 : 
         (stmt === 'empty' ? end - 1 : end);
     
     return linesAfterCurrentBlock(stmts.slice(1), rpts)
@@ -327,7 +339,6 @@ const RELATIONS = new Map([
     ['<', LessThan]
 ]);
 
-
 class While {
     constructor(boolean, stmt) {
         this.boolean = boolean;
@@ -340,6 +351,20 @@ class While {
             return this.evaluate(ctx);
         }
 
+        return context;
+    }   
+}
+
+class If {
+    constructor(boolean, stmt) {
+        this.boolean = boolean;
+        this.stmt = stmt;
+    }
+
+    evaluate(context) {
+        if(this.boolean.evaluate(context).value) {
+            return this.stmt.evaluate(context);
+        }
         return context;
     }   
 }
