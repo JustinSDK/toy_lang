@@ -117,45 +117,13 @@ const VALUE_PARSERS = new Map([
             if(boolExprTokens) {
                 let [left, op, right] = boolExprTokens;
                 let leftNumber = parseFloat(left);
-                let rightNumber = parseFloat(right);
-                if(op === '==') {
-                    return new Equal(
-                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
-                    );
-                }
-                if(op === '!=') {
-                    return new NotEqual(
-                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
-                    );
-                }
-                if(op === '>=') {
-                    return new BiggerEqual(
-                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
-                    );
-                }
-                if(op === '<=') {
-                    return new LessEqual(
-                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
-                    );
-                }
-                if(op === '>') {
-                    return new BiggerThan(
-                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
-                    );
-                }
-                if(op === '<') {
-                    return new LessThan(
-                        Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                        Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
-                    );
-                }
+                let rightNumber = parseFloat(right);    
+                let Class = RELATIONS.get(op);
+                return new Class(
+                    Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
+                    Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                );
             }
-
 
             return VALUE_PARSERS.get('expression').parse(tokenTester);
         }        
@@ -306,7 +274,7 @@ class NotEqual {
     }
 }
 
-class BiggerEqual {
+class GreaterEqual {
     constructor(left, right) {
         this.left = left;
         this.right = right;
@@ -328,7 +296,7 @@ class LessEqual {
     }
 }
 
-class BiggerThan {
+class GreaterThan {
     constructor(left, right) {
         this.left = left;
         this.right = right;
@@ -349,6 +317,16 @@ class LessThan {
         return new Boolean(this.left.evaluate(context).value < this.right.evaluate(context).value)
     }
 }
+
+const RELATIONS = new Map([
+    ['==', Equal],
+    ['!=', NotEqual],
+    ['>=', GreaterEqual],
+    ['<=', LessEqual],
+    ['>', GreaterThan],
+    ['<', LessThan]
+]);
+
 
 class While {
     constructor(boolean, stmt) {
