@@ -54,18 +54,6 @@ const STMT_PARSERS = new Map([
             );
         }
     }],
-    ['until0', {
-        parse(stmts) {
-            let remains = stmts.slice(1);     
-            return new StmtSequence(
-                 new UntilZero(
-                    VALUE_PARSERS.get('num').parse(stmts[0].tokenTester), 
-                    STMT_PARSERS.get('sequence').parse(remains)
-                 ),
-                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-            );
-        }
-    }],
     ['while', {
         parse(stmts) {
             let remains = stmts.slice(1);     
@@ -376,22 +364,6 @@ class While {
 
         return context;
     }   
-}
-
-class UntilZero {
-    constructor(value, stmt) {
-        this.value = value;
-        this.stmt = stmt;
-    }
-
-    evaluate(context) {
-        if(this.value.evaluate(context).value !== 0) {
-            let ctx = this.stmt.evaluate(context);
-            return this.evaluate(ctx);
-        }
-
-        return context;
-    }    
 }
 
 class StmtSequence {
