@@ -70,6 +70,25 @@ end
 
 printFibonacciNumbers(10)
 printFibonacciNumbers(20)</code></strong></pre>
+<ul>
+    <li>河內塔</li>
+  </ul>
+  <pre><strong><code>def hanoi(n, a, b, c) 
+    if n == 1
+        print 'Move sheet from '
+        print a
+        print ' to '
+        print c
+        print '\n'
+    end
+    if n != 1
+        hanoi(n - 1, a, c, b)
+        hanoi(1, a, b, c)
+        hanoi(n - 1, b, a, c) 
+    end
+end
+
+hanoi(3, 'A', 'B', 'C')</code></strong></pre>
     <ul>
       <li>實驗室</li>
     </ul>
