@@ -7,7 +7,7 @@ export {AST};
 const STMT_PARSERS = new Map([
     ['sequence', {
         parse(stmts) {
-            if(stmts.length === 0 || stmts[0].type === 'end') {
+            if(stmts.length === 0 || stmts[0].type === 'else' || stmts[0].type === 'end') {
                 return StmtSequence.EMPTY;
             }
     
@@ -60,10 +60,12 @@ const STMT_PARSERS = new Map([
     ['if', {
         parse(stmts) {
             let remains = stmts.slice(1);     
+            let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
+            
             return new StmtSequence(
                  new If(
                     VALUE_PARSERS.get('boolean').parse(stmts[0].tokenTester), 
-                    STMT_PARSERS.get('sequence').parse(remains)
+                    trueStmt
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
