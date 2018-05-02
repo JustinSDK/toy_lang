@@ -83,16 +83,18 @@ class While {
 }
 
 class If {
-    constructor(boolean, stmt) {
+    constructor(boolean, trueStmt, falseStmt = StmtSequence.EMPTY) {
         this.boolean = boolean;
-        this.stmt = stmt;
+        this.trueStmt = trueStmt;
+        this.falseStmt = falseStmt;
     }
 
     evaluate(context) {
         if(this.boolean.evaluate(context).value) {
-            return this.stmt.evaluate(context);
+            return this.trueStmt.evaluate(context);
         }
-        return context;
+
+        return this.falseStmt.evaluate(context);
     }   
 }
 
