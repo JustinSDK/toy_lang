@@ -160,9 +160,12 @@ class StmtTokenizer {
                         .map(line => line.trim())
                         .filter(line => line !== '')
                         .map(line => {
-                            // 'end' is an empty statement
                             if(line.startsWith('end')) {
-                                return new EmptyStatement('empty', [line]);
+                                return new EmptyStatement('end', [line]);
+                            }
+
+                            if(line.startsWith('else')) {
+                                return new EmptyStatement('else', [line]);
                             }
                             
                             let assign = /^([a-zA-Z_]+[a-zA-Z_0-9]*)\s*(=)\s*(.*)$/.exec(line);

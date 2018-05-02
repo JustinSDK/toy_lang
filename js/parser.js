@@ -7,7 +7,7 @@ export {AST};
 const STMT_PARSERS = new Map([
     ['sequence', {
         parse(stmts) {
-            if(stmts.length === 0 || stmts[0].type === 'empty') {
+            if(stmts.length === 0 || stmts[0].type === 'end') {
                 return StmtSequence.EMPTY;
             }
     
@@ -90,7 +90,7 @@ function linesAfterCurrentBlock(stmts, end = 1) {
 
     let stmt = stmts[0].type;
     let rpts = stmt === 'if' || stmt === 'while' || stmt === 'def' ? end + 1 : 
-        (stmt === 'empty' ? end - 1 : end);
+        (stmt === 'end' ? end - 1 : end);
     
     return linesAfterCurrentBlock(stmts.slice(1), rpts)
 }
