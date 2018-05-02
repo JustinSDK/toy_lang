@@ -61,11 +61,17 @@ const STMT_PARSERS = new Map([
         parse(stmts) {
             let remains = stmts.slice(1);     
             let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
-            
+
+            let i = matchingElseIdx(trueStmt);
+            let falseStmt = remains[i].type === 'else' ? 
+                    STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
+                    StmtSequence.EMPTY;
+
             return new StmtSequence(
                  new If(
                     VALUE_PARSERS.get('boolean').parse(stmts[0].tokenTester), 
-                    trueStmt
+                    trueStmt,
+                    falseStmt
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
@@ -84,6 +90,13 @@ const STMT_PARSERS = new Map([
         }
     }]
 ]);
+
+function matchingElseIdx(stmt, i = 1) {
+    if(stmt.secondStmt === StmtSequence.EMPTY) {
+        return i;
+    }
+    return matchingElseIdx(stmt.secondStmt, i + 1);
+}
 
 function linesAfterCurrentBlock(stmts, end = 1) {
     if(end === 0) {

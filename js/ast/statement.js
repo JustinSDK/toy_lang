@@ -83,7 +83,7 @@ class While {
 }
 
 class If {
-    constructor(boolean, trueStmt, falseStmt = StmtSequence.EMPTY) {
+    constructor(boolean, trueStmt, falseStmt) {
         this.boolean = boolean;
         this.trueStmt = trueStmt;
         this.falseStmt = falseStmt;
