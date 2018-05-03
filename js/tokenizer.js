@@ -178,6 +178,11 @@ class StmtTokenizer {
                                 return new FuncallStatement('funcall', [funcall[1], funcall[2]]);
                             }
 
+                            let reTurn = /^return\s*(.*)$/.exec(line);
+                            if(reTurn) {
+                                return new OneArgStatement('return', ['return', reTurn[1]]);
+                            }
+
                             let command = /^(\w+)\s+(.*)$/.exec(line);
                             return new OneArgStatement(command[1], [command[1], command[2]]);
                         });

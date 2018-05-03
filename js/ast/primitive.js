@@ -1,4 +1,10 @@
-export {Text, Num, Boolean};
+export {Text, Num, Boolean, Void};
+
+const Void = {
+    evaluate(context) {
+        return this;
+    }    
+};
 
 class Text {
     constructor(value) {

@@ -1,10 +1,11 @@
-export {Variable, Assign, Print, While, If, StmtSequence, Func, FunCall, Context};
+export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCall, Context};
 
 class Context {
-    constructor(parent = null, outputs = [], variables = new Map()) {
+    constructor(parent = null, outputs = [], variables = new Map(), returnedValue = null) {
         this.parent = parent;
         this.outputs = outputs;
         this.variables = variables;
+        this.returnedValue = returnedValue;
     }
 
     output(value) {
@@ -20,6 +21,15 @@ class Context {
             this.parent,
             this.outputs,
             new Map(Array.from(this.variables.entries()).concat([[variable, value]]))
+        );
+    }
+
+    returned(value) {
+        return new Context(
+            this.parent,
+            this.outputs,
+            this.variables,
+            value
         );
     }
 }
@@ -47,8 +57,6 @@ class Assign {
         return context.assign(this.variable.name, this.value.evaluate(context));
     }
 }
-
-
 
 function lookUpVariable(context, name) {
     let value = context.variables.get(name);
@@ -105,7 +113,11 @@ class StmtSequence {
     }
 
     evaluate(context) {
-        return this.secondStmt.evaluate(this.firstStmt.evaluate(context));
+        let ctx = this.firstStmt.evaluate(context);
+        if(ctx.returnedValue === null) {
+            return this.secondStmt.evaluate(ctx);
+        }
+        return ctx;
     }
 }
 
@@ -114,6 +126,16 @@ StmtSequence.EMPTY = {
         return context;
     }
 };
+
+class Return {
+    constructor(value) {
+        this.value = value;
+    }
+
+    evaluate(context) {
+        return context.returned(this.value.evaluate(context));
+    }    
+}
 
 class Func {
     constructor(params, stmt) {
@@ -150,6 +172,10 @@ class FunCall {
         let f = this.fVariable.evaluate(context);
         let stmt = f.call(this.args.map(arg => arg.evaluate(context)));
         let ctx = stmt.evaluate(new Context(context, context.outputs));
+        if(ctx.returnedValue !== null) {
+            // we can get returned value now
+            console.log(ctx.returnedValue.value);
+        }
         return new Context(context.parent, ctx.outputs, context.variables);
     }    
 }
