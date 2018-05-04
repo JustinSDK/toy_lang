@@ -1,4 +1,4 @@
-import {Text, Num, Boolean} from './primitive.js';
+import {Value} from './value.js';
 export {Add, Substract, Multiply, Divide, RELATIONS};
 
 class Add {
@@ -8,7 +8,7 @@ class Add {
     }
 
     evaluate(context) {
-        return new Num(this.left.evaluate(context).value + this.right.evaluate(context).value);
+        return new Value(this.left.evaluate(context).value + this.right.evaluate(context).value);
     }
 }
 
@@ -19,7 +19,7 @@ class Substract {
     }
 
     evaluate(context) {
-        return new Num(this.left.evaluate(context).value - this.right.evaluate(context).value);
+        return new Value(this.left.evaluate(context).value - this.right.evaluate(context).value);
     }
 }
 
@@ -30,7 +30,7 @@ class Multiply {
     }
 
     evaluate(context) {
-        return new Num(this.left.evaluate(context).value * this.right.evaluate(context).value);
+        return new Value(this.left.evaluate(context).value * this.right.evaluate(context).value);
     }
 }
 
@@ -41,7 +41,7 @@ class Divide {
     }
 
     evaluate(context) {
-        return new Num(this.left.evaluate(context).value / this.right.evaluate(context).value);
+        return new Value(this.left.evaluate(context).value / this.right.evaluate(context).value);
     }
 }
 
@@ -52,7 +52,7 @@ class Equal {
     }
 
     evaluate(context) {
-        return new Boolean(this.left.evaluate(context).value === this.right.evaluate(context).value)
+        return new Value(this.left.evaluate(context).value === this.right.evaluate(context).value)
     }
 }
 
@@ -63,7 +63,7 @@ class NotEqual {
     }
 
     evaluate(context) {
-        return new Boolean(this.left.evaluate(context).value !== this.right.evaluate(context).value)
+        return new Value(this.left.evaluate(context).value !== this.right.evaluate(context).value)
     }
 }
 
@@ -74,7 +74,7 @@ class GreaterEqual {
     }
 
     evaluate(context) {
-        return new Boolean(this.left.evaluate(context).value >= this.right.evaluate(context).value)
+        return new Value(this.left.evaluate(context).value >= this.right.evaluate(context).value)
     }
 }
 
@@ -85,7 +85,7 @@ class LessEqual {
     }
 
     evaluate(context) {
-        return new Boolean(this.left.evaluate(context).value <= this.right.evaluate(context).value)
+        return new Value(this.left.evaluate(context).value <= this.right.evaluate(context).value)
     }
 }
 
@@ -96,7 +96,7 @@ class GreaterThan {
     }
 
     evaluate(context) {
-        return new Boolean(this.left.evaluate(context).value > this.right.evaluate(context).value)
+        return new Value(this.left.evaluate(context).value > this.right.evaluate(context).value)
     }
 }
 
@@ -107,7 +107,7 @@ class LessThan {
     }
 
     evaluate(context) {
-        return new Boolean(this.left.evaluate(context).value < this.right.evaluate(context).value)
+        return new Value(this.left.evaluate(context).value < this.right.evaluate(context).value)
     }
 }
 

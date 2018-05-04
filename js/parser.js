@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-import {Text, Num, Boolean, Void, FunCallValue} from './ast/primitive.js'
+import {Value, Void, FunCallValue} from './ast/value.js'
 import {Add, Substract, Multiply, Divide, RELATIONS} from './ast/operator.js'
 import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context} from './ast/statement.js'
 export {AST};
@@ -130,19 +130,19 @@ const VALUE_PARSERS = new Map([
     ['text', {
         parse(tokenTester) {
             let text = tokenTester.textToken();
-            return text === null ? VALUE_PARSERS.get('num').parse(tokenTester) : new Text(text);
+            return text === null ? VALUE_PARSERS.get('num').parse(tokenTester) : new Value(text);
         }
     }],
     ['num', {
         parse(tokenTester) {
             let number = tokenTester.numberToken();
-            return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Num(parseFloat(number));
+            return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Value(parseFloat(number));
         }        
     }],
     ['boolean', {
         parse(tokenTester) {
             let boolean = tokenTester.booleanToken();
-            return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Boolean(boolean === 'true');
+            return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Value(boolean === 'true');
         }        
     }],    
     ['variable', {
@@ -156,12 +156,10 @@ const VALUE_PARSERS = new Map([
             let boolExprTokens = tokenTester.boolExprTokens();
             if(boolExprTokens) {
                 let [left, op, right] = boolExprTokens;
-                let leftNumber = parseFloat(left);
-                let rightNumber = parseFloat(right);    
                 let Class = RELATIONS.get(op);
                 return new Class(
-                    Number.isNaN(leftNumber) ? new Variable(left) : new Num(leftNumber), 
-                    Number.isNaN(rightNumber) ? new Variable(right) : new Num(rightNumber)
+                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(left)), 
+                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(right))
                 );
             }
 
@@ -189,8 +187,10 @@ const VALUE_PARSERS = new Map([
                 if('+-*/'.indexOf(token) !== -1) {
                     return reduce(stack, token);
                 } 
-                let number = parseFloat(token);
-                return stack.push(Number.isNaN(number) ? VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(token)) : new Num(number));
+                // let number = parseFloat(token);
+                return stack.push(
+                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(token))
+                );
             }, new Stack()).top;
         }
     }]

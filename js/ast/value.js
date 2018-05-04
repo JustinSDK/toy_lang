@@ -1,4 +1,4 @@
-export {Text, Num, Boolean, Void, FunCallValue};
+export {Void, Value, FunCallValue};
 
 const Void = {
     evaluate(context) {
@@ -6,7 +6,7 @@ const Void = {
     }    
 };
 
-class Text {
+class Value {
     constructor(value) {
         this.value = value;
     }
@@ -14,26 +14,6 @@ class Text {
     evaluate(context) {
         return this;
     }
-}
-
-class Num {
-    constructor(value) {
-        this.value = value;
-    }
-
-    evaluate(context) {
-        return this;
-    }
-}
-
-class Boolean {
-    constructor(value) {
-        this.value = value;
-    }
-
-    evaluate(context) {
-        return this;
-    }    
 }
 
 class FunCallValue {
