@@ -33,12 +33,9 @@ while i &gt; 0
     a = 10 - i
     while j &gt; 0
         b = 10 - j
-        print b
-        print '*'
-        print a
+        print b + '*' + a
         print '='
-        print b * a
-        print '\t'
+        print b * a + '\t'
         j = j - 1
     end
     print '\n'
@@ -48,19 +45,15 @@ end</code></strong></pre>
       <li>費式數列</li>
     </ul>
     <pre><strong><code>def printFibonacciNumbers(n)
-    print n
-    print ' Fibonacci numbers\n'
+    print n + ' Fibonacci numbers\n'
     n = n - 2
     fn1 = 1
     fn2 = 1
-    print fn1
-    print ' '
-    print fn2
+    print fn1 + ' ' + fn2
     print ' '
     while n &gt; 0
         fn = fn2 + fn1
-        print fn
-        print ' '
+        print fn + ' '
         fn1 = fn2
         fn2 = fn
         n = n - 1
@@ -76,9 +69,7 @@ printFibonacciNumbers(20)</code></strong></pre>
   <pre><strong><code>def hanoi(n, a, b, c) 
     if n == 1
         print 'Move sheet from '
-        print a
-        print ' to '
-        print c
+        print a + ' to ' + c
         print '\n'
     else
         hanoi(n - 1, a, c, b)
@@ -101,9 +92,7 @@ end
 
 n = 1
 while n &lt;= 5
-    print n
-    print '! = '
-    print factorial(n)
+    print n + '! = ' + factorial(n)
     print '\n'
     n = n + 1
 end</code></strong></pre>
