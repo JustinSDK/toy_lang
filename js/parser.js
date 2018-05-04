@@ -198,11 +198,12 @@ function reduce(stack, token) {
 }
 
 class AST {
-    constructor(tokenizer) {
+    constructor(tokenizer, output) {
         this.ast = STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
+        this.output = output;
     }
 
-    evaluate(context = new Context()) {
+    evaluate(context = new Context(null, this.output)) {
         return this.ast.evaluate(context);
     }
 }

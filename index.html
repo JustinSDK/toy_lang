@@ -99,14 +99,16 @@ hanoi(3, 'A', 'B', 'C')</code></strong></pre>
     <script type="module">
     import {StmtTokenizer} from './js/tokenizer.js';
     import {AST} from './js/parser.js';
+
+    function output(value) {
+        tty.textContent += `${value}`.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+    }
+
     document.getElementById('run').addEventListener('click', _ => {
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
-        tty.textContent = new AST(new StmtTokenizer(code))
-                            .evaluate()
-                            .outputs
-                            .map(output => `${output}`.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
-                            .join('');
+        tty.textContent = '';
+        new AST(new StmtTokenizer(code), output).evaluate();
     });
 </script> </body>
 </html>

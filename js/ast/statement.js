@@ -1,25 +1,24 @@
 export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCall, Context};
 
+function nope(value) {}
+
 class Context {
-    constructor(parent = null, outputs = [], variables = new Map(), returnedValue = null) {
+    constructor(parent = null, output = nope, variables = new Map(), returnedValue = null) {
         this.parent = parent;
-        this.outputs = outputs;
+        this.output = output;
         this.variables = variables;
         this.returnedValue = returnedValue;
     }
 
     output(value) {
-        return new Context(
-            this.parent,
-            this.outputs.concat([value]),
-            this.variables
-        );
+        this.output(value);
+        return this;
     }
 
     assign(variable, value) {
         return new Context(
             this.parent,
-            this.outputs,
+            this.output,
             new Map(Array.from(this.variables.entries()).concat([[variable, value]]))
         );
     }
@@ -27,7 +26,7 @@ class Context {
     returned(value) {
         return new Context(
             this.parent,
-            this.outputs,
+            this.output,
             this.variables,
             value
         );
@@ -69,7 +68,8 @@ class Print {
     }
 
     evaluate(context) {
-        return context.output(this.value.evaluate(context).value);
+        context.output(this.value.evaluate(context).value)
+        return context;
     }
 }
 
@@ -171,11 +171,11 @@ class FunCall {
     evaluate(context) {
         let f = this.fVariable.evaluate(context);
         let stmt = f.call(this.args.map(arg => arg.evaluate(context)));
-        let ctx = stmt.evaluate(new Context(context, context.outputs));
+        let ctx = stmt.evaluate(new Context(context, context.output));
         if(ctx.returnedValue !== null) {
             // we can get returned value now
             console.log(ctx.returnedValue.value);
         }
-        return new Context(context.parent, ctx.outputs, context.variables);
+        return new Context(context.parent, ctx.output, context.variables);
     }    
 }
