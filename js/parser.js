@@ -1,7 +1,7 @@
 import {Stack} from './util.js';
-import {Text, Num, Boolean, Void} from './ast/primitive.js'
+import {Text, Num, Boolean, Void, FunCallValue} from './ast/primitive.js'
 import {Add, Substract, Multiply, Divide, RELATIONS} from './ast/operator.js'
-import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallValue, FunCallStmt, Context} from './ast/statement.js'
+import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context} from './ast/statement.js'
 export {AST};
 
 const STMT_PARSERS = new Map([
@@ -39,8 +39,10 @@ const STMT_PARSERS = new Map([
         parse(stmts) {
             return new StmtSequence(
                 new FunCallStmt(
-                    new Variable(stmts[0].funcName()), 
-                    stmts[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
+                    new FunCallValue(
+                        new Variable(stmts[0].funcName()), 
+                        stmts[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
+                    )
                 ),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
