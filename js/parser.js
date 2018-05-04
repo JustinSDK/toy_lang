@@ -1,7 +1,7 @@
 import {Stack} from './util.js';
 import {Text, Num, Boolean, Void} from './ast/primitive.js'
 import {Add, Substract, Multiply, Divide, RELATIONS} from './ast/operator.js'
-import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCall, Context} from './ast/statement.js'
+import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallValue, FunCallStmt, Context} from './ast/statement.js'
 export {AST};
 
 const STMT_PARSERS = new Map([
@@ -38,7 +38,7 @@ const STMT_PARSERS = new Map([
     ['funcall', {
         parse(stmts) {
             return new StmtSequence(
-                new FunCall(
+                new FunCallStmt(
                     new Variable(stmts[0].funcName()), 
                     stmts[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
                 ),
@@ -163,6 +163,18 @@ const VALUE_PARSERS = new Map([
                 );
             }
 
+            return VALUE_PARSERS.get('funcall').parse(tokenTester);
+        }        
+    }],
+    ['funcall', {
+        parse(tokenTester) {
+            let funcallTokens = tokenTester.funcallTokens();
+            if(funcallTokens) {
+                return new FunCallValue(
+                    new Variable(funcallTokens[0]), 
+                    tokenTester.funcallTokenTesters().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
+                );
+            }
             return VALUE_PARSERS.get('expression').parse(tokenTester);
         }        
     }],    

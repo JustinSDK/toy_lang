@@ -16,14 +16,19 @@ function boolean(input) {
     return matched === null ? null : input;
 }    
 
-function bool_expr(input) {
-    let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
-    return matched === null ? null : [matched[1], matched[2], matched[3]];
-}
-
 function variable(input) {
     let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(input);
     return matched === null ? null : input;
+}
+
+function funcall(input) {
+    let matched = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(input);
+    return matched === null ? null : [matched[1]].concat(funcArguments(matched[2]));
+}
+
+function bool_expr(input) {
+    let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
+    return matched === null ? null : [matched[1], matched[2], matched[3]];
 }
 
 function postfixExpression(input) {
@@ -67,6 +72,14 @@ class TokenTester {
     variableToken() {
         return variable(this.input);
     }
+
+    funcallTokens() {
+        return funcall(this.input);
+    }
+
+    funcallTokenTesters() {
+        return funcall(this.input).slice(1).map(arg => new TokenTester(arg));
+    }    
 
     expressionPostfixTokens() {
         return postfixExpression(this.input);

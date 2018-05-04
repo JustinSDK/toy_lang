@@ -1,4 +1,4 @@
-export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCall, Context};
+export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallValue, FunCallStmt, Context};
 
 function nope(value) {}
 
@@ -143,7 +143,7 @@ class Func {
         this.stmt = stmt;
     }
 
-    call(args) {
+    bodyStmt(args) {
         return new StmtSequence(assigns(this.params, args), this.stmt);
     }
 
@@ -162,20 +162,30 @@ function assigns(params, args) {
             );
 }
 
-class FunCall {
+class FunCallValue {
     constructor(fVariable, args) {
         this.fVariable = fVariable;
         this.args = args;
     }
 
-    evaluate(context) {
+    call(context) {
         let f = this.fVariable.evaluate(context);
-        let stmt = f.call(this.args.map(arg => arg.evaluate(context)));
-        let ctx = stmt.evaluate(new Context(context, context.output));
-        if(ctx.returnedValue !== null) {
-            // we can get returned value now
-            console.log(ctx.returnedValue.value);
-        }
-        return new Context(context.parent, ctx.output, context.variables);
+        let bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
+        return bodyStmt.evaluate(new Context(context, context.output));
+    }    
+
+    evaluate(context) {
+        return this.call(context).returnedValue;
+    }    
+}
+
+class FunCallStmt extends FunCallValue {
+    constructor(fVariable, args) {
+        super(fVariable, args);
+    }
+
+    evaluate(context) {
+        super.evaluate(context);
+        return context;
     }    
 }
