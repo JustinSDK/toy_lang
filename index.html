@@ -65,8 +65,7 @@ printFibonacciNumbers(20)</code></strong></pre>
   </ul>
   <pre><strong><code>def hanoi(n, a, b, c) 
     if n == 1
-        print 'Move sheet from '
-        print a + ' to ' + c + '\n'
+        print 'Move sheet from ' + a + ' to ' + c + '\n'
     else
         hanoi(n - 1, a, c, b)
         hanoi(1, a, b, c)
