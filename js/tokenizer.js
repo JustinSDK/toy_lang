@@ -2,7 +2,7 @@ import {Stack} from './util.js';
 export {StmtTokenizer};
 
 function text(input) {
-    let matched = /^'(.*)'$/.exec(input);
+    let matched = /^'([^']*)'$/.exec(input);
     return matched === null ? null : matched[1];
 }
 
