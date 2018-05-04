@@ -170,11 +170,13 @@ const VALUE_PARSERS = new Map([
         parse(tokenTester) {
             let funcallTokens = tokenTester.funcallTokens();
             if(funcallTokens) {
+                let [fName, ...args] = funcallTokens;
                 return new FunCallValue(
-                    new Variable(funcallTokens[0]), 
-                    tokenTester.funcallTokenTesters().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
-                );
+                    new Variable(fName), 
+                    args.map(arg => VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(arg)))
+                )
             }
+
             return VALUE_PARSERS.get('expression').parse(tokenTester);
         }        
     }],    
@@ -186,7 +188,7 @@ const VALUE_PARSERS = new Map([
                     return reduce(stack, token);
                 } 
                 let number = parseFloat(token);
-                return stack.push(Number.isNaN(number) ? new Variable(token) : new Num(number));
+                return stack.push(Number.isNaN(number) ? VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(token)) : new Num(number));
             }, new Stack()).top;
         }
     }]
