@@ -88,6 +88,25 @@ printFibonacciNumbers(20)</code></strong></pre>
 end
 
 hanoi(3, 'A', 'B', 'C')</code></strong></pre>
+<ul>
+    <li>階乘</li>
+  </ul>
+  <pre><strong><code>def factorial(n)
+    if n == 0
+        return 1
+    else
+        return n * factorial(n - 1)
+    end
+end
+
+n = 1
+while n &lt;= 5
+    print n
+    print '! = '
+    print factorial(n)
+    print '\n'
+    n = n + 1
+end</code></strong></pre>
     <ul>
       <li>實驗室</li>
     </ul>
