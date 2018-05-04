@@ -1,45 +1,6 @@
 import {Stack} from './util.js';
 export {StmtTokenizer};
 
-function text(input) {
-    let matched = /^'([^']*)'$/.exec(input);
-    return matched === null ? null : matched[1];
-}
-
-function number(input) {
-    let matched = /^-?[0-9]+\.?[0-9]*$/.exec(input);
-    return matched === null ? null : input;
-}    
-
-function boolean(input) {
-    let matched = /^(true|false)$/.exec(input);
-    return matched === null ? null : input;
-}    
-
-function variable(input) {
-    let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(input);
-    return matched === null ? null : input;
-}
-
-function funcall(input) {
-    let matched = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(input);
-    return matched === null ? null : [matched[1]].concat(funcArguments(matched[2]));
-}
-
-function bool_expr(input) {
-    let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
-    return matched === null ? null : [matched[1], matched[2], matched[3]];
-}
-
-function postfixExpression(input) {
-    return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
-}
-
-function def(input) {
-    let matched = /^([a-zA-Z_]+[a-zA-Z_0-9])\(\s*(.*)\s*\)$/.exec(input);
-    return [matched[1]].concat(matched[2] === '' ? [] : matched[2].split(/,\s*/));
-}
-
 function funcArguments(input) {
     let matched = /^\(\s*(.*)\s*\)$/.exec(input);
     if(matched[1] === '') {
@@ -47,6 +8,40 @@ function funcArguments(input) {
     }
     return matched[1].split(/,\s*/);
 }
+
+const TOKEN_TESTERS = new Map([
+    ['text', function(input) {
+        let matched = /^'([^']*)'$/.exec(input);
+        return matched === null ? null : matched[1];
+    }],
+    ['number', function(input) {
+        let matched = /^-?[0-9]+\.?[0-9]*$/.exec(input);
+        return matched === null ? null : input;
+    }],
+    ['boolean', function(input) {
+        let matched = /^(true|false)$/.exec(input);
+        return matched === null ? null : input;
+    }],
+    ['variable', function(input) {
+        let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(input);
+        return matched === null ? null : input;
+    }],
+    ['funcall', function(input) {
+        let matched = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(input);
+        return matched === null ? null : [matched[1]].concat(funcArguments(matched[2]));
+    }],
+    ['bool_expr', function(input) {
+        let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
+        return matched === null ? null : [matched[1], matched[2], matched[3]];
+    }],
+    ['postfixExprTokens', function(input) {
+        return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
+    }],
+    ['def', function(input) {
+        let matched = /^([a-zA-Z_]+[a-zA-Z_0-9])\(\s*(.*)\s*\)$/.exec(input);
+        return [matched[1]].concat(matched[2] === '' ? [] : matched[2].split(/,\s*/));
+    }]
+]);
 
 class TokenTester {
     constructor(input) {
@@ -57,37 +52,13 @@ class TokenTester {
         return new TokenTester(input);
     }
 
-    textToken() {
-        return text(this.input);
+    tryToken(type) {
+        return TOKEN_TESTERS.get(type)(this.input);
     }
 
-    numberToken() {
-        return number(this.input);
+    tryTokens(type) {
+        return TOKEN_TESTERS.get(type)(this.input);
     }
-
-    booleanToken() {
-        return boolean(this.input);
-    }    
-
-    boolExprTokens() {
-        return bool_expr(this.input);
-    }
-
-    variableToken() {
-        return variable(this.input);
-    }
-
-    funcallTokens() {
-        return funcall(this.input);
-    }
-
-    expressionPostfixTokens() {
-        return postfixExpression(this.input);
-    }
-
-    defTokens() {
-        return def(this.input);
-    }    
 }
 
 class Statement {

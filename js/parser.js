@@ -16,7 +16,7 @@ const STMT_PARSERS = new Map([
     }],    
     ['def', {
         parse(stmts) {
-            let [funcName, ...params] = stmts[0].tokenTester.defTokens();
+            let [funcName, ...params] = stmts[0].tokenTester.tryTokens('def');
             let remains = stmts.slice(1);     
             return new StmtSequence(
                 new Assign(
@@ -129,31 +129,31 @@ const VALUE_PARSERS = new Map([
     }],
     ['text', {
         parse(tokenTester) {
-            let text = tokenTester.textToken();
+            let text = tokenTester.tryToken('text');
             return text === null ? VALUE_PARSERS.get('num').parse(tokenTester) : new Value(text);
         }
     }],
     ['num', {
         parse(tokenTester) {
-            let number = tokenTester.numberToken();
+            let number = tokenTester.tryToken('number');
             return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Value(parseFloat(number));
         }        
     }],
     ['boolean', {
         parse(tokenTester) {
-            let boolean = tokenTester.booleanToken();
+            let boolean = tokenTester.tryToken('boolean');
             return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Value(boolean === 'true');
         }        
     }],    
     ['variable', {
         parse(tokenTester) {
-            let variable = tokenTester.variableToken();
+            let variable = tokenTester.tryToken('variable');
             return variable === null ? VALUE_PARSERS.get('bool_expr').parse(tokenTester) : new Variable(variable);
         }
     }],
     ['bool_expr', {
         parse(tokenTester) {
-            let boolExprTokens = tokenTester.boolExprTokens();
+            let boolExprTokens = tokenTester.tryTokens('bool_expr');
             if(boolExprTokens) {
                 let [left, op, right] = boolExprTokens;
                 let Class = RELATIONS.get(op);
@@ -168,7 +168,7 @@ const VALUE_PARSERS = new Map([
     }],
     ['funcall', {
         parse(tokenTester) {
-            let funcallTokens = tokenTester.funcallTokens();
+            let funcallTokens = tokenTester.tryTokens('funcall');
             if(funcallTokens) {
                 let [fName, ...args] = funcallTokens;
                 return new FunCallValue(
@@ -182,7 +182,7 @@ const VALUE_PARSERS = new Map([
     }],    
     ['expression', {
         parse(tokenTester) {
-            let tokens = tokenTester.expressionPostfixTokens();
+            let tokens = tokenTester.tryTokens('postfixExprTokens');
             return tokens.reduce((stack, token) => {
                 if('+-*/'.indexOf(token) !== -1) {
                     return reduce(stack, token);
