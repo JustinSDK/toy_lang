@@ -148,9 +148,23 @@ const VALUE_PARSERS = new Map([
     ['variable', {
         parse(tokenTester) {
             let variable = tokenTester.tryToken('variable');
-            return variable === null ? VALUE_PARSERS.get('logic').parse(tokenTester) : new Variable(variable);
+            return variable === null ? VALUE_PARSERS.get('not').parse(tokenTester) : new Variable(variable);
         }
     }],
+    ['not', {
+        parse(tokenTester) {
+            let notTokens = tokenTester.tryTokens('not');
+            if(notTokens) {
+                let [not, operand] = notTokens;
+                let NotOperator = LOGIC_OPERATORS.get(not);
+                return new NotOperator(
+                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(operand))
+                );
+            }
+
+            return VALUE_PARSERS.get('logic').parse(tokenTester);
+        }        
+    }],     
     ['logic', {
         parse(tokenTester) {
             let logicTokens = tokenTester.tryTokens('logic');

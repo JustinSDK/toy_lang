@@ -149,7 +149,18 @@ class Or {
     }
 }
 
+class Not {
+    constructor(operand) {
+        this.operand = operand;
+    }
+
+    evaluate(context) {
+        return new Value(!this.operand.evaluate(context).value);
+    }
+}
+
 const LOGIC_OPERATORS = new Map([
     ['and', And],
-    ['or', Or]
+    ['or', Or],
+    ['not', Not]
 ]);
