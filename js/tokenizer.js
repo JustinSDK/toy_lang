@@ -30,14 +30,14 @@ const TOKEN_TESTERS = new Map([
         let matched = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(input);
         return matched === null ? null : [matched[1]].concat(funcArguments(matched[2]));
     }],
+    ['logic', function(input) {
+        let matched = /^(.*)\s+(and|or)\s+(.*)$/.exec(input);
+        return matched === null ? null : [matched[1], matched[2], matched[3]];
+    }],
     ['relation', function(input) {
         let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
         return matched === null ? null : [matched[1], matched[2], matched[3]];
     }],
-    ['logic', function(input) {
-        let matched = /^(.*)\s+(and|or)\s+(.*)$/.exec(input);
-        return matched === null ? null : [matched[1], matched[2], matched[3]];
-    }],    
     ['postfixExprTokens', function(input) {
         return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
     }],
