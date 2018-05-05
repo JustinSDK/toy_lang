@@ -1,5 +1,5 @@
 import {Value} from './value.js';
-export {Add, Substract, Multiply, Divide, RELATIONS, LOGIC_OPERATORS};
+export {Add, Substract, Multiply, Divide, RELATION_OPERATORS, LOGIC_OPERATORS};
 
 class Add {
     constructor(left, right) {
@@ -111,7 +111,7 @@ class LessThan {
     }
 }
 
-const RELATIONS = new Map([
+const RELATION_OPERATORS = new Map([
     ['==', Equal],
     ['!=', NotEqual],
     ['>=', GreaterEqual],

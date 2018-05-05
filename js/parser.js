@@ -1,6 +1,6 @@
 import {Stack} from './util.js';
 import {Value, Void, FunCallValue} from './ast/value.js'
-import {Add, Substract, Multiply, Divide, RELATIONS, LOGIC_OPERATORS} from './ast/operator.js'
+import {Add, Substract, Multiply, Divide, RELATION_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js'
 import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context} from './ast/statement.js'
 export {AST};
 
@@ -171,7 +171,7 @@ const VALUE_PARSERS = new Map([
             let boolExprTokens = tokenTester.tryTokens('relation');
             if(boolExprTokens) {
                 let [left, op, right] = boolExprTokens;
-                let Class = RELATIONS.get(op);
+                let Class = RELATION_OPERATORS.get(op);
                 return new Class(
                     VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(left)), 
                     VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(right))
