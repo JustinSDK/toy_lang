@@ -1,5 +1,5 @@
 import {Value} from './value.js';
-export {Add, Substract, Multiply, Divide, RELATIONS};
+export {Add, Substract, Multiply, Divide, RELATIONS, LOGIC_OPERATORS};
 
 class Add {
     constructor(left, right) {
@@ -118,4 +118,31 @@ const RELATIONS = new Map([
     ['<=', LessEqual],
     ['>', GreaterThan],
     ['<', LessThan]
+]);
+
+class And {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Value(this.left.evaluate(context).value && this.right.evaluate(context).value)
+    }
+}
+
+class Or {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        return new Value(this.left.evaluate(context).value || this.right.evaluate(context).value)
+    }
+}
+
+const LOGIC_OPERATORS = new Map([
+    ['and', And],
+    ['or', Or]
 ]);
