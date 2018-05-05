@@ -1,5 +1,5 @@
 import {Value} from './value.js';
-export {Add, Substract, Multiply, Divide, RELATION_OPERATORS, LOGIC_OPERATORS};
+export {ARITHMETIC_OPERATORS, RELATION_OPERATORS, LOGIC_OPERATORS};
 
 class Add {
     constructor(left, right) {
@@ -44,6 +44,13 @@ class Divide {
         return new Value(this.left.evaluate(context).value / this.right.evaluate(context).value);
     }
 }
+
+const ARITHMETIC_OPERATORS = new Map([
+    ['+', Add],
+    ['-', Substract],
+    ['*', Multiply],
+    ['/', Divide]
+]);
 
 class Equal {
     constructor(left, right) {

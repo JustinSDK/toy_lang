@@ -1,6 +1,6 @@
 import {Stack} from './util.js';
 import {Value, Void, FunCallValue} from './ast/value.js'
-import {Add, Substract, Multiply, Divide, RELATION_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js'
+import {ARITHMETIC_OPERATORS, RELATION_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js'
 import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context} from './ast/statement.js'
 export {AST};
 
@@ -216,16 +216,8 @@ function reduce(stack, token) {
     let s1 = stack.pop();
     let left = s1.top;
     let s2 = s1.pop();
-    switch(token) {
-        case '+':
-            return s2.push(new Add(left, right));
-        case '-':
-            return s2.push(new Substract(left, right));
-        case '*':
-            return s2.push(new Multiply(left, right));
-        case '/':
-            return s2.push(new Divide(left, right));                                                           
-    }
+    let ArithmeticOperator = ARITHMETIC_OPERATORS.get(token);
+    return s2.push(new ArithmeticOperator(left, right));
 }
 
 class AST {
