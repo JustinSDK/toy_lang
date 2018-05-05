@@ -168,11 +168,11 @@ const VALUE_PARSERS = new Map([
     }],    
     ['relation', {
         parse(tokenTester) {
-            let boolExprTokens = tokenTester.tryTokens('relation');
-            if(boolExprTokens) {
-                let [left, op, right] = boolExprTokens;
-                let Class = RELATION_OPERATORS.get(op);
-                return new Class(
+            let relationTokens = tokenTester.tryTokens('relation');
+            if(relationTokens) {
+                let [left, op, right] = relationTokens;
+                let RelationOperator = RELATION_OPERATORS.get(op);
+                return new RelationOperator(
                     VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(left)), 
                     VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(right))
                 );
