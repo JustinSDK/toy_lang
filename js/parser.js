@@ -148,12 +148,12 @@ const VALUE_PARSERS = new Map([
     ['variable', {
         parse(tokenTester) {
             let variable = tokenTester.tryToken('variable');
-            return variable === null ? VALUE_PARSERS.get('bool_expr').parse(tokenTester) : new Variable(variable);
+            return variable === null ? VALUE_PARSERS.get('relation').parse(tokenTester) : new Variable(variable);
         }
     }],
-    ['bool_expr', {
+    ['relation', {
         parse(tokenTester) {
-            let boolExprTokens = tokenTester.tryTokens('bool_expr');
+            let boolExprTokens = tokenTester.tryTokens('relation');
             if(boolExprTokens) {
                 let [left, op, right] = boolExprTokens;
                 let Class = RELATIONS.get(op);

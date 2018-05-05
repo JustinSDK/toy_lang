@@ -30,7 +30,7 @@ const TOKEN_TESTERS = new Map([
         let matched = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(input);
         return matched === null ? null : [matched[1]].concat(funcArguments(matched[2]));
     }],
-    ['bool_expr', function(input) {
+    ['relation', function(input) {
         let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
         return matched === null ? null : [matched[1], matched[2], matched[3]];
     }],
