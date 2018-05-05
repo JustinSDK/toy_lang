@@ -196,7 +196,7 @@ class ExprTokenizer {
 }
 
 function expr_tokens(expr) {
-    let regex = /^([a-zA-Z_]+[a-zA-Z_0-9]*\(.*\)|('[^']*')|(\+|\-|\*|\/)|(\(|\))|([a-zA-Z_]+[a-zA-Z_0-9]*|[0-9]+\.?[0-9]*))/;
+    let regex = /^(([a-zA-Z_]+[a-zA-Z_0-9]*\(.*\))|('[^']*')|(\+|\-|\*|\/)|(\(|\))|([a-zA-Z_]+[a-zA-Z_0-9]*|[0-9]+\.?[0-9]*))/;
     let matched = regex.exec(expr);
     if(matched) {
         let token = matched[1];
