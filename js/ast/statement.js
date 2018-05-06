@@ -43,9 +43,6 @@ class Variable {
     }
 
     evaluate(context) {
-        if(this.name.charAt(0) === '-') {
-            return new Num(lookUpVariable(context, this.name.slice(1)).value * -1) ;
-        }
         return lookUpVariable(context, this.name);
     }
 }
