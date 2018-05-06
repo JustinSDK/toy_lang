@@ -196,7 +196,7 @@ class ExprTokenizer {
 }
 
 function expr_tokens(expr) {
-    let regex = /^(([a-zA-Z_]+[a-zA-Z_0-9]*\(.*\))|('[^']*')|(\+|\-|\*|\/)|(\(|\))|([a-zA-Z_]+[a-zA-Z_0-9]*|[0-9]+\.?[0-9]*))/;
+    let regex = /^(([a-zA-Z_]+[a-zA-Z_0-9]*\(.*\))|('[^']*')|(==|!=|>=|>|<=|<)|(and|or)|(\+|\-|\*|\/)|(\(|\))|([a-zA-Z_]+[a-zA-Z_0-9]*|[0-9]+\.?[0-9]*))/;
     let matched = regex.exec(expr);
     if(matched) {
         let token = matched[1];
@@ -207,9 +207,11 @@ function expr_tokens(expr) {
     }
 }
 
-function priority(c) {
-    return c === '+' || c === '-' ? 1 : 
-           c === '*' || c === '/' ? 2 : 0;
+function priority(operator) {
+    return ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
+           ['and', 'or'].indexOf(operator) !== -1 ? 3 :
+           ['*', '/'].indexOf(operator) !== -1 ? 2 :
+           ['+', '-'].indexOf(operator) !== -1 ? 1 : 0;
 }
 
 function popHighPriority(token, stack, output) {
@@ -234,6 +236,8 @@ function digest(tokens, stack = new Stack(), output = []) {
     switch(tokens[0]) {
         case '(':
             return digest(tokens.slice(1), stack.push(tokens[0]), output);
+        case '==': case '!=': case '>=': case '>': case '<=': case '<':
+        case 'and': case 'or':
         case '+': case '-': case '*': case '/':
             let [s1, o1] = popHighPriority(tokens[0], stack, output);
             return digest(tokens.slice(1), s1.push(tokens[0]), o1);

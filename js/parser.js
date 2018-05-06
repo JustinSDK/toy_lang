@@ -1,6 +1,6 @@
 import {Stack} from './util.js';
 import {Value, Void, FunCallValue} from './ast/value.js'
-import {ARITHMETIC_OPERATORS, RELATION_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js'
+import {BINARY_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js'
 import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context} from './ast/statement.js'
 export {AST};
 
@@ -162,39 +162,9 @@ const VALUE_PARSERS = new Map([
                 );
             }
 
-            return VALUE_PARSERS.get('logic').parse(tokenTester);
-        }        
-    }],     
-    ['logic', {
-        parse(tokenTester) {
-            let logicTokens = tokenTester.tryTokens('logic');
-            if(logicTokens) {
-                let [left, op, right] = logicTokens;
-                let LogicOperator = LOGIC_OPERATORS.get(op);
-                return new LogicOperator(
-                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(left)), 
-                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(right))
-                );
-            }
-
-            return VALUE_PARSERS.get('relation').parse(tokenTester);
-        }        
-    }],    
-    ['relation', {
-        parse(tokenTester) {
-            let relationTokens = tokenTester.tryTokens('relation');
-            if(relationTokens) {
-                let [left, op, right] = relationTokens;
-                let RelationOperator = RELATION_OPERATORS.get(op);
-                return new RelationOperator(
-                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(left)), 
-                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(right))
-                );
-            }
-
             return VALUE_PARSERS.get('funcall').parse(tokenTester);
         }        
-    }],
+    }],   
     ['funcall', {
         parse(tokenTester) {
             let funcallTokens = tokenTester.tryTokens('funcall');
@@ -213,10 +183,9 @@ const VALUE_PARSERS = new Map([
         parse(tokenTester) {
             let tokens = tokenTester.tryTokens('postfixExprTokens');
             return tokens.reduce((stack, token) => {
-                if('+-*/'.indexOf(token) !== -1) {
+                if(isOperator(token)) {
                     return reduce(stack, token);
                 } 
-                // let number = parseFloat(token);
                 return stack.push(
                     VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(token))
                 );
@@ -225,13 +194,19 @@ const VALUE_PARSERS = new Map([
     }]
 ]);
 
+function isOperator(token) {        
+    return ['==', '!=', '>=', '>', '<=', '<',
+            'and', 'or', 
+            '+', '-', '*', '/'].indexOf(token) !== -1;
+}
+
 function reduce(stack, token) {
     let right = stack.top;
     let s1 = stack.pop();
     let left = s1.top;
     let s2 = s1.pop();
-    let ArithmeticOperator = ARITHMETIC_OPERATORS.get(token);
-    return s2.push(new ArithmeticOperator(left, right));
+    let Operator = BINARY_OPERATORS.get(token);
+    return s2.push(new Operator(left, right));
 }
 
 class AST {

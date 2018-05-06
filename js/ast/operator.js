@@ -1,5 +1,5 @@
 import {Value} from './value.js';
-export {ARITHMETIC_OPERATORS, RELATION_OPERATORS, LOGIC_OPERATORS};
+export {BINARY_OPERATORS, ARITHMETIC_OPERATORS, RELATION_OPERATORS, LOGIC_OPERATORS};
 
 class Add {
     constructor(left, right) {
@@ -164,3 +164,9 @@ const LOGIC_OPERATORS = new Map([
     ['or', Or],
     ['not', Not]
 ]);
+
+const BINARY_OPERATORS = new Map(
+    Array.from(RELATION_OPERATORS.entries()).concat(
+        Array.from(LOGIC_OPERATORS.entries())).concat(
+            Array.from(ARITHMETIC_OPERATORS.entries()))
+);
