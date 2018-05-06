@@ -156,13 +156,7 @@ const VALUE_PARSERS = new Map([
     ['variable', {
         parse(tokenTester) {
             let variable = tokenTester.tryToken('variable');
-            if(variable !== null) {
-                if(variable.charAt(0) === '-') {
-                    return VALUE_PARSERS.get('expression').parse(tokenTester.tokenTester(`0 ${variable}`));
-                }
-                return new Variable(variable);
-            }
-            return VALUE_PARSERS.get('not').parse(tokenTester);
+            return variable === null ?  VALUE_PARSERS.get('not').parse(tokenTester) : new Variable(variable);
         }
     }],
     ['not', {

@@ -1,7 +1,7 @@
 import {Stack} from './util.js';
 export {StmtTokenizer};
 
-const VARIABLE_REGEX = /(-?[a-zA-Z_]+[a-zA-Z_0-9]*)/;
+const VARIABLE_REGEX = /([a-zA-Z_]+[a-zA-Z_0-9]*)/;
 const FUNC_REGEX = /(([a-zA-Z_]+[a-zA-Z_0-9]*)(\(\s*(.*)\s*\)))/;
 const TEXT_REGEX = /('((\\'|\\\\|\\n|\\t|[^'\\])*)')/;
 const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
@@ -179,9 +179,9 @@ class StmtTokenizer {
                                 return new AssignStatement('assign', [assign[1], assign[2], assign[3]]);
                             }
 
-                            let funcall = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(line);
+                            let funcall = FUNC_TOKEN_REGEX.exec(line);
                             if(funcall) {
-                                return new FuncallStatement('funcall', [funcall[1], funcall[2]]);
+                                return new FuncallStatement('funcall', [funcall[2], funcall[3]]);
                             }
 
                             let reTurn = /^return\s*(.*)$/.exec(line);
@@ -210,7 +210,7 @@ class ExprTokenizer {
 }
 
 const EXPR_REGEX = new RegExp(
-    `^(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source}|${NUMBER_REGEX.source})`
+    `^(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
 );
 
 function expr_tokens(expr) {
