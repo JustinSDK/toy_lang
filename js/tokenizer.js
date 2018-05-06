@@ -8,7 +8,7 @@ const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
 const LOGIC_REGEX = /(and|or)/;
 const ARITHMETIC_REGEX = /(\+|\-|\*|\/)/;
 const PARENTHESE_REGEX = /(\(|\))/;
-const NUMBER_REGEX = /(-?[0-9]+\.?[0-9]*)/;
+const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 
 const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
