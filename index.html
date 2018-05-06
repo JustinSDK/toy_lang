@@ -101,7 +101,7 @@ end</code></strong></pre>
     import {AST} from './js/parser.js';
 
     function output(value) {
-        tty.textContent += `${value}`.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+        tty.textContent += value;
     }
 
     document.getElementById('run').addEventListener('click', _ => {

@@ -11,7 +11,7 @@ function funcArguments(input) {
 
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
-        let matched = /^'([^']*)'$/.exec(input);
+        let matched = /^'((\\'|\\\\|\\n|\\t|[^'\\])*)'$/.exec(input);
         return matched === null ? null : matched[1];
     }],
     ['number', function(input) {

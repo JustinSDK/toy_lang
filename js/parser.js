@@ -130,7 +130,13 @@ const VALUE_PARSERS = new Map([
     ['text', {
         parse(tokenTester) {
             let text = tokenTester.tryToken('text');
-            return text === null ? VALUE_PARSERS.get('num').parse(tokenTester) : new Value(text);
+            return text === null ? 
+                      VALUE_PARSERS.get('num').parse(tokenTester) : 
+                      new Value(text.replace(/([^\\])?\\n/g, '$1\n')
+                                    .replace(/([^\\])?\\t/g, '$1\t')
+                                    .replace(/\\\\/g, '\\')
+                                    .replace(/\\'/g, '\'')
+                      );
         }
     }],
     ['num', {
