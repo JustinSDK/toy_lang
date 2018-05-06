@@ -1,5 +1,5 @@
 # Toy Lang
 
-首次嘗試打造的玩具語言！本來只是寫個 [gist](https://gist.github.com/JustinSDK/9c38136b90137387ad3518d4e99d15ba) 玩玩，後來覺得可以當成一種原型，就放到這邊來了！
+Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b90137387ad3518d4e99d15ba). It's the first language I made and might be a prototype if you want to design your own language. The following examples contain several syntaxes of Toy lang. ES6 modules support is required.
 
-[玩玩看！](https://openhome.cc/Gossip/Computation/toy_lang/)
+[Play It](https://openhome.cc/Gossip/Computation/toy_lang/)

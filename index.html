@@ -3,14 +3,14 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="首次嘗試打造的玩具語言。">
-    <meta property="og:locale" content="zh_TW">
+    <meta name="description" content="The first language I made.">
+    <meta property="og:locale" content="en_US">
     <meta property="og:title" content="Toy Lang">
     <meta property="og:type" content="programming language">
     <meta property="og:url" content="https://openhome.cc/Gossip/Computation/toy_lang/index.html">
     <meta property="og:image" content="https://openhome.cc/Gossip/images/caterpillar_small.jpg">
     <meta property="og:site_name" content="OPENHOME.CC">
-    <meta property="og:description" content="首次嘗試打造的玩具語言。">
+    <meta property="og:description" content="The first language I made.">
     <title>Toy Lang</title>
     <style type="text/css">
         textarea {
@@ -22,10 +22,11 @@
     </style>
   </head>
   <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
-    <p>相關程式碼可在 <a href="https://github.com/JustinSDK/toy_lang">Github</a>
-      找到，這是首次嘗試打造的玩具語言，可用的指令組合可參考底下的範例，你的瀏覽器必須支援 ES6 模組。 </p>
+    <p>You can find the source code on <a href="https://github.com/JustinSDK/toy_lang">Github</a>. 
+        Toy lang is the first language I made and might be a prototype if you want to design your own language.  
+        The following examples contain several syntaxes of Toy lang.  ES6 modules support is required. </p>
     <ul>
-      <li>九九乘法表</li>
+      <li>Multiplication Table</li>
     </ul>
     <pre><strong><code>i = 1
 while i &lt; 10
@@ -38,7 +39,7 @@ while i &lt; 10
     i = i + 1
 end</code></strong></pre>
     <ul>
-      <li>費式數列</li>
+      <li>Fibonacci Numbers</li>
     </ul>
     <pre><strong><code>def printFibonacciNumbers(n)
     print n + ' Fibonacci numbers\n'
@@ -59,7 +60,7 @@ end
 printFibonacciNumbers(10)
 printFibonacciNumbers(20)</code></strong></pre>
 <ul>
-    <li>河內塔</li>
+    <li>Tower of Hanoi</li>
   </ul>
   <pre><strong><code>def hanoi(n, a, b, c) 
     if n == 1
@@ -73,7 +74,7 @@ end
 
 hanoi(3, 'A', 'B', 'C')</code></strong></pre>
 <ul>
-    <li>階乘</li>
+    <li>Factorial</li>
   </ul>
   <pre><strong><code>def factorial(n)
     if n == 0
@@ -89,11 +90,11 @@ while n &lt;= 5
     n = n + 1
 end</code></strong></pre>
     <ul>
-      <li>實驗室</li>
+      <li>Laboratory</li>
     </ul>
     <textarea id="code">print 'Hello\' World'</textarea> <br>
     <br>
-    <button id="run">執行</button> <br>
+    <button id="run">Run It</button> <br>
     <br>
     <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
