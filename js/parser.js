@@ -1,7 +1,8 @@
 import {Stack} from './util.js';
-import {Value, Void, FunCallValue} from './ast/value.js'
-import {BINARY_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js'
-import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context} from './ast/statement.js'
+import {Value, Void} from './ast/value.js';
+import {FunCall} from './ast/function.js';
+import {BINARY_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js';
+import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, Invoke, Context} from './ast/statement.js';
 export {AST};
 
 const STMT_PARSERS = new Map([
@@ -38,8 +39,8 @@ const STMT_PARSERS = new Map([
     ['funcall', {
         parse(stmts) {
             return new StmtSequence(
-                new FunCallStmt(
-                    new FunCallValue(
+                new Invoke(
+                    new FunCall(
                         new Variable(stmts[0].funcName()), 
                         stmts[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
                     )
@@ -178,7 +179,7 @@ const VALUE_PARSERS = new Map([
             let funcallTokens = tokenTester.tryTokens('funcall');
             if(funcallTokens) {
                 let [fName, ...args] = funcallTokens;
-                return new FunCallValue(
+                return new FunCall(
                     new Variable(fName), 
                     args.map(arg => VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(arg)))
                 )

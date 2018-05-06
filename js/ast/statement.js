@@ -1,4 +1,4 @@
-export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, FunCallStmt, Context};
+export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, Invoke, Context};
 
 function nope(value) {}
 
@@ -163,7 +163,7 @@ function assigns(params, args) {
             );
 }
 
-class FunCallStmt {
+class Invoke {
     constructor(fcallValue) {
         this.fcallValue = fcallValue;
     }
