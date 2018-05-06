@@ -132,8 +132,10 @@ const VALUE_PARSERS = new Map([
             let text = tokenTester.tryToken('text');
             return text === null ? 
                       VALUE_PARSERS.get('num').parse(tokenTester) : 
-                      new Value(text.replace(/([^\\])?\\n/g, '$1\n')
-                                    .replace(/([^\\])?\\t/g, '$1\t')
+                      new Value(text.replace(/^\\n/, '\n')
+                                    .replace(/([^\\])\\n/g, '$1\n')
+                                    .replace(/^\\t/, '\t')
+                                    .replace(/([^\\])\\t/g, '$1\t')
                                     .replace(/\\\\/g, '\\')
                                     .replace(/\\'/g, '\'')
                       );
