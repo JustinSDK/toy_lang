@@ -1,6 +1,20 @@
 import {Stack} from './util.js';
 export {StmtTokenizer};
 
+const VARIABLE_REGEX = /(-?[a-zA-Z_]+[a-zA-Z_0-9]*)/;
+const FUNC_REGEX = /(([a-zA-Z_]+[a-zA-Z_0-9]*)(\(\s*(.*)\s*\)))/;
+const TEXT_REGEX = /('((\\'|\\\\|\\n|\\t|[^'\\])*)')/;
+const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
+const LOGIC_REGEX = /(and|or)/;
+const ARITHMETIC_REGEX = /(\+|\-|\*|\/)/;
+const PARENTHESE_REGEX = /(\(|\))/;
+const NUMBER_REGEX = /(-?[0-9]+\.?[0-9]*)/;
+
+const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
+const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
+const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
+const FUNC_TOKEN_REGEX = new RegExp(`^${FUNC_REGEX.source}$`);
+
 function funcArguments(input) {
     let matched = /^\(\s*(.*)\s*\)$/.exec(input);
     if(matched[1] === '') {
@@ -11,11 +25,11 @@ function funcArguments(input) {
 
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
-        let matched = /^'((\\'|\\\\|\\n|\\t|[^'\\])*)'$/.exec(input);
-        return matched === null ? null : matched[1];
+        let matched = TEXT_TOKEN_REGEX.exec(input);
+        return matched === null ? null : matched[2];
     }],
     ['number', function(input) {
-        let matched = /^-?[0-9]+\.?[0-9]*$/.exec(input);
+        let matched = NUMBERT_TOKEN_REGEX.exec(input);
         return matched === null ? null : input;
     }],
     ['boolean', function(input) {
@@ -23,12 +37,12 @@ const TOKEN_TESTERS = new Map([
         return matched === null ? null : input;
     }],
     ['variable', function(input) {
-        let matched = /^-?[a-zA-Z_]+[a-zA-Z_0-9]*$/.exec(input);
+        let matched = VARIABLE_TOKEN_REGEX.exec(input);
         return matched === null ? null : input;
     }],
     ['funcall', function(input) {
-        let matched = /^([a-zA-Z_]+[a-zA-Z_0-9]*)(\(.*\))$/.exec(input);
-        return matched === null ? null : [matched[1]].concat(funcArguments(matched[2]));
+        let matched = FUNC_TOKEN_REGEX.exec(input);;
+        return matched === null ? null : [matched[2]].concat(funcArguments(matched[3]));
     }],
     ['not', function(input) {
         let matched = /^not\s+(.*)$/.exec(input);
@@ -46,8 +60,8 @@ const TOKEN_TESTERS = new Map([
         return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
     }],
     ['def', function(input) {
-        let matched = /^([a-zA-Z_]+[a-zA-Z_0-9])\(\s*(.*)\s*\)$/.exec(input);
-        return [matched[1]].concat(matched[2] === '' ? [] : matched[2].split(/,\s*/));
+        let matched = FUNC_TOKEN_REGEX.exec(input);
+        return [matched[2]].concat(matched[4] === '' ? [] : matched[4].split(/,\s*/));
     }]
 ]);
 
@@ -195,9 +209,12 @@ class ExprTokenizer {
     }
 }
 
+const EXPR_REGEX = new RegExp(
+    `^(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source}|${NUMBER_REGEX.source})`
+);
+
 function expr_tokens(expr) {
-    let regex = /^(([a-zA-Z_]+[a-zA-Z_0-9]*\(.*\))|('[^']*')|(==|!=|>=|>|<=|<)|(and|or)|(\+|\-|\*|\/)|(\(|\))|([a-zA-Z_]+[a-zA-Z_0-9]*|[0-9]+\.?[0-9]*))/;
-    let matched = regex.exec(expr);
+    let matched = EXPR_REGEX.exec(expr);
     if(matched) {
         let token = matched[1];
         return [token].concat(expr_tokens(expr.slice(token.length).trim()));
