@@ -1,8 +1,8 @@
 import {Stack} from './util.js';
 import {Value, Void} from './ast/value.js';
-import {FunCall} from './ast/function.js';
+import {Func, Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {BINARY_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js';
-import {Variable, Assign, Print, While, If, StmtSequence, Func, Return, Invoke, Context} from './ast/statement.js';
+import {Variable, Assign, Print, While, If, StmtSequence, Context} from './ast/statement.js';
 export {AST};
 
 const STMT_PARSERS = new Map([
@@ -39,7 +39,7 @@ const STMT_PARSERS = new Map([
     ['invoke', {
         parse(stmts) {
             return new StmtSequence(
-                new Invoke(
+                new FunCallWrapper(
                     new FunCall(
                         new Variable(stmts[0].funcName()), 
                         stmts[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))

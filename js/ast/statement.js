@@ -1,4 +1,4 @@
-export {Variable, Assign, Print, While, If, StmtSequence, Func, Return, Invoke, Context};
+export {Variable, Assign, Print, While, If, StmtSequence, Context};
 
 function nope(value) {}
 
@@ -128,48 +128,4 @@ StmtSequence.EMPTY = {
     }
 };
 
-class Return {
-    constructor(value) {
-        this.value = value;
-    }
 
-    evaluate(context) {
-        return context.returned(this.value.evaluate(context));
-    }    
-}
-
-class Func {
-    constructor(params, stmt) {
-        this.params = params;
-        this.stmt = stmt;
-    }
-
-    bodyStmt(args) {
-        return new StmtSequence(assigns(this.params, args), this.stmt);
-    }
-
-    evaluate(context) {
-        return this;
-    }
-}
-
-function assigns(params, args) {
-    if(params.length === 0) {
-        return StmtSequence.EMPTY;
-    }
-    return new StmtSequence(
-                  new Assign(new Variable(params[0]), args[0]), 
-                  assigns(params.slice(1), args.slice(1))
-            );
-}
-
-class Invoke {
-    constructor(fcallValue) {
-        this.fcallValue = fcallValue;
-    }
-
-    evaluate(context) {
-        this.fcallValue.evaluate(context);
-        return context;
-    }    
-}
