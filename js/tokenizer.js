@@ -179,9 +179,9 @@ class StmtTokenizer {
                                 return new AssignStatement('assign', [assign[1], assign[2], assign[3]]);
                             }
 
-                            let invoke = FUNC_TOKEN_REGEX.exec(line);
-                            if(invoke) {
-                                return new FuncallStatement('invoke', [invoke[2], invoke[3]]);
+                            let funcall = FUNC_TOKEN_REGEX.exec(line);
+                            if(funcall) {
+                                return new FuncallStatement('funcall', [funcall[2], funcall[3]]);
                             }
 
                             let reTurn = /^return\s*(.*)$/.exec(line);

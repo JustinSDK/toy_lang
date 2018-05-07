@@ -36,7 +36,7 @@ const STMT_PARSERS = new Map([
             );
         }
     }],      
-    ['invoke', {
+    ['funcall', {
         parse(stmts) {
             return new StmtSequence(
                 new FunCallWrapper(
