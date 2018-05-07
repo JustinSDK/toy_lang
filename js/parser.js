@@ -22,7 +22,7 @@ const STMT_PARSERS = new Map([
             return new StmtSequence(
                 new Assign(
                     new Variable(funcName), 
-                    new Func(params, STMT_PARSERS.get('sequence').parse(remains))
+                    new Func(params.map(param => new Variable(param)), STMT_PARSERS.get('sequence').parse(remains))
                 ),
                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );

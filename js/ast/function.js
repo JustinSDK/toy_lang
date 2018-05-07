@@ -1,4 +1,4 @@
-import {Variable, Assign, StmtSequence} from './statement.js'
+import {Assign, StmtSequence} from './statement.js'
 export {Func, Return, FunCall, FunCallWrapper};
 
 class Func {
@@ -21,7 +21,7 @@ function assigns(params, args) {
         return StmtSequence.EMPTY;
     }
     return new StmtSequence(
-                  new Assign(new Variable(params[0]), args[0]), 
+                  new Assign(params[0], args[0]), 
                   assigns(params.slice(1), args.slice(1))
             );
 }
