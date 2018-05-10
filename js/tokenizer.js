@@ -2,7 +2,7 @@ import {Stack} from './util.js';
 export {StmtTokenizer};
 
 const VARIABLE_REGEX = /([a-zA-Z_]+[a-zA-Z_0-9]*)/;
-const TEXT_REGEX = /('((\\'|\\\\|\\n|\\t|[^'\\])*)')/;
+const TEXT_REGEX = /('((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)')/;
 const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
 const LOGIC_REGEX = /(and|or)/;
 const ARITHMETIC_REGEX = /(\+|\-|\*|\/)/;
