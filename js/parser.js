@@ -135,6 +135,7 @@ const VALUE_PARSERS = new Map([
                       VALUE_PARSERS.get('num').parse(tokenTester) : 
                       new Value(text.replace(/^\\r/, '\r')
                                     .replace(/^\\n/, '\n')
+                                    .replace(/([^\\])\\r/g, '$1\r')
                                     .replace(/([^\\])\\n/g, '$1\n')
                                     .replace(/^\\t/, '\t')
                                     .replace(/([^\\])\\t/g, '$1\t')
