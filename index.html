@@ -98,8 +98,9 @@ end</code></strong></pre>
     <br>
     <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
-    import {StmtTokenizer} from './js/tokenizer.js';
-    import {AST} from './js/parser.js';
+    import {Context} from './js/ast/context.js';
+    import {Tokenizer} from './js/tokenizer.js';
+    import {Parser} from './js/parser.js';
 
     function output(value) {
         tty.textContent += value;
@@ -109,7 +110,9 @@ end</code></strong></pre>
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        new AST(new StmtTokenizer(code), output).evaluate();
+        new Parser(new Tokenizer(code))
+                .parse()
+                .evaluate(new Context(null, output));
     });
 </script> </body>
 </html>

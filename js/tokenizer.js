@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-export {StmtTokenizer};
+export {Tokenizer};
 
 const VARIABLE_REGEX = /([a-zA-Z_]+[a-zA-Z_0-9]*)/;
 const TEXT_REGEX = /('((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)')/;
@@ -160,7 +160,7 @@ class FuncallStatement extends Statement {
     }
 }
 
-class StmtTokenizer {
+class Tokenizer {
     constructor(code) {
         this.code = code;
     }

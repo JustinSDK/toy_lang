@@ -2,8 +2,8 @@ import {Stack} from './util.js';
 import {Value, Void} from './ast/value.js';
 import {Func, Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {BINARY_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js';
-import {Variable, Assign, Print, While, If, StmtSequence, Context} from './ast/statement.js';
-export {AST};
+import {Variable, Assign, Print, While, If, StmtSequence} from './ast/statement.js';
+export {Parser};
 
 const STMT_PARSERS = new Map([
     ['sequence', {
@@ -220,13 +220,16 @@ function reduce(stack, token) {
     return s2.push(new Operator(left, right));
 }
 
-class AST {
-    constructor(tokenizer, output) {
-        this.ast = STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
-        this.output = output;
+class Parser {
+    constructor(tokenizer) {
+        this.tokenizer = tokenizer;
     }
 
-    evaluate(context = new Context(null, this.output)) {
-        return this.ast.evaluate(context);
+    parse() {
+        return STMT_PARSERS.get('sequence').parse(this.tokenizer.tokenize());
     }
+
+    // evaluate(context = new Context(null, this.output)) {
+    //     return this.ast.evaluate(context);
+    // }
 }
