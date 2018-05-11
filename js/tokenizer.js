@@ -12,18 +12,18 @@ const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
 const ARGUMENT_LIST_REGEX = /(\(\s*(.*)\s*\))/;
 const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
-
 const EXPR_REGEX = new RegExp(
     `(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
 );
-
-const EXPR_TOKEN_REGEX = new RegExp(`^${EXPR_REGEX.source}`);
 
 const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
 const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
 const FUNC_TOKEN_REGEX = new RegExp(`^${FUNC_REGEX.source}$`);
 const ARGUMENT_LT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_LIST_REGEX.source}$`);
+const EXPR_TOKEN_REGEX = new RegExp(`^${EXPR_REGEX.source}`);
+
+const DOT_SEPERATED_TOKEN_REGEX = new RegExp(`^(${EXPR_REGEX.source}|(,))`);
 
 function funcArguments(input) {
     let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
@@ -31,11 +31,27 @@ function funcArguments(input) {
         return [];
     }
 
-    let textToken = TEXT_TOKEN_REGEX.exec(matched[2]);
-    if(textToken) {
-        return [textToken[1]];
+    return dotSeperated(matched[2]);
+}
+
+function dotSeperated(input, x = '', acc = []) {
+    if(input == '') {
+        return acc.concat([x]);
     }
-    return matched[2].split(/,\s*/);
+
+    let matched = DOT_SEPERATED_TOKEN_REGEX.exec(input);
+    if(matched) {
+        let token = matched[1];
+        if(token == ',') {
+            return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
+        } 
+        else {
+            return dotSeperated(input.slice(token.length).trim(), x + token, acc);
+        }
+    }
+    else {
+        return [];
+    }
 }
 
 const TOKEN_TESTERS = new Map([
