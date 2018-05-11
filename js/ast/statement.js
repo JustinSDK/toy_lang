@@ -1,4 +1,4 @@
-export {Variable, Assign, Print, While, If, StmtSequence};
+export {Variable, Assign, While, If, StmtSequence};
 
 function nope(value) {}
 
@@ -27,18 +27,6 @@ function lookUpVariable(context, name) {
     let value = context.variables.get(name);
     return value === undefined ? lookUpVariable(context.parent, name) : value;
 }
-
-class Print {
-    constructor(value) {
-        this.value = value;
-    }
-
-    evaluate(context) {
-        context.output(this.value.evaluate(context).value)
-        return context;
-    }
-}
-
 
 class While {
     constructor(boolean, stmt) {

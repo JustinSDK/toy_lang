@@ -2,7 +2,7 @@ import {Stack} from './util.js';
 import {Value, Void} from './ast/value.js';
 import {Func, Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {BINARY_OPERATORS, LOGIC_OPERATORS} from './ast/operator.js';
-import {Variable, Assign, Print, While, If, StmtSequence} from './ast/statement.js';
+import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
 const STMT_PARSERS = new Map([
@@ -56,14 +56,6 @@ const STMT_PARSERS = new Map([
                     new Variable(stmts[0].variableName()), 
                     VALUE_PARSERS.get('value').parse(stmts[0].tokenTester)
                 ),
-                STMT_PARSERS.get('sequence').parse(stmts.slice(1))
-            );
-        }
-    }],
-    ['print', {
-        parse(stmts) {
-            return new StmtSequence(
-                new Print(VALUE_PARSERS.get('value').parse(stmts[0].tokenTester)),
                 STMT_PARSERS.get('sequence').parse(stmts.slice(1))
             );
         }

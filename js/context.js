@@ -1,4 +1,22 @@
+import {Func} from './ast/function.js';
+import {Variable} from './ast/statement.js';
+
 export {Context};
+
+class Print {
+    constructor(value) {
+        this.value = value;
+    }
+
+    evaluate(context) {
+        context.output(this.value.evaluate(context).value)
+        return context;
+    }
+}
+
+const BUILTINS = new Map([
+    ['print', new Func([new Variable('v')], new Print(new Variable('v')))]
+]);
 
 class Context {
     constructor(parent = null, output = nope, variables = new Map(), returnedValue = null) {
@@ -6,6 +24,10 @@ class Context {
         this.output = output;
         this.variables = variables;
         this.returnedValue = returnedValue;
+    }
+
+    static initialize(environment) {
+        return new Context(null, environment.output, BUILTINS);
     }
 
     childContext() {
@@ -34,3 +56,4 @@ class Context {
         );
     }
 }
+

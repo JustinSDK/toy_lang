@@ -102,9 +102,11 @@ end</code></strong></pre>
     import {Tokenizer} from './js/tokenizer.js';
     import {Parser} from './js/parser.js';
 
-    function output(value) {
-        tty.textContent += value;
-    }
+    const ENVIRONMENT = {
+        output(value) {
+            tty.textContent += value;
+        }
+    };
 
     document.getElementById('run').addEventListener('click', _ => {
         let code = document.getElementById('code').value;
@@ -112,7 +114,7 @@ end</code></strong></pre>
         tty.textContent = '';
         new Parser(new Tokenizer(code))
                 .parse()
-                .evaluate(new Context(null, output));
+                .evaluate(Context.initialize(ENVIRONMENT));
     });
 </script> </body>
 </html>
