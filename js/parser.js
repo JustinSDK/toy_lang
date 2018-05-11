@@ -228,8 +228,4 @@ class Parser {
     parse() {
         return STMT_PARSERS.get('sequence').parse(this.tokenizer.tokenize());
     }
-
-    // evaluate(context = new Context(null, this.output)) {
-    //     return this.ast.evaluate(context);
-    // }
 }
