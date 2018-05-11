@@ -14,6 +14,7 @@ const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
 
 // For simplicity, only allow three nested parentheses.
+// You can change NESTED_PARENTHESES_LEVEL to what level you want.
 // More nested parentheses are too complex to code, right?
 
 function nestingParentheses(level) {
