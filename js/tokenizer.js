@@ -10,17 +10,17 @@ const PARENTHESE_REGEX = /(\(|\))/;
 const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 
 const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
-const ARGUMENT_REGEX = /(\(\s*(.*)\s*\))/;
-const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_REGEX.source})`);
+const ARGUMENT_LIST_REGEX = /(\(\s*(.*)\s*\))/;
+const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
 
 const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
 const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
 const FUNC_TOKEN_REGEX = new RegExp(`^${FUNC_REGEX.source}$`);
-const ARGUMENT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_REGEX.source}$`);
+const ARGUMENT_LT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_LIST_REGEX.source}$`);
 
 function funcArguments(input) {
-    let matched = ARGUMENT_TOKEN_REGEX.exec(input);
+    let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
     if(matched[2] === '') {
         return [];
     }
