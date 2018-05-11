@@ -10,7 +10,9 @@ const PARENTHESE_REGEX = /(\(|\))/;
 const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 
 const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
-const ARGUMENT_LIST_REGEX = /(\(\s*(.*)\s*\))/;
+// For simplicity, only allow three nested parentheses.
+// More nested parentheses are too complex to code, right?
+const ARGUMENT_LIST_REGEX = /(\(((?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*)\))/;
 const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
 const EXPR_REGEX = new RegExp(
     `(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
