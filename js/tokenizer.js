@@ -13,6 +13,12 @@ const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
 const ARGUMENT_LIST_REGEX = /(\(\s*(.*)\s*\))/;
 const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
 
+const EXPR_REGEX = new RegExp(
+    `(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
+);
+
+const EXPR_TOKEN_REGEX = new RegExp(`^${EXPR_REGEX.source}`);
+
 const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
 const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
@@ -218,12 +224,8 @@ class ExprTokenizer {
     }
 }
 
-const EXPR_REGEX = new RegExp(
-    `^(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
-);
-
 function expr_tokens(expr) {
-    let matched = EXPR_REGEX.exec(expr);
+    let matched = EXPR_TOKEN_REGEX.exec(expr);
     if(matched) {
         let token = matched[1];
         return [token].concat(expr_tokens(expr.slice(token.length).trim()));
