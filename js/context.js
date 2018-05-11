@@ -25,9 +25,11 @@ class Len {
     }    
 }
 
+const ONE_PARAM = new Variable('v');
+
 const BUILTINS = new Map([
-    ['print', new Func([new Variable('v')], new Print(new Variable('v')))],
-    ['len', new Func([new Variable('v')], new Len(new Variable('v')))]
+    ['print', new Func([ONE_PARAM], new Print(ONE_PARAM))],
+    ['len', new Func([ONE_PARAM], new Len(ONE_PARAM))]
 ]);
 
 class Context {
