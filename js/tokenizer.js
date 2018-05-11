@@ -1,6 +1,8 @@
 import {Stack} from './util.js';
 export {Tokenizer};
 
+const NESTED_PARENTHESES_LEVEL = 3; 
+
 const VARIABLE_REGEX = /([a-zA-Z_]+[a-zA-Z_0-9]*)/;
 const TEXT_REGEX = /('((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)')/;
 const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
@@ -10,9 +12,19 @@ const PARENTHESE_REGEX = /(\(|\))/;
 const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 
 const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
+
 // For simplicity, only allow three nested parentheses.
 // More nested parentheses are too complex to code, right?
-const ARGUMENT_LIST_REGEX = /(\(((?:[^()]|\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))*)\))/;
+
+function nestingParentheses(level) {
+    if (level === 0) {
+        return '[^()]*';
+    }
+    return '(?:[^()]|\\(' + nestingParentheses(level - 1) + '\\))*';
+}
+
+const ARGUMENT_LIST_REGEX = new RegExp('(\\((' + nestingParentheses(NESTED_PARENTHESES_LEVEL) + ')\\))');
+
 const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
 const EXPR_REGEX = new RegExp(
     `(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
