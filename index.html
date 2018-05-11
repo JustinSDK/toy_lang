@@ -32,29 +32,29 @@
 while i &lt; 10
     j = 2
     while j &lt; 10
-        print j + '*' + i + '=' + (j * i) + '\t'
+        print(j + '*' + i + '=' + (j * i) + '\t')
         j = j + 1
     end
-    print '\n'
+    print('\n')
     i = i + 1
 end</code></strong></pre>
     <ul>
       <li>Fibonacci Numbers</li>
     </ul>
     <pre><strong><code>def printFibonacciNumbers(n)
-    print n + ' Fibonacci numbers\n'
+    print(n + ' Fibonacci numbers\n')
     n = n - 2
     fn1 = 1
     fn2 = 1
-    print fn1 + ' ' + fn2 + ' '
+    print(fn1 + ' ' + fn2 + ' ')
     while n &gt; 0
         fn = fn2 + fn1
-        print fn + ' '
+        print(fn + ' ')
         fn1 = fn2
         fn2 = fn
         n = n - 1
     end
-    print '\n\n'
+    print('\n\n')
 end
 
 printFibonacciNumbers(10)
@@ -64,7 +64,7 @@ printFibonacciNumbers(20)</code></strong></pre>
   </ul>
   <pre><strong><code>def hanoi(n, a, b, c) 
     if n == 1
-        print 'Move sheet from ' + a + ' to ' + c + '\n'
+        print('Move sheet from ' + a + ' to ' + c + '\n')
     else
         hanoi(n - 1, a, c, b)
         hanoi(1, a, b, c)
@@ -86,13 +86,13 @@ end
 
 n = 1
 while n &lt;= 5
-    print n + '! = ' + factorial(n) + '\n'
+    print(n + '! = ' + factorial(n) + '\n')
     n = n + 1
 end</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
-    <textarea id="code">print 'Hello\' World'</textarea> <br>
+    <textarea id="code">print('Hello World')</textarea> <br>
     <br>
     <button id="run">Run It</button> <br>
     <br>
