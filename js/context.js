@@ -1,3 +1,4 @@
+import {Value} from './ast/value.js';
 import {Func} from './ast/function.js';
 import {Variable} from './ast/statement.js';
 
@@ -9,13 +10,24 @@ class Print {
     }
 
     evaluate(context) {
-        context.output(this.value.evaluate(context).value)
+        context.output(this.value.evaluate(context).value);
         return context;
     }
 }
 
+class Len {
+    constructor(value) {
+        this.value = value;
+    }
+
+    evaluate(context) {
+        return context.returned(new Value(this.value.evaluate(context).value.length));
+    }    
+}
+
 const BUILTINS = new Map([
-    ['print', new Func([new Variable('v')], new Print(new Variable('v')))]
+    ['print', new Func([new Variable('v')], new Print(new Variable('v')))],
+    ['len', new Func([new Variable('v')], new Len(new Variable('v')))]
 ]);
 
 class Context {
