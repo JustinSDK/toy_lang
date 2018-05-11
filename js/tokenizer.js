@@ -24,6 +24,11 @@ function funcArguments(input) {
     if(matched[2] === '') {
         return [];
     }
+
+    let textToken = TEXT_TOKEN_REGEX.exec(matched[2]);
+    if(textToken) {
+        return [textToken[1]];
+    }
     return matched[2].split(/,\s*/);
 }
 
