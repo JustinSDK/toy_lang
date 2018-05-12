@@ -60,6 +60,9 @@ function dotSeperated(input, x = '', acc = []) {
         if(token == ',') {
             return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
         } 
+        else if(token == 'not') {
+            return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
+        }
         else {
             return dotSeperated(input.slice(token.length).trim(), x + token, acc);
         }
