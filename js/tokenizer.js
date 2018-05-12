@@ -21,10 +21,10 @@ function nestingParentheses(level) {
     if (level === 0) {
         return '[^()]*';
     }
-    return '([^()]|\\(' + nestingParentheses(level - 1) + '\\))*';
+    return `([^()]|\\(${nestingParentheses(level - 1)}\\))*`;
 }
 
-const ARGUMENT_LIST_REGEX = new RegExp('(\\((' + nestingParentheses(NESTED_PARENTHESES_LEVEL) + ')\\))');
+const ARGUMENT_LIST_REGEX = new RegExp(`(\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\))`);
 
 const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
 const EXPR_REGEX = new RegExp(
