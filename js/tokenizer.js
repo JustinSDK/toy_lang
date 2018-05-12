@@ -21,7 +21,7 @@ function nestingParentheses(level) {
     if (level === 0) {
         return '[^()]*';
     }
-    return '(?:[^()]|\\(' + nestingParentheses(level - 1) + '\\))*';
+    return '([^()]|\\(' + nestingParentheses(level - 1) + '\\))*';
 }
 
 const ARGUMENT_LIST_REGEX = new RegExp('(\\((' + nestingParentheses(NESTED_PARENTHESES_LEVEL) + ')\\))');
