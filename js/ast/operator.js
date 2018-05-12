@@ -33,6 +33,7 @@ const BINARY_OPERATORS = new Map([
     ['-', createOperatorNode((a, b) => a - b)],
     ['*', createOperatorNode((a, b) => a * b)],
     ['/', createOperatorNode((a, b) => a / b)],
+    ['%', createOperatorNode((a, b) => a % b)],
     ['==', createOperatorNode((a, b) => a === b)],
     ['!=', createOperatorNode((a, b) => a !== b)],
     ['>=', createOperatorNode((a, b) => a >= b)],

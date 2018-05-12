@@ -200,7 +200,7 @@ const VALUE_PARSERS = new Map([
 function isOperator(token) {        
     return ['==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
-            '+', '-', '*', '/'].indexOf(token) !== -1;
+            '+', '-', '*', '/', '%'].indexOf(token) !== -1;
 }
 
 function reduce(stack, token) {

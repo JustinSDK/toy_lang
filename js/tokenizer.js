@@ -7,7 +7,7 @@ const VARIABLE_REGEX = /([a-zA-Z_]+[a-zA-Z_0-9]*)/;
 const TEXT_REGEX = /('((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)')/;
 const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
 const LOGIC_REGEX = /(and|or)/;
-const ARITHMETIC_REGEX = /(\+|\-|\*|\/)/;
+const ARITHMETIC_REGEX = /(\+|\-|\*|\/|\%)/;
 const PARENTHESE_REGEX = /(\(|\))/;
 const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
 
@@ -272,7 +272,7 @@ function expr_tokens(expr) {
 function priority(operator) {
     return ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
            ['and', 'or'].indexOf(operator) !== -1 ? 3 :
-           ['*', '/'].indexOf(operator) !== -1 ? 2 :
+           ['*', '/', '%'].indexOf(operator) !== -1 ? 2 :
            ['+', '-'].indexOf(operator) !== -1 ? 1 : 0;
 }
 
@@ -300,7 +300,7 @@ function digest(tokens, stack = new Stack(), output = []) {
             return digest(tokens.slice(1), stack.push(tokens[0]), output);
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
-        case '+': case '-': case '*': case '/':
+        case '+': case '-': case '*': case '/': case '%':
             let [s1, o1] = popHighPriority(tokens[0], stack, output);
             return digest(tokens.slice(1), s1.push(tokens[0]), o1);
         case ')':
