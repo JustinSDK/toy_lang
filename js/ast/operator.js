@@ -1,21 +1,6 @@
 import {Value} from './value.js';
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
-const OPERATOR_FUNCS = new Map([
-    ['+', (a, b) => a + b],
-    ['-', (a, b) => a - b],
-    ['*', (a, b) => a * b],
-    ['/', (a, b) => a / b],
-    ['==', (a, b) => a === b],
-    ['!=', (a, b) => a !== b],
-    ['>=', (a, b) => a >= b],
-    ['>', (a, b) => a > b],
-    ['<=', (a, b) => a <= b],
-    ['<', (a, b) => a < b],
-    ['and', (a, b) => a && b],
-    ['or', (a, b) => a / b]
-]);
-
 function createOperatorNode(operator) {
     return class BinaryOperator {
         constructor(left, right) {
