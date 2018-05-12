@@ -1,151 +1,31 @@
 import {Value} from './value.js';
-export {BINARY_OPERATORS, ARITHMETIC_OPERATORS, RELATION_OPERATORS, LOGIC_OPERATORS};
+export {BINARY_OPERATORS, UNARY_OPERATORS};
 
-class Add {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value + this.right.evaluate(context).value);
-    }
-}
-
-class Substract {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value - this.right.evaluate(context).value);
-    }
-}
-
-class Multiply {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value * this.right.evaluate(context).value);
-    }
-}
-
-class Divide {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value / this.right.evaluate(context).value);
-    }
-}
-
-const ARITHMETIC_OPERATORS = new Map([
-    ['+', Add],
-    ['-', Substract],
-    ['*', Multiply],
-    ['/', Divide]
+const OPERATOR_FUNCS = new Map([
+    ['+', (a, b) => a + b],
+    ['-', (a, b) => a - b],
+    ['*', (a, b) => a * b],
+    ['/', (a, b) => a / b],
+    ['==', (a, b) => a === b],
+    ['!=', (a, b) => a !== b],
+    ['>=', (a, b) => a >= b],
+    ['>', (a, b) => a > b],
+    ['<=', (a, b) => a <= b],
+    ['<', (a, b) => a < b],
+    ['and', (a, b) => a && b],
+    ['or', (a, b) => a / b]
 ]);
 
-class Equal {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value === this.right.evaluate(context).value)
-    }
-}
-
-class NotEqual {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value !== this.right.evaluate(context).value)
-    }
-}
-
-class GreaterEqual {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value >= this.right.evaluate(context).value)
-    }
-}
-
-class LessEqual {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value <= this.right.evaluate(context).value)
-    }
-}
-
-class GreaterThan {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value > this.right.evaluate(context).value)
-    }
-}
-
-class LessThan {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value < this.right.evaluate(context).value)
-    }
-}
-
-const RELATION_OPERATORS = new Map([
-    ['==', Equal],
-    ['!=', NotEqual],
-    ['>=', GreaterEqual],
-    ['<=', LessEqual],
-    ['>', GreaterThan],
-    ['<', LessThan]
-]);
-
-class And {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value && this.right.evaluate(context).value)
-    }
-}
-
-class Or {
-    constructor(left, right) {
-        this.left = left;
-        this.right = right;
-    }
-
-    evaluate(context) {
-        return new Value(this.left.evaluate(context).value || this.right.evaluate(context).value)
+function createOperatorNode(operator) {
+    return class BinaryOperator {
+        constructor(left, right) {
+            this.left = left;
+            this.right = right;
+        }
+    
+        evaluate(context) {
+            return new Value(operator(this.left.evaluate(context).value, this.right.evaluate(context).value));
+        }
     }
 }
 
@@ -159,14 +39,21 @@ class Not {
     }
 }
 
-const LOGIC_OPERATORS = new Map([
-    ['and', And],
-    ['or', Or],
+const UNARY_OPERATORS = new Map([
     ['not', Not]
 ]);
 
-const BINARY_OPERATORS = new Map(
-    Array.from(RELATION_OPERATORS.entries()).concat(
-        Array.from(LOGIC_OPERATORS.entries())).concat(
-            Array.from(ARITHMETIC_OPERATORS.entries()))
-);
+const BINARY_OPERATORS = new Map([
+    ['+', createOperatorNode((a, b) => a + b)],
+    ['-', createOperatorNode((a, b) => a - b)],
+    ['*', createOperatorNode((a, b) => a * b)],
+    ['/', createOperatorNode((a, b) => a / b)],
+    ['==', createOperatorNode((a, b) => a === b)],
+    ['!=', createOperatorNode((a, b) => a !== b)],
+    ['>=', createOperatorNode((a, b) => a >= b)],
+    ['>', createOperatorNode((a, b) => a > b)],
+    ['<=', createOperatorNode((a, b) => a <= b)],
+    ['<', createOperatorNode((a, b) => a < b)],
+    ['and', createOperatorNode((a, b) => a && b)],
+    ['or', createOperatorNode((a, b) => a / b)]
+]);
