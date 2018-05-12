@@ -41,5 +41,5 @@ const BINARY_OPERATORS = new Map([
     ['<=', createOperatorNode((a, b) => a <= b)],
     ['<', createOperatorNode((a, b) => a < b)],
     ['and', createOperatorNode((a, b) => a && b)],
-    ['or', createOperatorNode((a, b) => a / b)]
+    ['or', createOperatorNode((a, b) => a || b)]
 ]);
