@@ -28,14 +28,18 @@
     <ul>
       <li>Multiplication Table</li>
     </ul>
-    <pre><strong><code>i = 1
-while i &lt; 10
-    j = 2
-    while j &lt; 10
-        print(j + '*' + i + '=' + (j * i) + '\t')
-        j = j + 1
+    <pre><strong><code>def print_row(n)
+    i = 2
+    while i &lt; 10
+        print(i + '*' + n + '=' + (i * n) + '\t')
+        i = i + 1 
     end
     print('\n')
+end
+
+i = 1
+while i &lt; 10
+    print_row(i)
     i = i + 1
 end</code></strong></pre>
     <ul>
