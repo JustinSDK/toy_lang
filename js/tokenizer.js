@@ -28,7 +28,7 @@ const ARGUMENT_LIST_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHE
 
 const FUNC_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LIST_REGEX.source}))`);
 const EXPR_REGEX = new RegExp(
-    `(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
+    `((not\\s+)?${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?${VARIABLE_REGEX.source})`
 );
 
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
