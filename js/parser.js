@@ -151,23 +151,9 @@ const VALUE_PARSERS = new Map([
     ['variable', {
         parse(tokenTester) {
             let variable = tokenTester.tryToken('variable');
-            return variable === null ?  VALUE_PARSERS.get('not').parse(tokenTester) : new Variable(variable);
+            return variable === null ?  VALUE_PARSERS.get('funcall').parse(tokenTester) : new Variable(variable);
         }
     }],
-    ['not', {
-        parse(tokenTester) {
-            let notTokens = tokenTester.tryTokens('not');
-            if(notTokens) {
-                let [not, operand] = notTokens;
-                let NotOperator = UNARY_OPERATORS.get(not);
-                return new NotOperator(
-                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(operand))
-                );
-            }
-
-            return VALUE_PARSERS.get('funcall').parse(tokenTester);
-        }        
-    }],   
     ['funcall', {
         parse(tokenTester) {
             let funcallTokens = tokenTester.tryTokens('funcall');
@@ -189,6 +175,15 @@ const VALUE_PARSERS = new Map([
                 if(isOperator(token)) {
                     return reduce(stack, token);
                 } 
+                else if(token.startsWith('not')) {
+                    let [not, operand] = tokenTester.tryTokens('not');
+                    let NotOperator = UNARY_OPERATORS.get(not);
+                    return stack.push(
+                        new NotOperator(
+                            VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(operand))
+                        )
+                    );
+                }
                 return stack.push(
                     VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(token))
                 );

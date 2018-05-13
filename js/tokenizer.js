@@ -28,7 +28,7 @@ const ARGUMENT_LIST_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHE
 
 const FUNC_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LIST_REGEX.source}))`);
 const EXPR_REGEX = new RegExp(
-    `((not\\s+)?${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?${VARIABLE_REGEX.source})`
+    `((not\\s+)?${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(true|false)|(not\\s+)?${VARIABLE_REGEX.source})`
 );
 
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
@@ -54,7 +54,7 @@ function funcArguments(input) {
 
 function dotSeperated(input, x = '', acc = []) {
     if(input == '') {
-        return acc.concat([x]);
+        return acc.concat([x.trim()]);
     }
 
     let matched = DOT_SEPERATED_TOKEN_REGEX.exec(input);
@@ -63,11 +63,8 @@ function dotSeperated(input, x = '', acc = []) {
         if(token == ',') {
             return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
         } 
-        else if(token == 'not') {
-            return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
-        }
         else {
-            return dotSeperated(input.slice(token.length).trim(), x + token, acc);
+            return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
         }
     }
     else {
