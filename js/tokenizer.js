@@ -3,6 +3,7 @@ export {Tokenizer};
 
 const NESTED_PARENTHESES_LEVEL = 3; 
 
+const BOOLEAN_REGEX = /true|false/;
 const NUMBER_REGEX = /[0-9]+\.?[0-9]*/;
 const TEXT_REGEX = /'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
 const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
@@ -28,9 +29,10 @@ const ARGUMENT_LIST_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHE
 
 const FUNC_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LIST_REGEX.source}))`);
 const EXPR_REGEX = new RegExp(
-    `((not\\s+)?${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(true|false)|(not\\s+)?${VARIABLE_REGEX.source})`
+    `((not\\s+)?${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
 );
 
+const BOOLEAN_TOKEN_REGEX = new RegExp(`^(${BOOLEAN_REGEX.source})$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
 const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
@@ -82,7 +84,7 @@ const TOKEN_TESTERS = new Map([
         return matched === null ? null : input;
     }],
     ['boolean', function(input) {
-        let matched = /^(true|false)$/.exec(input);
+        let matched = BOOLEAN_TOKEN_REGEX.exec(input);
         return matched === null ? null : input;
     }],
     ['variable', function(input) {
