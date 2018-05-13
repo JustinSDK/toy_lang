@@ -215,7 +215,7 @@ class Tokenizer {
     tokenize() {
         return this.code.trim().split('\n')
                         .map(line => line.trim())
-                        .filter(line => line !== '')
+                        .filter(line => line !== '' && !line.startsWith("#")) // A comment starts with #
                         .map(line => {
                             if(line.startsWith('end')) {
                                 return new EmptyStmtTokenizer('end', [line]);
