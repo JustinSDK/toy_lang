@@ -176,7 +176,7 @@ const VALUE_PARSERS = new Map([
                     return reduce(stack, token);
                 } 
                 else if(token.startsWith('not')) {
-                    let [not, operand] = tokenTester.tryTokens('not');
+                    let [not, operand] = tokenTester.tokenTester(token).tryTokens('not');
                     let NotOperator = UNARY_OPERATORS.get(not);
                     return stack.push(
                         new NotOperator(
