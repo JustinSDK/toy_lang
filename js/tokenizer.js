@@ -3,15 +3,15 @@ export {Tokenizer};
 
 const NESTED_PARENTHESES_LEVEL = 3; 
 
-const VARIABLE_REGEX = /([a-zA-Z_]+[a-zA-Z_0-9]*)/;
-const TEXT_REGEX = /('((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)')/;
-const RELATION_REGEX = /(==|!=|>=|>|<=|<)/;
-const LOGIC_REGEX = /(and|or)/;
-const ARITHMETIC_REGEX = /(\+|\-|\*|\/|\%)/;
-const PARENTHESE_REGEX = /(\(|\))/;
-const NUMBER_REGEX = /([0-9]+\.?[0-9]*)/;
+const NUMBER_REGEX = /[0-9]+\.?[0-9]*/;
+const TEXT_REGEX = /'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
+const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
+const RELATION_REGEX = /==|!=|>=|>|<=|</;
+const LOGIC_REGEX = /and|or/;
+const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
+const PARENTHESE_REGEX = /\(|\)/;
 
-const ASSIGN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}\\s*(=)\\s*(.*)$`);
+const ASSIGN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})\\s*(=)\\s*(.*)$`);
 
 // For simplicity, only allow three nested parentheses.
 // You can change NESTED_PARENTHESES_LEVEL to what level you want.
@@ -24,17 +24,20 @@ function nestingParentheses(level) {
     return `([^()]|\\(${nestingParentheses(level - 1)}\\))*`;
 }
 
-const ARGUMENT_LIST_REGEX = new RegExp(`(\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\))`);
+const ARGUMENT_LIST_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\)`);
 
-const FUNC_REGEX = new RegExp(`(${VARIABLE_REGEX.source}${ARGUMENT_LIST_REGEX.source})`);
+const FUNC_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LIST_REGEX.source}))`);
 const EXPR_REGEX = new RegExp(
     `(${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|${VARIABLE_REGEX.source})`
 );
 
-const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
+const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
 const FUNC_TOKEN_REGEX = new RegExp(`^${FUNC_REGEX.source}$`);
+const RELATION_TOKEN_REGEX = new RegExp(`^(.*)\\s+(${RELATION_REGEX.source})\\s+(.*)$`);
+const LOGIC_TOKEN_REGEX = new RegExp(`^(.*)\\s+(${LOGIC_REGEX.source})\\s+(.*)$`);
+
 const ARGUMENT_LT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_LIST_REGEX.source}$`);
 const EXPR_TOKEN_REGEX = new RegExp(`^${EXPR_REGEX.source}`);
 
@@ -42,11 +45,11 @@ const DOT_SEPERATED_TOKEN_REGEX = new RegExp(`^(${EXPR_REGEX.source}|(,))`);
 
 function funcArguments(input) {
     let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
-    if(matched[2] === '') {
+    if(matched[1] === '') {
         return [];
     }
 
-    return dotSeperated(matched[2]);
+    return dotSeperated(matched[1]);
 }
 
 function dotSeperated(input, x = '', acc = []) {
@@ -75,7 +78,7 @@ function dotSeperated(input, x = '', acc = []) {
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
         let matched = TEXT_TOKEN_REGEX.exec(input);
-        return matched === null ? null : matched[2];
+        return matched === null ? null : matched[1];
     }],
     ['number', function(input) {
         let matched = NUMBERT_TOKEN_REGEX.exec(input);
@@ -98,11 +101,11 @@ const TOKEN_TESTERS = new Map([
         return matched === null ? null : ['not', matched[1]];
     }],    
     ['logic', function(input) {
-        let matched = /^(.*)\s+(and|or)\s+(.*)$/.exec(input);
+        let matched = LOGIC_TOKEN_REGEX.exec(input);
         return matched === null ? null : [matched[1], matched[2], matched[3]];
     }],
     ['relation', function(input) {
-        let matched = /^(.*)\s+(==|!=|>=|<=|>|<)\s+(.*)$/.exec(input);
+        let matched = RELATION_TOKEN_REGEX.exec(input);
         return matched === null ? null : [matched[1], matched[2], matched[3]];
     }],
     ['postfixExprTokens', function(input) {
