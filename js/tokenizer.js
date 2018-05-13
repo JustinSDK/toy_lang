@@ -134,7 +134,7 @@ class TokenTester {
     }
 }
 
-class Statement {
+class StmtTokenizer {
     constructor(type, tokens) {
         this.type = type;
         this.tokens = tokens;
@@ -142,7 +142,7 @@ class Statement {
     }
 }
 
-class EmptyStatement extends Statement {
+class EmptyStmtTokenizer extends StmtTokenizer {
     constructor(type, tokens) {
         super(type, tokens);
     }
@@ -152,7 +152,7 @@ class EmptyStatement extends Statement {
     }
 }
 
-class AssignStatement extends Statement {
+class AssignStmtTokenizer extends StmtTokenizer {
     constructor(type, tokens) {
         super(type, tokens);
     }
@@ -170,7 +170,7 @@ class AssignStatement extends Statement {
     }
 }
 
-class OneArgStatement extends Statement {
+class OneArgStmtTokenizer extends StmtTokenizer {
     constructor(type, tokens) {
         super(type, tokens);
     }
@@ -188,7 +188,7 @@ class OneArgStatement extends Statement {
     }
 }
 
-class FuncallStatement extends Statement {
+class FuncallStmtTokenizer extends StmtTokenizer {
     constructor(type, tokens) {
         super(type, tokens);
     }
@@ -218,30 +218,30 @@ class Tokenizer {
                         .filter(line => line !== '')
                         .map(line => {
                             if(line.startsWith('end')) {
-                                return new EmptyStatement('end', [line]);
+                                return new EmptyStmtTokenizer('end', [line]);
                             }
 
                             if(line.startsWith('else')) {
-                                return new EmptyStatement('else', [line]);
+                                return new EmptyStmtTokenizer('else', [line]);
                             }
                             
                             let assign = ASSIGN_REGEX.exec(line);
                             if(assign) {
-                                return new AssignStatement('assign', [assign[1], assign[2], assign[3]]);
+                                return new AssignStmtTokenizer('assign', [assign[1], assign[2], assign[3]]);
                             }
 
                             let funcall = FUNC_TOKEN_REGEX.exec(line);
                             if(funcall) {
-                                return new FuncallStatement('funcall', [funcall[2], funcall[3]]);
+                                return new FuncallStmtTokenizer('funcall', [funcall[2], funcall[3]]);
                             }
 
                             let reTurn = /^return\s*(.*)$/.exec(line);
                             if(reTurn) {
-                                return new OneArgStatement('return', ['return', reTurn[1]]);
+                                return new OneArgStmtTokenizer('return', ['return', reTurn[1]]);
                             }
 
                             let command = /^(\w+)\s+(.*)$/.exec(line);
-                            return new OneArgStatement(command[1], [command[1], command[2]]);
+                            return new OneArgStmtTokenizer(command[1], [command[1], command[2]]);
                         });
     }
 }
