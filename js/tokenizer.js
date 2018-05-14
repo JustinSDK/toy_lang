@@ -140,20 +140,21 @@ class TokenTester {
 }
 
 class StmtTokenizer {
-    constructor(type, tokens) {
+    constructor(type, tokens, lineNumber) {
         this.type = type;
         this.tokens = tokens;
+        this.lineNumber = lineNumber;
         this.tokenTester = new TokenTester(this);
     }
 
     toString() {
-        return this.tokens.join(' ');
+        return `line ${this.lineNumber}\t${this.tokens.join(' ')}`;
     }
 }
 
 class EmptyStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens) {
-        super(type, tokens);
+    constructor(type, tokens, lineNumber) {
+        super(type, tokens, lineNumber);
     }
 
     matchingValue() {
@@ -162,8 +163,8 @@ class EmptyStmtTokenizer extends StmtTokenizer {
 }
 
 class AssignStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens) {
-        super(type, tokens);
+    constructor(type, tokens, lineNumber) {
+        super(type, tokens, lineNumber);
     }
 
     variableName() {
@@ -180,8 +181,8 @@ class AssignStmtTokenizer extends StmtTokenizer {
 }
 
 class OneArgStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens) {
-        super(type, tokens);
+    constructor(type, tokens, lineNumber) {
+        super(type, tokens, lineNumber);
     }
 
     funcName() {
@@ -198,8 +199,8 @@ class OneArgStmtTokenizer extends StmtTokenizer {
 }
 
 class FuncallStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens) {
-        super(type, tokens);
+    constructor(type, tokens, lineNumber) {
+        super(type, tokens, lineNumber);
     }
 
     funcName() {
@@ -224,33 +225,39 @@ class Tokenizer {
     tokenize() {
         return this.code.trim().split('\n')
                         .map(line => line.trim())
-                        .filter(line => line !== '' && !line.startsWith("#")) // A comment starts with #
+                        .map((line, idx) => {
+                            return {
+                                code   : line,
+                                number : idx + 1
+                            };
+                        })
+                        .filter(line => line.code !== '' && !line.code.startsWith("#")) // A comment starts with #
                         .map(line => {
-                            if(line.startsWith('end')) {
-                                return new EmptyStmtTokenizer('end', [line]);
+                            if(line.code.startsWith('end')) {
+                                return new EmptyStmtTokenizer('end', [line.code], line.number);
                             }
 
-                            if(line.startsWith('else')) {
-                                return new EmptyStmtTokenizer('else', [line]);
+                            if(line.code.startsWith('else')) {
+                                return new EmptyStmtTokenizer('else', [line.code], line.number);
                             }
                             
-                            let assign = ASSIGN_REGEX.exec(line);
+                            let assign = ASSIGN_REGEX.exec(line.code);
                             if(assign) {
-                                return new AssignStmtTokenizer('assign', [assign[1], assign[2], assign[3]]);
+                                return new AssignStmtTokenizer('assign', [assign[1], assign[2], assign[3]], line.number);
                             }
 
-                            let funcall = FUNC_TOKEN_REGEX.exec(line);
+                            let funcall = FUNC_TOKEN_REGEX.exec(line.code);
                             if(funcall) {
-                                return new FuncallStmtTokenizer('funcall', [funcall[2], funcall[3]]);
+                                return new FuncallStmtTokenizer('funcall', [funcall[2], funcall[3]], line.number);
                             }
 
-                            let reTurn = /^return\s*(.*)$/.exec(line);
+                            let reTurn = /^return\s*(.*)$/.exec(line.code);
                             if(reTurn) {
-                                return new OneArgStmtTokenizer('return', ['return', reTurn[1]]);
+                                return new OneArgStmtTokenizer('return', ['return', reTurn[1]], line.number);
                             }
 
-                            let command = /^(\w+)\s+(.*)$/.exec(line);
-                            return new OneArgStmtTokenizer(command[1], [command[1], command[2]]);
+                            let command = /^(\w+)\s+(.*)$/.exec(line.code);
+                            return new OneArgStmtTokenizer(command[1], [command[1], command[2]], line.number);
                         });
     }
 }

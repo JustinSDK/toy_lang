@@ -19,7 +19,7 @@ class ParserInterceptor {
                 throw ex;
             }
             let target = object.length ? object[0] : object;
-            throw new SyntaxError(`${target.toString()}`);
+            throw new SyntaxError(`\n\t${target.toString()}`);
         }
     }
 }
