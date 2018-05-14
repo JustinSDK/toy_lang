@@ -257,7 +257,11 @@ class Tokenizer {
                             }
 
                             let command = /^(\w+)\s+(.*)$/.exec(line.code);
-                            return new OneArgStmtTokenizer(command[1], [command[1], command[2]], line.number);
+                            if(command) {
+                                return new OneArgStmtTokenizer(command[1], [command[1], command[2]], line.number);
+                            }
+                            
+                            throw new SyntaxError(`\n\tline ${line.number}\t${line.code}`);
                         });
     }
 }
