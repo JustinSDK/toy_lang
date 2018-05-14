@@ -5,8 +5,23 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
+class StmtParserWrapper {
+    constructor(parser) {
+        this.parser = parser;
+    }
+
+    parse(stmtTokenizers) {
+        try {
+            return this.parser.parse(stmtTokenizers);
+        } 
+        catch(ex) {
+            throw `parsing error: ${stmtTokenizers[0].tokens.join(' ')}`;
+        }
+    }
+}
+
 const STMT_PARSERS = new Map([
-    ['sequence', {
+    ['sequence', new StmtParserWrapper({
         parse(stmtTokenizers) {
             if(stmtTokenizers.length === 0 || stmtTokenizers[0].type === 'else' || stmtTokenizers[0].type === 'end') {
                 return StmtSequence.EMPTY;
@@ -14,8 +29,8 @@ const STMT_PARSERS = new Map([
     
             return STMT_PARSERS.get(stmtTokenizers[0].type).parse(stmtTokenizers);   
         }
-    }],    
-    ['def', {
+    })],    
+    ['def', new StmtParserWrapper({
         parse(stmtTokenizers) {
             let [funcName, ...params] = stmtTokenizers[0].tokenTester.tryTokens('def');
             let remains = stmtTokenizers.slice(1);     
@@ -27,16 +42,16 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
-    }],   
-    ['return', {
+    })],   
+    ['return', new StmtParserWrapper({
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Return(stmtTokenizers[0].tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizers[0].tokenTester)),
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    }],      
-    ['funcall', {
+    })],      
+    ['funcall', new StmtParserWrapper({
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new FunCallWrapper(
@@ -48,8 +63,8 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    }],        
-    ['assign', {
+    })],        
+    ['assign', new StmtParserWrapper({
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Assign(
@@ -59,8 +74,8 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    }],
-    ['if', {
+    })],
+    ['if', new StmtParserWrapper({
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
             let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
@@ -79,8 +94,8 @@ const STMT_PARSERS = new Map([
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
-    }],
-    ['while', {
+    })],
+    ['while', new StmtParserWrapper({
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
             return new StmtSequence(
@@ -91,7 +106,7 @@ const STMT_PARSERS = new Map([
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
-    }]
+    })]
 ]);
 
 function matchingElseIdx(stmt, i = 1) {
@@ -208,11 +223,17 @@ function reduce(stack, token) {
 }
 
 class Parser {
-    constructor(tokenizer) {
-        this.tokenizer = tokenizer;
+    constructor(environment) {
+        this.environment = environment;  
     }
 
-    parse() {
-        return STMT_PARSERS.get('sequence').parse(this.tokenizer.tokenize());
+    parse(tokenizer) {
+        try {
+            return STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
+        }
+        catch(ex) {
+            this.environment.output(ex);
+            throw ex;
+        }
     }
 }

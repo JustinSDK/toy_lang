@@ -117,8 +117,8 @@ print('Hello World')</textarea> <br>
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        new Parser(new Tokenizer(code))
-                .parse()
+        new Parser(ENVIRONMENT)
+                .parse(new Tokenizer(code))
                 .evaluate(Context.initialize(ENVIRONMENT));
     });
 </script> </body>
