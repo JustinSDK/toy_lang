@@ -117,7 +117,7 @@ const TOKEN_TESTERS = new Map([
 ]);
 
 class TokenTester {
-    constructor(stmtTokenizer, input) {
+    constructor(stmtTokenizer, input = stmtTokenizer.matchingValue()) {
         this.stmtTokenizer = stmtTokenizer;
         this.input = input;
     }
@@ -143,7 +143,7 @@ class StmtTokenizer {
     constructor(type, tokens) {
         this.type = type;
         this.tokens = tokens;
-        this.tokenTester = new TokenTester(this, this.matchingValue());
+        this.tokenTester = new TokenTester(this);
     }
 
     toString() {
