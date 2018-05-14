@@ -10,12 +10,13 @@ class ParserInterceptor {
         this.parser = parser;
     }
 
-    parse(stmtTokenizers) {
+    parse(object) {
         try {
-            return this.parser.parse(stmtTokenizers);
+            return this.parser.parse(object);
         } 
         catch(ex) {
-            throw `parsing error: ${stmtTokenizers[0].tokens.join(' ')}`;
+            let target = object.length ? object[0] : object;
+            throw `parsing error: ${target.toString()}`;
         }
     }
 }
@@ -129,13 +130,13 @@ function linesAfterCurrentBlock(stmtTokenizers, end = 1) {
 }
 
 const VALUE_PARSERS = new Map([
-    ['value', {
+    ['value', new ParserInterceptor({
         parse(tokenTester) {
             // pattern matching from text
             return VALUE_PARSERS.get('text').parse(tokenTester);
         }
-    }],
-    ['text', {
+    })],
+    ['text', new ParserInterceptor({
         parse(tokenTester) {
             let text = tokenTester.tryToken('text');
             return text === null ? 
@@ -150,26 +151,26 @@ const VALUE_PARSERS = new Map([
                                     .replace(/\\'/g, '\'')
                       );
         }
-    }],
-    ['num', {
+    })],
+    ['num', new ParserInterceptor({
         parse(tokenTester) {
             let number = tokenTester.tryToken('number');
             return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Value(parseFloat(number));
         }        
-    }],
-    ['boolean', {
+    })],
+    ['boolean', new ParserInterceptor({
         parse(tokenTester) {
             let boolean = tokenTester.tryToken('boolean');
             return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Value(boolean === 'true');
         }        
-    }],    
-    ['variable', {
+    })],    
+    ['variable', new ParserInterceptor({
         parse(tokenTester) {
             let variable = tokenTester.tryToken('variable');
             return variable === null ?  VALUE_PARSERS.get('funcall').parse(tokenTester) : new Variable(variable);
         }
-    }],
-    ['funcall', {
+    })],
+    ['funcall', new ParserInterceptor({
         parse(tokenTester) {
             let funcallTokens = tokenTester.tryTokens('funcall');
             if(funcallTokens) {
@@ -182,8 +183,8 @@ const VALUE_PARSERS = new Map([
 
             return VALUE_PARSERS.get('expression').parse(tokenTester);
         }        
-    }],    
-    ['expression', {
+    })],    
+    ['expression', new ParserInterceptor({
         parse(tokenTester) {
             let tokens = tokenTester.tryTokens('postfixExprTokens');
             return tokens.reduce((stack, token) => {
@@ -204,7 +205,7 @@ const VALUE_PARSERS = new Map([
                 );
             }, new Stack()).top;
         }
-    }]
+    })]
 ]);
 
 function isOperator(token) {        
