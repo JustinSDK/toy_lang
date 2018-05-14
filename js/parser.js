@@ -5,7 +5,7 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
-class StmtParserWrapper {
+class ParserInterceptor {
     constructor(parser) {
         this.parser = parser;
     }
@@ -21,7 +21,7 @@ class StmtParserWrapper {
 }
 
 const STMT_PARSERS = new Map([
-    ['sequence', new StmtParserWrapper({
+    ['sequence', new ParserInterceptor({
         parse(stmtTokenizers) {
             if(stmtTokenizers.length === 0 || stmtTokenizers[0].type === 'else' || stmtTokenizers[0].type === 'end') {
                 return StmtSequence.EMPTY;
@@ -30,7 +30,7 @@ const STMT_PARSERS = new Map([
             return STMT_PARSERS.get(stmtTokenizers[0].type).parse(stmtTokenizers);   
         }
     })],    
-    ['def', new StmtParserWrapper({
+    ['def', new ParserInterceptor({
         parse(stmtTokenizers) {
             let [funcName, ...params] = stmtTokenizers[0].tokenTester.tryTokens('def');
             let remains = stmtTokenizers.slice(1);     
@@ -43,7 +43,7 @@ const STMT_PARSERS = new Map([
             );
         }
     })],   
-    ['return', new StmtParserWrapper({
+    ['return', new ParserInterceptor({
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Return(stmtTokenizers[0].tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizers[0].tokenTester)),
@@ -51,7 +51,7 @@ const STMT_PARSERS = new Map([
             );
         }
     })],      
-    ['funcall', new StmtParserWrapper({
+    ['funcall', new ParserInterceptor({
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new FunCallWrapper(
@@ -64,7 +64,7 @@ const STMT_PARSERS = new Map([
             );
         }
     })],        
-    ['assign', new StmtParserWrapper({
+    ['assign', new ParserInterceptor({
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Assign(
@@ -75,7 +75,7 @@ const STMT_PARSERS = new Map([
             );
         }
     })],
-    ['if', new StmtParserWrapper({
+    ['if', new ParserInterceptor({
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
             let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
@@ -95,7 +95,7 @@ const STMT_PARSERS = new Map([
             );
         }
     })],
-    ['while', new StmtParserWrapper({
+    ['while', new ParserInterceptor({
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
             return new StmtSequence(
