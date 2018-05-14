@@ -15,8 +15,11 @@ class ParserInterceptor {
             return this.parser.parse(object);
         } 
         catch(ex) {
+            if(ex instanceof SyntaxError) {
+                throw ex;
+            }
             let target = object.length ? object[0] : object;
-            throw `parsing error: ${target.toString()}`;
+            throw new SyntaxError(`${target.toString()}`);
         }
     }
 }
