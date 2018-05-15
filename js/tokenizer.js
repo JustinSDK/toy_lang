@@ -242,7 +242,7 @@ class Tokenizer {
                                 return new FuncallStmtTokenizer('funcall', [funcall[2], funcall[3]], line.number);
                             }
 
-                            let reTurn = /^return\s*(.*)$/.exec(line.code);
+                            let reTurn = /^return\s+(.*)$/.exec(line.code);
                             if(reTurn) {
                                 return new OneArgStmtTokenizer('return', ['return', reTurn[1]], line.number);
                             }
