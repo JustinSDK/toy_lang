@@ -10,16 +10,15 @@ class ParserInterceptor {
         this.parser = parser;
     }
 
-    parse(object) {
+    parse(stmtTokenizers) {
         try {
-            return this.parser.parse(object);
+            return this.parser.parse(stmtTokenizers);
         } 
         catch(ex) {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
-            let target = object.length ? object[0] : object;
-            throw new SyntaxError(`\n\t${target.toString()}`);
+            throw new SyntaxError(`\n\t${stmtTokenizers[0].toString()}`);
         }
     }
 }
@@ -34,7 +33,7 @@ const STMT_PARSERS = new Map([
             return STMT_PARSERS.get(stmtTokenizers[0].type).parse(stmtTokenizers);   
         }
     })],    
-    ['def', new ParserInterceptor({
+    ['def', {
         parse(stmtTokenizers) {
             let [funcName, ...params] = stmtTokenizers[0].tokenTester.tryTokens('def');
             let remains = stmtTokenizers.slice(1);     
@@ -46,16 +45,16 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
-    })],   
-    ['return', new ParserInterceptor({
+    }],   
+    ['return', {
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Return(stmtTokenizers[0].tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizers[0].tokenTester)),
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    })],      
-    ['funcall', new ParserInterceptor({
+    }],      
+    ['funcall', {
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new FunCallWrapper(
@@ -67,8 +66,8 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    })],        
-    ['assign', new ParserInterceptor({
+    }],        
+    ['assign', {
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Assign(
@@ -78,8 +77,8 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    })],
-    ['if', new ParserInterceptor({
+    }],
+    ['if', {
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
             let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
@@ -98,8 +97,8 @@ const STMT_PARSERS = new Map([
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
-    })],
-    ['while', new ParserInterceptor({
+    }],
+    ['while', {
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
             return new StmtSequence(
@@ -110,7 +109,7 @@ const STMT_PARSERS = new Map([
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
             );
         }
-    })]
+    }]
 ]);
 
 function matchingElseIdx(stmt, i = 1) {
@@ -133,13 +132,13 @@ function linesAfterCurrentBlock(stmtTokenizers, end = 1) {
 }
 
 const VALUE_PARSERS = new Map([
-    ['value', new ParserInterceptor({
+    ['value', {
         parse(tokenTester) {
             // pattern matching from text
             return VALUE_PARSERS.get('text').parse(tokenTester);
         }
-    })],
-    ['text', new ParserInterceptor({
+    }],
+    ['text', {
         parse(tokenTester) {
             let text = tokenTester.tryToken('text');
             return text === null ? 
@@ -154,26 +153,26 @@ const VALUE_PARSERS = new Map([
                                     .replace(/\\'/g, '\'')
                       );
         }
-    })],
-    ['num', new ParserInterceptor({
+    }],
+    ['num', {
         parse(tokenTester) {
             let number = tokenTester.tryToken('number');
             return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Value(parseFloat(number));
         }        
-    })],
-    ['boolean', new ParserInterceptor({
+    }],
+    ['boolean', {
         parse(tokenTester) {
             let boolean = tokenTester.tryToken('boolean');
             return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Value(boolean === 'true');
         }        
-    })],    
-    ['variable', new ParserInterceptor({
+    }],    
+    ['variable', {
         parse(tokenTester) {
             let variable = tokenTester.tryToken('variable');
             return variable === null ?  VALUE_PARSERS.get('funcall').parse(tokenTester) : new Variable(variable);
         }
-    })],
-    ['funcall', new ParserInterceptor({
+    }],
+    ['funcall', {
         parse(tokenTester) {
             let funcallTokens = tokenTester.tryTokens('funcall');
             if(funcallTokens) {
@@ -186,8 +185,8 @@ const VALUE_PARSERS = new Map([
 
             return VALUE_PARSERS.get('expression').parse(tokenTester);
         }        
-    })],    
-    ['expression', new ParserInterceptor({
+    }],    
+    ['expression', {
         parse(tokenTester) {
             let tokens = tokenTester.tryTokens('postfixExprTokens');
             return tokens.reduce((stack, token) => {
@@ -208,7 +207,7 @@ const VALUE_PARSERS = new Map([
                 );
             }, new Stack()).top;
         }
-    })]
+    }]
 ]);
 
 function isOperator(token) {        
@@ -233,7 +232,8 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            return STMT_PARSERS.get('sequence').parse(tokenizer.tokenize());
+            let stmtTokenizers = tokenizer.tokenize();
+            return STMT_PARSERS.get('sequence').parse(stmtTokenizers);
         }
         catch(ex) {
             this.environment.output(ex);
