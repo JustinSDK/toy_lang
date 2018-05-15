@@ -116,14 +116,14 @@ const TOKEN_TESTERS = new Map([
     }]
 ]);
 
-class TokenTester {
+class ValueTester {
     constructor(stmtTokenizer, input = stmtTokenizer.matchingValue()) {
         this.stmtTokenizer = stmtTokenizer;
         this.input = input;
     }
 
-    tokenTester(input) {
-        return new TokenTester(this.stmtTokenizer, input);
+    valueTester(input) {
+        return new ValueTester(this.stmtTokenizer, input);
     }
 
     tryToken(type) {
@@ -144,7 +144,7 @@ class StmtTokenizer {
         this.type = type;
         this.tokens = tokens;
         this.lineNumber = lineNumber;
-        this.tokenTester = new TokenTester(this);
+        this.valueTester = new ValueTester(this);
     }
 
     toString() {
@@ -213,7 +213,7 @@ class FuncallStmtTokenizer extends StmtTokenizer {
 
     args() {
         let argTokens = funcArguments(this.matchingValue());
-        return argTokens.map(token => new TokenTester(this, token));
+        return argTokens.map(token => new ValueTester(this, token));
     }
 }
 

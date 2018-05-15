@@ -35,7 +35,7 @@ const STMT_PARSERS = new Map([
     })],    
     ['def', {
         parse(stmtTokenizers) {
-            let [funcName, ...params] = stmtTokenizers[0].tokenTester.tryTokens('def');
+            let [funcName, ...params] = stmtTokenizers[0].valueTester.tryTokens('def');
             let remains = stmtTokenizers.slice(1);     
             return new StmtSequence(
                 new Assign(
@@ -49,7 +49,7 @@ const STMT_PARSERS = new Map([
     ['return', {
         parse(stmtTokenizers) {
             return new StmtSequence(
-                new Return(stmtTokenizers[0].tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizers[0].tokenTester)),
+                new Return(stmtTokenizers[0].tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizers[0].valueTester)),
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
@@ -60,7 +60,7 @@ const STMT_PARSERS = new Map([
                 new FunCallWrapper(
                     new FunCall(
                         new Variable(stmtTokenizers[0].funcName()), 
-                        stmtTokenizers[0].args().map(tokenTester => VALUE_PARSERS.get('value').parse(tokenTester))
+                        stmtTokenizers[0].args().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
                     )
                 ),
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
@@ -72,7 +72,7 @@ const STMT_PARSERS = new Map([
             return new StmtSequence(
                 new Assign(
                     new Variable(stmtTokenizers[0].variableName()), 
-                    VALUE_PARSERS.get('value').parse(stmtTokenizers[0].tokenTester)
+                    VALUE_PARSERS.get('value').parse(stmtTokenizers[0].valueTester)
                 ),
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
@@ -90,7 +90,7 @@ const STMT_PARSERS = new Map([
 
             return new StmtSequence(
                  new If(
-                    VALUE_PARSERS.get('boolean').parse(stmtTokenizers[0].tokenTester), 
+                    VALUE_PARSERS.get('boolean').parse(stmtTokenizers[0].valueTester), 
                     trueStmt,
                     falseStmt
                  ),
@@ -103,7 +103,7 @@ const STMT_PARSERS = new Map([
             let remains = stmtTokenizers.slice(1);     
             return new StmtSequence(
                  new While(
-                    VALUE_PARSERS.get('boolean').parse(stmtTokenizers[0].tokenTester), 
+                    VALUE_PARSERS.get('boolean').parse(stmtTokenizers[0].valueTester), 
                     STMT_PARSERS.get('sequence').parse(remains)
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
@@ -133,16 +133,16 @@ function linesAfterCurrentBlock(stmtTokenizers, end = 1) {
 
 const VALUE_PARSERS = new Map([
     ['value', {
-        parse(tokenTester) {
+        parse(valueTester) {
             // pattern matching from text
-            return VALUE_PARSERS.get('text').parse(tokenTester);
+            return VALUE_PARSERS.get('text').parse(valueTester);
         }
     }],
     ['text', {
-        parse(tokenTester) {
-            let text = tokenTester.tryToken('text');
+        parse(valueTester) {
+            let text = valueTester.tryToken('text');
             return text === null ? 
-                      VALUE_PARSERS.get('num').parse(tokenTester) : 
+                      VALUE_PARSERS.get('num').parse(valueTester) : 
                       new Value(text.replace(/^\\r/, '\r')
                                     .replace(/^\\n/, '\n')
                                     .replace(/([^\\])\\r/g, '$1\r')
@@ -155,55 +155,55 @@ const VALUE_PARSERS = new Map([
         }
     }],
     ['num', {
-        parse(tokenTester) {
-            let number = tokenTester.tryToken('number');
-            return number === null ? VALUE_PARSERS.get('boolean').parse(tokenTester) : new Value(parseFloat(number));
+        parse(valueTester) {
+            let number = valueTester.tryToken('number');
+            return number === null ? VALUE_PARSERS.get('boolean').parse(valueTester) : new Value(parseFloat(number));
         }        
     }],
     ['boolean', {
-        parse(tokenTester) {
-            let boolean = tokenTester.tryToken('boolean');
-            return boolean === null ? VALUE_PARSERS.get('variable').parse(tokenTester) : new Value(boolean === 'true');
+        parse(valueTester) {
+            let boolean = valueTester.tryToken('boolean');
+            return boolean === null ? VALUE_PARSERS.get('variable').parse(valueTester) : new Value(boolean === 'true');
         }        
     }],    
     ['variable', {
-        parse(tokenTester) {
-            let variable = tokenTester.tryToken('variable');
-            return variable === null ?  VALUE_PARSERS.get('funcall').parse(tokenTester) : new Variable(variable);
+        parse(valueTester) {
+            let variable = valueTester.tryToken('variable');
+            return variable === null ?  VALUE_PARSERS.get('funcall').parse(valueTester) : new Variable(variable);
         }
     }],
     ['funcall', {
-        parse(tokenTester) {
-            let funcallTokens = tokenTester.tryTokens('funcall');
+        parse(valueTester) {
+            let funcallTokens = valueTester.tryTokens('funcall');
             if(funcallTokens) {
                 let [fName, ...args] = funcallTokens;
                 return new FunCall(
                     new Variable(fName), 
-                    args.map(arg => VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(arg)))
+                    args.map(arg => VALUE_PARSERS.get('value').parse(valueTester.valueTester(arg)))
                 )
             }
 
-            return VALUE_PARSERS.get('expression').parse(tokenTester);
+            return VALUE_PARSERS.get('expression').parse(valueTester);
         }        
     }],    
     ['expression', {
-        parse(tokenTester) {
-            let tokens = tokenTester.tryTokens('postfixExprTokens');
+        parse(valueTester) {
+            let tokens = valueTester.tryTokens('postfixExprTokens');
             return tokens.reduce((stack, token) => {
                 if(isOperator(token)) {
                     return reduce(stack, token);
                 } 
                 else if(token.startsWith('not')) {
-                    let [not, operand] = tokenTester.tokenTester(token).tryTokens('not');
+                    let [not, operand] = valueTester.valueTester(token).tryTokens('not');
                     let NotOperator = UNARY_OPERATORS.get(not);
                     return stack.push(
                         new NotOperator(
-                            VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(operand))
+                            VALUE_PARSERS.get('value').parse(valueTester.valueTester(operand))
                         )
                     );
                 }
                 return stack.push(
-                    VALUE_PARSERS.get('value').parse(tokenTester.tokenTester(token))
+                    VALUE_PARSERS.get('value').parse(valueTester.valueTester(token))
                 );
             }, new Stack()).top;
         }
