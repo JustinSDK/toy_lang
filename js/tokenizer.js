@@ -180,16 +180,8 @@ class OneArgStmtTokenizer extends StmtTokenizer {
         super(type, tokens, lineNumber);
     }
 
-    funcName() {
-        return this.tokens[0];
-    }    
-
-    argument() {
-        return this.tokens[1];
-    }
-
     matchingValue() {
-        return this.argument();
+        return this.tokens[1];
     }
 }
 
