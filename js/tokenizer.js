@@ -221,7 +221,7 @@ class Tokenizer {
         this.code = code;
     }
 
-    tokenize() {
+    stmtTokenizers() {
         return this.code.trim().split('\n')
                         .map(line => line.trim())
                         .map((line, idx) => {

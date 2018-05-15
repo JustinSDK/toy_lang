@@ -232,7 +232,7 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            let stmtTokenizers = tokenizer.tokenize();
+            let stmtTokenizers = tokenizer.stmtTokenizers();
             return STMT_PARSERS.get('sequence').parse(stmtTokenizers);
         }
         catch(ex) {
