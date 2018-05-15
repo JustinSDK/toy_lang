@@ -132,10 +132,6 @@ class ValueTester {
     tryTokens(type) {
         return TOKEN_TESTERS.get(type)(this.value);
     }
-
-    toString() {
-        return this.stmtTokenizer.toString();
-    }
 }
 
 class StmtTokenizer {
