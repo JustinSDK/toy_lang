@@ -228,12 +228,8 @@ class Tokenizer {
                         })
                         .filter(line => line.code !== '' && !line.code.startsWith("#")) // A comment starts with #
                         .map(line => {
-                            if(line.code.startsWith('end')) {
-                                return new EmptyStmtTokenizer('end', [line.code], line.number);
-                            }
-
-                            if(line.code.startsWith('else')) {
-                                return new EmptyStmtTokenizer('else', [line.code], line.number);
+                            if(line.code.startsWith('end') || line.code.startsWith('else')) {
+                                return new EmptyStmtTokenizer(line.code, [line.code], line.number);
                             }
                             
                             let assign = ASSIGN_REGEX.exec(line.code);
