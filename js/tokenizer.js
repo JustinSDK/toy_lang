@@ -175,7 +175,7 @@ class AssignStmtTokenizer extends StmtTokenizer {
     }
 }
 
-class OneArgStmtTokenizer extends StmtTokenizer {
+class CommandStmtTokenizer extends StmtTokenizer {
     constructor(type, tokens, lineNumber) {
         super(type, tokens, lineNumber);
     }
@@ -236,7 +236,7 @@ class Tokenizer {
 
                             let command = /^(\w+)\s+(.*)$/.exec(line.code);
                             if(command) {
-                                return new OneArgStmtTokenizer(command[1], [command[1], command[2]], line.number);
+                                return new CommandStmtTokenizer(command[1], [command[1], command[2]], line.number);
                             }
                             
                             throw new SyntaxError(`\n\tline ${line.number}\t${line.code}`);
