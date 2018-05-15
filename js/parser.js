@@ -32,7 +32,31 @@ const STMT_PARSERS = new Map([
     
             return STMT_PARSERS.get(stmtTokenizers[0].type).parse(stmtTokenizers);   
         }
-    })],    
+    })], 
+    ['=', {
+        parse(stmtTokenizers) {
+            return new StmtSequence(
+                new Assign(
+                    new Variable(stmtTokenizers[0].variableName()), 
+                    VALUE_PARSERS.get('value').parse(stmtTokenizers[0].valueTester)
+                ),
+                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
+            );
+        }
+    }],      
+    ['funcall', {
+        parse(stmtTokenizers) {
+            return new StmtSequence(
+                new FunCallWrapper(
+                    new FunCall(
+                        new Variable(stmtTokenizers[0].funcName()), 
+                        stmtTokenizers[0].argsAsValueTesters().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
+                    )
+                ),
+                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
+            );
+        }
+    }],        
     ['def', {
         parse(stmtTokenizers) {
             let [funcName, ...params] = stmtTokenizers[0].valueTester.tryTokens('def');
@@ -53,31 +77,7 @@ const STMT_PARSERS = new Map([
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
             );
         }
-    }],      
-    ['funcall', {
-        parse(stmtTokenizers) {
-            return new StmtSequence(
-                new FunCallWrapper(
-                    new FunCall(
-                        new Variable(stmtTokenizers[0].funcName()), 
-                        stmtTokenizers[0].argsAsValueTesters().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
-                    )
-                ),
-                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
-            );
-        }
-    }],        
-    ['=', {
-        parse(stmtTokenizers) {
-            return new StmtSequence(
-                new Assign(
-                    new Variable(stmtTokenizers[0].variableName()), 
-                    VALUE_PARSERS.get('value').parse(stmtTokenizers[0].valueTester)
-                ),
-                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
-            );
-        }
-    }],
+    }],           
     ['if', {
         parse(stmtTokenizers) {
             let remains = stmtTokenizers.slice(1);     
