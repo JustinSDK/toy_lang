@@ -60,7 +60,7 @@ const STMT_PARSERS = new Map([
                 new FunCallWrapper(
                     new FunCall(
                         new Variable(stmtTokenizers[0].funcName()), 
-                        stmtTokenizers[0].args().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
+                        stmtTokenizers[0].argsAsValueTesters().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
                     )
                 ),
                 STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
