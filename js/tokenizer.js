@@ -234,17 +234,12 @@ class Tokenizer {
                             
                             let assign = ASSIGN_REGEX.exec(line.code);
                             if(assign) {
-                                return new AssignStmtTokenizer('assign', [assign[1], assign[2], assign[3]], line.number);
+                                return new AssignStmtTokenizer('=', [assign[1], assign[2], assign[3]], line.number);
                             }
 
                             let funcall = FUNC_TOKEN_REGEX.exec(line.code);
                             if(funcall) {
                                 return new FuncallStmtTokenizer('funcall', [funcall[2], funcall[3]], line.number);
-                            }
-
-                            let reTurn = /^return\s+(.*)$/.exec(line.code);
-                            if(reTurn) {
-                                return new OneArgStmtTokenizer('return', ['return', reTurn[1]], line.number);
                             }
 
                             let command = /^(\w+)\s+(.*)$/.exec(line.code);

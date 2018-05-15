@@ -67,7 +67,7 @@ const STMT_PARSERS = new Map([
             );
         }
     }],        
-    ['assign', {
+    ['=', {
         parse(stmtTokenizers) {
             return new StmtSequence(
                 new Assign(
