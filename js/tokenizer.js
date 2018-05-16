@@ -92,7 +92,7 @@ const TOKEN_TESTERS = new Map([
         return matched === null ? null : input;
     }],
     ['funcall', function(input) {
-        let matched = FUNC_TOKEN_REGEX.exec(input);;
+        let matched = FUNC_TOKEN_REGEX.exec(input);
         return matched === null ? null : [matched[2]].concat(funcArguments(matched[3]));
     }],
     ['not', function(input) {
@@ -113,6 +113,14 @@ const TOKEN_TESTERS = new Map([
     ['def', function(input) {
         let matched = FUNC_TOKEN_REGEX.exec(input);
         return [matched[2]].concat(matched[4] === '' ? [] : matched[4].split(/,\s*/));
+    }],
+    ['assign', function(input) {
+        let matched = ASSIGN_REGEX.exec(input);
+        return matched === null ? null : [matched[1], matched[2], matched[3]];
+    }],
+    ['command', function(input) {
+        let matched = /^(\w+)\s+(.*)$/.exec(input);
+        return matched === null ? null : [matched[1], matched[2]];
     }]
 ]);
 
@@ -135,21 +143,23 @@ class ValueTester {
 }
 
 class StmtTokenizer {
-    constructor(type, tokens, lineNumber) {
-        this.type = type;
-        this.tokens = tokens;
-        this.lineNumber = lineNumber;
-        this.valueTester = new ValueTester(this.matchingValue());
+    constructor(line) {
+        this.line = line;
+    }
+
+    get valueTester() {
+        return new ValueTester(this.matchingValue())
     }
 
     toString() {
-        return `line ${this.lineNumber}\t${this.tokens.join(' ')}`;
+        return `line ${this.line.lineNumber}\t${this.line.code}`;
     }
 }
 
 class EmptyStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens, lineNumber) {
-        super(type, tokens, lineNumber);
+    constructor(line) {
+        super(line);
+        this.type = line.code;
     }
 
     matchingValue() {
@@ -158,26 +168,26 @@ class EmptyStmtTokenizer extends StmtTokenizer {
 }
 
 class AssignStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens, lineNumber) {
-        super(type, tokens, lineNumber);
+    constructor(line) {
+        super(line);
+        this.tokens = line.tryTokens('assign');
+        this.type = '=';
     }
 
     variableName() {
         return this.tokens[0];
     }
 
-    assigned() {
-        return this.tokens[2];
-    }
-
     matchingValue() {
-        return this.assigned();
+        return this.tokens[2];
     }
 }
 
 class CommandStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens, lineNumber) {
-        super(type, tokens, lineNumber);
+    constructor(line) {
+        super(line);
+        this.tokens = line.tryTokens('command');
+        this.type = this.tokens[0];
     }
 
     matchingValue() {
@@ -186,21 +196,53 @@ class CommandStmtTokenizer extends StmtTokenizer {
 }
 
 class FuncallStmtTokenizer extends StmtTokenizer {
-    constructor(type, tokens, lineNumber) {
-        super(type, tokens, lineNumber);
+    constructor(line) {
+        super(line);
+        this.tokens = FUNC_TOKEN_REGEX.exec(line.code);;
+        this.type = 'funcall';
     }
 
     funcName() {
-        return this.tokens[0];
+        return this.tokens[2];
     }    
 
     matchingValue() {
-        return this.tokens[1];
+        return this.tokens[3];
     }
 
     argsAsValueTesters() {
         let argTokens = funcArguments(this.matchingValue());
         return argTokens.map(token => new ValueTester(token));
+    }
+}
+
+class Line {
+    constructor(code, number) {
+        this.code = code;
+        this.number = number;
+    }
+
+    tryTokens(type) {
+        return TOKEN_TESTERS.get(type)(this.code);
+    }
+
+    stmtTokenizer() {
+        let assign = ASSIGN_REGEX.exec(this.code);
+        if(assign) {
+            return new AssignStmtTokenizer(this);
+        }
+
+        let funcall = FUNC_TOKEN_REGEX.exec(this.code);
+        if(funcall) {
+            return new FuncallStmtTokenizer(this);
+        }
+
+        let command = /^(\w+)\s+(.*)$/.exec(this.code);
+        if(command) {
+            return new CommandStmtTokenizer(this);
+        }
+        
+        throw new SyntaxError(`\n\tline ${this.number}\t${this.code}`);
     }
 }
 
@@ -212,35 +254,8 @@ class Tokenizer {
     stmtTokenizers() {
         return this.code.trim().split('\n')
                         .map(line => line.trim())
-                        .map((line, idx) => {
-                            return {
-                                code   : line,
-                                number : idx + 1
-                            };
-                        })
-                        .filter(line => line.code !== '' && !line.code.startsWith("#")) // A comment starts with #
-                        .map(line => {
-                            if(line.code.startsWith('end') || line.code.startsWith('else')) {
-                                return new EmptyStmtTokenizer(line.code, [line.code], line.number);
-                            }
-                            
-                            let assign = ASSIGN_REGEX.exec(line.code);
-                            if(assign) {
-                                return new AssignStmtTokenizer('=', [assign[1], assign[2], assign[3]], line.number);
-                            }
-
-                            let funcall = FUNC_TOKEN_REGEX.exec(line.code);
-                            if(funcall) {
-                                return new FuncallStmtTokenizer('funcall', [funcall[2], funcall[3]], line.number);
-                            }
-
-                            let command = /^(\w+)\s+(.*)$/.exec(line.code);
-                            if(command) {
-                                return new CommandStmtTokenizer(command[1], [command[1], command[2]], line.number);
-                            }
-                            
-                            throw new SyntaxError(`\n\tline ${line.number}\t${line.code}`);
-                        });
+                        .map((line, idx) => new Line(line, idx + 1))
+                        .filter(line => line.code !== '' && !line.code.startsWith("#")); // A comment starts with #
     }
 }
 

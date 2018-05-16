@@ -10,57 +10,60 @@ class ParserInterceptor {
         this.parser = parser;
     }
 
-    parse(stmtTokenizers) {
+    parse(lines) {
         try {
-            return this.parser.parse(stmtTokenizers);
+            return this.parser.parse(lines);
         } 
         catch(ex) {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
-            throw new SyntaxError(`\n\t${stmtTokenizers[0].toString()}`);
+            throw new SyntaxError(`\n\t${lines[0].toString()}`);
         }
     }
 }
 
 const STMT_PARSERS = new Map([
     ['sequence', new ParserInterceptor({
-        parse(stmtTokenizers) {
-            if(stmtTokenizers.length === 0 || stmtTokenizers[0].type === 'else' || stmtTokenizers[0].type === 'end') {
+        parse(lines) {
+            if(lines.length === 0 || lines[0].code === 'else' || lines[0].code === 'end') {
                 return StmtSequence.EMPTY;
             }
     
-            return STMT_PARSERS.get(stmtTokenizers[0].type).parse(stmtTokenizers);   
+            return STMT_PARSERS.get(lines[0].stmtTokenizer().type).parse(lines);   
         }
     })], 
     ['=', {
-        parse(stmtTokenizers) {
+        parse(lines) {
+            let stmtTokenizer = lines[0].stmtTokenizer();
             return new StmtSequence(
                 new Assign(
-                    new Variable(stmtTokenizers[0].variableName()), 
-                    VALUE_PARSERS.get('value').parse(stmtTokenizers[0].valueTester)
+                    new Variable(stmtTokenizer.variableName()), 
+                    VALUE_PARSERS.get('value').parse(stmtTokenizer.valueTester)
                 ),
-                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
+                STMT_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],      
     ['funcall', {
-        parse(stmtTokenizers) {
+        parse(lines) {
+            let stmtTokenizer = lines[0].stmtTokenizer();
             return new StmtSequence(
                 new FunCallWrapper(
                     new FunCall(
-                        new Variable(stmtTokenizers[0].funcName()), 
-                        stmtTokenizers[0].argsAsValueTesters().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
+                        new Variable(stmtTokenizer.funcName()), 
+                        stmtTokenizer.argsAsValueTesters().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
                     )
                 ),
-                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
+                STMT_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],        
     ['def', {
-        parse(stmtTokenizers) {
-            let [funcName, ...params] = stmtTokenizers[0].valueTester.tryTokens('def');
-            let remains = stmtTokenizers.slice(1);     
+        parse(lines) {
+            let stmtTokenizer = lines[0].stmtTokenizer();
+            let [funcName, ...params] = stmtTokenizer.valueTester.tryTokens('def');
+            let remains = lines.slice(1);     
             return new StmtSequence(
                 new Assign(
                     new Variable(funcName), 
@@ -71,26 +74,28 @@ const STMT_PARSERS = new Map([
         }
     }],   
     ['return', {
-        parse(stmtTokenizers) {
+        parse(lines) {
+            let stmtTokenizer = lines[0].stmtTokenizer();
             return new StmtSequence(
-                new Return(stmtTokenizers[0].tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizers[0].valueTester)),
-                STMT_PARSERS.get('sequence').parse(stmtTokenizers.slice(1))
+                new Return(stmtTokenizer.tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizer.valueTester)),
+                STMT_PARSERS.get('sequence').parse(lines.slice(1))
             );
         }
     }],           
     ['if', {
-        parse(stmtTokenizers) {
-            let remains = stmtTokenizers.slice(1);     
+        parse(lines) {
+            let stmtTokenizer = lines[0].stmtTokenizer();
+            let remains = lines.slice(1);     
             let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
 
             let i = matchingElseIdx(trueStmt);
-            let falseStmt = remains[i].type === 'else' ? 
+            let falseStmt = remains[i].code === 'else' ? 
                     STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
                     StmtSequence.EMPTY;
 
             return new StmtSequence(
                  new If(
-                    VALUE_PARSERS.get('boolean').parse(stmtTokenizers[0].valueTester), 
+                    VALUE_PARSERS.get('boolean').parse(stmtTokenizer.valueTester), 
                     trueStmt,
                     falseStmt
                  ),
@@ -99,11 +104,12 @@ const STMT_PARSERS = new Map([
         }
     }],
     ['while', {
-        parse(stmtTokenizers) {
-            let remains = stmtTokenizers.slice(1);     
+        parse(lines) {
+            let stmtTokenizer = lines[0].stmtTokenizer();
+            let remains = lines.slice(1);     
             return new StmtSequence(
                  new While(
-                    VALUE_PARSERS.get('boolean').parse(stmtTokenizers[0].valueTester), 
+                    VALUE_PARSERS.get('boolean').parse(stmtTokenizer.valueTester), 
                     STMT_PARSERS.get('sequence').parse(remains)
                  ),
                  STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
@@ -119,16 +125,24 @@ function matchingElseIdx(stmt, i = 1) {
     return matchingElseIdx(stmt.secondStmt, i + 1);
 }
 
-function linesAfterCurrentBlock(stmtTokenizers, end = 1) {
+function linesAfterCurrentBlock(lines, end = 1) {
     if(end === 0) {
-        return stmtTokenizers;
+        return lines;
     }
 
-    let stmtType = stmtTokenizers[0].type;
-    let rpts = stmtType === 'if' || stmtType === 'while' || stmtType === 'def' ? end + 1 : 
-        (stmtType === 'end' ? end - 1 : end);
+    if(lines[0].code === 'end') {
+        return linesAfterCurrentBlock(lines.slice(1), end - 1);
+    }
+
+    if(lines[0].code === 'else') {
+        return linesAfterCurrentBlock(lines.slice(1), end);
+    }
+
+    let stmtTokenizer = lines[0].stmtTokenizer();
+    let stmtType = stmtTokenizer.type;
+    let rpts = stmtType === 'if' || stmtType === 'while' || stmtType === 'def' ? end + 1 : end;
     
-    return linesAfterCurrentBlock(stmtTokenizers.slice(1), rpts)
+    return linesAfterCurrentBlock(lines.slice(1), rpts)
 }
 
 const VALUE_PARSERS = new Map([
