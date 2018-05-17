@@ -66,81 +66,75 @@ const LINE_PARSERS = new Map([
                 );                
             }
 
-            return LINE_PARSERS.get('def').parse(lines);
+            return LINE_PARSERS.get('command').parse(lines);
         }
     }],        
-    ['def', {
+    ['command', {
         parse(lines) {
             let [command, arg] = lines[0].tryTokenize('command');
-            if(command === 'def') {
-                let [funcName, ...params] = lines[0].valuablePart(arg).tryTokenize('func');
-                let remains = lines.slice(1);     
-                return new StmtSequence(
-                    new Assign(
-                        new Variable(funcName), 
-                        new Func(params.map(param => new Variable(param)), LINE_PARSERS.get('sequence').parse(remains))
-                    ),
-                    LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-                );    
-            }
-            
-            return LINE_PARSERS.get('return').parse(lines);
-        }
-    }],   
-    ['return', {
-        parse(lines) {
-            let [command, arg] = lines[0].tryTokenize('command');
-            if(command === 'return') {
-                return new StmtSequence(
-                    new Return(arg === '' ? Void : VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg))),
-                    LINE_PARSERS.get('sequence').parse(lines.slice(1))
-                );
-            }
-            
-            return LINE_PARSERS.get('if').parse(lines);           
-        }
-    }],           
-    ['if', {
-        parse(lines) {
-            let [command, arg] = lines[0].tryTokenize('command');
-            if(command === 'if') {
-                let remains = lines.slice(1);     
-                let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
-    
-                let i = matchingElseIdx(trueStmt);
-                let falseStmt = remains[i].code === 'else' ? 
-                        LINE_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
-                        StmtSequence.EMPTY;
-    
-                return new StmtSequence(
-                     new If(
-                        VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
-                        trueStmt,
-                        falseStmt
-                     ),
-                     LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-                );
-            }
-            return LINE_PARSERS.get('while').parse(lines); 
-        }
-    }],
-    ['while', {
-        parse(lines) {
-            let [command, arg] = lines[0].tryTokenize('command');
-            if(command === 'while') {
-                let remains = lines.slice(1);     
-                return new StmtSequence(
-                     new While(
-                        VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
-                        LINE_PARSERS.get('sequence').parse(remains)
-                     ),
-                     LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-                );                
+            switch(command) {
+                case 'def':
+                    return createAssignFunc(lines, arg);
+                case 'return':
+                    return createReturn(lines, arg);
+                case 'if':
+                    return createIf(lines, arg);
+                case 'while':
+                    return createWhile(lines, arg);
             }
             throw new SyntaxError(`\n\t${lines[0].toString()}`);
         }
     }]
 ]);
+
+function createAssignFunc(lines, arg) {
+    let [funcName, ...params] = lines[0].valuablePart(arg).tryTokenize('func');
+    let remains = lines.slice(1);     
+    return new StmtSequence(
+        new Assign(
+            new Variable(funcName), 
+            new Func(params.map(param => new Variable(param)), LINE_PARSERS.get('sequence').parse(remains))
+        ),
+        LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+    );    
+}
+
+function createReturn(lines, arg) { 
+    return new StmtSequence(
+        new Return(arg === '' ? Void : VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg))),
+        LINE_PARSERS.get('sequence').parse(lines.slice(1))
+    );
+}
+
+function createIf(lines, arg) {
+    let remains = lines.slice(1);     
+    let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
+
+    let i = matchingElseIdx(trueStmt);
+    let falseStmt = remains[i].code === 'else' ? 
+            LINE_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
+            StmtSequence.EMPTY;
+
+    return new StmtSequence(
+            new If(
+            VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
+            trueStmt,
+            falseStmt
+            ),
+            LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+    );
+}
+
+function createWhile(lines, arg) {
+    let remains = lines.slice(1);     
+    return new StmtSequence(
+         new While(
+            VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
+            LINE_PARSERS.get('sequence').parse(remains)
+         ),
+         LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+    ); 
+}
 
 function matchingElseIdx(stmt, i = 1) {
     if(stmt.secondStmt === StmtSequence.EMPTY) {
