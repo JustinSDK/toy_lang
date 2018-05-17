@@ -23,14 +23,14 @@ class ParserInterceptor {
     }
 }
 
-const STMT_PARSERS = new Map([
+const LINE_PARSERS = new Map([
     ['sequence', new ParserInterceptor({
         parse(lines) {
             if(lines.length === 0 || lines[0].code === 'else' || lines[0].code === 'end') {
                 return StmtSequence.EMPTY;
             }
     
-            return STMT_PARSERS.get('assign').parse(lines);   
+            return LINE_PARSERS.get('assign').parse(lines);   
         }
     })], 
     ['assign', {
@@ -43,11 +43,11 @@ const STMT_PARSERS = new Map([
                         new Variable(variableName), 
                         VALUE_PARSERS.get('value').parse(lines[0].valueTester(assigned))
                     ),
-                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                    LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
             }
 
-            return STMT_PARSERS.get('funcall').parse(lines);
+            return LINE_PARSERS.get('funcall').parse(lines);
         }
     }],      
     ['funcall', {
@@ -62,11 +62,11 @@ const STMT_PARSERS = new Map([
                             args.map(arg => VALUE_PARSERS.get('value').parse(lines[0].valueTester(arg))) 
                         )
                     ),
-                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                    LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );                
             }
 
-            return STMT_PARSERS.get('def').parse(lines);
+            return LINE_PARSERS.get('def').parse(lines);
         }
     }],        
     ['def', {
@@ -78,13 +78,13 @@ const STMT_PARSERS = new Map([
                 return new StmtSequence(
                     new Assign(
                         new Variable(funcName), 
-                        new Func(params.map(param => new Variable(param)), STMT_PARSERS.get('sequence').parse(remains))
+                        new Func(params.map(param => new Variable(param)), LINE_PARSERS.get('sequence').parse(remains))
                     ),
-                    STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+                    LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
                 );    
             }
             
-            return STMT_PARSERS.get('return').parse(lines);
+            return LINE_PARSERS.get('return').parse(lines);
         }
     }],   
     ['return', {
@@ -93,11 +93,11 @@ const STMT_PARSERS = new Map([
             if(command === 'return') {
                 return new StmtSequence(
                     new Return(arg === '' ? Void : VALUE_PARSERS.get('value').parse(lines[0].valueTester(arg))),
-                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                    LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
             }
             
-            return STMT_PARSERS.get('if').parse(lines);           
+            return LINE_PARSERS.get('if').parse(lines);           
         }
     }],           
     ['if', {
@@ -105,11 +105,11 @@ const STMT_PARSERS = new Map([
             let [command, arg] = lines[0].tryTokens('command');
             if(command === 'if') {
                 let remains = lines.slice(1);     
-                let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
+                let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
     
                 let i = matchingElseIdx(trueStmt);
                 let falseStmt = remains[i].code === 'else' ? 
-                        STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
+                        LINE_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
                         StmtSequence.EMPTY;
     
                 return new StmtSequence(
@@ -118,10 +118,10 @@ const STMT_PARSERS = new Map([
                         trueStmt,
                         falseStmt
                      ),
-                     STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+                     LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
                 );
             }
-            return STMT_PARSERS.get('while').parse(lines); 
+            return LINE_PARSERS.get('while').parse(lines); 
         }
     }],
     ['while', {
@@ -132,9 +132,9 @@ const STMT_PARSERS = new Map([
                 return new StmtSequence(
                      new While(
                         VALUE_PARSERS.get('boolean').parse(lines[0].valueTester(arg)), 
-                        STMT_PARSERS.get('sequence').parse(remains)
+                        LINE_PARSERS.get('sequence').parse(remains)
                      ),
-                     STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+                     LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
                 );                
             }
             throw new SyntaxError(`\n\t${lines[0].toString()}`);
@@ -268,7 +268,7 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            return STMT_PARSERS.get('sequence').parse(tokenizer.lines());
+            return LINE_PARSERS.get('sequence').parse(tokenizer.lines());
         }
         catch(ex) {
             this.environment.output(ex);
