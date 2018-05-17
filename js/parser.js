@@ -149,22 +149,17 @@ function matchingElseIdx(stmt, i = 1) {
     return matchingElseIdx(stmt.secondStmt, i + 1);
 }
 
-function linesAfterCurrentBlock(lines, end = 1) {
-    if(end === 0) {
+function linesAfterCurrentBlock(lines, endCount = 1) {
+    if(endCount === 0) {
         return lines;
     }
 
-    if(lines[0].code === 'end') {
-        return linesAfterCurrentBlock(lines.slice(1), end - 1);
-    }
+    let code = lines[0].code;
+    let n = (code.startsWith('if') || code.startsWith('while') || code.startsWith('def')) ? endCount + 1 : (
+        code === 'end' ? endCount - 1 : endCount
+    );
 
-    if(lines[0].code === 'else') {
-        return linesAfterCurrentBlock(lines.slice(1), end);
-    }
-
-    let rpts = lines[0].code.startsWith('if') || lines[0].code.startsWith('while') || lines[0].code.startsWith('def') ? end + 1 : end;
-    
-    return linesAfterCurrentBlock(lines.slice(1), rpts)
+    return linesAfterCurrentBlock(lines.slice(1), n);
 }
 
 const VALUE_PART_PARSERS = new Map([
