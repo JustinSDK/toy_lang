@@ -36,7 +36,7 @@ const LINE_PARSERS = new Map([
     ['assign', {
         parse(lines) {
             let matched = lines[0].tryTokens('assign');
-            if(matched) {
+            if(matched.length !== 0) {
                 let [variableName, _, assigned] = matched;
                 return new StmtSequence(
                     new Assign(
@@ -53,7 +53,7 @@ const LINE_PARSERS = new Map([
     ['funcall', {
         parse(lines) {
             let matched = lines[0].tryTokens('funcall');
-            if(matched) {
+            if(matched.length !== 0) {
                 let [funcName, ...args] = matched;
                 return new StmtSequence(
                     new FunCallWrapper(
@@ -176,8 +176,8 @@ const VALUE_PARSERS = new Map([
     }],
     ['text', {
         parse(valueTester) {
-            let text = valueTester.tryToken('text');
-            return text === null ? 
+            let [text] = valueTester.tryTokens('text');
+            return text === undefined ? 
                       VALUE_PARSERS.get('num').parse(valueTester) : 
                       new Value(text.replace(/^\\r/, '\r')
                                     .replace(/^\\n/, '\n')
@@ -192,26 +192,26 @@ const VALUE_PARSERS = new Map([
     }],
     ['num', {
         parse(valueTester) {
-            let number = valueTester.tryToken('number');
-            return number === null ? VALUE_PARSERS.get('boolean').parse(valueTester) : new Value(parseFloat(number));
+            let [number] = valueTester.tryTokens('number');
+            return number === undefined ? VALUE_PARSERS.get('boolean').parse(valueTester) : new Value(parseFloat(number));
         }        
     }],
     ['boolean', {
         parse(valueTester) {
-            let boolean = valueTester.tryToken('boolean');
-            return boolean === null ? VALUE_PARSERS.get('variable').parse(valueTester) : new Value(boolean === 'true');
+            let [boolean] = valueTester.tryTokens('boolean');
+            return boolean === undefined ? VALUE_PARSERS.get('variable').parse(valueTester) : new Value(boolean === 'true');
         }        
     }],    
     ['variable', {
         parse(valueTester) {
-            let variable = valueTester.tryToken('variable');
-            return variable === null ?  VALUE_PARSERS.get('funcall').parse(valueTester) : new Variable(variable);
+            let [variable] = valueTester.tryTokens('variable');
+            return variable === undefined ?  VALUE_PARSERS.get('funcall').parse(valueTester) : new Variable(variable);
         }
     }],
     ['funcall', {
         parse(valueTester) {
             let funcallTokens = valueTester.tryTokens('funcall');
-            if(funcallTokens) {
+            if(funcallTokens.length !== 0) {
                 let [fName, ...args] = funcallTokens;
                 return new FunCall(
                     new Variable(fName), 

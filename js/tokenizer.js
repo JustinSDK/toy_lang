@@ -77,35 +77,35 @@ function dotSeperated(input, x = '', acc = []) {
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
         let matched = TEXT_TOKEN_REGEX.exec(input);
-        return matched === null ? null : matched[1];
+        return matched === null ? [] : [matched[1]];
     }],
     ['number', function(input) {
         let matched = NUMBERT_TOKEN_REGEX.exec(input);
-        return matched === null ? null : input;
+        return matched === null ? [] : [input];
     }],
     ['boolean', function(input) {
         let matched = BOOLEAN_TOKEN_REGEX.exec(input);
-        return matched === null ? null : input;
+        return matched === null ? [] : [input];
     }],
     ['variable', function(input) {
         let matched = VARIABLE_TOKEN_REGEX.exec(input);
-        return matched === null ? null : input;
+        return matched === null ? [] : [input];
     }],
     ['funcall', function(input) {
         let matched = FUNC_TOKEN_REGEX.exec(input);
-        return matched === null ? null : [matched[2]].concat(funcArguments(matched[3]));
+        return matched === null ? [] : [matched[2]].concat(funcArguments(matched[3]));
     }],
     ['not', function(input) {
         let matched = /^not\s+(.*)$/.exec(input);
-        return matched === null ? null : ['not', matched[1]];
+        return matched === null ? [] : ['not', matched[1]];
     }],    
     ['logic', function(input) {
         let matched = LOGIC_TOKEN_REGEX.exec(input);
-        return matched === null ? null : [matched[1], matched[2], matched[3]];
+        return matched === null ? [] : [matched[1], matched[2], matched[3]];
     }],
     ['relation', function(input) {
         let matched = RELATION_TOKEN_REGEX.exec(input);
-        return matched === null ? null : [matched[1], matched[2], matched[3]];
+        return matched === null ? [] : [matched[1], matched[2], matched[3]];
     }],
     ['postfixExprTokens', function(input) {
         return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
@@ -116,11 +116,11 @@ const TOKEN_TESTERS = new Map([
     }],
     ['assign', function(input) {
         let matched = ASSIGN_REGEX.exec(input);
-        return matched === null ? null : [matched[1], matched[2], matched[3]];
+        return matched === null ? [] : [matched[1], matched[2], matched[3]];
     }],
     ['command', function(input) {
         let matched = /^(\w+)\s+(.*)$/.exec(input);
-        return matched === null ? null : [matched[1], matched[2]];
+        return matched === null ? [] : [matched[1], matched[2]];
     }]
 ]);
 
@@ -131,10 +131,6 @@ class ValueTester {
 
     valueTester(value) {
         return new ValueTester(value);
-    }
-
-    tryToken(type) {
-        return TOKEN_TESTERS.get(type)(this.value);
     }
 
     tryTokens(type) {
