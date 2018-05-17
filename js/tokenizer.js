@@ -142,107 +142,22 @@ class ValueTester {
     }
 }
 
-class StmtTokenizer {
-    constructor(line) {
-        this.line = line;
-    }
-
-    get valueTester() {
-        return new ValueTester(this.matchingValue())
-    }
-
-    toString() {
-        return `line ${this.line.lineNumber}\t${this.line.code}`;
-    }
-}
-
-class EmptyStmtTokenizer extends StmtTokenizer {
-    constructor(line) {
-        super(line);
-        this.type = line.code;
-    }
-
-    matchingValue() {
-        return '';
-    }
-}
-
-class AssignStmtTokenizer extends StmtTokenizer {
-    constructor(line) {
-        super(line);
-        this.tokens = line.tryTokens('assign');
-        this.type = '=';
-    }
-
-    variableName() {
-        return this.tokens[0];
-    }
-
-    matchingValue() {
-        return this.tokens[2];
-    }
-}
-
-class CommandStmtTokenizer extends StmtTokenizer {
-    constructor(line) {
-        super(line);
-        this.tokens = line.tryTokens('command');
-        this.type = this.tokens[0];
-    }
-
-    matchingValue() {
-        return this.tokens[1];
-    }
-}
-
-class FuncallStmtTokenizer extends StmtTokenizer {
-    constructor(line) {
-        super(line);
-        this.tokens = FUNC_TOKEN_REGEX.exec(line.code);;
-        this.type = 'funcall';
-    }
-
-    funcName() {
-        return this.tokens[2];
-    }    
-
-    matchingValue() {
-        return this.tokens[3];
-    }
-
-    argsAsValueTesters() {
-        let argTokens = funcArguments(this.matchingValue());
-        return argTokens.map(token => new ValueTester(token));
-    }
-}
-
 class Line {
     constructor(code, number) {
         this.code = code;
         this.number = number;
     }
 
+    valueTester(input) {
+        return new ValueTester(input);
+    }
+
     tryTokens(type) {
         return TOKEN_TESTERS.get(type)(this.code);
     }
 
-    stmtTokenizer() {
-        let assign = ASSIGN_REGEX.exec(this.code);
-        if(assign) {
-            return new AssignStmtTokenizer(this);
-        }
-
-        let funcall = FUNC_TOKEN_REGEX.exec(this.code);
-        if(funcall) {
-            return new FuncallStmtTokenizer(this);
-        }
-
-        let command = /^(\w+)\s+(.*)$/.exec(this.code);
-        if(command) {
-            return new CommandStmtTokenizer(this);
-        }
-        
-        throw new SyntaxError(`\n\tline ${this.number}\t${this.code}`);
+    toString() {
+        return `line ${this.number}\t${this.code}`;
     }
 }
 
@@ -251,7 +166,7 @@ class Tokenizer {
         this.code = code;
     }
 
-    stmtTokenizers() {
+    lines() {
         return this.code.trim().split('\n')
                         .map(line => line.trim())
                         .map((line, idx) => new Line(line, idx + 1))

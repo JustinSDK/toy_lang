@@ -30,90 +30,114 @@ const STMT_PARSERS = new Map([
                 return StmtSequence.EMPTY;
             }
     
-            return STMT_PARSERS.get(lines[0].stmtTokenizer().type).parse(lines);   
+            return STMT_PARSERS.get('assign').parse(lines);   
         }
     })], 
-    ['=', {
+    ['assign', {
         parse(lines) {
-            let stmtTokenizer = lines[0].stmtTokenizer();
-            return new StmtSequence(
-                new Assign(
-                    new Variable(stmtTokenizer.variableName()), 
-                    VALUE_PARSERS.get('value').parse(stmtTokenizer.valueTester)
-                ),
-                STMT_PARSERS.get('sequence').parse(lines.slice(1))
-            );
+            let matched = lines[0].tryTokens('assign');
+            if(matched) {
+                let [variableName, _, assigned] = matched;
+                return new StmtSequence(
+                    new Assign(
+                        new Variable(variableName), 
+                        VALUE_PARSERS.get('value').parse(lines[0].valueTester(assigned))
+                    ),
+                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                );
+            }
+
+            return STMT_PARSERS.get('funcall').parse(lines);
         }
     }],      
     ['funcall', {
         parse(lines) {
-            let stmtTokenizer = lines[0].stmtTokenizer();
-            return new StmtSequence(
-                new FunCallWrapper(
-                    new FunCall(
-                        new Variable(stmtTokenizer.funcName()), 
-                        stmtTokenizer.argsAsValueTesters().map(valueTester => VALUE_PARSERS.get('value').parse(valueTester))
-                    )
-                ),
-                STMT_PARSERS.get('sequence').parse(lines.slice(1))
-            );
+            let matched = lines[0].tryTokens('funcall');
+            if(matched) {
+                let [funcName, ...args] = matched;
+                return new StmtSequence(
+                    new FunCallWrapper(
+                        new FunCall(
+                            new Variable(funcName),
+                            args.map(arg => VALUE_PARSERS.get('value').parse(lines[0].valueTester(arg))) 
+                        )
+                    ),
+                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                );                
+            }
+
+            return STMT_PARSERS.get('def').parse(lines);
         }
     }],        
     ['def', {
         parse(lines) {
-            let stmtTokenizer = lines[0].stmtTokenizer();
-            let [funcName, ...params] = stmtTokenizer.valueTester.tryTokens('def');
-            let remains = lines.slice(1);     
-            return new StmtSequence(
-                new Assign(
-                    new Variable(funcName), 
-                    new Func(params.map(param => new Variable(param)), STMT_PARSERS.get('sequence').parse(remains))
-                ),
-                STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-            );
+            let [command, arg] = lines[0].tryTokens('command');
+            if(command === 'def') {
+                let [funcName, ...params] = lines[0].valueTester(arg).tryTokens('def');
+                let remains = lines.slice(1);     
+                return new StmtSequence(
+                    new Assign(
+                        new Variable(funcName), 
+                        new Func(params.map(param => new Variable(param)), STMT_PARSERS.get('sequence').parse(remains))
+                    ),
+                    STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+                );    
+            }
+            
+            return STMT_PARSERS.get('return').parse(lines);
         }
     }],   
     ['return', {
         parse(lines) {
-            let stmtTokenizer = lines[0].stmtTokenizer();
-            return new StmtSequence(
-                new Return(stmtTokenizer.tokens[1] === '' ? Void : VALUE_PARSERS.get('value').parse(stmtTokenizer.valueTester)),
-                STMT_PARSERS.get('sequence').parse(lines.slice(1))
-            );
+            let [command, arg] = lines[0].tryTokens('command');
+            if(command === 'return') {
+                return new StmtSequence(
+                    new Return(arg === '' ? Void : VALUE_PARSERS.get('value').parse(lines[0].valueTester(arg))),
+                    STMT_PARSERS.get('sequence').parse(lines.slice(1))
+                );
+            }
+            
+            return STMT_PARSERS.get('if').parse(lines);           
         }
     }],           
     ['if', {
         parse(lines) {
-            let stmtTokenizer = lines[0].stmtTokenizer();
-            let remains = lines.slice(1);     
-            let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
-
-            let i = matchingElseIdx(trueStmt);
-            let falseStmt = remains[i].code === 'else' ? 
-                    STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
-                    StmtSequence.EMPTY;
-
-            return new StmtSequence(
-                 new If(
-                    VALUE_PARSERS.get('boolean').parse(stmtTokenizer.valueTester), 
-                    trueStmt,
-                    falseStmt
-                 ),
-                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-            );
+            let [command, arg] = lines[0].tryTokens('command');
+            if(command === 'if') {
+                let remains = lines.slice(1);     
+                let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
+    
+                let i = matchingElseIdx(trueStmt);
+                let falseStmt = remains[i].code === 'else' ? 
+                        STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
+                        StmtSequence.EMPTY;
+    
+                return new StmtSequence(
+                     new If(
+                        VALUE_PARSERS.get('boolean').parse(lines[0].valueTester(arg)), 
+                        trueStmt,
+                        falseStmt
+                     ),
+                     STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+                );
+            }
+            return STMT_PARSERS.get('while').parse(lines); 
         }
     }],
     ['while', {
         parse(lines) {
-            let stmtTokenizer = lines[0].stmtTokenizer();
-            let remains = lines.slice(1);     
-            return new StmtSequence(
-                 new While(
-                    VALUE_PARSERS.get('boolean').parse(stmtTokenizer.valueTester), 
-                    STMT_PARSERS.get('sequence').parse(remains)
-                 ),
-                 STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-            );
+            let [command, arg] = lines[0].tryTokens('command');
+            if(command === 'while') {
+                let remains = lines.slice(1);     
+                return new StmtSequence(
+                     new While(
+                        VALUE_PARSERS.get('boolean').parse(lines[0].valueTester(arg)), 
+                        STMT_PARSERS.get('sequence').parse(remains)
+                     ),
+                     STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+                );                
+            }
+            throw new SyntaxError(`\n\t${lines[0].toString()}`);
         }
     }]
 ]);
@@ -138,9 +162,7 @@ function linesAfterCurrentBlock(lines, end = 1) {
         return linesAfterCurrentBlock(lines.slice(1), end);
     }
 
-    let stmtTokenizer = lines[0].stmtTokenizer();
-    let stmtType = stmtTokenizer.type;
-    let rpts = stmtType === 'if' || stmtType === 'while' || stmtType === 'def' ? end + 1 : end;
+    let rpts = lines[0].code.startsWith('if') || lines[0].code.startsWith('while') || lines[0].code.startsWith('def') ? end + 1 : end;
     
     return linesAfterCurrentBlock(lines.slice(1), rpts)
 }
@@ -246,8 +268,7 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            let stmtTokenizers = tokenizer.stmtTokenizers();
-            return STMT_PARSERS.get('sequence').parse(stmtTokenizers);
+            return STMT_PARSERS.get('sequence').parse(tokenizer.lines());
         }
         catch(ex) {
             this.environment.output(ex);
