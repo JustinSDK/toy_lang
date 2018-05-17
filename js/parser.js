@@ -35,7 +35,7 @@ const LINE_PARSERS = new Map([
     })], 
     ['assign', {
         parse(lines) {
-            let matched = lines[0].tryTokenizeLine('assign');
+            let matched = lines[0].tryTokenizeStmt('assign');
             if(matched.length !== 0) {
                 let [variableName, _, assigned] = matched;
                 return new StmtSequence(
@@ -52,7 +52,7 @@ const LINE_PARSERS = new Map([
     }],      
     ['funcall', {
         parse(lines) {
-            let matched = lines[0].tryTokenizeLine('funcall');
+            let matched = lines[0].tryTokenizeStmt('funcall');
             if(matched.length !== 0) {
                 let [funcName, ...args] = matched;
                 return new StmtSequence(
@@ -71,7 +71,7 @@ const LINE_PARSERS = new Map([
     }],        
     ['def', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeLine('command');
+            let [command, arg] = lines[0].tryTokenizeStmt('command');
             if(command === 'def') {
                 let [funcName, ...params] = lines[0].valuablePart(arg).tryTokens('func');
                 let remains = lines.slice(1);     
@@ -89,7 +89,7 @@ const LINE_PARSERS = new Map([
     }],   
     ['return', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeLine('command');
+            let [command, arg] = lines[0].tryTokenizeStmt('command');
             if(command === 'return') {
                 return new StmtSequence(
                     new Return(arg === '' ? Void : VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg))),
@@ -102,7 +102,7 @@ const LINE_PARSERS = new Map([
     }],           
     ['if', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeLine('command');
+            let [command, arg] = lines[0].tryTokenizeStmt('command');
             if(command === 'if') {
                 let remains = lines.slice(1);     
                 let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
@@ -126,7 +126,7 @@ const LINE_PARSERS = new Map([
     }],
     ['while', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeLine('command');
+            let [command, arg] = lines[0].tryTokenizeStmt('command');
             if(command === 'while') {
                 let remains = lines.slice(1);     
                 return new StmtSequence(

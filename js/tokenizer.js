@@ -148,7 +148,7 @@ class Line {
         return new ValuablePart(input);
     }
 
-    tryTokenizeLine(type) {
+    tryTokenizeStmt(type) {
         return TOKEN_TESTERS.get(type)(this.code);
     }
 
