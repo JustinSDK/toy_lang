@@ -148,7 +148,7 @@ class Line {
         return new ValueTester(input);
     }
 
-    tryTokens(type) {
+    tryTokenizeLine(type) {
         return TOKEN_TESTERS.get(type)(this.code);
     }
 
