@@ -73,7 +73,7 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             let [command, arg] = lines[0].tryTokens('command');
             if(command === 'def') {
-                let [funcName, ...params] = lines[0].valueTester(arg).tryTokens('def');
+                let [funcName, ...params] = lines[0].valueTester(arg).tryTokens('func');
                 let remains = lines.slice(1);     
                 return new StmtSequence(
                     new Assign(

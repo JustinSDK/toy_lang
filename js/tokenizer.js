@@ -110,7 +110,7 @@ const TOKEN_TESTERS = new Map([
     ['postfixExprTokens', function(input) {
         return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
     }],
-    ['def', function(input) {
+    ['func', function(input) {
         let matched = FUNC_TOKEN_REGEX.exec(input);
         return [matched[2]].concat(matched[4] === '' ? [] : matched[4].split(/,\s*/));
     }],
