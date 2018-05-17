@@ -41,7 +41,7 @@ const LINE_PARSERS = new Map([
                 return new StmtSequence(
                     new Assign(
                         new Variable(variableName), 
-                        VALUE_PARSERS.get('value').parse(lines[0].valueTester(assigned))
+                        VALUE_PARSERS.get('value').parse(lines[0].valuablePart(assigned))
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
@@ -59,7 +59,7 @@ const LINE_PARSERS = new Map([
                     new FunCallWrapper(
                         new FunCall(
                             new Variable(funcName),
-                            args.map(arg => VALUE_PARSERS.get('value').parse(lines[0].valueTester(arg))) 
+                            args.map(arg => VALUE_PARSERS.get('value').parse(lines[0].valuablePart(arg))) 
                         )
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
@@ -73,7 +73,7 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             let [command, arg] = lines[0].tryTokens('command');
             if(command === 'def') {
-                let [funcName, ...params] = lines[0].valueTester(arg).tryTokens('func');
+                let [funcName, ...params] = lines[0].valuablePart(arg).tryTokens('func');
                 let remains = lines.slice(1);     
                 return new StmtSequence(
                     new Assign(
@@ -92,7 +92,7 @@ const LINE_PARSERS = new Map([
             let [command, arg] = lines[0].tryTokens('command');
             if(command === 'return') {
                 return new StmtSequence(
-                    new Return(arg === '' ? Void : VALUE_PARSERS.get('value').parse(lines[0].valueTester(arg))),
+                    new Return(arg === '' ? Void : VALUE_PARSERS.get('value').parse(lines[0].valuablePart(arg))),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
             }
@@ -114,7 +114,7 @@ const LINE_PARSERS = new Map([
     
                 return new StmtSequence(
                      new If(
-                        VALUE_PARSERS.get('boolean').parse(lines[0].valueTester(arg)), 
+                        VALUE_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
                         trueStmt,
                         falseStmt
                      ),
@@ -131,7 +131,7 @@ const LINE_PARSERS = new Map([
                 let remains = lines.slice(1);     
                 return new StmtSequence(
                      new While(
-                        VALUE_PARSERS.get('boolean').parse(lines[0].valueTester(arg)), 
+                        VALUE_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
                         LINE_PARSERS.get('sequence').parse(remains)
                      ),
                      LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))

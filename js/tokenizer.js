@@ -144,7 +144,7 @@ class Line {
         this.number = number;
     }
 
-    valueTester(input) {
+    valuablePart(input) {
         return new ValueTester(input);
     }
 
