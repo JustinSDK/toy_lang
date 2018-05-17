@@ -124,13 +124,13 @@ const TOKEN_TESTERS = new Map([
     }]
 ]);
 
-class ValueTester {
+class ValuablePart {
     constructor(value) {
         this.value = value;
     }
 
     valueTester(value) {
-        return new ValueTester(value);
+        return new ValuablePart(value);
     }
 
     tryTokens(type) {
@@ -145,7 +145,7 @@ class Line {
     }
 
     valuablePart(input) {
-        return new ValueTester(input);
+        return new ValuablePart(input);
     }
 
     tryTokenizeLine(type) {
