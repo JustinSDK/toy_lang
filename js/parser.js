@@ -35,7 +35,7 @@ const LINE_PARSERS = new Map([
     })], 
     ['assign', {
         parse(lines) {
-            let matched = lines[0].tryTokenizeStmt('assign');
+            let matched = lines[0].tryTokenize('assign');
             if(matched.length !== 0) {
                 let [variableName, _, assigned] = matched;
                 return new StmtSequence(
@@ -52,7 +52,7 @@ const LINE_PARSERS = new Map([
     }],      
     ['funcall', {
         parse(lines) {
-            let matched = lines[0].tryTokenizeStmt('funcall');
+            let matched = lines[0].tryTokenize('funcall');
             if(matched.length !== 0) {
                 let [funcName, ...args] = matched;
                 return new StmtSequence(
@@ -71,9 +71,9 @@ const LINE_PARSERS = new Map([
     }],        
     ['def', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeStmt('command');
+            let [command, arg] = lines[0].tryTokenize('command');
             if(command === 'def') {
-                let [funcName, ...params] = lines[0].valuablePart(arg).tryTokens('func');
+                let [funcName, ...params] = lines[0].valuablePart(arg).tryTokenize('func');
                 let remains = lines.slice(1);     
                 return new StmtSequence(
                     new Assign(
@@ -89,7 +89,7 @@ const LINE_PARSERS = new Map([
     }],   
     ['return', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeStmt('command');
+            let [command, arg] = lines[0].tryTokenize('command');
             if(command === 'return') {
                 return new StmtSequence(
                     new Return(arg === '' ? Void : VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg))),
@@ -102,7 +102,7 @@ const LINE_PARSERS = new Map([
     }],           
     ['if', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeStmt('command');
+            let [command, arg] = lines[0].tryTokenize('command');
             if(command === 'if') {
                 let remains = lines.slice(1);     
                 let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
@@ -126,7 +126,7 @@ const LINE_PARSERS = new Map([
     }],
     ['while', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenizeStmt('command');
+            let [command, arg] = lines[0].tryTokenize('command');
             if(command === 'while') {
                 let remains = lines.slice(1);     
                 return new StmtSequence(
@@ -176,7 +176,7 @@ const VALUE_PART_PARSERS = new Map([
     }],
     ['text', {
         parse(valuablePart) {
-            let [text] = valuablePart.tryTokens('text');
+            let [text] = valuablePart.tryTokenize('text');
             return text === undefined ? 
                       VALUE_PART_PARSERS.get('num').parse(valuablePart) : 
                       new Value(text.replace(/^\\r/, '\r')
@@ -192,30 +192,30 @@ const VALUE_PART_PARSERS = new Map([
     }],
     ['num', {
         parse(valuablePart) {
-            let [number] = valuablePart.tryTokens('number');
+            let [number] = valuablePart.tryTokenize('number');
             return number === undefined ? VALUE_PART_PARSERS.get('boolean').parse(valuablePart) : new Value(parseFloat(number));
         }        
     }],
     ['boolean', {
         parse(valuablePart) {
-            let [boolean] = valuablePart.tryTokens('boolean');
+            let [boolean] = valuablePart.tryTokenize('boolean');
             return boolean === undefined ? VALUE_PART_PARSERS.get('variable').parse(valuablePart) : new Value(boolean === 'true');
         }        
     }],    
     ['variable', {
         parse(valuablePart) {
-            let [variable] = valuablePart.tryTokens('variable');
+            let [variable] = valuablePart.tryTokenize('variable');
             return variable === undefined ?  VALUE_PART_PARSERS.get('funcall').parse(valuablePart) : new Variable(variable);
         }
     }],
     ['funcall', {
         parse(valuablePart) {
-            let funcallTokens = valuablePart.tryTokens('funcall');
+            let funcallTokens = valuablePart.tryTokenize('funcall');
             if(funcallTokens.length !== 0) {
                 let [fName, ...args] = funcallTokens;
                 return new FunCall(
                     new Variable(fName), 
-                    args.map(arg => VALUE_PART_PARSERS.get('value').parse(valuablePart.valueTester(arg)))
+                    args.map(arg => VALUE_PART_PARSERS.get('value').parse(valuablePart.valuablePart(arg)))
                 )
             }
 
@@ -224,22 +224,22 @@ const VALUE_PART_PARSERS = new Map([
     }],    
     ['expression', {
         parse(valuablePart) {
-            let tokens = valuablePart.tryTokens('postfixExprTokens');
+            let tokens = valuablePart.tryTokenize('postfixExprTokens');
             return tokens.reduce((stack, token) => {
                 if(isOperator(token)) {
                     return reduce(stack, token);
                 } 
                 else if(token.startsWith('not')) {
-                    let [not, operand] = valuablePart.valueTester(token).tryTokens('not');
+                    let [not, operand] = valuablePart.valuablePart(token).tryTokenize('not');
                     let NotOperator = UNARY_OPERATORS.get(not);
                     return stack.push(
                         new NotOperator(
-                            VALUE_PART_PARSERS.get('value').parse(valuablePart.valueTester(operand))
+                            VALUE_PART_PARSERS.get('value').parse(valuablePart.valuablePart(operand))
                         )
                     );
                 }
                 return stack.push(
-                    VALUE_PART_PARSERS.get('value').parse(valuablePart.valueTester(token))
+                    VALUE_PART_PARSERS.get('value').parse(valuablePart.valuablePart(token))
                 );
             }, new Stack()).top;
         }

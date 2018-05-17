@@ -129,11 +129,11 @@ class ValuablePart {
         this.value = value;
     }
 
-    valueTester(value) {
+    valuablePart(value) {
         return new ValuablePart(value);
     }
 
-    tryTokens(type) {
+    tryTokenize(type) {
         return TOKEN_TESTERS.get(type)(this.value);
     }
 }
@@ -148,7 +148,7 @@ class Line {
         return new ValuablePart(input);
     }
 
-    tryTokenizeStmt(type) {
+    tryTokenize(type) {
         return TOKEN_TESTERS.get(type)(this.code);
     }
 
