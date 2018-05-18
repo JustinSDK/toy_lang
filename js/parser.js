@@ -5,6 +5,22 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
+class Parser {
+    constructor(environment) {
+        this.environment = environment;  
+    }
+
+    parse(tokenizer) {
+        try {
+            return LINE_PARSERS.get('sequence').parse(tokenizer.lines());
+        }
+        catch(ex) {
+            this.environment.output(ex);
+            throw ex;
+        }
+    }
+}
+
 class LineParserInterceptor {
     constructor(parser) {
         this.parser = parser;
@@ -218,7 +234,7 @@ const VALUE_PART_PARSERS = new Map([
     }],    
     ['expression', {
         parse(token) {
-            let tokens = token.tryTokenize('postfixExpression');
+            let tokens = toPostfix(token.tryTokenize('expression'));
             return tokens.reduce((stack, token) => {
                 if(isOperator(token.value)) {
                     return reduce(stack, token.value);
@@ -240,6 +256,62 @@ const VALUE_PART_PARSERS = new Map([
     }]
 ]);
 
+// expression
+
+function priority(operator) {
+    return ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
+           ['and', 'or'].indexOf(operator) !== -1 ? 3 :
+           ['*', '/', '%'].indexOf(operator) !== -1 ? 2 :
+           ['+', '-'].indexOf(operator) !== -1 ? 1 : 0;
+}
+
+function popHighPriority(token, stack, output) {
+    if(!stack.isEmpty() && priority(stack.top.value) >= priority(token.value)) {
+        return popHighPriority(token, stack.pop(), output.concat([stack.top]));
+    }
+    return [stack, output];
+}
+
+function popAllBeforeLP(stack, output) {
+    if(stack.top.value !== '(') {
+        return popAllBeforeLP(stack.pop(), output.concat([stack.top]));
+    }
+    return [stack, output];
+}
+
+function digest(tokens, stack = new Stack(), output = []) {
+    if(tokens.length === 0) {
+        return [stack, output];
+    }
+
+    switch(tokens[0].value) {
+        case '(':
+            return digest(tokens.slice(1), stack.push(tokens[0]), output);
+        case '==': case '!=': case '>=': case '>': case '<=': case '<':
+        case 'and': case 'or':
+        case '+': case '-': case '*': case '/': case '%':
+            let [s1, o1] = popHighPriority(tokens[0], stack, output);
+            return digest(tokens.slice(1), s1.push(tokens[0]), o1);
+        case ')':
+            let [s2, o2] = popAllBeforeLP(stack, output);
+            return digest(tokens.slice(1), s2.pop(), o2);
+        default: 
+            return digest(tokens.slice(1), stack, output.concat([tokens[0]]));
+    }
+}
+
+function popAll(stack, output) {
+    if(stack.isEmpty()) {
+        return output;
+    }
+    return popAll(stack.pop(), output.concat([stack.top]));
+}
+
+function toPostfix(tokens) {
+    let [stack, output] = digest(tokens);
+    return popAll(stack, output);
+}
+
 function isOperator(tokenValue) {        
     return ['==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
@@ -253,20 +325,4 @@ function reduce(stack, tokenValue) {
     let s2 = s1.pop();
     let Operator = BINARY_OPERATORS.get(tokenValue);
     return s2.push(new Operator(left, right));
-}
-
-class Parser {
-    constructor(environment) {
-        this.environment = environment;  
-    }
-
-    parse(tokenizer) {
-        try {
-            return LINE_PARSERS.get('sequence').parse(tokenizer.lines());
-        }
-        catch(ex) {
-            this.environment.output(ex);
-            throw ex;
-        }
-    }
 }
