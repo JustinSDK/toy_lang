@@ -37,11 +37,11 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             let matched = lines[0].tryTokenize('assign');
             if(matched.length !== 0) {
-                let [variableName, assigned] = matched;
+                let [varToken, assignedToken] = matched;
                 return new StmtSequence(
                     new Assign(
-                        new Variable(variableName.value), 
-                        VALUE_PART_PARSERS.get('value').parse(assigned)
+                        new Variable(varToken.value), 
+                        VALUE_PART_PARSERS.get('value').parse(assignedToken)
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
@@ -54,12 +54,12 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             let matched = lines[0].tryTokenize('funcall');
             if(matched.length !== 0) {
-                let [funcName, ...args] = matched;
+                let [funcNameToken, ...argTokens] = matched;
                 return new StmtSequence(
                     new FunCallWrapper(
                         new FunCall(
-                            new Variable(funcName.value),
-                            args.map(arg => VALUE_PART_PARSERS.get('value').parse(arg)) 
+                            new Variable(funcNameToken.value),
+                            argTokens.map(argToken => VALUE_PART_PARSERS.get('value').parse(argToken)) 
                         )
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
@@ -71,42 +71,45 @@ const LINE_PARSERS = new Map([
     }],        
     ['command', {
         parse(lines) {
-            let [command, arg] = lines[0].tryTokenize('command');
-            switch(command.value) {
+            let [cmdToken, argToken] = lines[0].tryTokenize('command');
+            switch(cmdToken.value) {
                 case 'def':
-                    return createAssignFunc(lines, arg);
+                    return createAssignFunc(lines, argToken);
                 case 'return':
-                    return createReturn(lines, arg);
+                    return createReturn(lines, argToken);
                 case 'if':
-                    return createIf(lines, arg);
+                    return createIf(lines, argToken);
                 case 'while':
-                    return createWhile(lines, arg);
+                    return createWhile(lines, argToken);
             }
             throw new SyntaxError(`\n\t${lines[0].toString()}`);
         }
     }]
 ]);
 
-function createAssignFunc(lines, arg) {
-    let [funcName, ...params] = arg.tryTokenize('func');
+function createAssignFunc(lines, argToken) {
+    let [funcNameToken, ...paramTokens] = argToken.tryTokenize('func');
     let remains = lines.slice(1);     
     return new StmtSequence(
         new Assign(
-            new Variable(funcName.value), 
-            new Func(params.map(param => new Variable(param.value)), LINE_PARSERS.get('sequence').parse(remains))
+            new Variable(funcNameToken.value), 
+            new Func(
+                paramTokens.map(paramToken => new Variable(paramToken.value)), 
+                LINE_PARSERS.get('sequence').parse(remains)
+            )
         ),
         LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
     );    
 }
 
-function createReturn(lines, arg) { 
+function createReturn(lines, argToken) { 
     return new StmtSequence(
-        new Return(arg.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(arg)),
+        new Return(argToken.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argToken)),
         LINE_PARSERS.get('sequence').parse(lines.slice(1))
     );
 }
 
-function createIf(lines, arg) {
+function createIf(lines, argToken) {
     let remains = lines.slice(1);     
     let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
 
@@ -117,19 +120,19 @@ function createIf(lines, arg) {
 
     return new StmtSequence(
             new If(
-            VALUE_PART_PARSERS.get('boolean').parse(arg), 
-            trueStmt,
-            falseStmt
+                VALUE_PART_PARSERS.get('boolean').parse(argToken), 
+                trueStmt,
+                falseStmt
             ),
             LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
     );
 }
 
-function createWhile(lines, arg) {
+function createWhile(lines, argToken) {
     let remains = lines.slice(1);     
     return new StmtSequence(
          new While(
-            VALUE_PART_PARSERS.get('boolean').parse(arg), 
+            VALUE_PART_PARSERS.get('boolean').parse(argToken), 
             LINE_PARSERS.get('sequence').parse(remains)
          ),
          LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
@@ -165,9 +168,10 @@ const VALUE_PART_PARSERS = new Map([
     }],
     ['text', {
         parse(token) {
-            let [text] = token.tryTokenize('text');
-            return text ? 
-                      new Value(text.value.replace(/^\\r/, '\r')
+            let [textToken] = token.tryTokenize('text');
+            return textToken ? 
+                      new Value(textToken.value
+                                          .replace(/^\\r/, '\r')
                                           .replace(/^\\n/, '\n')
                                           .replace(/([^\\])\\r/g, '$1\r')
                                           .replace(/([^\\])\\n/g, '$1\n')
@@ -181,30 +185,30 @@ const VALUE_PART_PARSERS = new Map([
     }],
     ['num', {
         parse(token) {
-            let [number] = token.tryTokenize('number');
-            return number ? new Value(parseFloat(number.value)) : VALUE_PART_PARSERS.get('boolean').parse(token);
+            let [numToken] = token.tryTokenize('number');
+            return numToken ? new Value(parseFloat(numToken.value)) : VALUE_PART_PARSERS.get('boolean').parse(token);
         }        
     }],
     ['boolean', {
         parse(token) {
-            let [boolean] = token.tryTokenize('boolean');
-            return boolean ? new Value(boolean.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(token);
+            let [boolToken] = token.tryTokenize('boolean');
+            return boolToken ? new Value(boolToken.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(token);
         }        
     }],    
     ['variable', {
         parse(token) {
-            let [variable] = token.tryTokenize('variable');
-            return variable ? new Variable(variable.value) : VALUE_PART_PARSERS.get('funcall').parse(token);
+            let [varToken] = token.tryTokenize('variable');
+            return varToken ? new Variable(varToken.value) : VALUE_PART_PARSERS.get('funcall').parse(token);
         }
     }],
     ['funcall', {
         parse(token) {
             let funcallTokens = token.tryTokenize('funcall');
             if(funcallTokens.length !== 0) {
-                let [fName, ...args] = funcallTokens;
+                let [fNameToken, ...argTokens] = funcallTokens;
                 return new FunCall(
-                    new Variable(fName.value), 
-                    args.map(arg => VALUE_PART_PARSERS.get('value').parse(token.from(arg.value)))
+                    new Variable(fNameToken.value), 
+                    argTokens.map(argToken => VALUE_PART_PARSERS.get('value').parse(token.from(argToken.value)))
                 )
             }
 
@@ -219,11 +223,11 @@ const VALUE_PART_PARSERS = new Map([
                     return reduce(stack, token.value);
                 } 
                 else if(token.value.startsWith('not')) {
-                    let [not, operand] = token.from(token.value).tryTokenize('not');
-                    let NotOperator = UNARY_OPERATORS.get(not.value);
+                    let [unaryToken, operandToken] = token.from(token.value).tryTokenize('not');
+                    let NotOperator = UNARY_OPERATORS.get(unaryToken.value);
                     return stack.push(
                         new NotOperator(
-                            VALUE_PART_PARSERS.get('value').parse(token.from(operand.value))
+                            VALUE_PART_PARSERS.get('value').parse(token.from(operandToken.value))
                         )
                     );
                 }
@@ -235,18 +239,18 @@ const VALUE_PART_PARSERS = new Map([
     }]
 ]);
 
-function isOperator(token) {        
+function isOperator(tokenValue) {        
     return ['==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
-            '+', '-', '*', '/', '%'].indexOf(token) !== -1;
+            '+', '-', '*', '/', '%'].indexOf(tokenValue) !== -1;
 }
 
-function reduce(stack, token) {
+function reduce(stack, tokenValue) {
     let right = stack.top;
     let s1 = stack.pop();
     let left = s1.top;
     let s2 = s1.pop();
-    let Operator = BINARY_OPERATORS.get(token);
+    let Operator = BINARY_OPERATORS.get(tokenValue);
     return s2.push(new Operator(left, right));
 }
 
