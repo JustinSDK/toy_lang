@@ -181,10 +181,10 @@ const VALUE_PART_PARSERS = new Map([
                                           .replace(/\\\\/g, '\\')
                                           .replace(/\\'/g, '\'')
                       ) 
-                      : VALUE_PART_PARSERS.get('num').parse(token);
+                      : VALUE_PART_PARSERS.get('number').parse(token);
         }
     }],
-    ['num', {
+    ['number', {
         parse(token) {
             let [numToken] = token.tryTokenize('number');
             return numToken ? new Value(parseFloat(numToken.value)) : VALUE_PART_PARSERS.get('boolean').parse(token);
