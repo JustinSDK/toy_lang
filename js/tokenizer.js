@@ -133,7 +133,7 @@ class Token {
 
     tryTokenize(type) {
         return TOKEN_TESTERS.get(type)(this.value).map(token => new Token(type, this.lineNumber, token));
-    }    
+    }     
 }
 
 class Line {

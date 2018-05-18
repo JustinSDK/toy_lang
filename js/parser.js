@@ -5,7 +5,7 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
-class ParserInterceptor {
+class LineParserInterceptor {
     constructor(parser) {
         this.parser = parser;
     }
@@ -18,13 +18,14 @@ class ParserInterceptor {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
+            
             throw new SyntaxError(`\n\t${lines[0].toString()}`);
         }
     }
 }
 
 const LINE_PARSERS = new Map([
-    ['sequence', new ParserInterceptor({
+    ['sequence', new LineParserInterceptor({
         parse(lines) {
             if(lines.length === 0 || lines[0].code === 'else' || lines[0].code === 'end') {
                 return StmtSequence.EMPTY;
