@@ -65,7 +65,7 @@ const TOKEN_TESTERS = new Map([
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
     ['postfixExperssion', function(input) {
-        return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
+        return postfixTokens(input.charAt(0) === '-' ? `0 ${input}` : input);
     }],
     ['func', function(input) {
         let matched = REGEX.get('func').exec(input);
@@ -121,18 +121,12 @@ class Tokenizer {
     }
 }
 
-class ExprTokenizer {
-    constructor(expr) {
-        this.expr = expr;
-    }
+function infixTokens(expr) {
+    return expr_tokens(expr);
+}
 
-    infixTokens() {
-        return expr_tokens(this.expr);
-    }
-
-    postfixTokens() {
-        return toPostfix(this.infixTokens());
-    }
+function postfixTokens(expr) {
+    return toPostfix(infixTokens(expr));
 }
 
 function expr_tokens(expr) {
