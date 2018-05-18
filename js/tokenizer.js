@@ -55,7 +55,7 @@ function funcArguments(input) {
 }
 
 function dotSeperated(input, x = '', acc = []) {
-    if(input == '') {
+    if(input === '') {
         return acc.concat([x.trim()]);
     }
 
