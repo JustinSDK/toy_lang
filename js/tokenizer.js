@@ -47,11 +47,11 @@ const DOT_SEPERATED_TOKEN_REGEX = new RegExp(`^(${EXPR_REGEX.source}|(,))`);
 
 function funcArguments(input) {
     let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
-    if(matched[1] === '') {
-        return [];
+    if(matched[1]) {
+        return dotSeperated(matched[1]);
     }
 
-    return dotSeperated(matched[1]);
+    return [];
 }
 
 function dotSeperated(input, x = '', acc = []) {
