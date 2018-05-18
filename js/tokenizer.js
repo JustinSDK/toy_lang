@@ -64,7 +64,7 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('relation').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
-    ['postfixExprTokens', function(input) {
+    ['postfixExperssion', function(input) {
         return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
     }],
     ['func', function(input) {

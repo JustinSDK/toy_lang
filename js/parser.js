@@ -218,7 +218,7 @@ const VALUE_PART_PARSERS = new Map([
     }],    
     ['expression', {
         parse(token) {
-            let tokens = token.tryTokenize('postfixExprTokens');
+            let tokens = token.tryTokenize('postfixExperssion');
             return tokens.reduce((stack, token) => {
                 if(isOperator(token.value)) {
                     return reduce(stack, token.value);
