@@ -130,30 +130,20 @@ class Token {
         this.lineNumber = lineNumber;
         this.value = value;
     }
-}
 
-class ValuablePart {
-    constructor(value) {
-        this.value = value;
-    }
-
-    valuablePart(value) {
-        return new ValuablePart(value);
-    }
+    from(value) {
+        return new Token('value', this.lineNumber, value);
+    }    
 
     tryTokenize(type) {
-        return TOKEN_TESTERS.get(type)(this.value);
-    }
+        return TOKEN_TESTERS.get(type)(this.value).map(token => new Token(type, this.lineNumber, token));
+    }    
 }
 
 class Line {
     constructor(code, number) {
         this.code = code;
         this.number = number;
-    }
-
-    valuablePart(input) {
-        return new ValuablePart(input);
     }
 
     tryTokenize(type) {
