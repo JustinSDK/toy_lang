@@ -25,25 +25,30 @@ function nestingParentheses(level) {
     return `([^()]|\\(${nestingParentheses(level - 1)}\\))*`;
 }
 
-const ARGUMENT_LIST_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\)`);
+const ARGUMENT_LT_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\)`);
 
-const FUNC_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LIST_REGEX.source}))`);
+const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
+
+const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
+
 const EXPR_REGEX = new RegExp(
-    `((not\\s+)?${FUNC_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
+    `((not\\s+)?${FUNCALL_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
 );
 
 const BOOLEAN_TOKEN_REGEX = new RegExp(`^(${BOOLEAN_REGEX.source})$`);
 const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
 const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
 const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
-const FUNC_TOKEN_REGEX = new RegExp(`^${FUNC_REGEX.source}$`);
+const FUNCALL_TOKEN_REGEX = new RegExp(`^${FUNCALL_REGEX.source}$`);
 const RELATION_TOKEN_REGEX = new RegExp(`^(.*)\\s+(${RELATION_REGEX.source})\\s+(.*)$`);
 const LOGIC_TOKEN_REGEX = new RegExp(`^(.*)\\s+(${LOGIC_REGEX.source})\\s+(.*)$`);
 
-const ARGUMENT_LT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_LIST_REGEX.source}$`);
+const ARGUMENT_LT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_LT_REGEX.source}$`);
 const EXPR_TOKEN_REGEX = new RegExp(`^${EXPR_REGEX.source}`);
 
 const DOT_SEPERATED_TOKEN_REGEX = new RegExp(`^(${EXPR_REGEX.source}|(,))`);
+
+const FUNC_TOKEN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})${PARAM_LT_REGEX.source}$`);
 
 function funcArguments(input) {
     let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
@@ -92,7 +97,7 @@ const TOKEN_TESTERS = new Map([
         return matched ? [input] : [];
     }],
     ['funcall', function(input) {
-        let matched = FUNC_TOKEN_REGEX.exec(input);
+        let matched = FUNCALL_TOKEN_REGEX.exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],
     ['not', function(input) {
@@ -112,7 +117,7 @@ const TOKEN_TESTERS = new Map([
     }],
     ['func', function(input) {
         let matched = FUNC_TOKEN_REGEX.exec(input);
-        return [matched[2]].concat(matched[4] ? matched[4].split(/,\s*/) : []);
+        return [matched[1]].concat(matched[2] ? matched[2].split(/,\s*/) : []);
     }],
     ['assign', function(input) {
         let matched = ASSIGN_REGEX.exec(input);
