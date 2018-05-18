@@ -1,60 +1,9 @@
 import {Stack} from './util.js';
+import {REGEX} from './regex.js'
 export {Tokenizer};
 
-const NESTED_PARENTHESES_LEVEL = 3; 
-
-const BOOLEAN_REGEX = /true|false/;
-const NUMBER_REGEX = /[0-9]+\.?[0-9]*/;
-const TEXT_REGEX = /'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
-const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
-const RELATION_REGEX = /==|!=|>=|>|<=|</;
-const LOGIC_REGEX = /and|or/;
-const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
-const PARENTHESE_REGEX = /\(|\)/;
-
-const ASSIGN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`);
-
-// For simplicity, only allow three nested parentheses.
-// You can change NESTED_PARENTHESES_LEVEL to what level you want.
-// More nested parentheses are too complex to code, right?
-
-function nestingParentheses(level) {
-    if (level === 0) {
-        return '[^()]*';
-    }
-    return `([^()]|\\(${nestingParentheses(level - 1)}\\))*`;
-}
-
-const ARGUMENT_LT_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\)`);
-
-const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
-
-const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
-
-const EXPR_REGEX = new RegExp(
-    `((not\\s+)?${FUNCALL_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
-);
-
-const BOOLEAN_TOKEN_REGEX = new RegExp(`^(${BOOLEAN_REGEX.source})$`);
-const NUMBERT_TOKEN_REGEX = new RegExp(`^${NUMBER_REGEX.source}$`);
-const TEXT_TOKEN_REGEX = new RegExp(`^${TEXT_REGEX.source}$`);
-const VARIABLE_TOKEN_REGEX = new RegExp(`^${VARIABLE_REGEX.source}$`);
-const FUNCALL_TOKEN_REGEX = new RegExp(`^${FUNCALL_REGEX.source}$`);
-const RELATION_TOKEN_REGEX = new RegExp(`^(.*)\\s+(${RELATION_REGEX.source})\\s+(.*)$`);
-const LOGIC_TOKEN_REGEX = new RegExp(`^(.*)\\s+(${LOGIC_REGEX.source})\\s+(.*)$`);
-
-const ARGUMENT_LT_TOKEN_REGEX = new RegExp(`^${ARGUMENT_LT_REGEX.source}$`);
-const EXPR_TOKEN_REGEX = new RegExp(`^${EXPR_REGEX.source}`);
-
-const DOT_SEPERATED_TOKEN_REGEX = new RegExp(`^(${EXPR_REGEX.source}|(,))`);
-
-const FUNC_TOKEN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})${PARAM_LT_REGEX.source}$`);
-
-const NOT_TOKEN_REGEX = /^not\s+(.*)$/;
-const CMD_TOKEN_REGEX = /^(\w+)\s+(.*)$/;
-
 function funcArguments(input) {
-    let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
+    let matched = REGEX.get('argList').exec(input);
     if(matched[1]) {
         return dotSeperated(matched[1]);
     }
@@ -67,7 +16,7 @@ function dotSeperated(input, x = '', acc = []) {
         return acc.concat([x.trim()]);
     }
 
-    let matched = DOT_SEPERATED_TOKEN_REGEX.exec(input);
+    let matched = REGEX.get('dotSeperated').exec(input);
     if(matched) {
         let token = matched[1];
         if(token === ',') {
@@ -84,50 +33,50 @@ function dotSeperated(input, x = '', acc = []) {
 
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
-        let matched = TEXT_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('text').exec(input);
         return matched ? [matched[1]] : [];
     }],
     ['number', function(input) {
-        let matched = NUMBERT_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('number').exec(input);
         return matched ? [input] : [];
     }],
     ['boolean', function(input) {
-        let matched = BOOLEAN_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('boolean').exec(input);
         return matched ? [input] : [];
     }],
     ['variable', function(input) {
-        let matched = VARIABLE_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('variable').exec(input);
         return matched ? [input] : [];
     }],
     ['funcall', function(input) {
-        let matched = FUNCALL_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('funcall').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],
     ['not', function(input) {
-        let matched = NOT_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('not').exec(input);
         return matched ? ['not', matched[1]] : [];
     }],    
     ['logic', function(input) {
-        let matched = LOGIC_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('logic').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
     ['relation', function(input) {
-        let matched = RELATION_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('relation').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
     ['postfixExprTokens', function(input) {
         return new ExprTokenizer(input.charAt(0) === '-' ? `0 ${input}` : input).postfixTokens();
     }],
     ['func', function(input) {
-        let matched = FUNC_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('func').exec(input);
         return [matched[1]].concat(matched[2] ? matched[2].split(/,\s*/) : []);
     }],
     ['assign', function(input) {
-        let matched = ASSIGN_REGEX.exec(input);
+        let matched = REGEX.get('assign').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }],
     ['command', function(input) {
-        let matched = CMD_TOKEN_REGEX.exec(input);
+        let matched = REGEX.get('command').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }]
 ]);
@@ -187,7 +136,7 @@ class ExprTokenizer {
 }
 
 function expr_tokens(expr) {
-    let matched = EXPR_TOKEN_REGEX.exec(expr);
+    let matched = REGEX.get('expression').exec(expr);
     if(matched) {
         let token = matched[1];
         return [token].concat(expr_tokens(expr.slice(token.length).trim()));
