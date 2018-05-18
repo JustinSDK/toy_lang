@@ -50,6 +50,9 @@ const DOT_SEPERATED_TOKEN_REGEX = new RegExp(`^(${EXPR_REGEX.source}|(,))`);
 
 const FUNC_TOKEN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})${PARAM_LT_REGEX.source}$`);
 
+const NOT_TOKEN_REGEX = /^not\s+(.*)$/;
+const CMD_TOKEN_REGEX = /^(\w+)\s+(.*)$/;
+
 function funcArguments(input) {
     let matched = ARGUMENT_LT_TOKEN_REGEX.exec(input);
     if(matched[1]) {
@@ -101,7 +104,7 @@ const TOKEN_TESTERS = new Map([
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],
     ['not', function(input) {
-        let matched = /^not\s+(.*)$/.exec(input);
+        let matched = NOT_TOKEN_REGEX.exec(input);
         return matched ? ['not', matched[1]] : [];
     }],    
     ['logic', function(input) {
@@ -124,7 +127,7 @@ const TOKEN_TESTERS = new Map([
         return matched ? [matched[1], matched[2]] : [];
     }],
     ['command', function(input) {
-        let matched = /^(\w+)\s+(.*)$/.exec(input);
+        let matched = CMD_TOKEN_REGEX.exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }]
 ]);
