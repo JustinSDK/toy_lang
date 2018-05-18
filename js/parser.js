@@ -166,8 +166,7 @@ const VALUE_PART_PARSERS = new Map([
     ['text', {
         parse(valuablePart) {
             let [text] = valuablePart.tryTokenize('text');
-            return text === undefined ? 
-                      VALUE_PART_PARSERS.get('num').parse(valuablePart) : 
+            return text ? 
                       new Value(text.replace(/^\\r/, '\r')
                                     .replace(/^\\n/, '\n')
                                     .replace(/([^\\])\\r/g, '$1\r')
@@ -176,25 +175,26 @@ const VALUE_PART_PARSERS = new Map([
                                     .replace(/([^\\])\\t/g, '$1\t')
                                     .replace(/\\\\/g, '\\')
                                     .replace(/\\'/g, '\'')
-                      );
+                      ) 
+                      : VALUE_PART_PARSERS.get('num').parse(valuablePart);
         }
     }],
     ['num', {
         parse(valuablePart) {
             let [number] = valuablePart.tryTokenize('number');
-            return number === undefined ? VALUE_PART_PARSERS.get('boolean').parse(valuablePart) : new Value(parseFloat(number));
+            return number ? new Value(parseFloat(number)) : VALUE_PART_PARSERS.get('boolean').parse(valuablePart);
         }        
     }],
     ['boolean', {
         parse(valuablePart) {
             let [boolean] = valuablePart.tryTokenize('boolean');
-            return boolean === undefined ? VALUE_PART_PARSERS.get('variable').parse(valuablePart) : new Value(boolean === 'true');
+            return boolean ? new Value(boolean === 'true') : VALUE_PART_PARSERS.get('variable').parse(valuablePart);
         }        
     }],    
     ['variable', {
         parse(valuablePart) {
             let [variable] = valuablePart.tryTokenize('variable');
-            return variable === undefined ?  VALUE_PART_PARSERS.get('funcall').parse(valuablePart) : new Variable(variable);
+            return variable ? new Variable(variable) : VALUE_PART_PARSERS.get('funcall').parse(valuablePart);
         }
     }],
     ['funcall', {
