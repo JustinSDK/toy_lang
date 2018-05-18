@@ -124,6 +124,14 @@ const TOKEN_TESTERS = new Map([
     }]
 ]);
 
+class Token {
+    constructor(type, lineNumber, value) {
+        this.type = type;
+        this.lineNumber = lineNumber;
+        this.value = value;
+    }
+}
+
 class ValuablePart {
     constructor(value) {
         this.value = value;
@@ -149,7 +157,7 @@ class Line {
     }
 
     tryTokenize(type) {
-        return TOKEN_TESTERS.get(type)(this.code);
+        return TOKEN_TESTERS.get(type)(this.code).map(token => new Token(type, this.number, token));
     }
 
     toString() {

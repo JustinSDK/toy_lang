@@ -40,8 +40,8 @@ const LINE_PARSERS = new Map([
                 let [variableName, assigned] = matched;
                 return new StmtSequence(
                     new Assign(
-                        new Variable(variableName), 
-                        VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(assigned))
+                        new Variable(variableName.value), 
+                        VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(assigned.value))
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
@@ -58,8 +58,8 @@ const LINE_PARSERS = new Map([
                 return new StmtSequence(
                     new FunCallWrapper(
                         new FunCall(
-                            new Variable(funcName),
-                            args.map(arg => VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg))) 
+                            new Variable(funcName.value),
+                            args.map(arg => VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg.value))) 
                         )
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
@@ -72,7 +72,7 @@ const LINE_PARSERS = new Map([
     ['command', {
         parse(lines) {
             let [command, arg] = lines[0].tryTokenize('command');
-            switch(command) {
+            switch(command.value) {
                 case 'def':
                     return createAssignFunc(lines, arg);
                 case 'return':
@@ -88,7 +88,7 @@ const LINE_PARSERS = new Map([
 ]);
 
 function createAssignFunc(lines, arg) {
-    let [funcName, ...params] = lines[0].valuablePart(arg).tryTokenize('func');
+    let [funcName, ...params] = lines[0].valuablePart(arg.value).tryTokenize('func');
     let remains = lines.slice(1);     
     return new StmtSequence(
         new Assign(
@@ -101,7 +101,7 @@ function createAssignFunc(lines, arg) {
 
 function createReturn(lines, arg) { 
     return new StmtSequence(
-        new Return(arg === '' ? Void : VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg))),
+        new Return(arg === '' ? Void : VALUE_PART_PARSERS.get('value').parse(lines[0].valuablePart(arg.value))),
         LINE_PARSERS.get('sequence').parse(lines.slice(1))
     );
 }
@@ -117,7 +117,7 @@ function createIf(lines, arg) {
 
     return new StmtSequence(
             new If(
-            VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
+            VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg.value)), 
             trueStmt,
             falseStmt
             ),
@@ -129,7 +129,7 @@ function createWhile(lines, arg) {
     let remains = lines.slice(1);     
     return new StmtSequence(
          new While(
-            VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg)), 
+            VALUE_PART_PARSERS.get('boolean').parse(lines[0].valuablePart(arg.value)), 
             LINE_PARSERS.get('sequence').parse(remains)
          ),
          LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
