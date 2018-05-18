@@ -2,35 +2,6 @@ import {Stack} from './util.js';
 import {REGEX} from './regex.js'
 export {Tokenizer};
 
-function funcArguments(input) {
-    let matched = REGEX.get('argList').exec(input);
-    if(matched[1]) {
-        return dotSeperated(matched[1]);
-    }
-
-    return [];
-}
-
-function dotSeperated(input, x = '', acc = []) {
-    if(input === '') {
-        return acc.concat([x.trim()]);
-    }
-
-    let matched = REGEX.get('dotSeperated').exec(input);
-    if(matched) {
-        let token = matched[1];
-        if(token === ',') {
-            return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
-        } 
-        else {
-            return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
-        }
-    }
-    else {
-        return [];
-    }
-}
-
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
         let matched = REGEX.get('text').exec(input);
@@ -81,6 +52,36 @@ const TOKEN_TESTERS = new Map([
     }]
 ]);
 
+
+function funcArguments(input) {
+    let matched = REGEX.get('argList').exec(input);
+    if(matched[1]) {
+        return dotSeperated(matched[1]);
+    }
+
+    return [];
+}
+
+function dotSeperated(input, x = '', acc = []) {
+    if(input === '') {
+        return acc.concat([x.trim()]);
+    }
+
+    let matched = REGEX.get('dotSeperated').exec(input);
+    if(matched) {
+        let token = matched[1];
+        if(token === ',') {
+            return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
+        } 
+        else {
+            return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
+        }
+    }
+    else {
+        return [];
+    }
+}
+
 class Token {
     constructor(type, lineNumber, value) {
         this.type = type;
@@ -121,13 +122,7 @@ class Tokenizer {
     }
 }
 
-function infixTokens(expr) {
-    return expr_tokens(expr);
-}
-
-function postfixTokens(expr) {
-    return toPostfix(infixTokens(expr));
-}
+// expression
 
 function expr_tokens(expr) {
     let matched = REGEX.get('expression').exec(expr);
@@ -138,6 +133,14 @@ function expr_tokens(expr) {
     else {
         return [];
     }
+}
+
+function infixTokens(expr) {
+    return expr_tokens(expr);
+}
+
+function postfixTokens(expr) {
+    return toPostfix(infixTokens(expr));
 }
 
 function priority(operator) {
