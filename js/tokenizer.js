@@ -131,10 +131,6 @@ class Token {
         this.value = value;
     }
 
-    from(value) {
-        return new Token('value', this.lineNumber, value);
-    }    
-
     tryTokenize(type) {
         return TOKEN_TESTERS.get(type)(this.value).map(token => new Token(type, this.lineNumber, token));
     }    

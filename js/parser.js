@@ -208,7 +208,7 @@ const VALUE_PART_PARSERS = new Map([
                 let [fNameToken, ...argTokens] = funcallTokens;
                 return new FunCall(
                     new Variable(fNameToken.value), 
-                    argTokens.map(argToken => VALUE_PART_PARSERS.get('value').parse(token.from(argToken.value)))
+                    argTokens.map(argToken => VALUE_PART_PARSERS.get('value').parse(argToken))
                 )
             }
 
@@ -223,16 +223,16 @@ const VALUE_PART_PARSERS = new Map([
                     return reduce(stack, token.value);
                 } 
                 else if(token.value.startsWith('not')) {
-                    let [unaryToken, operandToken] = token.from(token.value).tryTokenize('not');
+                    let [unaryToken, operandToken] = token.tryTokenize('not');
                     let NotOperator = UNARY_OPERATORS.get(unaryToken.value);
                     return stack.push(
                         new NotOperator(
-                            VALUE_PART_PARSERS.get('value').parse(token.from(operandToken.value))
+                            VALUE_PART_PARSERS.get('value').parse(operandToken)
                         )
                     );
                 }
                 return stack.push(
-                    VALUE_PART_PARSERS.get('value').parse(token.from(token.value))
+                    VALUE_PART_PARSERS.get('value').parse(token)
                 );
             }, new Stack()).top;
         }
