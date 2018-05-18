@@ -62,7 +62,7 @@ function dotSeperated(input, x = '', acc = []) {
     let matched = DOT_SEPERATED_TOKEN_REGEX.exec(input);
     if(matched) {
         let token = matched[1];
-        if(token == ',') {
+        if(token === ',') {
             return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
         } 
         else {
