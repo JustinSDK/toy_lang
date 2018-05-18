@@ -35,7 +35,17 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('relation').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
-    ['postfixExperssion', function(input) {
+    ['expression', function expr_tokens(input) {
+        let matched = REGEX.get('expression').exec(input);
+        if(matched) {
+            let token = matched[1];
+            return [token].concat(expr_tokens(input.slice(token.length).trim()));
+        } 
+        else {
+            return [];
+        }
+    }],
+    ['postfixExpression', function(input) {
         return postfixTokens(input.charAt(0) === '-' ? `0 ${input}` : input);
     }],
     ['func', function(input) {
@@ -51,7 +61,6 @@ const TOKEN_TESTERS = new Map([
         return matched ? [matched[1], matched[2]] : [];
     }]
 ]);
-
 
 function funcArguments(input) {
     let matched = REGEX.get('argList').exec(input);
@@ -71,7 +80,7 @@ function dotSeperated(input, x = '', acc = []) {
     if(matched) {
         let token = matched[1];
         if(token === ',') {
-            return  dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
+            return dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
         } 
         else {
             return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
@@ -124,19 +133,8 @@ class Tokenizer {
 
 // expression
 
-function expr_tokens(expr) {
-    let matched = REGEX.get('expression').exec(expr);
-    if(matched) {
-        let token = matched[1];
-        return [token].concat(expr_tokens(expr.slice(token.length).trim()));
-    } 
-    else {
-        return [];
-    }
-}
-
 function infixTokens(expr) {
-    return expr_tokens(expr);
+    return TOKEN_TESTERS.get('expression')(expr);
 }
 
 function postfixTokens(expr) {
