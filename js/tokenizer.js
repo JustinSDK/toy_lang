@@ -12,7 +12,7 @@ const LOGIC_REGEX = /and|or/;
 const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
 const PARENTHESE_REGEX = /\(|\)/;
 
-const ASSIGN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})\\s*(=)\\s*(.*)$`);
+const ASSIGN_REGEX = new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`);
 
 // For simplicity, only allow three nested parentheses.
 // You can change NESTED_PARENTHESES_LEVEL to what level you want.
@@ -116,7 +116,7 @@ const TOKEN_TESTERS = new Map([
     }],
     ['assign', function(input) {
         let matched = ASSIGN_REGEX.exec(input);
-        return matched ? [matched[1], matched[2], matched[3]] : [];
+        return matched ? [matched[1], matched[2]] : [];
     }],
     ['command', function(input) {
         let matched = /^(\w+)\s+(.*)$/.exec(input);

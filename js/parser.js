@@ -37,7 +37,7 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             let matched = lines[0].tryTokenize('assign');
             if(matched.length !== 0) {
-                let [variableName, _, assigned] = matched;
+                let [variableName, assigned] = matched;
                 return new StmtSequence(
                     new Assign(
                         new Variable(variableName), 
