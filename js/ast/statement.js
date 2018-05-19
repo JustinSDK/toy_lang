@@ -21,6 +21,16 @@ class Assign {
     evaluate(context) {
         return context.assign(this.variable.name, this.value.evaluate(context));
     }
+
+    static assigns(variables, values) {
+        if(variables.length === 0) {
+            return StmtSequence.EMPTY;
+        }
+        return new StmtSequence(
+                      new Assign(variables[0], values[0]), 
+                      Assign.assigns(variables.slice(1), values.slice(1))
+                );
+    }    
 }
 
 function lookUpVariable(context, name) {

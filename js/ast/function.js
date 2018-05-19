@@ -8,22 +8,12 @@ class Func {
     }
 
     bodyStmt(args) {
-        return new StmtSequence(assigns(this.params, args), this.stmt);
+        return new StmtSequence(Assign.assigns(this.params, args), this.stmt);
     }
 
     evaluate(context) {
         return this;
     }
-}
-
-function assigns(params, args) {
-    if(params.length === 0) {
-        return StmtSequence.EMPTY;
-    }
-    return new StmtSequence(
-                  new Assign(params[0], args[0]), 
-                  assigns(params.slice(1), args.slice(1))
-            );
 }
 
 class Return {
