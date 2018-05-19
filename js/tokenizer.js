@@ -19,8 +19,8 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('variable').exec(input);
         return matched ? [input] : [];
     }],
-    ['funcall', function(input) {
-        let matched = REGEX.get('funcall').exec(input);
+    ['fcall', function(input) {
+        let matched = REGEX.get('fcall').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],
     ['not', function(input) {
@@ -88,7 +88,7 @@ function dotSeperated(input, x = '', acc = []) {
     }
 }
 
-class Token {
+class Tokenable {
     constructor(type, lineNumber, value) {
         this.type = type;
         this.lineNumber = lineNumber;
@@ -96,7 +96,7 @@ class Token {
     }
 
     tryTokenize(type) {
-        return TOKEN_TESTERS.get(type)(this.value).map(token => new Token(type, this.lineNumber, token));
+        return TOKEN_TESTERS.get(type)(this.value).map(token => new Tokenable(type, this.lineNumber, token));
     }     
 }
 
@@ -107,7 +107,7 @@ class Line {
     }
 
     tryTokenize(type) {
-        return TOKEN_TESTERS.get(type)(this.code).map(token => new Token(type, this.number, token));
+        return TOKEN_TESTERS.get(type)(this.code).map(token => new Tokenable(type, this.number, token));
     }
 
     toString() {

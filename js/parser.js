@@ -54,29 +54,29 @@ const LINE_PARSERS = new Map([
         parse(lines) {
             let matched = lines[0].tryTokenize('assign');
             if(matched.length !== 0) {
-                let [varToken, assignedToken] = matched;
+                let [varTokenable, assignedTokenable] = matched;
                 return new StmtSequence(
                     new Assign(
-                        new Variable(varToken.value), 
-                        VALUE_PART_PARSERS.get('value').parse(assignedToken)
+                        new Variable(varTokenable.value), 
+                        VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
                 );
             }
 
-            return LINE_PARSERS.get('funcall').parse(lines);
+            return LINE_PARSERS.get('fcall').parse(lines);
         }
     }],      
-    ['funcall', {
+    ['fcall', {
         parse(lines) {
-            let matched = lines[0].tryTokenize('funcall');
+            let matched = lines[0].tryTokenize('fcall');
             if(matched.length !== 0) {
-                let [funcNameToken, ...argTokens] = matched;
+                let [fNameTokenable, ...argTokenables] = matched;
                 return new StmtSequence(
                     new FunCallWrapper(
                         new FunCall(
-                            new Variable(funcNameToken.value),
-                            argTokens.map(argToken => VALUE_PART_PARSERS.get('value').parse(argToken)) 
+                            new Variable(fNameTokenable.value),
+                            argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable)) 
                         )
                     ),
                     LINE_PARSERS.get('sequence').parse(lines.slice(1))
@@ -88,30 +88,30 @@ const LINE_PARSERS = new Map([
     }],        
     ['command', {
         parse(lines) {
-            let [cmdToken, argToken] = lines[0].tryTokenize('command');
-            switch(cmdToken.value) {
+            let [cmdTokenable, argTokenable] = lines[0].tryTokenize('command');
+            switch(cmdTokenable.value) {
                 case 'def':
-                    return createAssignFunc(lines, argToken);
+                    return createAssignFunc(lines, argTokenable);
                 case 'return':
-                    return createReturn(lines, argToken);
+                    return createReturn(lines, argTokenable);
                 case 'if':
-                    return createIf(lines, argToken);
+                    return createIf(lines, argTokenable);
                 case 'while':
-                    return createWhile(lines, argToken);
+                    return createWhile(lines, argTokenable);
             }
             throw new SyntaxError(`\n\t${lines[0].toString()}`);
         }
     }]
 ]);
 
-function createAssignFunc(lines, argToken) {
-    let [funcNameToken, ...paramTokens] = argToken.tryTokenize('func');
+function createAssignFunc(lines, argTokenable) {
+    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenize('func');
     let remains = lines.slice(1);     
     return new StmtSequence(
         new Assign(
-            new Variable(funcNameToken.value), 
+            new Variable(fNameTokenable.value), 
             new Func(
-                paramTokens.map(paramToken => new Variable(paramToken.value)), 
+                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
                 LINE_PARSERS.get('sequence').parse(remains)
             )
         ),
@@ -119,14 +119,14 @@ function createAssignFunc(lines, argToken) {
     );    
 }
 
-function createReturn(lines, argToken) { 
+function createReturn(lines, argTokenable) { 
     return new StmtSequence(
-        new Return(argToken.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argToken)),
+        new Return(argTokenable.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argTokenable)),
         LINE_PARSERS.get('sequence').parse(lines.slice(1))
     );
 }
 
-function createIf(lines, argToken) {
+function createIf(lines, argTokenable) {
     let remains = lines.slice(1);     
     let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
 
@@ -137,7 +137,7 @@ function createIf(lines, argToken) {
 
     return new StmtSequence(
             new If(
-                VALUE_PART_PARSERS.get('boolean').parse(argToken), 
+                VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
                 trueStmt,
                 falseStmt
             ),
@@ -145,11 +145,11 @@ function createIf(lines, argToken) {
     );
 }
 
-function createWhile(lines, argToken) {
+function createWhile(lines, argTokenable) {
     let remains = lines.slice(1);     
     return new StmtSequence(
          new While(
-            VALUE_PART_PARSERS.get('boolean').parse(argToken), 
+            VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
             LINE_PARSERS.get('sequence').parse(remains)
          ),
          LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
@@ -178,16 +178,16 @@ function linesAfterCurrentBlock(lines, endCount = 1) {
 
 const VALUE_PART_PARSERS = new Map([
     ['value', {
-        parse(token) {
+        parse(tokenable) {
             // pattern matching from text
-            return VALUE_PART_PARSERS.get('text').parse(token);
+            return VALUE_PART_PARSERS.get('text').parse(tokenable);
         }
     }],
     ['text', {
-        parse(token) {
-            let [textToken] = token.tryTokenize('text');
-            return textToken ? 
-                      new Value(textToken.value
+        parse(tokenable) {
+            let [textTokenable] = tokenable.tryTokenize('text');
+            return textTokenable ? 
+                      new Value(textTokenable.value
                                           .replace(/^\\r/, '\r')
                                           .replace(/^\\n/, '\n')
                                           .replace(/([^\\])\\r/g, '$1\r')
@@ -197,59 +197,59 @@ const VALUE_PART_PARSERS = new Map([
                                           .replace(/\\\\/g, '\\')
                                           .replace(/\\'/g, '\'')
                       ) 
-                      : VALUE_PART_PARSERS.get('number').parse(token);
+                      : VALUE_PART_PARSERS.get('number').parse(tokenable);
         }
     }],
     ['number', {
-        parse(token) {
-            let [numToken] = token.tryTokenize('number');
-            return numToken ? new Value(parseFloat(numToken.value)) : VALUE_PART_PARSERS.get('boolean').parse(token);
+        parse(tokenable) {
+            let [numTokenable] = tokenable.tryTokenize('number');
+            return numTokenable ? new Value(parseFloat(numTokenable.value)) : VALUE_PART_PARSERS.get('boolean').parse(tokenable);
         }        
     }],
     ['boolean', {
-        parse(token) {
-            let [boolToken] = token.tryTokenize('boolean');
-            return boolToken ? new Value(boolToken.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(token);
+        parse(tokenable) {
+            let [boolTokenable] = tokenable.tryTokenize('boolean');
+            return boolTokenable ? new Value(boolTokenable.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(tokenable);
         }        
     }],    
     ['variable', {
-        parse(token) {
-            let [varToken] = token.tryTokenize('variable');
-            return varToken ? new Variable(varToken.value) : VALUE_PART_PARSERS.get('funcall').parse(token);
+        parse(tokenable) {
+            let [varTokenable] = tokenable.tryTokenize('variable');
+            return varTokenable ? new Variable(varTokenable.value) : VALUE_PART_PARSERS.get('fcall').parse(tokenable);
         }
     }],
-    ['funcall', {
-        parse(token) {
-            let funcallTokens = token.tryTokenize('funcall');
-            if(funcallTokens.length !== 0) {
-                let [fNameToken, ...argTokens] = funcallTokens;
+    ['fcall', {
+        parse(tokenable) {
+            let fcallTokenables = tokenable.tryTokenize('fcall');
+            if(fcallTokenables.length !== 0) {
+                let [fNameTokenable, ...argTokenables] = fcallTokenables;
                 return new FunCall(
-                    new Variable(fNameToken.value), 
-                    argTokens.map(argToken => VALUE_PART_PARSERS.get('value').parse(argToken))
+                    new Variable(fNameTokenable.value), 
+                    argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
                 )
             }
 
-            return VALUE_PART_PARSERS.get('expression').parse(token);
+            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
         }        
     }],    
     ['expression', {
-        parse(token) {
-            let tokens = toPostfix(token.tryTokenize('expression'));
-            return tokens.reduce((stack, token) => {
-                if(isOperator(token.value)) {
-                    return reduce(stack, token.value);
+        parse(tokenable) {
+            let tokenables = toPostfix(tokenable.tryTokenize('expression'));
+            return tokenables.reduce((stack, tokenable) => {
+                if(isOperator(tokenable.value)) {
+                    return reduce(stack, tokenable.value);
                 } 
-                else if(token.value.startsWith('not')) {
-                    let [unaryToken, operandToken] = token.tryTokenize('not');
-                    let NotOperator = UNARY_OPERATORS.get(unaryToken.value);
+                else if(tokenable.value.startsWith('not')) {
+                    let [unaryTokenable, operandTokenable] = tokenable.tryTokenize('not');
+                    let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
                     return stack.push(
                         new NotOperator(
-                            VALUE_PART_PARSERS.get('value').parse(operandToken)
+                            VALUE_PART_PARSERS.get('value').parse(operandTokenable)
                         )
                     );
                 }
                 return stack.push(
-                    VALUE_PART_PARSERS.get('value').parse(token)
+                    VALUE_PART_PARSERS.get('value').parse(tokenable)
                 );
             }, new Stack()).top;
         }
@@ -265,9 +265,9 @@ function priority(operator) {
            ['+', '-'].indexOf(operator) !== -1 ? 1 : 0;
 }
 
-function popHighPriority(token, stack, output) {
-    if(!stack.isEmpty() && priority(stack.top.value) >= priority(token.value)) {
-        return popHighPriority(token, stack.pop(), output.concat([stack.top]));
+function popHighPriority(tokenable, stack, output) {
+    if(!stack.isEmpty() && priority(stack.top.value) >= priority(tokenable.value)) {
+        return popHighPriority(tokenable, stack.pop(), output.concat([stack.top]));
     }
     return [stack, output];
 }
@@ -279,24 +279,24 @@ function popAllBeforeLP(stack, output) {
     return [stack, output];
 }
 
-function digest(tokens, stack = new Stack(), output = []) {
-    if(tokens.length === 0) {
+function digest(tokenables, stack = new Stack(), output = []) {
+    if(tokenables.length === 0) {
         return [stack, output];
     }
 
-    switch(tokens[0].value) {
+    switch(tokenables[0].value) {
         case '(':
-            return digest(tokens.slice(1), stack.push(tokens[0]), output);
+            return digest(tokenables.slice(1), stack.push(tokenables[0]), output);
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
         case '+': case '-': case '*': case '/': case '%':
-            let [s1, o1] = popHighPriority(tokens[0], stack, output);
-            return digest(tokens.slice(1), s1.push(tokens[0]), o1);
+            let [s1, o1] = popHighPriority(tokenables[0], stack, output);
+            return digest(tokenables.slice(1), s1.push(tokenables[0]), o1);
         case ')':
             let [s2, o2] = popAllBeforeLP(stack, output);
-            return digest(tokens.slice(1), s2.pop(), o2);
+            return digest(tokenables.slice(1), s2.pop(), o2);
         default: 
-            return digest(tokens.slice(1), stack, output.concat([tokens[0]]));
+            return digest(tokenables.slice(1), stack, output.concat([tokenables[0]]));
     }
 }
 
@@ -307,22 +307,22 @@ function popAll(stack, output) {
     return popAll(stack.pop(), output.concat([stack.top]));
 }
 
-function toPostfix(tokens) {
-    let [stack, output] = digest(tokens);
+function toPostfix(tokenables) {
+    let [stack, output] = digest(tokenables);
     return popAll(stack, output);
 }
 
-function isOperator(tokenValue) {        
+function isOperator(value) {        
     return ['==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
-            '+', '-', '*', '/', '%'].indexOf(tokenValue) !== -1;
+            '+', '-', '*', '/', '%'].indexOf(value) !== -1;
 }
 
-function reduce(stack, tokenValue) {
+function reduce(stack, value) {
     let right = stack.top;
     let s1 = stack.pop();
     let left = s1.top;
     let s2 = s1.pop();
-    let Operator = BINARY_OPERATORS.get(tokenValue);
+    let Operator = BINARY_OPERATORS.get(value);
     return s2.push(new Operator(left, right));
 }
