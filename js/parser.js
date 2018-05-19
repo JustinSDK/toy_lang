@@ -12,7 +12,7 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            return LINE_PARSERS.get('sequence').parse(tokenizer.lines());
+            return LINE_PARSERS.get('sequence').parse(tokenizer.tokenizableLines());
         }
         catch(ex) {
             this.environment.output(ex);
@@ -26,33 +26,33 @@ class LineParserInterceptor {
         this.parser = parser;
     }
 
-    parse(lines) {
+    parse(tokenizableLines) {
         try {
-            return this.parser.parse(lines);
+            return this.parser.parse(tokenizableLines);
         } 
         catch(ex) {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
             
-            throw new SyntaxError(`\n\t${lines[0].toString()}`);
+            throw new SyntaxError(`\n\t${tokenizableLines[0].toString()}`);
         }
     }
 }
 
 const LINE_PARSERS = new Map([
     ['sequence', new LineParserInterceptor({
-        parse(lines) {
-            if(lines.length === 0 || lines[0].code === 'else' || lines[0].code === 'end') {
+        parse(tokenizableLines) {
+            if(tokenizableLines.length === 0 || tokenizableLines[0].value === 'else' || tokenizableLines[0].value === 'end') {
                 return StmtSequence.EMPTY;
             }
     
-            return LINE_PARSERS.get('assign').parse(lines);   
+            return LINE_PARSERS.get('assign').parse(tokenizableLines);   
         }
     })], 
     ['assign', {
-        parse(lines) {
-            let matched = lines[0].tryTokenize('assign');
+        parse(tokenizableLines) {
+            let matched = tokenizableLines[0].tryTokenize('assign');
             if(matched.length !== 0) {
                 let [varTokenable, assignedTokenable] = matched;
                 return new StmtSequence(
@@ -60,16 +60,16 @@ const LINE_PARSERS = new Map([
                         new Variable(varTokenable.value), 
                         VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
                     ),
-                    LINE_PARSERS.get('sequence').parse(lines.slice(1))
+                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
                 );
             }
 
-            return LINE_PARSERS.get('fcall').parse(lines);
+            return LINE_PARSERS.get('fcall').parse(tokenizableLines);
         }
     }],      
     ['fcall', {
-        parse(lines) {
-            let matched = lines[0].tryTokenize('fcall');
+        parse(tokenizableLines) {
+            let matched = tokenizableLines[0].tryTokenize('fcall');
             if(matched.length !== 0) {
                 let [fNameTokenable, ...argTokenables] = matched;
                 return new StmtSequence(
@@ -79,34 +79,34 @@ const LINE_PARSERS = new Map([
                             argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable)) 
                         )
                     ),
-                    LINE_PARSERS.get('sequence').parse(lines.slice(1))
+                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
                 );                
             }
 
-            return LINE_PARSERS.get('command').parse(lines);
+            return LINE_PARSERS.get('command').parse(tokenizableLines);
         }
     }],        
     ['command', {
-        parse(lines) {
-            let [cmdTokenable, argTokenable] = lines[0].tryTokenize('command');
+        parse(tokenizableLines) {
+            let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenize('command');
             switch(cmdTokenable.value) {
                 case 'def':
-                    return createAssignFunc(lines, argTokenable);
+                    return createAssignFunc(tokenizableLines, argTokenable);
                 case 'return':
-                    return createReturn(lines, argTokenable);
+                    return createReturn(tokenizableLines, argTokenable);
                 case 'if':
-                    return createIf(lines, argTokenable);
+                    return createIf(tokenizableLines, argTokenable);
                 case 'while':
-                    return createWhile(lines, argTokenable);
+                    return createWhile(tokenizableLines, argTokenable);
             }
-            throw new SyntaxError(`\n\t${lines[0].toString()}`);
+            throw new SyntaxError(`\n\t${tokenizableLines[0].toString()}`);
         }
     }]
 ]);
 
-function createAssignFunc(lines, argTokenable) {
+function createAssignFunc(tokenizableLines, argTokenable) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenize('func');
-    let remains = lines.slice(1);     
+    let remains = tokenizableLines.slice(1);     
     return new StmtSequence(
         new Assign(
             new Variable(fNameTokenable.value), 
@@ -119,19 +119,19 @@ function createAssignFunc(lines, argTokenable) {
     );    
 }
 
-function createReturn(lines, argTokenable) { 
+function createReturn(tokenizableLines, argTokenable) { 
     return new StmtSequence(
         new Return(argTokenable.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argTokenable)),
-        LINE_PARSERS.get('sequence').parse(lines.slice(1))
+        LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
     );
 }
 
-function createIf(lines, argTokenable) {
-    let remains = lines.slice(1);     
+function createIf(tokenizableLines, argTokenable) {
+    let remains = tokenizableLines.slice(1);     
     let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
 
     let i = matchingElseIdx(trueStmt);
-    let falseStmt = remains[i].code === 'else' ? 
+    let falseStmt = remains[i].value === 'else' ? 
             LINE_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
 
@@ -145,8 +145,8 @@ function createIf(lines, argTokenable) {
     );
 }
 
-function createWhile(lines, argTokenable) {
-    let remains = lines.slice(1);     
+function createWhile(tokenizableLines, argTokenable) {
+    let remains = tokenizableLines.slice(1);     
     return new StmtSequence(
          new While(
             VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
@@ -163,17 +163,17 @@ function matchingElseIdx(stmt, i = 1) {
     return matchingElseIdx(stmt.secondStmt, i + 1);
 }
 
-function linesAfterCurrentBlock(lines, endCount = 1) {
+function linesAfterCurrentBlock(tokenizableLines, endCount = 1) {
     if(endCount === 0) {
-        return lines;
+        return tokenizableLines;
     }
 
-    let code = lines[0].code;
-    let n = (code.startsWith('if') || code.startsWith('while') || code.startsWith('def')) ? endCount + 1 : (
-        code === 'end' ? endCount - 1 : endCount
+    let line = tokenizableLines[0].value;
+    let n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def')) ? endCount + 1 : (
+        line === 'end' ? endCount - 1 : endCount
     );
 
-    return linesAfterCurrentBlock(lines.slice(1), n);
+    return linesAfterCurrentBlock(tokenizableLines.slice(1), n);
 }
 
 const VALUE_PART_PARSERS = new Map([

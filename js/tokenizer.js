@@ -98,21 +98,10 @@ class Tokenable {
     tryTokenize(type) {
         return TOKEN_TESTERS.get(type)(this.value).map(token => new Tokenable(type, this.lineNumber, token));
     }     
-}
-
-class Line {
-    constructor(code, number) {
-        this.code = code;
-        this.number = number;
-    }
-
-    tryTokenize(type) {
-        return TOKEN_TESTERS.get(type)(this.code).map(token => new Tokenable(type, this.number, token));
-    }
 
     toString() {
-        return `line ${this.number}\t${this.code}`;
-    }
+        return `line ${this.lineNumber}\t${this.value}`;
+    }    
 }
 
 class Tokenizer {
@@ -120,10 +109,10 @@ class Tokenizer {
         this.code = code;
     }
 
-    lines() {
+    tokenizableLines() {
         return this.code.trim().split('\n')
                         .map(line => line.trim())
-                        .map((line, idx) => new Line(line, idx + 1))
-                        .filter(line => line.code !== '' && !line.code.startsWith("#")); // A comment starts with #
+                        .map((line, idx) => new Tokenable('line', idx + 1, line))
+                        .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")); // A comment starts with #
     }
 }
