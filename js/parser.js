@@ -1,6 +1,7 @@
 import {Stack} from './util.js';
 import {Value, Void} from './ast/value.js';
 import {Func, Return, FunCall, FunCallWrapper} from './ast/function.js';
+import {Instalization} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
