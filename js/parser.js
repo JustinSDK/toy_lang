@@ -91,7 +91,7 @@ const LINE_PARSERS = new Map([
         parse(tokenizableLines) {
             let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenize('command');
             switch(cmdTokenable.value) {
-                case 'def':
+                case 'def': case 'class':
                     return createAssignFunc(tokenizableLines, argTokenable);
                 case 'return':
                     return createReturn(tokenizableLines, argTokenable);
