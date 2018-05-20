@@ -27,6 +27,10 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('new').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],    
+    ['property', function(input) {
+        let matched = REGEX.get('property').exec(input);
+        return matched ? [matched[2], matched[3]] : [];
+    }],  
     ['not', function(input) {
         let matched = REGEX.get('not').exec(input);
         return matched ? ['not', matched[1]] : [];

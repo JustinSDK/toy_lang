@@ -1,13 +1,13 @@
 import {Stack} from './util.js';
 import {Primitive, Func, Void} from './ast/value.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
-import {Instalization} from './ast/class.js';
+import {Instalization, Property} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
 class Parser {
-    constructor(environment) {
+    constructor(environment) {  
         this.environment = environment;  
     }
 
@@ -244,9 +244,23 @@ const VALUE_PART_PARSERS = new Map([
                 )
             }
 
-            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+            return VALUE_PART_PARSERS.get('property').parse(tokenable);
         }        
     }],      
+    ['property', {
+        parse(tokenable) {
+            let instanceProperty = tokenable.tryTokenables('property');
+            if(instanceProperty.length !== 0) {
+                let [nameTokenable, argTokenable] = instanceProperty;
+                return new Property(
+                    new Variable(nameTokenable.value),
+                    argTokenable.value
+                );
+            }
+
+            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+        }        
+    }],          
     ['expression', {
         parse(tokenable) {
             let tokenables = toPostfix(tokenable.tryTokenables('expression'));
