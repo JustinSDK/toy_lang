@@ -26,20 +26,26 @@ class Return {
     }    
 }
 
-class FunCall {
+class Call {
     constructor(fVariable, args) {
         this.fVariable = fVariable;
         this.args = args;
     }
 
-    call(context) {
+    evaluate(context) {
         let f = this.fVariable.evaluate(context);
         let bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
         return bodyStmt.evaluate(context.childContext());
-    }    
+    }
+}
+
+class FunCall {
+    constructor(fVariable, args) {
+        this.call = new Call(fVariable, args);
+    } 
 
     evaluate(context) {
-        return this.call(context).returnedValue;
+        return this.call.evaluate(context).returnedValue;
     }    
 }
 
