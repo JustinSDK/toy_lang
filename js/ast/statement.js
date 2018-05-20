@@ -13,13 +13,13 @@ class Variable {
 }
 
 class Assign {
-    constructor(variable, value) {
-        this.variable = variable;
+    constructor(target, value) {
+        this.target = target;
         this.value = value;
     }
 
     evaluate(context) {
-        return context.assign(this.variable.name, this.value.evaluate(context));
+        return context.assign(this.target.name, this.value.evaluate(context));
     }
 
     static assigns(variables, values) {
