@@ -19,6 +19,6 @@ class Property {
     }
 
     evaluate(context) {
-        return this.receiver.evaluate(context).variables.get(this.name);
+        return this.receiver.evaluate(context).properties.get(this.name);
     }    
 }
