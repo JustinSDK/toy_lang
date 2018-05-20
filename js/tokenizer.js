@@ -57,8 +57,8 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('func').exec(input);
         return [matched[1]].concat(matched[3] ? matched[3].split(/,\s*/) : []);
     }],
-    ['assign', function(input) {
-        let matched = REGEX.get('assign').exec(input);
+    ['variableAssign', function(input) {
+        let matched = REGEX.get('variableAssign').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }],
     ['command', function(input) {

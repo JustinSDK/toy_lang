@@ -48,12 +48,12 @@ const LINE_PARSERS = new Map([
                 return StmtSequence.EMPTY;
             }
     
-            return LINE_PARSERS.get('assign').parse(tokenizableLines);   
+            return LINE_PARSERS.get('variableAssign').parse(tokenizableLines);   
         }
     })], 
-    ['assign', {
+    ['variableAssign', {
         parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenables('assign');
+            let matched = tokenizableLines[0].tryTokenables('variableAssign');
             if(matched.length !== 0) {
                 let [varTokenable, assignedTokenable] = matched;
                 return new StmtSequence(
