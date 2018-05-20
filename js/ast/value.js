@@ -30,8 +30,8 @@ class Func extends Value {
 const Void = new Value();
 
 class Instance extends Value {
-    constructor(properties) {
+    constructor(variables) {
         super();
-        this.value = properties;
+        this.variables = variables;
     }
 }

@@ -19,7 +19,11 @@ class Assign {
     }
 
     evaluate(context) {
-        return context.assign(this.target.name, this.value.evaluate(context));
+        if(this.target instanceof Variable) {
+            return context.assign(this.target.name, this.value.evaluate(context));
+        }
+        
+        return context;
     }
 
     static assigns(variables, values) {
