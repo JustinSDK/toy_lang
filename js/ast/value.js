@@ -1,18 +1,22 @@
 import {Assign, StmtSequence} from './statement.js'
 export {Primitive, Func, Void};
 
-class Primitive {
-    constructor(value) {
-        this.value = value;
-    }
-
+class Value {
     evaluate(context) {
         return this;
+    }      
+}
+
+class Primitive extends Value {
+    constructor(value) {
+        super();
+        this.value = value;
     }
 }
 
-class Func {
+class Func extends Value {
     constructor(params, stmt) {
+        super();
         this.params = params;
         this.stmt = stmt;
     }
@@ -20,14 +24,6 @@ class Func {
     bodyStmt(args) {
         return new StmtSequence(Assign.assigns(this.params, args), this.stmt);
     }
-
-    evaluate(context) {
-        return this;
-    }
 }
 
-const Void = {
-    evaluate(context) {
-        return this;
-    }    
-};
+const Void = new Value();
