@@ -1,7 +1,7 @@
 import {Stack} from './util.js';
 import {Primitive, Func, Void} from './ast/value.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
-import {Instalization, PropertyGetter} from './ast/class.js';
+import {Instalization, Property} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {Variable, VariableAssign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
@@ -252,7 +252,7 @@ const VALUE_PART_PARSERS = new Map([
             let instanceProperty = tokenable.tryTokenables('property');
             if(instanceProperty.length !== 0) {
                 let [nameTokenable, argTokenable] = instanceProperty;
-                return new PropertyGetter(
+                return new Property(
                     new Variable(nameTokenable.value),
                     argTokenable.value
                 );
