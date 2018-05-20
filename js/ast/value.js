@@ -7,6 +7,7 @@ class Value {
     }      
 }
 
+// number, text, boolean
 class Primitive extends Value {
     constructor(value) {
         super();
