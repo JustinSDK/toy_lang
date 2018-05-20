@@ -1,5 +1,5 @@
 import {Assign, StmtSequence} from './statement.js'
-export {Primitive, Func, Void};
+export {Primitive, Func, Void, Instance};
 
 class Value {
     evaluate(context) {
@@ -27,3 +27,10 @@ class Func extends Value {
 }
 
 const Void = new Value();
+
+class Instance extends Value {
+    constructor(properties) {
+        super();
+        this.value = properties;
+    }
+}

@@ -230,9 +230,23 @@ const VALUE_PART_PARSERS = new Map([
                 )
             }
 
-            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+            return VALUE_PART_PARSERS.get('new').parse(tokenable);
         }        
     }],    
+    ['new', {
+        parse(tokenable) {
+            let newTokenables = tokenable.tryTokenables('new');
+            if(newTokenables.length !== 0) {
+                let [classNameTokenable, ...argTokenables] = newTokenables;
+                return new Instalization(
+                    new Variable(classNameTokenable.value), 
+                    argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
+                )
+            }
+
+            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+        }        
+    }],      
     ['expression', {
         parse(tokenable) {
             let tokenables = toPostfix(tokenable.tryTokenables('expression'));

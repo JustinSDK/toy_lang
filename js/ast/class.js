@@ -1,3 +1,4 @@
+import {Instance} from "./value.js";
 import {Apply} from "./function.js";
 export {Instalization};
 
@@ -7,6 +8,6 @@ class Instalization {
     } 
 
     evaluate(context) {
-        return this.apply.evaluate(context).variables;
+        return new Instance(this.apply.evaluate(context).variables);
     }   
 }
