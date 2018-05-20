@@ -1,4 +1,4 @@
-import {Value} from './ast/value.js';
+import {Primitive} from './ast/value.js';
 import {Func} from './ast/function.js';
 import {Variable} from './ast/statement.js';
 
@@ -21,7 +21,7 @@ class Len {
     }
 
     evaluate(context) {
-        return context.returned(new Value(this.value.evaluate(context).value.length));
+        return context.returned(new Primitive(this.value.evaluate(context).value.length));
     }    
 }
 

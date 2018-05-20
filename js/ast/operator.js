@@ -1,4 +1,4 @@
-import {Value} from './value.js';
+import {Primitive} from './value.js';
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
 function createOperatorNode(operator) {
@@ -9,7 +9,7 @@ function createOperatorNode(operator) {
         }
     
         evaluate(context) {
-            return new Value(operator(this.left.evaluate(context).value, this.right.evaluate(context).value));
+            return new Primitive(operator(this.left.evaluate(context).value, this.right.evaluate(context).value));
         }
     }
 }
@@ -20,7 +20,7 @@ class Not {
     }
 
     evaluate(context) {
-        return new Value(!this.operand.evaluate(context).value);
+        return new Primitive(!this.operand.evaluate(context).value);
     }
 }
 

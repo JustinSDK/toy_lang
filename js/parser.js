@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-import {Value, Void} from './ast/value.js';
+import {Primitive, Void} from './ast/value.js';
 import {Func, Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Instalization} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
@@ -188,7 +188,7 @@ const VALUE_PART_PARSERS = new Map([
         parse(tokenable) {
             let [textTokenable] = tokenable.tryTokenables('text');
             return textTokenable ? 
-                      new Value(textTokenable.value
+                      new Primitive(textTokenable.value
                                           .replace(/^\\r/, '\r')
                                           .replace(/^\\n/, '\n')
                                           .replace(/([^\\])\\r/g, '$1\r')
@@ -204,13 +204,13 @@ const VALUE_PART_PARSERS = new Map([
     ['number', {
         parse(tokenable) {
             let [numTokenable] = tokenable.tryTokenables('number');
-            return numTokenable ? new Value(parseFloat(numTokenable.value)) : VALUE_PART_PARSERS.get('boolean').parse(tokenable);
+            return numTokenable ? new Primitive(parseFloat(numTokenable.value)) : VALUE_PART_PARSERS.get('boolean').parse(tokenable);
         }        
     }],
     ['boolean', {
         parse(tokenable) {
             let [boolTokenable] = tokenable.tryTokenables('boolean');
-            return boolTokenable ? new Value(boolTokenable.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(tokenable);
+            return boolTokenable ? new Primitive(boolTokenable.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(tokenable);
         }        
     }],    
     ['variable', {

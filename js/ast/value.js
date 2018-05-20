@@ -1,4 +1,4 @@
-export {Void, Value};
+export {Void, Primitive};
 
 const Void = {
     evaluate(context) {
@@ -6,7 +6,7 @@ const Void = {
     }    
 };
 
-class Value {
+class Primitive {
     constructor(value) {
         this.value = value;
     }
