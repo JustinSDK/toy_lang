@@ -13,13 +13,13 @@ class Variable {
 }
 
 class VariableAssign {
-    constructor(target, value) {
-        this.target = target;
+    constructor(variable, value) {
+        this.variable = variable;
         this.value = value;
     }
 
     evaluate(context) {
-        return context.assign(this.target.name, this.value.evaluate(context));;
+        return context.assign(this.variable.name, this.value.evaluate(context));;
     }
 
     static assigns(variables, values) {
@@ -90,5 +90,3 @@ StmtSequence.EMPTY = {
         return context;
     }
 };
-
-
