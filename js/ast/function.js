@@ -1,20 +1,4 @@
-import {Assign, StmtSequence} from './statement.js'
-export {Func, Return, Apply, FunCall, FunCallWrapper};
-
-class Func {
-    constructor(params, stmt) {
-        this.params = params;
-        this.stmt = stmt;
-    }
-
-    bodyStmt(args) {
-        return new StmtSequence(Assign.assigns(this.params, args), this.stmt);
-    }
-
-    evaluate(context) {
-        return this;
-    }
-}
+export {Return, Apply, FunCall, FunCallWrapper};
 
 class Return {
     constructor(value) {

@@ -1,5 +1,4 @@
-import {Primitive} from './ast/value.js';
-import {Func} from './ast/function.js';
+import {Primitive, Func} from './ast/value.js';
 import {Variable} from './ast/statement.js';
 
 export {Context};
