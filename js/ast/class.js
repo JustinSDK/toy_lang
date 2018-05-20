@@ -13,12 +13,12 @@ class Instalization {
 }
 
 class Property {
-    constructor(instance, propertyName) {
-        this.instance = instance;
+    constructor(receiver, propertyName) {
+        this.receiver = receiver;
         this.propertyName = propertyName;
     }
 
     evaluate(context) {
-        return this.instance.evaluate(context).value.get(this.propertyName);
+        return this.receiver.evaluate(context).value.get(this.propertyName);
     }    
 }
