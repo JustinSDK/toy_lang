@@ -38,4 +38,10 @@ class Instance extends Value {
     getProperty(name) {
         return this.properties.get(name);
     }
+
+    setProperty(name, value) {
+        return new Instance(
+            new Map(Array.from(this.properties.entries()).concat([[name, value]]))
+        );
+    }
 }
