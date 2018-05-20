@@ -1,4 +1,4 @@
-export {Variable, Assign, While, If, StmtSequence};
+export {Variable, VariableAssign, While, If, StmtSequence};
 
 function nope(value) {}
 
@@ -12,18 +12,14 @@ class Variable {
     }
 }
 
-class Assign {
+class VariableAssign {
     constructor(target, value) {
         this.target = target;
         this.value = value;
     }
 
     evaluate(context) {
-        if(this.target instanceof Variable) {
-            return context.assign(this.target.name, this.value.evaluate(context));
-        }
-        
-        return context;
+        return context.assign(this.target.name, this.value.evaluate(context));;
     }
 
     static assigns(variables, values) {
@@ -31,8 +27,8 @@ class Assign {
             return StmtSequence.EMPTY;
         }
         return new StmtSequence(
-                      new Assign(variables[0], values[0]), 
-                      Assign.assigns(variables.slice(1), values.slice(1))
+                      new VariableAssign(variables[0], values[0]), 
+                      VariableAssign.assigns(variables.slice(1), values.slice(1))
                 );
     }    
 }

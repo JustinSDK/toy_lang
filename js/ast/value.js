@@ -1,4 +1,4 @@
-import {Assign, StmtSequence} from './statement.js'
+import {VariableAssign, StmtSequence} from './statement.js'
 export {Primitive, Func, Void, Instance};
 
 class Value {
@@ -23,7 +23,7 @@ class Func extends Value {
     }
 
     bodyStmt(args) {
-        return new StmtSequence(Assign.assigns(this.params, args), this.stmt);
+        return new StmtSequence(VariableAssign.assigns(this.params, args), this.stmt);
     }
 }
 

@@ -3,7 +3,7 @@ import {Primitive, Func, Void} from './ast/value.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Instalization, Property} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
-import {Variable, Assign, While, If, StmtSequence} from './ast/statement.js';
+import {Variable, VariableAssign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
 class Parser {
@@ -57,7 +57,7 @@ const LINE_PARSERS = new Map([
             if(matched.length !== 0) {
                 let [varTokenable, assignedTokenable] = matched;
                 return new StmtSequence(
-                    new Assign(
+                    new VariableAssign(
                         new Variable(varTokenable.value), 
                         VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
                     ),
@@ -109,7 +109,7 @@ function createAssignFunc(tokenizableLines, argTokenable) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     let remains = tokenizableLines.slice(1);     
     return new StmtSequence(
-        new Assign(
+        new VariableAssign(
             new Variable(fNameTokenable.value), 
             new Func(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
