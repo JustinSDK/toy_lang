@@ -1,8 +1,12 @@
 import {Apply} from "./function.js";
 export {Instalization};
 
-class Instalization extends FunCall {
+class Instalization {
+    constructor(fVariable, args) {
+        this.apply = new Apply(fVariable, args);
+    } 
+
     evaluate(context) {
-        return this.call(context).variables;
+        return this.apply.evaluate(context).variables;
     }   
 }
