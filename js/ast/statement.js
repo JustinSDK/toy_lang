@@ -1,4 +1,4 @@
-export {Variable, VariableAssign, While, If, StmtSequence};
+export {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
 
 function nope(value) {}
 

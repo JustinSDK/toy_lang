@@ -51,5 +51,6 @@ const REGEX = new Map([
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
     ['not', /^not\s+(.*)$/],
     ['command', /^(\w+)\s+(.*)$/],
-    ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)]
+    ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
+    ['propertyAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)]
 ]);

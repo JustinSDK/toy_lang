@@ -3,7 +3,7 @@ import {Primitive, Func, Void} from './ast/value.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Instalization, Property} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
-import {Variable, VariableAssign, While, If, StmtSequence} from './ast/statement.js';
+import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 export {Parser};
 
 class Parser {
@@ -65,9 +65,27 @@ const LINE_PARSERS = new Map([
                 );
             }
 
+            return LINE_PARSERS.get('propertyAssign').parse(tokenizableLines);
+        }
+    }],   
+    ['propertyAssign', {
+        parse(tokenizableLines) {
+            let matched = tokenizableLines[0].tryTokenables('propertyAssign');
+            if(matched.length !== 0) {
+                let [varTokenable, propertyTokenable, assignedTokenable] = matched;
+                return new StmtSequence(
+                    new PropertyAssign(
+                        new Variable(varTokenable.value), 
+                        propertyTokenable.value,
+                        VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
+                    ),
+                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                );
+            }
+
             return LINE_PARSERS.get('fcall').parse(tokenizableLines);
         }
-    }],      
+    }],             
     ['fcall', {
         parse(tokenizableLines) {
             let matched = tokenizableLines[0].tryTokenables('fcall');
