@@ -19,6 +19,6 @@ class PropertyGetter {
     }
 
     evaluate(context) {
-        return this.receiver.evaluate(context).properties.get(this.name);
+        return this.receiver.evaluate(context).getProperty(this.name);
     }    
 }

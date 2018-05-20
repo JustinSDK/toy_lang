@@ -34,4 +34,8 @@ class Instance extends Value {
         super();
         this.properties = properties;
     }
+
+    getProperty(name) {
+        return this.properties.get(name);
+    }
 }
