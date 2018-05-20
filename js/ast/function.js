@@ -1,5 +1,5 @@
 import {Assign, StmtSequence} from './statement.js'
-export {Func, Return, FunCall, FunCallWrapper};
+export {Func, Return, Apply, FunCall, FunCallWrapper};
 
 class Func {
     constructor(params, stmt) {
@@ -26,7 +26,7 @@ class Return {
     }    
 }
 
-class Call {
+class Apply {
     constructor(fVariable, args) {
         this.fVariable = fVariable;
         this.args = args;
@@ -41,11 +41,11 @@ class Call {
 
 class FunCall {
     constructor(fVariable, args) {
-        this.call = new Call(fVariable, args);
+        this.apply = new Apply(fVariable, args);
     } 
 
     evaluate(context) {
-        return this.call.evaluate(context).returnedValue;
+        return this.apply.evaluate(context).returnedValue;
     }    
 }
 

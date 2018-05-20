@@ -1,4 +1,4 @@
-import {FunCall} from "./function.js";
+import {Apply} from "./function.js";
 export {Instalization};
 
 class Instalization extends FunCall {
