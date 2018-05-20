@@ -53,7 +53,7 @@ const LINE_PARSERS = new Map([
     })], 
     ['assign', {
         parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenize('assign');
+            let matched = tokenizableLines[0].tryTokenables('assign');
             if(matched.length !== 0) {
                 let [varTokenable, assignedTokenable] = matched;
                 return new StmtSequence(
@@ -70,7 +70,7 @@ const LINE_PARSERS = new Map([
     }],      
     ['fcall', {
         parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenize('fcall');
+            let matched = tokenizableLines[0].tryTokenables('fcall');
             if(matched.length !== 0) {
                 let [fNameTokenable, ...argTokenables] = matched;
                 return new StmtSequence(
@@ -89,7 +89,7 @@ const LINE_PARSERS = new Map([
     }],        
     ['command', {
         parse(tokenizableLines) {
-            let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenize('command');
+            let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenables('command');
             switch(cmdTokenable.value) {
                 case 'def': case 'class':
                     return createAssignFunc(tokenizableLines, argTokenable);
@@ -106,7 +106,7 @@ const LINE_PARSERS = new Map([
 ]);
 
 function createAssignFunc(tokenizableLines, argTokenable) {
-    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenize('func');
+    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     let remains = tokenizableLines.slice(1);     
     return new StmtSequence(
         new Assign(
@@ -186,7 +186,7 @@ const VALUE_PART_PARSERS = new Map([
     }],
     ['text', {
         parse(tokenable) {
-            let [textTokenable] = tokenable.tryTokenize('text');
+            let [textTokenable] = tokenable.tryTokenables('text');
             return textTokenable ? 
                       new Value(textTokenable.value
                                           .replace(/^\\r/, '\r')
@@ -203,25 +203,25 @@ const VALUE_PART_PARSERS = new Map([
     }],
     ['number', {
         parse(tokenable) {
-            let [numTokenable] = tokenable.tryTokenize('number');
+            let [numTokenable] = tokenable.tryTokenables('number');
             return numTokenable ? new Value(parseFloat(numTokenable.value)) : VALUE_PART_PARSERS.get('boolean').parse(tokenable);
         }        
     }],
     ['boolean', {
         parse(tokenable) {
-            let [boolTokenable] = tokenable.tryTokenize('boolean');
+            let [boolTokenable] = tokenable.tryTokenables('boolean');
             return boolTokenable ? new Value(boolTokenable.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(tokenable);
         }        
     }],    
     ['variable', {
         parse(tokenable) {
-            let [varTokenable] = tokenable.tryTokenize('variable');
+            let [varTokenable] = tokenable.tryTokenables('variable');
             return varTokenable ? new Variable(varTokenable.value) : VALUE_PART_PARSERS.get('fcall').parse(tokenable);
         }
     }],
     ['fcall', {
         parse(tokenable) {
-            let fcallTokenables = tokenable.tryTokenize('fcall');
+            let fcallTokenables = tokenable.tryTokenables('fcall');
             if(fcallTokenables.length !== 0) {
                 let [fNameTokenable, ...argTokenables] = fcallTokenables;
                 return new FunCall(
@@ -235,13 +235,13 @@ const VALUE_PART_PARSERS = new Map([
     }],    
     ['expression', {
         parse(tokenable) {
-            let tokenables = toPostfix(tokenable.tryTokenize('expression'));
+            let tokenables = toPostfix(tokenable.tryTokenables('expression'));
             return tokenables.reduce((stack, tokenable) => {
                 if(isOperator(tokenable.value)) {
                     return reduce(stack, tokenable.value);
                 } 
                 else if(tokenable.value.startsWith('not')) {
-                    let [unaryTokenable, operandTokenable] = tokenable.tryTokenize('not');
+                    let [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
                     let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
                     return stack.push(
                         new NotOperator(

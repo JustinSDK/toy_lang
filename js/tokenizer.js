@@ -95,7 +95,7 @@ class Tokenable {
         this.value = value;
     }
 
-    tryTokenize(type) {
+    tryTokenables(type) {
         return TOKEN_TESTERS.get(type)(this.value).map(token => new Tokenable(type, this.lineNumber, token));
     }     
 
