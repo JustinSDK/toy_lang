@@ -22,25 +22,24 @@ class Func extends Value {
         this.stmt = stmt;
     }
 
+    apply(args) {
+        return VariableAssign.assigns(this.params, args);
+    }
+
     bodyStmt(args) {
-        return new StmtSequence(VariableAssign.assigns(this.params, args), this.stmt);
+        return new StmtSequence(this.apply(args), this.stmt);
     }
 }
 
-class Class extends Value {
+class Class extends Func {
     constructor(params, stmt) {
-        super();
-        this.params = params;
-        this.stmt = stmt;
+        super(params, stmt);
     }
 
-    bodyStmt(args) {
+    apply(args) {
         return new StmtSequence(
-            VariableAssign.assigns(
-                [new Variable('this')].concat(this.params), 
-                [new Instance(new Map())].concat(args)
-            ), 
-            this.stmt
+            super.apply(args), 
+            new VariableAssign(new Variable('this'), new Instance(new Map())) // this object
         );
     }
 }
