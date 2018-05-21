@@ -56,9 +56,13 @@ class Instance extends Value {
         return this.properties.get(name);
     }
 
+    /*
+        Even though I use functional programming to implement toy_lang on purpose, 
+        however, toy_lang is an imperative language. Using functional programming to
+        implement the setter of an mutable instance will make AST more complex. 
+        For simplicity, the setProperty method modifies the state directly. 
+    */
     setProperty(name, value) {
-        return new Instance(
-            new Map(Array.from(this.properties.entries()).concat([[name, value]]))
-        );
+        this.properties.set(name, value);
     }
 }

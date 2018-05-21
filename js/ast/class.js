@@ -53,15 +53,12 @@ class PropertySetter {
     }
 
     evaluate(context) {
-        let instance = this.property.receiver(context)
-                                    .setProperty(
-                                        this.property.propName, 
-                                        this.value.evaluate(context)
-                                    );
+        this.property.receiver(context)
+                     .setProperty(
+                        this.property.propName, 
+                        this.value.evaluate(context)
+                     );
  
-        return context.assign(
-            this.property.receiverName(), 
-            instance
-        );                                     
+        return context;                                     
     }    
 }
