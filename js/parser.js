@@ -56,12 +56,11 @@ const LINE_PARSERS = new Map([
             let matched = tokenizableLines[0].tryTokenables('variableAssign');
             if(matched.length !== 0) {
                 let [varTokenable, assignedTokenable] = matched;
-                return new StmtSequence(
-                    new VariableAssign(
-                        new Variable(varTokenable.value), 
-                        VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
-                    ),
-                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                return createAssign(
+                    tokenizableLines, 
+                    VariableAssign, 
+                    new Variable(varTokenable.value), 
+                    assignedTokenable
                 );
             }
 
@@ -73,14 +72,12 @@ const LINE_PARSERS = new Map([
             let matched = tokenizableLines[0].tryTokenables('propertyAssign');
             if(matched.length !== 0) {
                 let [varTokenable, propertyTokenable, assignedTokenable] = matched;
-                return new StmtSequence(
-                    new PropertyAssign(
-                        new Variable(varTokenable.value), 
-                        propertyTokenable.value,
-                        VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
-                    ),
-                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
-                );
+                return createAssign(
+                    tokenizableLines, 
+                    PropertyAssign, 
+                    new Property(new Variable(varTokenable.value), propertyTokenable.value), 
+                    assignedTokenable
+                );                
             }
 
             return LINE_PARSERS.get('fcall').parse(tokenizableLines);
@@ -122,6 +119,16 @@ const LINE_PARSERS = new Map([
         }
     }]
 ]);
+
+function createAssign(tokenizableLines, clz, target, assignedTokenable) {
+    return new StmtSequence(
+        new clz(
+            target, 
+            VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
+        ),
+        LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+    );
+}
 
 function createAssignFunc(tokenizableLines, argTokenable) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');

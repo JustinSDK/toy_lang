@@ -92,16 +92,11 @@ StmtSequence.EMPTY = {
 };
 
 class PropertyAssign {
-    constructor(variable, name, value) {
-        this.variable = variable;
-        this.name = name;
-        this.value = value;
+    constructor(property, value) {
+        this.property = property.setter(value);
     }
 
     evaluate(context) {
-        let instance = this.variable.evaluate(context)
-                                    .setProperty(this.name, this.value.evaluate(context));
-
-        return context.assign(this.variable.name, instance);;
+        return this.property.evaluate(context);
     }
 }
