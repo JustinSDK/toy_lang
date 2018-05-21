@@ -18,8 +18,16 @@ class Property {
         this.name = name;
     }
 
+    evaluateReceiver(context) {
+        return this.receiver.evaluate(context);
+    } 
+
     getter() {
         return new PropertyGetter(this);
+    }
+
+    setter() {
+        return new PropertySetter(this);
     }
 }
 
@@ -29,6 +37,19 @@ class PropertyGetter {
     }
 
     evaluate(context) {
-        return this.property.receiver.evaluate(context).getProperty(this.property.name);
+        return this.property.evaluateReceiver(context).getProperty(this.property.name);
+    }    
+}
+
+class PropertySetter {
+    constructor(property) {
+        this.property = property;
+    }
+
+    evaluate(context) {
+        let instance = this.property.evaluateReceiver(context)
+                                    .setProperty(this.name, this.value.evaluate(context));
+ 
+         return context.assign(this.variable.name, instance);;                                     
     }    
 }
