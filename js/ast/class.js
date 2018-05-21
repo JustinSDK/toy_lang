@@ -1,5 +1,5 @@
-import {Instance} from "./value.js";
-import {Apply} from "./function.js";
+import {Instance} from './value.js';
+import {Apply} from './function.js';
 export {Instalization, Property};
 
 class Instalization {
@@ -8,7 +8,7 @@ class Instalization {
     } 
 
     evaluate(context) {
-        return new Instance(this.apply.evaluate(context).variables);
+        return this.apply.evaluate(context).variables.get('this');
     }   
 }
 

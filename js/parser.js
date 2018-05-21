@@ -1,5 +1,5 @@
 import {Stack} from './util.js';
-import {Primitive, Func, Void} from './ast/value.js';
+import {Primitive, Func, Void, Class} from './ast/value.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Instalization, Property} from './ast/class.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
@@ -106,8 +106,10 @@ const LINE_PARSERS = new Map([
         parse(tokenizableLines) {
             let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenables('command');
             switch(cmdTokenable.value) {
-                case 'def': case 'class':
+                case 'def':
                     return createAssignFunc(tokenizableLines, argTokenable);
+                case 'class':
+                    return createAssignClass(tokenizableLines, argTokenable);
                 case 'return':
                     return createReturn(tokenizableLines, argTokenable);
                 case 'if':
@@ -137,6 +139,21 @@ function createAssignFunc(tokenizableLines, argTokenable) {
         new VariableAssign(
             new Variable(fNameTokenable.value), 
             new Func(
+                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
+                LINE_PARSERS.get('sequence').parse(remains)
+            )
+        ),
+        LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+    );    
+}
+
+function createAssignClass(tokenizableLines, argTokenable) {
+    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
+    let remains = tokenizableLines.slice(1);     
+    return new StmtSequence(
+        new VariableAssign(
+            new Variable(fNameTokenable.value), 
+            new Class(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
                 LINE_PARSERS.get('sequence').parse(remains)
             )

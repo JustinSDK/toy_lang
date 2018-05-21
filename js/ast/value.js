@@ -1,5 +1,5 @@
-import {VariableAssign, StmtSequence} from './statement.js'
-export {Primitive, Func, Void, Instance};
+import {Variable, VariableAssign, StmtSequence} from './statement.js'
+export {Primitive, Func, Void, Instance, Class};
 
 class Value {
     evaluate(context) {
@@ -24,6 +24,24 @@ class Func extends Value {
 
     bodyStmt(args) {
         return new StmtSequence(VariableAssign.assigns(this.params, args), this.stmt);
+    }
+}
+
+class Class extends Value {
+    constructor(params, stmt) {
+        super();
+        this.params = params;
+        this.stmt = stmt;
+    }
+
+    bodyStmt(args) {
+        return new StmtSequence(
+            VariableAssign.assigns(
+                [new Variable('this')].concat(this.params), 
+                [new Instance(new Map())].concat(args)
+            ), 
+            this.stmt
+        );
     }
 }
 
