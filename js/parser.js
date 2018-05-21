@@ -132,13 +132,13 @@ function createAssign(tokenizableLines, clz, target, assignedTokenable) {
     );
 }
 
-function createAssignFunc(tokenizableLines, argTokenable) {
+function createAssignFunc(tokenizableLines, argTokenable, clz = Func) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     let remains = tokenizableLines.slice(1);     
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
-            new Func(
+            new clz(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
                 LINE_PARSERS.get('sequence').parse(remains)
             )
@@ -148,18 +148,7 @@ function createAssignFunc(tokenizableLines, argTokenable) {
 }
 
 function createAssignClass(tokenizableLines, argTokenable) {
-    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
-    let remains = tokenizableLines.slice(1);     
-    return new StmtSequence(
-        new VariableAssign(
-            new Variable(fNameTokenable.value), 
-            new Class(
-                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
-                LINE_PARSERS.get('sequence').parse(remains)
-            )
-        ),
-        LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
-    );    
+    return createAssignFunc(tokenizableLines, argTokenable, Class)
 }
 
 function createReturn(tokenizableLines, argTokenable) { 
