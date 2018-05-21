@@ -53,6 +53,7 @@ class PropertySetter {
     }
 
     evaluate(context) {
+        // For simplicity, the setProperty method modifies the state directly. 
         this.property.receiver(context)
                      .setProperty(
                         this.property.propName, 
