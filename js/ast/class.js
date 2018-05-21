@@ -1,6 +1,6 @@
 import {Instance} from "./value.js";
 import {Apply} from "./function.js";
-export {Instalization, Property};
+export {Instalization, PropertyGetter};
 
 class Instalization {
     constructor(fVariable, args) {
@@ -19,6 +19,16 @@ class Property {
     }
 
     evaluate(context) {
-        return this.receiver.evaluate(context).getProperty(this.name);
+        return this.receiver.evaluate(context);
+    }    
+}
+
+class PropertyGetter extends Property {
+    constructor(receiver, name) {
+        super(receiver, name);
+    }
+
+    evaluate(context) {
+        return super.evaluate(context).getProperty(this.name);
     }    
 }
