@@ -1,4 +1,3 @@
-import {Stack} from './util.js';
 import {REGEX} from './regex.js'
 export {Tokenizer};
 
