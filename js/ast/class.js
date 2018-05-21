@@ -13,21 +13,25 @@ class Instalization {
 }
 
 class Property {
-    constructor(receiver, name) {
-        this.receiver = receiver;
-        this.name = name;
+    constructor(variable, propName) {
+        this.variable = variable;
+        this.propName = propName;
     }
 
-    evaluateReceiver(context) {
-        return this.receiver.evaluate(context);
+    receiverName() {
+        return this.variable.name;
+    }
+
+    receiver(context) {
+        return this.variable.evaluate(context);
     } 
 
     getter() {
         return new PropertyGetter(this);
     }
 
-    setter() {
-        return new PropertySetter(this);
+    setter(value) {
+        return new PropertySetter(this, value);
     }
 }
 
@@ -37,19 +41,27 @@ class PropertyGetter {
     }
 
     evaluate(context) {
-        return this.property.evaluateReceiver(context).getProperty(this.property.name);
+        return this.property.receiver(context)
+                            .getProperty(this.property.propName);
     }    
 }
 
 class PropertySetter {
-    constructor(property) {
+    constructor(property, value) {
         this.property = property;
+        this.value = value;
     }
 
     evaluate(context) {
-        let instance = this.property.evaluateReceiver(context)
-                                    .setProperty(this.name, this.value.evaluate(context));
+        let instance = this.property.receiver(context)
+                                    .setProperty(
+                                        this.property.propName, 
+                                        this.value.evaluate(context)
+                                    );
  
-         return context.assign(this.variable.name, instance);;                                     
+        return context.assign(
+            this.property.receiverName(), 
+            instance
+        );                                     
     }    
 }
