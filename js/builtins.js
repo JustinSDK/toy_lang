@@ -3,6 +3,10 @@ import {Variable, StmtSequence, VariableAssign} from './ast/statement.js';
 
 export {BUILTINS};
 
+const ONE_PARAM = new Variable('v');
+
+// built-in functions
+
 class Print {
     constructor(value) {
         this.value = value;
@@ -14,7 +18,7 @@ class Print {
     }
 }
 
-const ONE_PARAM = new Variable('v');
+// built-in classes
 
 function classBodyStmt(initFunc) {
     return new StmtSequence(
