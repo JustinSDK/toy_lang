@@ -15,7 +15,7 @@
     <style type="text/css">
         textarea {
            width:100%;
-           height:300px;
+           height:400px;
            resize:none;
            overflow:auto;
         }   
@@ -42,27 +42,6 @@ while i &lt; 10
     print_row(i)
     i = i + 1
 end</code></strong></pre>
-    <ul>
-      <li># Fibonacci Numbers</li>
-    </ul>
-    <pre><strong><code>def printFibonacciNumbers(n)
-    print(n + ' Fibonacci numbers\n')
-    n = n - 2
-    fn1 = 1
-    fn2 = 1
-    print(fn1 + ' ' + fn2 + ' ')
-    while n &gt; 0
-        fn = fn2 + fn1
-        print(fn + ' ')
-        fn1 = fn2
-        fn2 = fn
-        n = n - 1
-    end
-    print('\n\n')
-end
-
-printFibonacciNumbers(10)
-printFibonacciNumbers(20)</code></strong></pre>
 <ul>
     <li># Tower of Hanoi</li>
   </ul>
@@ -93,6 +72,35 @@ while n &lt;= 5
     print(n + '! = ' + factorial(n) + '\n')
     n = n + 1
 end</code></strong></pre>
+<ul>
+    <li># Class</li>
+  </ul>
+  <pre><strong><code>class Account
+    # it's a field
+    balance = 0 
+
+    def init(number, name)
+        this.number = number
+        this.name = name
+    end
+
+    def deposit(amount)
+        if amount &lt;= 0
+            print('must be positive')
+            return
+        end
+
+        this.balance = this.balance + amount
+    end
+
+    def toString()
+        return this.number + ', ' + this.name + ', ' + this.balance
+    end
+end
+
+acct = new Account('123', 'Justin')
+acct.deposit(100)
+print(acct.toString())</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
