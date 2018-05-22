@@ -23,13 +23,13 @@ function classBodyStmt(initFunc) {
     );
 }
 
-const Str = new Map([
+const StringMethods = new Map([
     ['init', new Func([ONE_PARAM], {
         evaluate(context) {
             let properties = new Map([
                 ['value', ONE_PARAM.evaluate(context)],
                 ['length', new Primitive(ONE_PARAM.evaluate(context).value.length)]
-            ].concat(Array.from(Str.entries())));
+            ].concat(Array.from(StringMethods.entries())));
             return context.assign('this', new Instance(properties));
         }
     })],
@@ -64,5 +64,5 @@ const Str = new Map([
 
 const BUILTINS = new Map([
     ['print', new Func([ONE_PARAM], new Print(ONE_PARAM))],
-    ['String', new Class([], classBodyStmt(Str.get('init')))]
+    ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
