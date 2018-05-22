@@ -18,17 +18,6 @@ class Print {
     }
 }
 
-class Println {
-    constructor(param) {
-        this.param = param;
-    }
-
-    evaluate(context) {
-        context.output(this.param.evaluate(context).value + '\n');
-        return context;
-    }
-}
-
 // built-in classes
 
 function classBodyStmt(initFunc) {
@@ -79,6 +68,5 @@ const StringMethods = new Map([
 
 const BUILTINS = new Map([
     ['print', new Func([ONE_PARAM], new Print(ONE_PARAM))],
-    ['println', new Func([ONE_PARAM], new Println(ONE_PARAM))],
     ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
