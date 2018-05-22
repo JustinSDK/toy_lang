@@ -35,13 +35,6 @@ class Class extends Func {
     constructor(params, stmt) {
         super(params, stmt);
     }
-
-    // apply(args) {
-    //     return new StmtSequence(
-    //         super.apply(args), 
-    //         new VariableAssign(new Variable('this'), new Instance(new Map())) // this object
-    //     );
-    // }
 }
 
 const Void = new Value();
