@@ -1,7 +1,7 @@
 import {Stack} from './util.js';
 import {Primitive} from './ast/value.js';
 import {FunCall} from './ast/function.js';
-import {Instalization, Property} from './ast/class.js';
+import {Instalization, Property, MethodCall} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 
@@ -85,9 +85,23 @@ const VALUE_PART_PARSERS = new Map([
                 return new Property(new Variable(nameTokenable.value), argTokenable.value).getter();
             }
 
-            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+            return VALUE_PART_PARSERS.get('mcall').parse(tokenable);
         }        
     }],          
+    ['mcall', {
+        parse(tokenable) {
+            let mcallTokenables = tokenable.tryTokenables('mcall');
+            if(mcallTokenables.length !== 0) {
+                let [nameTokenable, propTokenable, ...argTokenables] = mcallTokenables;
+                return new MethodCall(
+                    new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                    argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
+                )
+            }
+
+            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+        }        
+    }],     
     ['expression', {
         parse(tokenable) {
             let tokenables = toPostfix(tokenable.tryTokenables('expression'));

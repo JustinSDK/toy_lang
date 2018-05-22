@@ -2,7 +2,7 @@ import {Variable, VariableAssign, StmtSequence} from './statement.js';
 import {Instance} from './value.js';
 import {Apply} from './function.js';
 
-export {Instalization, Property};
+export {Instalization, Property, MethodCall};
 
 class Instalization {
     constructor(fVariable, args) {
@@ -76,5 +76,24 @@ class PropertySetter {
                      );
  
         return context;                                     
+    }    
+}
+
+class MethodCall {
+    constructor(propertyGetter, args) {
+        this.propertyGetter = propertyGetter;
+        this.args = args;
+    } 
+
+    evaluate(context) {
+        let receiver = this.propertyGetter.property.receiver(context);
+        let f = this.propertyGetter.evaluate(context);
+
+        let method = new StmtSequence(
+            new VariableAssign(new Variable('this'), receiver),  
+            f.bodyStmt(this.args.map(arg => arg.evaluate(context)))
+        );
+
+        return method.evaluate(context).returnedValue;
     }    
 }

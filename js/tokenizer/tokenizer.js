@@ -22,6 +22,10 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('fcall').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],
+    ['mcall', function(input) {
+        let matched = REGEX.get('mcall').exec(input);
+        return matched ? [matched[2], matched[3]].concat(funcArguments(matched[4])) : [];
+    }],    
     ['new', function(input) {
         let matched = REGEX.get('new').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];

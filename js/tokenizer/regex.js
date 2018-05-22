@@ -28,10 +28,11 @@ const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGE
 
 const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
+const METHODCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
 const PROP_REGEX = new RegExp(`((${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source}))`);
 
 const EXPR_REGEX = new RegExp(
-    `((not\\s+)?${FUNCALL_REGEX.source}|${PROP_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
+    `((not\\s+)?${FUNCALL_REGEX.source}|${METHODCALL_REGEX.source}|${PROP_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
 );
 
 
@@ -41,6 +42,7 @@ const REGEX = new Map([
     ['text', new RegExp(`^${TEXT_REGEX.source}$`)],
     ['variable', new RegExp(`^${VARIABLE_REGEX.source}$`)],
     ['fcall', new RegExp(`^${FUNCALL_REGEX.source}$`)],
+    ['mcall', new RegExp(`^${METHODCALL_REGEX.source}$`)],
     ['new', new RegExp(`^new ${FUNCALL_REGEX.source}$`)],
     ['property', new RegExp(`^${PROP_REGEX.source}$`)],
     ['relation', new RegExp(`^(.*)\\s+(${RELATION_REGEX.source})\\s+(.*)$`)],
