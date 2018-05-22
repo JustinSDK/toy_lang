@@ -95,6 +95,6 @@ class MethodCall {
             f.bodyStmt(this.args.map(arg => arg.evaluate(context)))
         );
 
-        return method.evaluate(context).returnedValue;
+        return method.evaluate(context.childContext()).returnedValue;
     }    
 }
