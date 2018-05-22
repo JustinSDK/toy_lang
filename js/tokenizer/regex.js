@@ -52,7 +52,7 @@ const REGEX = new Map([
     ['dotSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
     ['not', /^not\s+(.*)$/],
-    ['command', /^(\w+)\s+(.*)$/],
+    ['command', /^(\w+)\s*(.*)$/],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)]
 ]);

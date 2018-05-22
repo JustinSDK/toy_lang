@@ -46,15 +46,8 @@ const TOKEN_TESTERS = new Map([
         let matched = REGEX.get('relation').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
-    ['expression', function expr_tokens(input) {
-        let matched = REGEX.get('expression').exec(input);
-        if(matched) {
-            let token = matched[1];
-            return [token].concat(expr_tokens(input.slice(token.length).trim()));
-        } 
-        else {
-            return [];
-        }
+    ['expression', function(input) {
+        return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
     }],
     ['func', function(input) {
         let matched = REGEX.get('func').exec(input);
@@ -73,6 +66,17 @@ const TOKEN_TESTERS = new Map([
         return matched ? [matched[1], matched[2]] : [];
     }]
 ]);
+
+function expr_tokens(input) {
+    let matched = REGEX.get('expression').exec(input);
+    if(matched) {
+        let token = matched[1];
+        return [token].concat(expr_tokens(input.slice(token.length).trim()));
+    } 
+    else {
+        return [];
+    }
+}
 
 function funcArguments(input) {
     let matched = REGEX.get('argList').exec(input);
