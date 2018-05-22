@@ -81,8 +81,8 @@ const VALUE_PART_PARSERS = new Map([
         parse(tokenable) {
             let instanceProperty = tokenable.tryTokenables('property');
             if(instanceProperty.length !== 0) {
-                let [nameTokenable, argTokenable] = instanceProperty;
-                return new Property(new Variable(nameTokenable.value), argTokenable.value).getter();
+                let [nameTokenable, propTokenable] = instanceProperty;
+                return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
             }
 
             return VALUE_PART_PARSERS.get('mcall').parse(tokenable);
