@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Property} from './ast/class.js';
+import {Property, MethodCall} from './ast/class.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {VALUE_PART_PARSERS} from './value_parsers.js';
@@ -83,9 +83,28 @@ const LINE_PARSERS = new Map([
                 );                
             }
 
-            return LINE_PARSERS.get('command').parse(tokenizableLines);
+            return LINE_PARSERS.get('mcall').parse(tokenizableLines);
         }
     }],        
+    ['mcall', {
+        parse(tokenizableLines) {
+            let matched = tokenizableLines[0].tryTokenables('mcall');
+            if(matched.length !== 0) {
+                let [nameTokenable, propTokenable, ...argTokenables] = matched;
+                return new StmtSequence(
+                    new FunCallWrapper(
+                        new MethodCall(
+                            new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                            argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
+                        )
+                    ),
+                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                );                
+            }
+
+            return LINE_PARSERS.get('command').parse(tokenizableLines);
+        }
+    }],            
     ['command', {
         parse(tokenizableLines) {
             let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenables('command');
