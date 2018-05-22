@@ -18,6 +18,7 @@ class Instalization {
         let thisInstance = this.instance(context);
 
         let init = new StmtSequence(
+            // here is 'this' ... XD
             new VariableAssign(new Variable('this'), thisInstance),  
             thisInstance.getProperty('init')
                         .bodyStmt(this.args.map(arg => arg.evaluate(context)))
