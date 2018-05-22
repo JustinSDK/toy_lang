@@ -3,17 +3,28 @@ import {Variable, StmtSequence, VariableAssign} from './ast/statement.js';
 
 export {BUILTINS};
 
-const ONE_PARAM = new Variable('v');
+const ONE_PARAM = new Variable('p');
 
 // built-in functions
 
 class Print {
-    constructor(value) {
-        this.value = value;
+    constructor(param) {
+        this.param = param;
     }
 
     evaluate(context) {
-        context.output(this.value.evaluate(context).value);
+        context.output(this.param.evaluate(context).value);
+        return context;
+    }
+}
+
+class Println {
+    constructor(param) {
+        this.param = param;
+    }
+
+    evaluate(context) {
+        context.output(this.param.evaluate(context).value + '\n');
         return context;
     }
 }
@@ -68,5 +79,6 @@ const StringMethods = new Map([
 
 const BUILTINS = new Map([
     ['print', new Func([ONE_PARAM], new Print(ONE_PARAM))],
+    ['println', new Func([ONE_PARAM], new Println(ONE_PARAM))],
     ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
