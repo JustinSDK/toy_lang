@@ -1,14 +1,29 @@
+import {Variable, VariableAssign, StmtSequence} from './statement.js';
 import {Instance} from './value.js';
 import {Apply} from './function.js';
+
 export {Instalization, Property};
 
 class Instalization {
     constructor(fVariable, args) {
         this.apply = new Apply(fVariable, args);
-    } 
+        this.args = args;
+    }
+
+    instance(context) {
+        return new Instance(this.apply.evaluate(context).variables);
+    }
 
     evaluate(context) {
-        return this.apply.evaluate(context).variables.get('this');
+        let thisInstance = this.instance(context);
+
+        let init = new StmtSequence(
+            new VariableAssign(new Variable('this'), thisInstance),  
+            thisInstance.getProperty('init')
+                        .bodyStmt(this.args.map(arg => arg.evaluate(context)))
+        );
+        
+        return init.evaluate(context.childContext()).variables.get('this');  
     }   
 }
 
