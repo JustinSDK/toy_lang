@@ -17,7 +17,7 @@ const Print = {
 const Println = {
     evaluate(context) {
         let value = ONE_PARAM.evaluate(context).value;
-        if(value) {
+        if(value !== undefined) {
             context.output(ONE_PARAM.evaluate(context).value);
         }
         context.output('\n');
