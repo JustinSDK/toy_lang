@@ -143,7 +143,8 @@ function createAssignFunc(tokenizableLines, argTokenable, clz = Func) {
             new Variable(fNameTokenable.value), 
             new clz(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
-                LINE_PARSERS.get('sequence').parse(remains)
+                LINE_PARSERS.get('sequence').parse(remains),
+                fNameTokenable
             )
         ),
         LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))

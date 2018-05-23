@@ -5,6 +5,10 @@ class Value {
     evaluate(context) {
         return this;
     }      
+
+    toString() {
+        return '';
+    }
 }
 
 // internal null value
@@ -26,10 +30,11 @@ Primitive.BoolTrue = new Primitive(true);
 Primitive.BoolFalse = new Primitive(false);
 
 class Func extends Value {
-    constructor(params, stmt) {
+    constructor(params, stmt, name = '') {
         super();
         this.params = params;
         this.stmt = stmt;
+        this.name = name;
     }
 
     apply(args) {
@@ -44,17 +49,17 @@ class Func extends Value {
     }
 
     toString() {
-        return `Function`;
+        return `[Function ${this.name}]`;
     }
 }
 
 class Class extends Func {
-    constructor(params, stmt) {
-        super(params, stmt);
+    constructor(params, stmt, name = '') {
+        super(params, stmt, name);
     }
 
     toString() {
-        return `Class`;
+        return `[Class ${this.name}]`;
     }
 }
 

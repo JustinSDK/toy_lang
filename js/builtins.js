@@ -57,7 +57,7 @@ const StringMethods = new Map([
             ].concat(Array.from(StringMethods.entries())));
             return context.assign('this', new Instance(properties));
         }
-    })],
+    }, 'init')],
     ['charAt', new Func([ONE_PARAM], {
         evaluate(context) {
             let instance = context.variables.get('this');
@@ -66,7 +66,7 @@ const StringMethods = new Map([
                 new Primitive(text.charAt(ONE_PARAM.evaluate(context).value))
             );
         }    
-    })],
+    }, 'charAt')],
     ['toUpperCase', new Func([], {
         evaluate(context) {
             let instance = context.variables.get('this');
@@ -75,7 +75,7 @@ const StringMethods = new Map([
                 new Primitive(text.toUpperCase())
             );
         }    
-    })],   
+    }, 'toUpperCase')],   
     ['toLowerCase', new Func([], {
         evaluate(context) {
             let instance = context.variables.get('this');
@@ -84,13 +84,13 @@ const StringMethods = new Map([
                 new Primitive(text.toLowerCase())
             );
         }    
-    })], 
+    }, 'toLowerCase')], 
 ]);
 
 const BUILTINS = new Map([
-    ['print', new Func([ONE_PARAM], Print)],
-    ['println', new Func([ONE_PARAM], Println)],
-    ['hasValue', new Func([ONE_PARAM], HasValue)],
-    ['noValue', new Func([ONE_PARAM], NoValue)],
-    ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
+    ['print', new Func([ONE_PARAM], Print, 'print')],
+    ['println', new Func([ONE_PARAM], Println, 'println')],
+    ['hasValue', new Func([ONE_PARAM], HasValue, 'hasValue')],
+    ['noValue', new Func([ONE_PARAM], NoValue, 'noValue')],
+    ['String', new Class([], classBodyStmt(StringMethods.get('init')), 'String')]
 ]);
