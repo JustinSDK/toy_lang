@@ -7,13 +7,9 @@ const ONE_PARAM = new Variable('p');
 
 // built-in functions
 
-class Print {
-    constructor(param) {
-        this.param = param;
-    }
-
+const Print = {
     evaluate(context) {
-        context.output(this.param.evaluate(context).value);
+        context.output(ONE_PARAM.evaluate(context).value);
         return context;
     }
 }
@@ -67,6 +63,6 @@ const StringMethods = new Map([
 ]);
 
 const BUILTINS = new Map([
-    ['print', new Func([ONE_PARAM], new Print(ONE_PARAM))],
+    ['print', new Func([ONE_PARAM], Print)],
     ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
