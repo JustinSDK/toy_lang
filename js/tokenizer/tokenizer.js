@@ -81,13 +81,13 @@ function expr_tokens(input) {
 function funcArguments(input) {
     let matched = REGEX.get('argList').exec(input);
     if(matched[1]) {
-        return dotSeperated(matched[1]);
+        return split(matched[1], ',');
     }
 
     return [];
 }
 
-function dotSeperated(input, x = '', acc = []) {
+function split(input, separator, x = '', acc = []) {
     if(input === '') {
         return acc.concat([x.trim()]);
     }
@@ -95,11 +95,11 @@ function dotSeperated(input, x = '', acc = []) {
     let matched = REGEX.get('dotSeperated').exec(input);
     if(matched) {
         let token = matched[1];
-        if(token === ',') {
-            return dotSeperated(input.slice(token.length).trim(), '', acc.concat([x]));
+        if(token === separator) {
+            return split(input.slice(token.length).trim(), separator, '', acc.concat([x]));
         } 
         else {
-            return dotSeperated(input.slice(token.length).trim(), x + token + ' ', acc);
+            return split(input.slice(token.length).trim(), separator, x + token + ' ', acc);
         }
     }
     else {
