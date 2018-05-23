@@ -41,21 +41,24 @@ const NoValue = {
 
 // built-in classes
 
-function classBodyStmt(initFunc) {
+function classBodyStmt(assigns) {
+    if(assigns.length === 0) {
+        return StmtSequence.EMPTY;
+    }
+    let [name, value] = assigns[0];
     return new StmtSequence(
-        new VariableAssign(new Variable('init'), initFunc),
-        StmtSequence.EMPTY
+        new VariableAssign(new Variable(name), value),
+        classBodyStmt(assigns.slice(1))
     );
 }
 
-const StringMethods = new Map([
+const StringClass = new Map([
     ['init', new Func([ONE_PARAM], {
         evaluate(context) {
-            let properties = new Map([
-                ['value', ONE_PARAM.evaluate(context)],
-                ['length', new Primitive(ONE_PARAM.evaluate(context).value.length)]
-            ].concat(Array.from(StringMethods.entries())));
-            return context.assign('this', new Instance(properties));
+            let self = context.variables.get('this');
+            self.setProperty('value', ONE_PARAM.evaluate(context));
+            self.setProperty('length', new Primitive(ONE_PARAM.evaluate(context).value.length));
+            return context;
         }
     }, 'init')],
     ['charAt', new Func([ONE_PARAM], {
@@ -92,5 +95,5 @@ const BUILTINS = new Map([
     ['println', new Func([ONE_PARAM], Println, 'println')],
     ['hasValue', new Func([ONE_PARAM], HasValue, 'hasValue')],
     ['noValue', new Func([ONE_PARAM], NoValue, 'noValue')],
-    ['String', new Class([], classBodyStmt(StringMethods.get('init')), 'String')]
+    ['String', new Class([], classBodyStmt(Array.from(StringClass.entries())), 'String')]
 ]);
