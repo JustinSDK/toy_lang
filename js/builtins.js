@@ -9,7 +9,7 @@ const ONE_PARAM = new Variable('p');
 
 const Print = {
     evaluate(context) {
-        context.output(ONE_PARAM.evaluate(context).value);
+        context.output(ONE_PARAM.evaluate(context).toString());
         return context;
     }
 }
@@ -18,7 +18,7 @@ const Println = {
     evaluate(context) {
         let argument = ONE_PARAM.evaluate(context);
         if(argument !== Null) {
-            context.output(argument.value);
+            context.output(argument.toString());
         }
         context.output('\n');
         return context;

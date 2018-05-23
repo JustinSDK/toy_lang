@@ -16,6 +16,10 @@ class Primitive extends Value {
         super();
         this.value = value;
     }
+
+    toString() {
+        return `${this.value}`;
+    }
 }
 
 Primitive.BoolTrue = new Primitive(true);
@@ -38,11 +42,19 @@ class Func extends Value {
     bodyStmt(args) {
         return new StmtSequence(this.apply(args), this.stmt);
     }
+
+    toString() {
+        return `Function`;
+    }
 }
 
 class Class extends Func {
     constructor(params, stmt) {
         super(params, stmt);
+    }
+
+    toString() {
+        return `Class`;
     }
 }
 
