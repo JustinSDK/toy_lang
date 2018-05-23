@@ -40,7 +40,9 @@ const VALUE_PART_PARSERS = new Map([
     ['boolean', {
         parse(tokenable) {
             let [boolTokenable] = tokenable.tryTokenables('boolean');
-            return boolTokenable ? new Primitive(boolTokenable.value === 'true') : VALUE_PART_PARSERS.get('variable').parse(tokenable);
+            return boolTokenable ? 
+                       (boolTokenable.value === 'true' ? Primitive.BoolTrue : Primitive.BoolFalse) 
+                       : VALUE_PART_PARSERS.get('variable').parse(tokenable);
         }        
     }],    
     ['variable', {

@@ -15,6 +15,9 @@ class Primitive extends Value {
     }
 }
 
+Primitive.BoolTrue = new Primitive(true);
+Primitive.BoolFalse = new Primitive(false);
+
 class Func extends Value {
     constructor(params, stmt) {
         super();
