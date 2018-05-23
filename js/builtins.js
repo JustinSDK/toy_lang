@@ -14,6 +14,17 @@ const Print = {
     }
 }
 
+const Println = {
+    evaluate(context) {
+        let value = ONE_PARAM.evaluate(context).value;
+        if(value) {
+            context.output(ONE_PARAM.evaluate(context).value);
+        }
+        context.output('\n');
+        return context;
+    }
+}
+
 const HasValue = {
     evaluate(context) {
         let bool = ONE_PARAM.evaluate(context).value ? Primitive.BoolTrue : Primitive.BoolFalse;
@@ -71,6 +82,7 @@ const StringMethods = new Map([
 
 const BUILTINS = new Map([
     ['print', new Func([ONE_PARAM], Print)],
+    ['println', new Func([ONE_PARAM], Println)],
     ['hasValue', new Func([ONE_PARAM], HasValue)],
     ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
