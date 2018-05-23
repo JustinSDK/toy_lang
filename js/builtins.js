@@ -1,4 +1,4 @@
-import {Primitive, Func, Class, Instance} from './ast/value.js';
+import {Null, Primitive, Func, Class, Instance} from './ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from './ast/statement.js';
 
 export {BUILTINS};
@@ -16,9 +16,9 @@ const Print = {
 
 const Println = {
     evaluate(context) {
-        let value = ONE_PARAM.evaluate(context).value;
-        if(value !== undefined) {
-            context.output(ONE_PARAM.evaluate(context).value);
+        let argument = ONE_PARAM.evaluate(context);
+        if(argument !== Null) {
+            context.output(argument.value);
         }
         context.output('\n');
         return context;

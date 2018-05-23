@@ -1,5 +1,5 @@
 import {Variable, VariableAssign, StmtSequence} from './statement.js'
-export {Value, Primitive, Func, Void, Instance, Class};
+export {Null, Primitive, Func, Void, Instance, Class};
 
 class Value {
     evaluate(context) {
@@ -7,6 +7,7 @@ class Value {
     }      
 }
 
+// internal null value
 const Null = new Value();
 
 // number, text, boolean
