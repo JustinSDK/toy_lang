@@ -1,11 +1,13 @@
 import {Variable, VariableAssign, StmtSequence} from './statement.js'
-export {Primitive, Func, Void, Instance, Class};
+export {Value, Primitive, Func, Void, Instance, Class};
 
 class Value {
     evaluate(context) {
         return this;
     }      
 }
+
+const Null = new Value();
 
 // number, text, boolean
 class Primitive extends Value {
@@ -26,7 +28,10 @@ class Func extends Value {
     }
 
     apply(args) {
-        return VariableAssign.assigns(this.params, args);
+        return VariableAssign.assigns(
+            this.params, 
+            this.params.map((_, idx) => args[idx] ? args[idx] : Null)
+        );
     }
 
     bodyStmt(args) {

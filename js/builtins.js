@@ -14,6 +14,13 @@ const Print = {
     }
 }
 
+const HasValue = {
+    evaluate(context) {
+        let bool = ONE_PARAM.evaluate(context).value ? Primitive.BoolTrue : Primitive.BoolFalse;
+        return context.returned(bool);
+    }
+}
+
 // built-in classes
 
 function classBodyStmt(initFunc) {
@@ -64,5 +71,6 @@ const StringMethods = new Map([
 
 const BUILTINS = new Map([
     ['print', new Func([ONE_PARAM], Print)],
+    ['hasValue', new Func([ONE_PARAM], HasValue)],
     ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
