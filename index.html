@@ -34,7 +34,7 @@
         print(i + '*' + n + '=' + (i * n) + '\t')
         i = i + 1 
     end
-    print('\n')
+    println()
 end
 
 i = 1
@@ -47,7 +47,7 @@ end</code></strong></pre>
   </ul>
   <pre><strong><code>def hanoi(n, a, b, c) 
     if n == 1
-        print('Move sheet from ' + a + ' to ' + c + '\n')
+        println('Move sheet from ' + a + ' to ' + c)
     else
         hanoi(n - 1, a, c, b)
         hanoi(1, a, b, c)
@@ -69,7 +69,7 @@ end
 
 n = 1
 while n &lt;= 5
-    print(n + '! = ' + factorial(n) + '\n')
+    println(n + '! = ' + factorial(n))
     n = n + 1
 end</code></strong></pre>
 <ul>
@@ -86,7 +86,7 @@ end</code></strong></pre>
 
     def deposit(amount)
         if amount &lt;= 0
-            print('must be positive')
+            println('must be positive')
             return
         end
 
@@ -100,12 +100,12 @@ end
 
 acct = new Account('123', 'Justin')
 acct.deposit(100)
-print(acct.toString())</code></strong></pre>
+println(acct.toString())</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
     <textarea id="code"># Is a language easier if 'Hello World' is easier?
-print('Hello World')</textarea> <br>
+println('Hello World')</textarea> <br>
     <br>
     <button id="run">Run It</button> <br>
     <br>
