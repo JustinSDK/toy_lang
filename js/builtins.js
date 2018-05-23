@@ -27,7 +27,14 @@ const Println = {
 
 const HasValue = {
     evaluate(context) {
-        let bool = ONE_PARAM.evaluate(context).value ? Primitive.BoolTrue : Primitive.BoolFalse;
+        let bool = ONE_PARAM.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
+        return context.returned(bool);
+    }
+}
+
+const NoValue = {
+    evaluate(context) {
+        let bool = ONE_PARAM.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
         return context.returned(bool);
     }
 }
@@ -84,5 +91,6 @@ const BUILTINS = new Map([
     ['print', new Func([ONE_PARAM], Print)],
     ['println', new Func([ONE_PARAM], Println)],
     ['hasValue', new Func([ONE_PARAM], HasValue)],
+    ['noValue', new Func([ONE_PARAM], NoValue)],
     ['String', new Class([], classBodyStmt(StringMethods.get('init')))]
 ]);
