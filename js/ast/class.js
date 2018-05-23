@@ -16,15 +16,15 @@ class Instalization {
 
     evaluate(context) {
         let thisInstance = this.instance(context);
+        let initFunc = thisInstance.getProperty('init');
 
-        let init = new StmtSequence(
+        let initStmt = new StmtSequence(
             // here is 'this' ... XD
             new VariableAssign(new Variable('this'), thisInstance),  
-            thisInstance.getProperty('init')
-                        .bodyStmt(this.args.map(arg => arg.evaluate(context)))
+            initFunc ? initFunc.bodyStmt(this.args.map(arg => arg.evaluate(context))) : StmtSequence.EMPTY
         );
         
-        return init.evaluate(context.childContext()).variables.get('this');  
+        return initStmt.evaluate(context.childContext()).variables.get('this');  
     }   
 }
 
