@@ -5,13 +5,13 @@ import {Instalization, Property, MethodCall} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 
-export {VALUE_PART_PARSERS};
+export {EXPR_PARSER};
 
 const VALUE_PART_PARSERS = new Map([
     ['value', {
         parse(tokenable) {
             // pattern matching from text
-            return VALUE_PART_PARSERS.get('text').parse(tokenable);
+            return EXPR_PARSER.parse(tokenable);
         }
     }],
     ['text', {
@@ -120,12 +120,12 @@ const EXPR_PARSER = {
                 let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
                 return stack.push(
                     new NotOperator(
-                        VALUE_PART_PARSERS.get('value').parse(operandTokenable)
+                        VALUE_PART_PARSERS.get('text').parse(operandTokenable)
                     )
                 );
             }
             return stack.push(
-                VALUE_PART_PARSERS.get('value').parse(tokenable)
+                VALUE_PART_PARSERS.get('text').parse(tokenable)
             );
         }, new Stack()).top;
     }

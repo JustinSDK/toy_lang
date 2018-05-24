@@ -2,7 +2,7 @@ import {Func, Void, Class} from './ast/value.js';
 import {Property, MethodCall} from './ast/class.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
-import {VALUE_PART_PARSERS} from './value_parsers.js';
+import {EXPR_PARSER} from './value_parsers.js';
 
 export {PROGRAM_PARSER};
 
@@ -77,7 +77,7 @@ const STMT_PARSERS = new Map([
                     new FunCallWrapper(
                         new FunCall(
                             new Variable(fNameTokenable.value),
-                            argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable)) 
+                            argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)) 
                         )
                     ),
                     PROGRAM_PARSER.parse(tokenizableLines.slice(1))
@@ -96,7 +96,7 @@ const STMT_PARSERS = new Map([
                     new FunCallWrapper(
                         new MethodCall(
                             new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
-                            argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
+                            argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
                         )
                     ),
                     PROGRAM_PARSER.parse(tokenizableLines.slice(1))
@@ -130,7 +130,7 @@ function createAssign(tokenizableLines, clz, target, assignedTokenable) {
     return new StmtSequence(
         new clz(
             target, 
-            VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
+            EXPR_PARSER.parse(assignedTokenable)
         ),
         PROGRAM_PARSER.parse(tokenizableLines.slice(1))
     );
@@ -158,7 +158,7 @@ function createAssignClass(tokenizableLines, argTokenable) {
 
 function createReturn(tokenizableLines, argTokenable) { 
     return new StmtSequence(
-        new Return(argTokenable.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argTokenable)),
+        new Return(argTokenable.value === '' ? Void : EXPR_PARSER.parse(argTokenable)),
         PROGRAM_PARSER.parse(tokenizableLines.slice(1))
     );
 }
@@ -174,7 +174,7 @@ function createIf(tokenizableLines, argTokenable) {
 
     return new StmtSequence(
             new If(
-                VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
+                EXPR_PARSER.parse(argTokenable), 
                 trueStmt,
                 falseStmt
             ),
@@ -186,7 +186,7 @@ function createWhile(tokenizableLines, argTokenable) {
     let remains = tokenizableLines.slice(1);     
     return new StmtSequence(
          new While(
-            VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
+            EXPR_PARSER.parse(argTokenable), 
             PROGRAM_PARSER.parse(remains)
          ),
          PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
