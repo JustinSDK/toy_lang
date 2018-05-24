@@ -9,7 +9,7 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            return PROGRAM_PARSER.parse(tokenizer.tokenizableLines());
+            return new Interceptor(PROGRAM_PARSER).parse(tokenizer.tokenizableLines());
         }
         catch(ex) {
             this.environment.output(ex);
@@ -18,4 +18,22 @@ class Parser {
     }
 }
 
+class Interceptor {
+    constructor(parser) {
+        this.parser = parser;
+    }
+
+    parse(tokenizableLines) {
+        try {
+            return this.parser.parse(tokenizableLines);
+        } 
+        catch(ex) {
+            if(ex instanceof SyntaxError) {
+                throw ex;
+            }
+            
+            throw new SyntaxError(`\n\t${tokenizableLines[0].toString()}`);
+        }
+    }
+}
 

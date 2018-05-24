@@ -6,26 +6,7 @@ import {EXPR_PARSER} from './expr_parser.js';
 
 export {PROGRAM_PARSER};
 
-class ParserInterceptor {
-    constructor(parser) {
-        this.parser = parser;
-    }
-
-    parse(tokenizableLines) {
-        try {
-            return this.parser.parse(tokenizableLines);
-        } 
-        catch(ex) {
-            if(ex instanceof SyntaxError) {
-                throw ex;
-            }
-            
-            throw new SyntaxError(`\n\t${tokenizableLines[0].toString()}`);
-        }
-    }
-}
-
-const PROGRAM_PARSER = new ParserInterceptor({
+const PROGRAM_PARSER = {
     parse(tokenizableLines) {
         if(tokenizableLines.length === 0 || tokenizableLines[0].value === 'else' || tokenizableLines[0].value === 'end') {
             return StmtSequence.EMPTY;
@@ -33,7 +14,7 @@ const PROGRAM_PARSER = new ParserInterceptor({
 
         return STMT_PARSERS.get('variableAssign').parse(tokenizableLines);   
     }
-});
+};
 
 const STMT_PARSERS = new Map([
     ['variableAssign', {
