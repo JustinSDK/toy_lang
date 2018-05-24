@@ -4,9 +4,9 @@ import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {VALUE_PART_PARSERS} from './value_parsers.js';
 
-export {STMT_PARSERS};
+export {PROGRAM_PARSER};
 
-class LineParserInterceptor {
+class ParserInterceptor {
     constructor(parser) {
         this.parser = parser;
     }
@@ -25,16 +25,17 @@ class LineParserInterceptor {
     }
 }
 
-const STMT_PARSERS = new Map([
-    ['sequence', new LineParserInterceptor({
-        parse(tokenizableLines) {
-            if(tokenizableLines.length === 0 || tokenizableLines[0].value === 'else' || tokenizableLines[0].value === 'end') {
-                return StmtSequence.EMPTY;
-            }
-    
-            return STMT_PARSERS.get('variableAssign').parse(tokenizableLines);   
+const PROGRAM_PARSER = new ParserInterceptor({
+    parse(tokenizableLines) {
+        if(tokenizableLines.length === 0 || tokenizableLines[0].value === 'else' || tokenizableLines[0].value === 'end') {
+            return StmtSequence.EMPTY;
         }
-    })], 
+
+        return STMT_PARSERS.get('variableAssign').parse(tokenizableLines);   
+    }
+});
+
+const STMT_PARSERS = new Map([
     ['variableAssign', {
         parse(tokenizableLines) {
             let matched = tokenizableLines[0].tryTokenables('variableAssign');
@@ -79,7 +80,7 @@ const STMT_PARSERS = new Map([
                             argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable)) 
                         )
                     ),
-                    STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                    PROGRAM_PARSER.parse(tokenizableLines.slice(1))
                 );                
             }
 
@@ -98,7 +99,7 @@ const STMT_PARSERS = new Map([
                             argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
                         )
                     ),
-                    STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                    PROGRAM_PARSER.parse(tokenizableLines.slice(1))
                 );                
             }
 
@@ -131,7 +132,7 @@ function createAssign(tokenizableLines, clz, target, assignedTokenable) {
             target, 
             VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
         ),
-        STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+        PROGRAM_PARSER.parse(tokenizableLines.slice(1))
     );
 }
 
@@ -143,11 +144,11 @@ function createAssignFunc(tokenizableLines, argTokenable, clz = Func) {
             new Variable(fNameTokenable.value), 
             new clz(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
-                STMT_PARSERS.get('sequence').parse(remains),
+                PROGRAM_PARSER.parse(remains),
                 fNameTokenable.value
             )
         ),
-        STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+        PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
     );    
 }
 
@@ -158,17 +159,17 @@ function createAssignClass(tokenizableLines, argTokenable) {
 function createReturn(tokenizableLines, argTokenable) { 
     return new StmtSequence(
         new Return(argTokenable.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argTokenable)),
-        STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+        PROGRAM_PARSER.parse(tokenizableLines.slice(1))
     );
 }
 
 function createIf(tokenizableLines, argTokenable) {
     let remains = tokenizableLines.slice(1);     
-    let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
+    let trueStmt = PROGRAM_PARSER.parse(remains);
 
     let i = matchingElseIdx(trueStmt);
     let falseStmt = remains[i].value === 'else' ? 
-            STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
+            PROGRAM_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
 
     return new StmtSequence(
@@ -177,7 +178,7 @@ function createIf(tokenizableLines, argTokenable) {
                 trueStmt,
                 falseStmt
             ),
-            STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+            PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
     );
 }
 
@@ -186,9 +187,9 @@ function createWhile(tokenizableLines, argTokenable) {
     return new StmtSequence(
          new While(
             VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
-            STMT_PARSERS.get('sequence').parse(remains)
+            PROGRAM_PARSER.parse(remains)
          ),
-         STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+         PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
     ); 
 }
 

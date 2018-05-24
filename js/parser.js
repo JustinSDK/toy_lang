@@ -1,4 +1,4 @@
-import {STMT_PARSERS} from './line_parsers.js';
+import {PROGRAM_PARSER} from './line_parsers.js';
 
 export {Parser};
 
@@ -9,7 +9,7 @@ class Parser {
 
     parse(tokenizer) {
         try {
-            return STMT_PARSERS.get('sequence').parse(tokenizer.tokenizableLines());
+            return PROGRAM_PARSER.parse(tokenizer.tokenizableLines());
         }
         catch(ex) {
             this.environment.output(ex);
