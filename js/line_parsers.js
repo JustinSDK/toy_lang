@@ -4,7 +4,7 @@ import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {VALUE_PART_PARSERS} from './value_parsers.js';
 
-export {LINE_PARSERS};
+export {STMT_PARSERS};
 
 class LineParserInterceptor {
     constructor(parser) {
@@ -25,14 +25,14 @@ class LineParserInterceptor {
     }
 }
 
-const LINE_PARSERS = new Map([
+const STMT_PARSERS = new Map([
     ['sequence', new LineParserInterceptor({
         parse(tokenizableLines) {
             if(tokenizableLines.length === 0 || tokenizableLines[0].value === 'else' || tokenizableLines[0].value === 'end') {
                 return StmtSequence.EMPTY;
             }
     
-            return LINE_PARSERS.get('variableAssign').parse(tokenizableLines);   
+            return STMT_PARSERS.get('variableAssign').parse(tokenizableLines);   
         }
     })], 
     ['variableAssign', {
@@ -48,7 +48,7 @@ const LINE_PARSERS = new Map([
                 );
             }
 
-            return LINE_PARSERS.get('propertyAssign').parse(tokenizableLines);
+            return STMT_PARSERS.get('propertyAssign').parse(tokenizableLines);
         }
     }],   
     ['propertyAssign', {
@@ -64,7 +64,7 @@ const LINE_PARSERS = new Map([
                 );                
             }
 
-            return LINE_PARSERS.get('fcall').parse(tokenizableLines);
+            return STMT_PARSERS.get('fcall').parse(tokenizableLines);
         }
     }],             
     ['fcall', {
@@ -79,11 +79,11 @@ const LINE_PARSERS = new Map([
                             argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable)) 
                         )
                     ),
-                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                    STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
                 );                
             }
 
-            return LINE_PARSERS.get('mcall').parse(tokenizableLines);
+            return STMT_PARSERS.get('mcall').parse(tokenizableLines);
         }
     }],        
     ['mcall', {
@@ -98,11 +98,11 @@ const LINE_PARSERS = new Map([
                             argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
                         )
                     ),
-                    LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+                    STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
                 );                
             }
 
-            return LINE_PARSERS.get('command').parse(tokenizableLines);
+            return STMT_PARSERS.get('command').parse(tokenizableLines);
         }
     }],            
     ['command', {
@@ -131,7 +131,7 @@ function createAssign(tokenizableLines, clz, target, assignedTokenable) {
             target, 
             VALUE_PART_PARSERS.get('value').parse(assignedTokenable)
         ),
-        LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+        STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
     );
 }
 
@@ -143,11 +143,11 @@ function createAssignFunc(tokenizableLines, argTokenable, clz = Func) {
             new Variable(fNameTokenable.value), 
             new clz(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
-                LINE_PARSERS.get('sequence').parse(remains),
+                STMT_PARSERS.get('sequence').parse(remains),
                 fNameTokenable.value
             )
         ),
-        LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+        STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
     );    
 }
 
@@ -158,17 +158,17 @@ function createAssignClass(tokenizableLines, argTokenable) {
 function createReturn(tokenizableLines, argTokenable) { 
     return new StmtSequence(
         new Return(argTokenable.value === '' ? Void : VALUE_PART_PARSERS.get('value').parse(argTokenable)),
-        LINE_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
+        STMT_PARSERS.get('sequence').parse(tokenizableLines.slice(1))
     );
 }
 
 function createIf(tokenizableLines, argTokenable) {
     let remains = tokenizableLines.slice(1);     
-    let trueStmt = LINE_PARSERS.get('sequence').parse(remains);
+    let trueStmt = STMT_PARSERS.get('sequence').parse(remains);
 
     let i = matchingElseIdx(trueStmt);
     let falseStmt = remains[i].value === 'else' ? 
-            LINE_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
+            STMT_PARSERS.get('sequence').parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
 
     return new StmtSequence(
@@ -177,7 +177,7 @@ function createIf(tokenizableLines, argTokenable) {
                 trueStmt,
                 falseStmt
             ),
-            LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+            STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
     );
 }
 
@@ -186,9 +186,9 @@ function createWhile(tokenizableLines, argTokenable) {
     return new StmtSequence(
          new While(
             VALUE_PART_PARSERS.get('boolean').parse(argTokenable), 
-            LINE_PARSERS.get('sequence').parse(remains)
+            STMT_PARSERS.get('sequence').parse(remains)
          ),
-         LINE_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
+         STMT_PARSERS.get('sequence').parse(linesAfterCurrentBlock(remains))
     ); 
 }
 
