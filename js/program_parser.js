@@ -2,7 +2,7 @@ import {Func, Void, Class} from './ast/value.js';
 import {Property, MethodCall} from './ast/class.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
-import {EXPR_PARSER} from './value_parsers.js';
+import {EXPR_PARSER} from './expr_parser.js';
 
 export {PROGRAM_PARSER};
 

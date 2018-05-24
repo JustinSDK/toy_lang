@@ -1,4 +1,4 @@
-import {PROGRAM_PARSER} from './line_parsers.js';
+import {PROGRAM_PARSER} from './program_parser.js';
 
 export {Parser};
 
