@@ -7,13 +7,62 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 
 export {EXPR_PARSER};
 
-const VALUE_PART_PARSERS = new Map([
-    ['value', {
+const OPERAND_PARSERS = new Map([
+    ['new', {
         parse(tokenable) {
-            // pattern matching from text
-            return EXPR_PARSER.parse(tokenable);
-        }
-    }],
+            let newTokenables = tokenable.tryTokenables('new');
+            if(newTokenables.length !== 0) {
+                let [classNameTokenable, ...argTokenables] = newTokenables;
+                return new Instalization(
+                    new Variable(classNameTokenable.value), 
+                    argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+                )
+            }
+
+            return OPERAND_PARSERS.get('fcall').parse(tokenable);
+        }        
+    }],  
+    ['fcall', {
+        parse(tokenable) {
+            let fcallTokenables = tokenable.tryTokenables('fcall');
+            if(fcallTokenables.length !== 0) {
+                let [fNameTokenable, ...argTokenables] = fcallTokenables;
+                return new FunCall(
+                    new Variable(fNameTokenable.value), 
+                    argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+                )
+            }
+
+            return OPERAND_PARSERS.get('mcall').parse(tokenable);
+        }        
+    }],   
+    ['mcall', {
+        parse(tokenable) {
+            let mcallTokenables = tokenable.tryTokenables('mcall');
+            if(mcallTokenables.length !== 0) {
+                let [nameTokenable, propTokenable, ...argTokenables] = mcallTokenables;
+                return new MethodCall(
+                    new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                    argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+                )
+            }
+            return OPERAND_PARSERS.get('property').parse(tokenable);
+        }        
+    }],     
+    ['property', {
+        parse(tokenable) {
+            let instanceProperty = tokenable.tryTokenables('property');
+            if(instanceProperty.length !== 0) {
+                let [nameTokenable, propTokenable] = instanceProperty;
+                return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
+            }
+
+            return VALUE_PARSERS.get('text').parse(tokenable);
+        }        
+    }]
+]);
+
+const VALUE_PARSERS = new Map([         
     ['text', {
         parse(tokenable) {
             let [textTokenable] = tokenable.tryTokenables('text');
@@ -28,13 +77,13 @@ const VALUE_PART_PARSERS = new Map([
                                           .replace(/\\\\/g, '\\')
                                           .replace(/\\'/g, '\'')
                       ) 
-                      : VALUE_PART_PARSERS.get('number').parse(tokenable);
+                      : VALUE_PARSERS.get('number').parse(tokenable);
         }
     }],
     ['number', {
         parse(tokenable) {
             let [numTokenable] = tokenable.tryTokenables('number');
-            return numTokenable ? new Primitive(parseFloat(numTokenable.value)) : VALUE_PART_PARSERS.get('boolean').parse(tokenable);
+            return numTokenable ? new Primitive(parseFloat(numTokenable.value)) : VALUE_PARSERS.get('boolean').parse(tokenable);
         }        
     }],
     ['boolean', {
@@ -42,67 +91,18 @@ const VALUE_PART_PARSERS = new Map([
             let [boolTokenable] = tokenable.tryTokenables('boolean');
             return boolTokenable ? 
                        (boolTokenable.value === 'true' ? Primitive.BoolTrue : Primitive.BoolFalse) 
-                       : VALUE_PART_PARSERS.get('variable').parse(tokenable);
+                       : VALUE_PARSERS.get('variable').parse(tokenable);
         }        
     }],    
     ['variable', {
         parse(tokenable) {
             let [varTokenable] = tokenable.tryTokenables('variable');
-            return varTokenable ? new Variable(varTokenable.value) : VALUE_PART_PARSERS.get('fcall').parse(tokenable);
+            if(varTokenable) {
+                return new Variable(varTokenable.value);
+            }
+
+            throw new SyntaxError(`\n\t${tokenable.toString()}`);
         }
-    }],
-    ['fcall', {
-        parse(tokenable) {
-            let fcallTokenables = tokenable.tryTokenables('fcall');
-            if(fcallTokenables.length !== 0) {
-                let [fNameTokenable, ...argTokenables] = fcallTokenables;
-                return new FunCall(
-                    new Variable(fNameTokenable.value), 
-                    argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
-                )
-            }
-
-            return VALUE_PART_PARSERS.get('new').parse(tokenable);
-        }        
-    }],    
-    ['new', {
-        parse(tokenable) {
-            let newTokenables = tokenable.tryTokenables('new');
-            if(newTokenables.length !== 0) {
-                let [classNameTokenable, ...argTokenables] = newTokenables;
-                return new Instalization(
-                    new Variable(classNameTokenable.value), 
-                    argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
-                )
-            }
-
-            return VALUE_PART_PARSERS.get('property').parse(tokenable);
-        }        
-    }],      
-    ['property', {
-        parse(tokenable) {
-            let instanceProperty = tokenable.tryTokenables('property');
-            if(instanceProperty.length !== 0) {
-                let [nameTokenable, propTokenable] = instanceProperty;
-                return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
-            }
-
-            return VALUE_PART_PARSERS.get('mcall').parse(tokenable);
-        }        
-    }],          
-    ['mcall', {
-        parse(tokenable) {
-            let mcallTokenables = tokenable.tryTokenables('mcall');
-            if(mcallTokenables.length !== 0) {
-                let [nameTokenable, propTokenable, ...argTokenables] = mcallTokenables;
-                return new MethodCall(
-                    new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
-                    argTokenables.map(argTokenable => VALUE_PART_PARSERS.get('value').parse(argTokenable))
-                )
-            }
-
-            return EXPR_PARSER.parse(tokenable);
-        }        
     }]
 ]);
 
@@ -120,12 +120,12 @@ const EXPR_PARSER = {
                 let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
                 return stack.push(
                     new NotOperator(
-                        VALUE_PART_PARSERS.get('text').parse(operandTokenable)
+                        OPERAND_PARSERS.get('new').parse(operandTokenable)
                     )
                 );
             }
             return stack.push(
-                VALUE_PART_PARSERS.get('text').parse(tokenable)
+                OPERAND_PARSERS.get('new').parse(tokenable)
             );
         }, new Stack()).top;
     }
