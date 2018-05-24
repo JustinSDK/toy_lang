@@ -3,43 +3,56 @@ import {Variable, StmtSequence, VariableAssign} from './ast/statement.js';
 
 export {BUILTINS};
 
-const ONE_PARAM = new Variable('p');
+const PARAM1 = new Variable('p1');
+const PARAM2 = new Variable('p2');
 
 // built-in functions
 
-const Print = {
-    evaluate(context) {
-        context.output(ONE_PARAM.evaluate(context).toString());
-        return context;
-    }
+function func(name, node, params = []) {
+    return new Func(params, node, name);
 }
 
-const Println = {
+const Print = func('print', {
     evaluate(context) {
-        let argument = ONE_PARAM.evaluate(context);
+        context.output(PARAM1.evaluate(context).toString());
+        return context;
+    }
+}, [PARAM1]);
+
+const Println = func('println', {
+    evaluate(context) {
+        let argument = PARAM1.evaluate(context);
         if(argument !== Null) {
             context.output(argument.toString());
         }
         context.output('\n');
         return context;
     }
-}
+}, [PARAM1]);
 
-const HasValue = {
+const HasValue = func('hasValue',{
     evaluate(context) {
-        let bool = ONE_PARAM.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
+        let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
         return context.returned(bool);
     }
-}
+}, [PARAM1]);
 
-const NoValue = {
+const NoValue = func('noValue', {
     evaluate(context) {
-        let bool = ONE_PARAM.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
+        let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
         return context.returned(bool);
     }
-}
-
+}, [PARAM1]);
+ 
 // built-in classes
+
+function clz(name, members) {
+    return new Class([], classBodyStmt(Array.from(members.entries())), name);
+}
+
+function self(context) {
+    return context.variables.get('this');
+}
 
 function classBodyStmt(assigns) {
     if(assigns.length === 0) {
@@ -52,48 +65,64 @@ function classBodyStmt(assigns) {
     );
 }
 
-const StringClass = new Map([
-    ['init', new Func([ONE_PARAM], {
+class StringClass {
+    static method(methodName, params = []) {
+        return func(methodName, {
+            evaluate(context) {
+                let instance = self(context);
+                let text = instance.getProperty('value').value;
+                return context.returned(
+                    new Primitive(
+                        String.prototype[methodName].apply(
+                            text, 
+                            params.map(param => param.evaluate(context).value)
+                        )
+                    )
+                );
+            }    
+        }, params);
+    }
+
+    static method0(methodName) {
+        return StringClass.method(methodName);
+    }
+
+    static method1(methodName) {
+        return StringClass.method(methodName, [PARAM1]);
+    }    
+
+    static method2(methodName) {
+        return StringClass.method(methodName, [PARAM1, PARAM2]);
+    }       
+}
+
+StringClass.members = new Map([
+    ['init', func('init', {
         evaluate(context) {
-            let self = context.variables.get('this');
-            self.setProperty('value', ONE_PARAM.evaluate(context));
-            self.setProperty('length', new Primitive(ONE_PARAM.evaluate(context).value.length));
+            let instance = self(context);
+            instance.setProperty('value', PARAM1.evaluate(context));
+            instance.setProperty('length', new Primitive(PARAM1.evaluate(context).value.length));
             return context;
         }
-    }, 'init')],
-    ['charAt', new Func([ONE_PARAM], {
-        evaluate(context) {
-            let instance = context.variables.get('this');
-            let text = instance.properties.get('value').value;
-            return context.returned(
-                new Primitive(text.charAt(ONE_PARAM.evaluate(context).value))
-            );
-        }    
-    }, 'charAt')],
-    ['toUpperCase', new Func([], {
-        evaluate(context) {
-            let instance = context.variables.get('this');
-            let text = instance.properties.get('value').value;
-            return context.returned(
-                new Primitive(text.toUpperCase())
-            );
-        }    
-    }, 'toUpperCase')],   
-    ['toLowerCase', new Func([], {
-        evaluate(context) {
-            let instance = context.variables.get('this');
-            let text = instance.properties.get('value').value;
-            return context.returned(
-                new Primitive(text.toLowerCase())
-            );
-        }    
-    }, 'toLowerCase')], 
+    }, [PARAM1])],
+    ['toUpperCase', StringClass.method0('toUpperCase')],   
+    ['toLowerCase', StringClass.method0('toLowerCase')],     
+    ['trim', StringClass.method0('trim')],     
+    ['charAt', StringClass.method1('charAt')],
+    ['charCodeAt', StringClass.method1('charCodeAt')],
+    ['codePointAt', StringClass.method1('codePointAt')],
+    ['endsWith', StringClass.method2('endsWith')],
+    ['startsWith', StringClass.method2('startsWith')],
+    ['includes', StringClass.method2('includes')],
+    ['indexOf', StringClass.method2('indexOf')],
+    ['lastIndexOf', StringClass.method2('lastIndexOf')],
+    ['substring', StringClass.method2('substring')] 
 ]);
 
 const BUILTINS = new Map([
-    ['print', new Func([ONE_PARAM], Print, 'print')],
-    ['println', new Func([ONE_PARAM], Println, 'println')],
-    ['hasValue', new Func([ONE_PARAM], HasValue, 'hasValue')],
-    ['noValue', new Func([ONE_PARAM], NoValue, 'noValue')],
-    ['String', new Class([], classBodyStmt(Array.from(StringClass.entries())), 'String')]
+    ['print', Print],
+    ['println', Println],
+    ['hasValue', HasValue],
+    ['noValue', NoValue],
+    ['String', clz('String', StringClass.members)]
 ]);
