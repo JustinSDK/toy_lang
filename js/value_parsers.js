@@ -7,6 +7,13 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 
 export {EXPR_PARSER};
 
+const EXPR_PARSER = {
+    parse(tokenable) {
+        let tokenables = toPostfix(tokenable.tryTokenables('expression'));
+        return exprAst(tokenables);
+    }
+};
+
 const OPERAND_PARSERS = new Map([
     ['new', {
         parse(tokenable) {
@@ -108,28 +115,25 @@ const VALUE_PARSERS = new Map([
 
 // expression
 
-const EXPR_PARSER = {
-    parse(tokenable) {
-        let tokenables = toPostfix(tokenable.tryTokenables('expression'));
-        return tokenables.reduce((stack, tokenable) => {
-            if(isOperator(tokenable.value)) {
-                return reduce(stack, tokenable.value);
-            } 
-            else if(tokenable.value.startsWith('not')) {
-                let [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
-                let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
-                return stack.push(
-                    new NotOperator(
-                        OPERAND_PARSERS.get('new').parse(operandTokenable)
-                    )
-                );
-            }
+function exprAst(tokenables) {
+    return tokenables.reduce((stack, tokenable) => {
+        if(isOperator(tokenable.value)) {
+            return reduce(stack, tokenable.value);
+        } 
+        else if(tokenable.value.startsWith('not')) {
+            let [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
+            let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
             return stack.push(
-                OPERAND_PARSERS.get('new').parse(tokenable)
+                new NotOperator(
+                    OPERAND_PARSERS.get('new').parse(operandTokenable)
+                )
             );
-        }, new Stack()).top;
-    }
-};
+        }
+        return stack.push(
+            OPERAND_PARSERS.get('new').parse(tokenable)
+        );
+    }, new Stack()).top;
+}
 
 function priority(operator) {
     return ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
