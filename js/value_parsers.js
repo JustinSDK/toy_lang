@@ -101,34 +101,35 @@ const VALUE_PART_PARSERS = new Map([
                 )
             }
 
-            return VALUE_PART_PARSERS.get('expression').parse(tokenable);
+            return EXPR_PARSER.parse(tokenable);
         }        
-    }],     
-    ['expression', {
-        parse(tokenable) {
-            let tokenables = toPostfix(tokenable.tryTokenables('expression'));
-            return tokenables.reduce((stack, tokenable) => {
-                if(isOperator(tokenable.value)) {
-                    return reduce(stack, tokenable.value);
-                } 
-                else if(tokenable.value.startsWith('not')) {
-                    let [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
-                    let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
-                    return stack.push(
-                        new NotOperator(
-                            VALUE_PART_PARSERS.get('value').parse(operandTokenable)
-                        )
-                    );
-                }
-                return stack.push(
-                    VALUE_PART_PARSERS.get('value').parse(tokenable)
-                );
-            }, new Stack()).top;
-        }
     }]
 ]);
 
 // expression
+
+const EXPR_PARSER = {
+    parse(tokenable) {
+        let tokenables = toPostfix(tokenable.tryTokenables('expression'));
+        return tokenables.reduce((stack, tokenable) => {
+            if(isOperator(tokenable.value)) {
+                return reduce(stack, tokenable.value);
+            } 
+            else if(tokenable.value.startsWith('not')) {
+                let [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
+                let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
+                return stack.push(
+                    new NotOperator(
+                        VALUE_PART_PARSERS.get('value').parse(operandTokenable)
+                    )
+                );
+            }
+            return stack.push(
+                VALUE_PART_PARSERS.get('value').parse(tokenable)
+            );
+        }, new Stack()).top;
+    }
+};
 
 function priority(operator) {
     return ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
