@@ -14,65 +14,6 @@ const EXPR_PARSER = {
     }
 };
 
-const OPERAND_PARSERS = new Map([
-    ['new', {
-        parse(tokenable) {
-            let newTokenables = tokenable.tryTokenables('new');
-            if(newTokenables.length !== 0) {
-                let [classNameTokenable, ...argTokenables] = newTokenables;
-                return new Instalization(
-                    new Variable(classNameTokenable.value), 
-                    argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-                )
-            }
-
-            return OPERAND_PARSERS.get('fcall').parse(tokenable);
-        }        
-    }],  
-    ['fcall', {
-        parse(tokenable) {
-            let fcallTokenables = tokenable.tryTokenables('fcall');
-            if(fcallTokenables.length !== 0) {
-                let [fNameTokenable, ...argTokenables] = fcallTokenables;
-                return new FunCall(
-                    new Variable(fNameTokenable.value), 
-                    argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-                )
-            }
-
-            return OPERAND_PARSERS.get('mcall').parse(tokenable);
-        }        
-    }],   
-    ['mcall', {
-        parse(tokenable) {
-            let mcallTokenables = tokenable.tryTokenables('mcall');
-            if(mcallTokenables.length !== 0) {
-                let [nameTokenable, propTokenable, ...argTokenables] = mcallTokenables;
-                return new MethodCall(
-                    new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
-                    argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-                )
-            }
-            return OPERAND_PARSERS.get('property').parse(tokenable);
-        }        
-    }],     
-    ['property', {
-        parse(tokenable) {
-            let instanceProperty = tokenable.tryTokenables('property');
-            if(instanceProperty.length !== 0) {
-                let [nameTokenable, propTokenable] = instanceProperty;
-                return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
-            }
-
-            return VALUE_PARSERS.parse(tokenable);
-        }        
-    }]
-]);
-
-OPERAND_PARSERS.parse = function(tokenable) {
-    return this.get('new').parse(tokenable);
-};
-
 class Rule {
     constructor(rule) {
         this.rule = rule;
@@ -136,7 +77,37 @@ class Parser {
     }
 }
 
-const VALUE_PARSERS = Parser.orRules(
+const OPERAND_PARSERS = Parser.orRules(
+    ['new', {
+        parse([classNameTokenable, ...argTokenables]) {
+            return new Instalization(
+                new Variable(classNameTokenable.value), 
+                argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+            );
+        }        
+    }],  
+    ['fcall', {
+        parse([fNameTokenable, ...argTokenables]) {;
+            return new FunCall(
+                new Variable(fNameTokenable.value), 
+                argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+            );
+        }        
+    }],   
+    ['mcall', {
+        parse([nameTokenable, propTokenable, ...argTokenables]) {
+            return new MethodCall(
+                new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+            );
+            
+        }        
+    }],     
+    ['property', {
+        parse([nameTokenable, propTokenable]) {
+            return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
+        }        
+    }],    
     ['text', {
         parse([textTokenable]) {
             return new Primitive(textTokenable.value

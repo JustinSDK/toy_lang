@@ -1,8 +1,8 @@
 import {PROGRAM_PARSER} from './program_parser.js';
 
-export {Parser};
+export {ToyParser};
 
-class Parser {
+class ToyParser {
     constructor(environment) {  
         this.environment = environment;  
     }

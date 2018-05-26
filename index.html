@@ -113,7 +113,7 @@ println('Hello World')</textarea> <br>
     <script type="module">
     import {Tokenizer} from './js/tokenizer/tokenizer.js';        
     import {Context} from './js/context.js';
-    import {Parser} from './js/toy_parser.js';
+    import {ToyParser} from './js/toy_parser.js';
 
     const ENVIRONMENT = {
         output(value) {
@@ -125,7 +125,7 @@ println('Hello World')</textarea> <br>
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        new Parser(ENVIRONMENT)
+        new ToyParser(ENVIRONMENT)
                 .parse(new Tokenizer(code))
                 .evaluate(Context.initialize(ENVIRONMENT));
     });
