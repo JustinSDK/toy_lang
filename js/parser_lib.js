@@ -14,7 +14,7 @@ class Rule {
     }
 }
 
-class TokenableRuleChain {
+class RuleChain {
     constructor(rules) {
         this.rules = rules;
     }
@@ -29,6 +29,12 @@ class TokenableRuleChain {
 
     isEmpty() {
         return this.rules.length === 0;
+    }
+}
+
+class TokenableRuleChain extends RuleChain {
+    constructor(rules) {
+        super(rules);
     }
 
     static orRules(...rulePairList) {
