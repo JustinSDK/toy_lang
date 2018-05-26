@@ -25,7 +25,7 @@ const OPERAND_PARSERS = Parser.orRules(
         }        
     }],  
     ['fcall', {
-        parse([fNameTokenable, ...argTokenables]) {;
+        parse([fNameTokenable, ...argTokenables]) {
             return new FunCall(
                 new Variable(fNameTokenable.value), 
                 argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
