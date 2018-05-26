@@ -8,12 +8,13 @@ import {Parser} from './parser_lib.js';
 
 export {EXPR_PARSER};
 
-const EXPR_PARSER = {
-    parse(tokenable) {
-        let tokenables = toPostfix(tokenable.tryTokenables('expression'));
-        return exprAst(tokenables);
-    }
-};
+const EXPR_PARSER = Parser.orRules(
+    ['expression', {
+        parse(tokenables) {
+            return exprAst(toPostfix(tokenables));
+        }
+    }]
+);
 
 const OPERAND_PARSERS = Parser.orRules(
     ['new', {
