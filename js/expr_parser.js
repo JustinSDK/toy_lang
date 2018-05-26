@@ -64,10 +64,14 @@ const OPERAND_PARSERS = new Map([
                 return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
             }
 
-            return VALUE_PARSERS.get('text').parse(tokenable);
+            return VALUE_PARSERS.parse(tokenable);
         }        
     }]
 ]);
+
+OPERAND_PARSERS.parse = function(tokenable) {
+    return this.get('new').parse(tokenable);
+};
 
 const VALUE_PARSERS = new Map([         
     ['text', {
@@ -113,6 +117,10 @@ const VALUE_PARSERS = new Map([
     }]
 ]);
 
+VALUE_PARSERS.parse = function(tokenable) {
+    return this.get('text').parse(tokenable);
+};
+
 // expression
 
 function exprAst(tokenables) {
@@ -125,12 +133,12 @@ function exprAst(tokenables) {
             let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
             return stack.push(
                 new NotOperator(
-                    OPERAND_PARSERS.get('new').parse(operandTokenable)
+                    OPERAND_PARSERS.parse(operandTokenable)
                 )
             );
         }
         return stack.push(
-            OPERAND_PARSERS.get('new').parse(tokenable)
+            OPERAND_PARSERS.parse(tokenable)
         );
     }, new Stack()).top;
 }
