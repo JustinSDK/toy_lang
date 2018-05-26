@@ -73,53 +73,100 @@ OPERAND_PARSERS.parse = function(tokenable) {
     return this.get('new').parse(tokenable);
 };
 
-const VALUE_PARSERS = new Map([         
+class Rule {
+    constructor(rule) {
+        this.rule = rule;
+    }
+
+    get type() {
+        return this.rule[0];
+    }
+
+    get parser() {
+        return this.rule[1];
+    }
+}
+
+class RuleChain {
+    constructor(rules) {
+        this.rules = rules;
+    }
+
+    head() {
+        return this.rules[0];
+    }
+
+    tail() {
+        return new RuleChain(this.rules.slice(1));
+    }
+
+    isEmpty() {
+        return this.rules.length === 0;
+    }
+
+    static orRules(...rulePairList) {
+        return new RuleChain(rulePairList.map(rulePair => new Rule(rulePair)));
+    }
+
+    parse(tokenable) {
+        if(this.isEmpty()) {
+            throw new SyntaxError(`\n\t${tokenable.toString()}`);
+        }
+
+        let rule = this.head();
+        let matchedTokenables = tokenable.tryTokenables(rule.type);
+        if(matchedTokenables.length !== 0) {
+            return rule.parser.parse(matchedTokenables);
+        }
+        return this.tail().parse(tokenable);
+    }
+}
+
+class Parser {
+    constructor(ruleChain) {
+        this.ruleChain = ruleChain;
+    }
+
+    static orRules(...rulePairList) {
+        return new Parser(RuleChain.orRules(...rulePairList));
+    }
+
+    parse(tokenable) {
+        return this.ruleChain.parse(tokenable);
+    }
+}
+
+const VALUE_PARSERS = Parser.orRules(
     ['text', {
-        parse(tokenable) {
-            let [textTokenable] = tokenable.tryTokenables('text');
-            return textTokenable ? 
-                      new Primitive(textTokenable.value
-                                          .replace(/^\\r/, '\r')
-                                          .replace(/^\\n/, '\n')
-                                          .replace(/([^\\])\\r/g, '$1\r')
-                                          .replace(/([^\\])\\n/g, '$1\n')
-                                          .replace(/^\\t/, '\t')
-                                          .replace(/([^\\])\\t/g, '$1\t')
-                                          .replace(/\\\\/g, '\\')
-                                          .replace(/\\'/g, '\'')
-                      ) 
-                      : VALUE_PARSERS.get('number').parse(tokenable);
+        parse([textTokenable]) {
+            return new Primitive(textTokenable.value
+                .replace(/^\\r/, '\r')
+                .replace(/^\\n/, '\n')
+                .replace(/([^\\])\\r/g, '$1\r')
+                .replace(/([^\\])\\n/g, '$1\n')
+                .replace(/^\\t/, '\t')
+                .replace(/([^\\])\\t/g, '$1\t')
+                .replace(/\\\\/g, '\\')
+                .replace(/\\'/g, '\'')
+            );
         }
     }],
     ['number', {
-        parse(tokenable) {
-            let [numTokenable] = tokenable.tryTokenables('number');
-            return numTokenable ? new Primitive(parseFloat(numTokenable.value)) : VALUE_PARSERS.get('boolean').parse(tokenable);
+        parse([numTokenable]) {
+            return new Primitive(parseFloat(numTokenable.value));
         }        
     }],
     ['boolean', {
-        parse(tokenable) {
-            let [boolTokenable] = tokenable.tryTokenables('boolean');
-            return boolTokenable ? 
-                       (boolTokenable.value === 'true' ? Primitive.BoolTrue : Primitive.BoolFalse) 
-                       : VALUE_PARSERS.get('variable').parse(tokenable);
+        parse([boolTokenable]) {
+            return boolTokenable.value === 'true' ? Primitive.BoolTrue : Primitive.BoolFalse;
         }        
     }],    
     ['variable', {
-        parse(tokenable) {
-            let [varTokenable] = tokenable.tryTokenables('variable');
-            if(varTokenable) {
-                return new Variable(varTokenable.value);
-            }
-
-            throw new SyntaxError(`\n\t${tokenable.toString()}`);
+        parse([varTokenable]) {
+            return new Variable(varTokenable.value);
         }
-    }]
-]);
-
-VALUE_PARSERS.parse = function(tokenable) {
-    return this.get('text').parse(tokenable);
-};
+    }] 
+);
 
 // expression
 
