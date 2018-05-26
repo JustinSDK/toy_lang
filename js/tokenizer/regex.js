@@ -34,10 +34,24 @@ const NEW_CLZ_REGEX = new RegExp(`(new (${VARIABLE_REGEX.source})(${ARGUMENT_LT_
 
 const PROP_REGEX = new RegExp(`((${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source}))`);
 
-const EXPR_REGEX = new RegExp(
-    `(${NEW_CLZ_REGEX.source}|(not\\s+)?${FUNCALL_REGEX.source}|(not\\s+)?${METHODCALL_REGEX.source}|(not\\s+)?${PROP_REGEX.source}|${TEXT_REGEX.source}|${RELATION_REGEX.source}|${LOGIC_REGEX.source}|${NUMBER_REGEX.source}|${ARITHMETIC_REGEX.source}|${PARENTHESE_REGEX.source}|(not\\s+)?(${BOOLEAN_REGEX.source})|(not\\s+)?${VARIABLE_REGEX.source})`
+const EXPR_REGEX = orRegexs(
+    NEW_CLZ_REGEX.source,
+    `(not\\s+)?${FUNCALL_REGEX.source}`,
+    `(not\\s+)?${METHODCALL_REGEX.source}`,
+    `(not\\s+)?${PROP_REGEX.source}`,
+    `(not\\s+)?${TEXT_REGEX.source}`,
+    `(not\\s+)?${NUMBER_REGEX.source}`,
+    `(not\\s+)?(${BOOLEAN_REGEX.source})`,
+    `(not\\s+)?${VARIABLE_REGEX.source}`,
+    RELATION_REGEX.source,
+    LOGIC_REGEX.source,
+    ARITHMETIC_REGEX.source,
+    PARENTHESE_REGEX.source
 );
 
+function orRegexs(...regexs) {
+    return new RegExp(`(${regexs.join('|')})`);
+}
 
 const REGEX = new Map([
     ['boolean', new RegExp(`^(${BOOLEAN_REGEX.source})$`)],
