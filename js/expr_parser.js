@@ -4,11 +4,11 @@ import {FunCall} from './ast/function.js';
 import {Instalization, Property, MethodCall} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
-import {Parser} from './parser_lib.js';
+import {TokenableParser} from './parser_lib.js';
 
 export {EXPR_PARSER};
 
-const EXPR_PARSER = Parser.orRules(
+const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
         parse(tokenables) {
             return exprAst(toPostfix(tokenables));
@@ -16,7 +16,7 @@ const EXPR_PARSER = Parser.orRules(
     }]
 );
 
-const OPERAND_PARSERS = Parser.orRules(
+const OPERAND_PARSERS = TokenableParser.orRules(
     ['new', {
         parse([classNameTokenable, ...argTokenables]) {
             return new Instalization(

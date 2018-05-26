@@ -1,4 +1,4 @@
-export {Parser};
+export {TokenableParser};
 
 class Rule {
     constructor(rule) {
@@ -14,7 +14,7 @@ class Rule {
     }
 }
 
-class RuleChain {
+class TokenableRuleChain {
     constructor(rules) {
         this.rules = rules;
     }
@@ -24,7 +24,7 @@ class RuleChain {
     }
 
     tail() {
-        return new RuleChain(this.rules.slice(1));
+        return new TokenableRuleChain(this.rules.slice(1));
     }
 
     isEmpty() {
@@ -32,7 +32,7 @@ class RuleChain {
     }
 
     static orRules(...rulePairList) {
-        return new RuleChain(rulePairList.map(rulePair => new Rule(rulePair)));
+        return new TokenableRuleChain(rulePairList.map(rulePair => new Rule(rulePair)));
     }
 
     parse(tokenable) {
@@ -49,13 +49,13 @@ class RuleChain {
     }
 }
 
-class Parser {
+class TokenableParser {
     constructor(ruleChain) {
         this.ruleChain = ruleChain;
     }
 
     static orRules(...rulePairList) {
-        return new Parser(RuleChain.orRules(...rulePairList));
+        return new TokenableParser(TokenableRuleChain.orRules(...rulePairList));
     }
 
     parse(tokenable) {
