@@ -92,7 +92,7 @@ function split(input, separator, x = '', acc = []) {
         return acc.concat([x.trim()]);
     }
 
-    let matched = REGEX.get('dotSeperated').exec(input);
+    let matched = REGEX.get('commaSeperated').exec(input);
     if(matched) {
         let token = matched[1];
         if(token === separator) {

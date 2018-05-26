@@ -65,7 +65,7 @@ const REGEX = new Map([
     ['logic', new RegExp(`^(.*)\\s+(${LOGIC_REGEX.source})\\s+(.*)$`)],
     ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}$`)],
     ['expression', new RegExp(`^${EXPR_REGEX.source}`)],
-    ['dotSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
+    ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
     ['not', /^not\s+(.*)$/],
     ['command', /^(\w+)\s*(.*)$/],
