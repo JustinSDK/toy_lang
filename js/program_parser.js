@@ -3,6 +3,7 @@ import {Property, MethodCall} from './ast/class.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
+import {TokenablesParser} from './parser_lib.js';
 
 export {PROGRAM_PARSER};
 
@@ -12,84 +13,59 @@ const PROGRAM_PARSER = {
             return StmtSequence.EMPTY;
         }
 
-        return STMT_PARSERS.get('variableAssign').parse(tokenizableLines);   
+        return STMT_PARSERS.parse(tokenizableLines);   
     }
 };
 
-const STMT_PARSERS = new Map([
+const STMT_PARSERS = TokenablesParser.orRules(
     ['variableAssign', {
-        parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenables('variableAssign');
-            if(matched.length !== 0) {
-                let [varTokenable, assignedTokenable] = matched;
-                return createAssign(
-                    tokenizableLines, 
-                    VariableAssign, 
-                    new Variable(varTokenable.value), 
-                    assignedTokenable
-                );
-            }
-
-            return STMT_PARSERS.get('propertyAssign').parse(tokenizableLines);
+        parse(tokenizableLines, [varTokenable, assignedTokenable]) {
+            return createAssign(
+                tokenizableLines, 
+                VariableAssign, 
+                new Variable(varTokenable.value), 
+                assignedTokenable
+            );
         }
     }],   
     ['propertyAssign', {
-        parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenables('propertyAssign');
-            if(matched.length !== 0) {
-                let [varTokenable, propertyTokenable, assignedTokenable] = matched;
-                return createAssign(
-                    tokenizableLines, 
-                    PropertyAssign, 
-                    new Property(new Variable(varTokenable.value), propertyTokenable.value), 
-                    assignedTokenable
-                );                
-            }
-
-            return STMT_PARSERS.get('fcall').parse(tokenizableLines);
+        parse(tokenizableLines, [varTokenable, propertyTokenable, assignedTokenable]) {
+            return createAssign(
+                tokenizableLines, 
+                PropertyAssign, 
+                new Property(new Variable(varTokenable.value), propertyTokenable.value), 
+                assignedTokenable
+            );                
         }
     }],             
     ['fcall', {
-        parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenables('fcall');
-            if(matched.length !== 0) {
-                let [fNameTokenable, ...argTokenables] = matched;
-                return new StmtSequence(
-                    new FunCallWrapper(
-                        new FunCall(
-                            new Variable(fNameTokenable.value),
-                            argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)) 
-                        )
-                    ),
-                    PROGRAM_PARSER.parse(tokenizableLines.slice(1))
-                );                
-            }
-
-            return STMT_PARSERS.get('mcall').parse(tokenizableLines);
+        parse(tokenizableLines, [fNameTokenable, ...argTokenables]) {            
+            return new StmtSequence(
+                new FunCallWrapper(
+                    new FunCall(
+                        new Variable(fNameTokenable.value),
+                        argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)) 
+                    )
+                ),
+                PROGRAM_PARSER.parse(tokenizableLines.slice(1))
+            );                
         }
     }],        
     ['mcall', {
-        parse(tokenizableLines) {
-            let matched = tokenizableLines[0].tryTokenables('mcall');
-            if(matched.length !== 0) {
-                let [nameTokenable, propTokenable, ...argTokenables] = matched;
-                return new StmtSequence(
-                    new FunCallWrapper(
-                        new MethodCall(
-                            new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
-                            argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-                        )
-                    ),
-                    PROGRAM_PARSER.parse(tokenizableLines.slice(1))
-                );                
-            }
-
-            return STMT_PARSERS.get('command').parse(tokenizableLines);
+        parse(tokenizableLines, [nameTokenable, propTokenable, ...argTokenables]) {
+            return new StmtSequence(
+                new FunCallWrapper(
+                    new MethodCall(
+                        new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                        argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+                    )
+                ),
+                PROGRAM_PARSER.parse(tokenizableLines.slice(1))
+            ); 
         }
     }],            
     ['command', {
-        parse(tokenizableLines) {
-            let [cmdTokenable, argTokenable] = tokenizableLines[0].tryTokenables('command');
+        parse(tokenizableLines, [cmdTokenable, argTokenable]) {
             switch(cmdTokenable.value) {
                 case 'def':
                     return createAssignFunc(tokenizableLines, argTokenable);
@@ -102,10 +78,9 @@ const STMT_PARSERS = new Map([
                 case 'while':
                     return createWhile(tokenizableLines, argTokenable);
             }
-            throw new SyntaxError(`\n\t${tokenizableLines[0].toString()}`);
         }
     }]
-]);
+);
 
 function createAssign(tokenizableLines, clz, target, assignedTokenable) {
     return new StmtSequence(
