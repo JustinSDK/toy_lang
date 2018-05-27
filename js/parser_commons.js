@@ -1,6 +1,6 @@
 export {TokenableParser, TokenablesParser};
 
-class Rule {
+class AstRule {
     constructor(rule) {
         this.rule = rule;
     }
@@ -9,7 +9,7 @@ class Rule {
         return this.rule[0];
     }
 
-    get parser() {
+    get tree() {
         return this.rule[1];
     }
 }
@@ -44,7 +44,7 @@ class TokenableRuleChain extends RuleChain {
     }
 
     static orRules(...rulePairList) {
-        return new TokenableRuleChain(rulePairList.map(rulePair => new Rule(rulePair)));
+        return new TokenableRuleChain(rulePairList.map(rulePair => new AstRule(rulePair)));
     }
 
     tail() {
@@ -59,7 +59,7 @@ class TokenableRuleChain extends RuleChain {
         let rule = this.head();
         let matchedTokenables = tokenable.tryTokenables(rule.type);
         if(matchedTokenables.length !== 0) {
-            return rule.parser.parse(matchedTokenables);
+            return rule.tree.burst(matchedTokenables);
         }
         return this.tail().parse(tokenable);
     }
@@ -81,7 +81,7 @@ class TokenablesRuleChain extends RuleChain {
     }
 
     static orRules(...rulePairList) {
-        return new TokenablesRuleChain(rulePairList.map(rulePair => new Rule(rulePair)));
+        return new TokenablesRuleChain(rulePairList.map(rulePair => new AstRule(rulePair)));
     }
 
     tail() {
@@ -96,7 +96,7 @@ class TokenablesRuleChain extends RuleChain {
         let rule = this.head();
         let matchedTokenables = tokenables[0].tryTokenables(rule.type);
         if(matchedTokenables.length !== 0) {
-            return rule.parser.parse(tokenables, matchedTokenables);
+            return rule.tree.burst(tokenables, matchedTokenables);
         }
 
         return this.tail().parse(tokenables);

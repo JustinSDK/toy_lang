@@ -10,7 +10,7 @@ export {EXPR_PARSER};
 
 const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
-        parse(tokenables) {
+        burst(tokenables) {
             return exprAst(toPostfix(tokenables));
         }
     }]
@@ -18,7 +18,7 @@ const EXPR_PARSER = TokenableParser.orRules(
 
 const OPERAND_PARSERS = TokenableParser.orRules(
     ['new', {
-        parse([classNameTokenable, ...argTokenables]) {
+        burst([classNameTokenable, ...argTokenables]) {
             return new Instalization(
                 new Variable(classNameTokenable.value), 
                 argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
@@ -26,7 +26,7 @@ const OPERAND_PARSERS = TokenableParser.orRules(
         }        
     }],  
     ['fcall', {
-        parse([fNameTokenable, ...argTokenables]) {
+        burst([fNameTokenable, ...argTokenables]) {
             return new FunCall(
                 new Variable(fNameTokenable.value), 
                 argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
@@ -34,7 +34,7 @@ const OPERAND_PARSERS = TokenableParser.orRules(
         }        
     }],   
     ['mcall', {
-        parse([nameTokenable, propTokenable, ...argTokenables]) {
+        burst([nameTokenable, propTokenable, ...argTokenables]) {
             return new MethodCall(
                 new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
                 argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
@@ -43,12 +43,12 @@ const OPERAND_PARSERS = TokenableParser.orRules(
         }        
     }],     
     ['property', {
-        parse([nameTokenable, propTokenable]) {
+        burst([nameTokenable, propTokenable]) {
             return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
         }        
     }],    
     ['text', {
-        parse([textTokenable]) {
+        burst([textTokenable]) {
             return new Primitive(textTokenable.value
                 .replace(/^\\r/, '\r')
                 .replace(/^\\n/, '\n')
@@ -62,17 +62,17 @@ const OPERAND_PARSERS = TokenableParser.orRules(
         }
     }],
     ['number', {
-        parse([numTokenable]) {
+        burst([numTokenable]) {
             return new Primitive(parseFloat(numTokenable.value));
         }        
     }],
     ['boolean', {
-        parse([boolTokenable]) {
+        burst([boolTokenable]) {
             return boolTokenable.value === 'true' ? Primitive.BoolTrue : Primitive.BoolFalse;
         }        
     }],    
     ['variable', {
-        parse([varTokenable]) {
+        burst([varTokenable]) {
             return new Variable(varTokenable.value);
         }
     }] 

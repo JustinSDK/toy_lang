@@ -19,7 +19,7 @@ const PROGRAM_PARSER = {
 
 const STMT_PARSERS = TokenablesParser.orRules(
     ['variableAssign', {
-        parse(tokenizableLines, [varTokenable, assignedTokenable]) {
+        burst(tokenizableLines, [varTokenable, assignedTokenable]) {
             return createAssign(
                 tokenizableLines, 
                 VariableAssign, 
@@ -29,7 +29,7 @@ const STMT_PARSERS = TokenablesParser.orRules(
         }
     }],   
     ['propertyAssign', {
-        parse(tokenizableLines, [varTokenable, propertyTokenable, assignedTokenable]) {
+        burst(tokenizableLines, [varTokenable, propertyTokenable, assignedTokenable]) {
             return createAssign(
                 tokenizableLines, 
                 PropertyAssign, 
@@ -39,7 +39,7 @@ const STMT_PARSERS = TokenablesParser.orRules(
         }
     }],             
     ['fcall', {
-        parse(tokenizableLines, [fNameTokenable, ...argTokenables]) {            
+        burst(tokenizableLines, [fNameTokenable, ...argTokenables]) {            
             return new StmtSequence(
                 new FunCallWrapper(
                     new FunCall(
@@ -52,7 +52,7 @@ const STMT_PARSERS = TokenablesParser.orRules(
         }
     }],        
     ['mcall', {
-        parse(tokenizableLines, [nameTokenable, propTokenable, ...argTokenables]) {
+        burst(tokenizableLines, [nameTokenable, propTokenable, ...argTokenables]) {
             return new StmtSequence(
                 new FunCallWrapper(
                     new MethodCall(
@@ -65,7 +65,7 @@ const STMT_PARSERS = TokenablesParser.orRules(
         }
     }],            
     ['command', {
-        parse(tokenizableLines, [cmdTokenable, argTokenable]) {
+        burst(tokenizableLines, [cmdTokenable, argTokenable]) {
             switch(cmdTokenable.value) {
                 case 'def':
                     return createAssignFunc(tokenizableLines, argTokenable);
