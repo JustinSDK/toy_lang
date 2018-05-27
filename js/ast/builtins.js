@@ -20,7 +20,7 @@ function invokeToString(context, v) {
             toString.bodyStmt([])
         );
 
-        return method.evaluate(context.childContext()).returnedValue;
+        return method.evaluate(context.childContext()).returnedValue.value;
     } 
     return v.toString();
 }
