@@ -69,7 +69,7 @@ const STMT_PARSER = TokenablesParser.orRules(
             return createReturn(tokenizableLines, argTokenable); 
         }
     }],             
-    ['command', {
+    ['block', {
         burst(tokenizableLines, [cmdTokenable, argTokenable]) {
             switch(cmdTokenable.value) {
                 case 'def':
