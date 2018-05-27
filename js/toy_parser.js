@@ -1,4 +1,4 @@
-import {LINE_PARSER} from './program_parser.js';
+import {LINE_PARSER} from './line_parser.js';
 
 export {ToyParser};
 
