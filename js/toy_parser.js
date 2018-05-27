@@ -23,16 +23,16 @@ class Interceptor {
         this.parser = parser;
     }
 
-    parse(tokenizableLines) {
+    parse(tokenableLines) {
         try {
-            return this.parser.parse(tokenizableLines);
+            return this.parser.parse(tokenableLines);
         } 
         catch(ex) {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
             
-            throw new SyntaxError(`\n\t${tokenizableLines[0].toString()}`);
+            throw new SyntaxError(`\n\t${tokenableLines[0].toString()}`);
         }
     }
 }
