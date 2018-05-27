@@ -9,7 +9,7 @@ class AstRule {
         return this.rule[0];
     }
 
-    get tree() {
+    get bud() {
         return this.rule[1];
     }
 }
@@ -59,7 +59,7 @@ class TokenableRuleChain extends RuleChain {
         let rule = this.head();
         let matchedTokenables = tokenable.tryTokenables(rule.type);
         if(matchedTokenables.length !== 0) {
-            return rule.tree.burst(matchedTokenables);
+            return rule.bud.burst(matchedTokenables);
         }
         return this.tail().parse(tokenable);
     }
@@ -96,7 +96,7 @@ class TokenablesRuleChain extends RuleChain {
         let rule = this.head();
         let matchedTokenables = tokenables[0].tryTokenables(rule.type);
         if(matchedTokenables.length !== 0) {
-            return rule.tree.burst(tokenables, matchedTokenables);
+            return rule.bud.burst(tokenables, matchedTokenables);
         }
 
         return this.tail().parse(tokenables);
