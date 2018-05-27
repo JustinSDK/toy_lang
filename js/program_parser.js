@@ -95,6 +95,13 @@ function createAssign(tokenizableLines, clz, target, assignedTokenable) {
     );
 }
 
+function createReturn(tokenizableLines, argTokenable) { 
+    return new StmtSequence(
+        new Return(argTokenable.value === '' ? Void : EXPR_PARSER.parse(argTokenable)),
+        PROGRAM_PARSER.parse(tokenizableLines.slice(1))
+    );
+}
+
 function createAssignFunc(tokenizableLines, argTokenable, clz = Func) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     let remains = tokenizableLines.slice(1);     
@@ -113,13 +120,6 @@ function createAssignFunc(tokenizableLines, argTokenable, clz = Func) {
 
 function createAssignClass(tokenizableLines, argTokenable) {
     return createAssignFunc(tokenizableLines, argTokenable, Class)
-}
-
-function createReturn(tokenizableLines, argTokenable) { 
-    return new StmtSequence(
-        new Return(argTokenable.value === '' ? Void : EXPR_PARSER.parse(argTokenable)),
-        PROGRAM_PARSER.parse(tokenizableLines.slice(1))
-    );
 }
 
 function createIf(tokenizableLines, argTokenable) {
