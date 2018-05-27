@@ -10,8 +10,8 @@ export {EXPR_PARSER};
 
 const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
-        burst(matchedTokenables) {
-            return exprAst(toPostfix(matchedTokenables));
+        burst([...infixTokenables]) {
+            return exprAst(toPostfix(infixTokenables));
         }
     }]
 );
