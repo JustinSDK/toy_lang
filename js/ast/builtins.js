@@ -12,19 +12,37 @@ function func(name, node, params = []) {
     return new Func(params, node, name);
 }
 
+function invokeToString(context, v) {
+    let toString = v.getProperty('toString');
+    if(toString) {
+        let method = new StmtSequence(
+            new VariableAssign(new Variable('this'), v),  
+            toString.bodyStmt([])
+        );
+
+        return method.evaluate(context.childContext()).returnedValue;
+    } 
+    return v.toString();
+}
+
+function print(context, v) {
+    context.output(v instanceof Instance ? invokeToString(context, v) : v.toString());
+}
+
 const Print = func('print', {
     evaluate(context) {
-        context.output(PARAM1.evaluate(context).toString());
+        print(context, PARAM1.evaluate(context));
         return context;
     }
 }, [PARAM1]);
-
+ 
 const Println = func('println', {
     evaluate(context) {
         let argument = PARAM1.evaluate(context);
         if(argument !== Null) {
-            context.output(argument.toString());
+            print(context, argument);
         }
+
         context.output('\n');
         return context;
     }

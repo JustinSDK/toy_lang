@@ -84,4 +84,8 @@ class Instance extends Value {
     setProperty(name, value) {
         this.properties.set(name, value);
     }
+
+    toString() {
+        return `[object]`;
+    }
 }
