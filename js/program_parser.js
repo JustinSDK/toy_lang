@@ -5,9 +5,9 @@ import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from 
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './parser_commons.js';
 
-export {PROGRAM_PARSER};
+export {LINE_PARSER};
 
-const PROGRAM_PARSER = {
+const LINE_PARSER = {
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === 'else' || tokenableLines[0].value === 'end') {
             return StmtSequence.EMPTY;
@@ -47,7 +47,7 @@ const STMT_PARSER = TokenablesParser.orRules(
                         argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)) 
                     )
                 ),
-                PROGRAM_PARSER.parse(tokenableLines.slice(1))
+                LINE_PARSER.parse(tokenableLines.slice(1))
             );                
         }
     }],        
@@ -60,7 +60,7 @@ const STMT_PARSER = TokenablesParser.orRules(
                         argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
                     )
                 ),
-                PROGRAM_PARSER.parse(tokenableLines.slice(1))
+                LINE_PARSER.parse(tokenableLines.slice(1))
             ); 
         }
     }],   
@@ -91,14 +91,14 @@ function createAssign(tokenableLines, clz, target, assignedTokenable) {
             target, 
             EXPR_PARSER.parse(assignedTokenable)
         ),
-        PROGRAM_PARSER.parse(tokenableLines.slice(1))
+        LINE_PARSER.parse(tokenableLines.slice(1))
     );
 }
 
 function createReturn(tokenableLines, argTokenable) { 
     return new StmtSequence(
         new Return(argTokenable.value === '' ? Void : EXPR_PARSER.parse(argTokenable)),
-        PROGRAM_PARSER.parse(tokenableLines.slice(1))
+        LINE_PARSER.parse(tokenableLines.slice(1))
     );
 }
 
@@ -110,11 +110,11 @@ function createAssignFunc(tokenableLines, argTokenable, clz = Func) {
             new Variable(fNameTokenable.value), 
             new clz(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
-                PROGRAM_PARSER.parse(remains),
+                LINE_PARSER.parse(remains),
                 fNameTokenable.value
             )
         ),
-        PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
+        LINE_PARSER.parse(linesAfterCurrentBlock(remains))
     );    
 }
 
@@ -124,11 +124,11 @@ function createAssignClass(tokenableLines, argTokenable) {
 
 function createIf(tokenableLines, argTokenable) {
     let remains = tokenableLines.slice(1);     
-    let trueStmt = PROGRAM_PARSER.parse(remains);
+    let trueStmt = LINE_PARSER.parse(remains);
 
     let i = matchingElseIdx(trueStmt);
     let falseStmt = remains[i].value === 'else' ? 
-            PROGRAM_PARSER.parse(remains.slice(i + 1)) : 
+            LINE_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
 
     return new StmtSequence(
@@ -137,7 +137,7 @@ function createIf(tokenableLines, argTokenable) {
                 trueStmt,
                 falseStmt
             ),
-            PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
+            LINE_PARSER.parse(linesAfterCurrentBlock(remains))
     );
 }
 
@@ -146,9 +146,9 @@ function createWhile(tokenableLines, argTokenable) {
     return new StmtSequence(
          new While(
             EXPR_PARSER.parse(argTokenable), 
-            PROGRAM_PARSER.parse(remains)
+            LINE_PARSER.parse(remains)
          ),
-         PROGRAM_PARSER.parse(linesAfterCurrentBlock(remains))
+         LINE_PARSER.parse(linesAfterCurrentBlock(remains))
     ); 
 }
 

@@ -1,4 +1,4 @@
-import {PROGRAM_PARSER} from './program_parser.js';
+import {LINE_PARSER} from './program_parser.js';
 
 export {ToyParser};
 
@@ -9,7 +9,7 @@ class ToyParser {
 
     parse(tokenizer) {
         try {
-            return new Interceptor(PROGRAM_PARSER).parse(tokenizer.tokenizableLines());
+            return new Interceptor(LINE_PARSER).parse(tokenizer.tokenizableLines());
         }
         catch(ex) {
             this.environment.output(ex);
