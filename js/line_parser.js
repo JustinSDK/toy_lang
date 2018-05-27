@@ -3,7 +3,7 @@ import {Property, MethodCall} from './ast/class.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
-import {TokenablesParser} from './parser_commons.js';
+import {TokenablesParser} from './commons/parser.js';
 
 export {LINE_PARSER};
 

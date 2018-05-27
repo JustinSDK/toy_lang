@@ -1,10 +1,10 @@
-import {Stack} from './util.js';
+import {Stack} from './commons/collection.js';
 import {Primitive} from './ast/value.js';
 import {FunCall} from './ast/function.js';
 import {Instalization, Property, MethodCall} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
-import {TokenableParser} from './parser_commons.js';
+import {TokenableParser} from './commons/parser.js';
 
 export {EXPR_PARSER};
 
