@@ -16,7 +16,7 @@ const EXPR_PARSER = TokenableParser.orRules(
     }]
 );
 
-const OPERAND_PARSERS = TokenableParser.orRules(
+const OPERAND_PARSER = TokenableParser.orRules(
     ['new', {
         burst([classNameTokenable, ...argTokenables]) {
             return new Instalization(
@@ -90,12 +90,12 @@ function exprAst(tokenables) {
             let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
             return stack.push(
                 new NotOperator(
-                    OPERAND_PARSERS.parse(operandTokenable)
+                    OPERAND_PARSER.parse(operandTokenable)
                 )
             );
         }
         return stack.push(
-            OPERAND_PARSERS.parse(tokenable)
+            OPERAND_PARSER.parse(tokenable)
         );
     }, new Stack()).top;
 }
