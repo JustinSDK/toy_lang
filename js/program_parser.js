@@ -13,11 +13,11 @@ const PROGRAM_PARSER = {
             return StmtSequence.EMPTY;
         }
 
-        return STMT_PARSERS.parse(tokenizableLines);   
+        return STMT_PARSER.parse(tokenizableLines);   
     }
 };
 
-const STMT_PARSERS = TokenablesParser.orRules(
+const STMT_PARSER = TokenablesParser.orRules(
     ['variableAssign', {
         burst(tokenizableLines, [varTokenable, assignedTokenable]) {
             return createAssign(
