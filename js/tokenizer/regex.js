@@ -71,5 +71,6 @@ const REGEX = new Map([
     ['command', /^(\w+)\s*(.*)$/],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
-    ['new', new RegExp(`^${NEW_CLZ_REGEX.source}`)]
+    ['new', new RegExp(`^${NEW_CLZ_REGEX.source}`)],
+    ['return', /^return\s*(.*)$/],
 ]);

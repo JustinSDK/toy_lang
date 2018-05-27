@@ -64,7 +64,11 @@ const TOKEN_TESTERS = new Map([
     ['command', function(input) {
         let matched = REGEX.get('command').exec(input);
         return matched ? [matched[1], matched[2]] : [];
-    }]
+    }],
+    ['return', function(input) {
+        let matched = REGEX.get('return').exec(input);
+        return matched ? [matched[1]] : [];
+    }]    
 ]);
 
 function expr_tokens(input) {

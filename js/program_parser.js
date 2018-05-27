@@ -63,7 +63,12 @@ const STMT_PARSERS = TokenablesParser.orRules(
                 PROGRAM_PARSER.parse(tokenizableLines.slice(1))
             ); 
         }
-    }],            
+    }],   
+    ['return', {
+        burst(tokenizableLines, [argTokenable]) {
+            return createReturn(tokenizableLines, argTokenable); 
+        }
+    }],             
     ['command', {
         burst(tokenizableLines, [cmdTokenable, argTokenable]) {
             switch(cmdTokenable.value) {
@@ -71,8 +76,6 @@ const STMT_PARSERS = TokenablesParser.orRules(
                     return createAssignFunc(tokenizableLines, argTokenable);
                 case 'class':
                     return createAssignClass(tokenizableLines, argTokenable);
-                case 'return':
-                    return createReturn(tokenizableLines, argTokenable);
                 case 'if':
                     return createIf(tokenizableLines, argTokenable);
                 case 'while':
