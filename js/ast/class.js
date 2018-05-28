@@ -54,9 +54,17 @@ class PropertyGetter {
         this.property = property;
     }
 
+    receiver(context) {
+        return this.property.receiver(context);
+    }
+
+    propName() {
+        return this.property.propName;
+    }
+
     evaluate(context) {
-        return this.property.receiver(context)
-                            .getProperty(this.property.propName);
+        return this.receiver(context)
+                   .getProperty(this.property.propName);
     }    
 }
 
@@ -66,13 +74,17 @@ class PropertySetter {
         this.value = value;
     }
 
+    receiver(context) {
+        return this.property.receiver(context);
+    }    
+
     evaluate(context) {
         // For simplicity, the setProperty method modifies the state directly. 
-        this.property.receiver(context)
-                     .setProperty(
-                        this.property.propName, 
-                        this.value.evaluate(context)
-                     );
+        this.receiver(context)
+            .setProperty(
+                this.property.propName, 
+                this.value.evaluate(context)
+            );
  
         return context;                                     
     }    
@@ -85,14 +97,8 @@ class MethodCall {
     } 
 
     evaluate(context) {
-        let receiver = this.propertyGetter.property.receiver(context);
-        let f = this.propertyGetter.evaluate(context);
-
-        let method = new StmtSequence(
-            new VariableAssign(new Variable('this'), receiver),  
-            f.bodyStmt(this.args.map(arg => arg.evaluate(context)))
-        );
-
+        let instance = this.propertyGetter.receiver(context);
+        let method = instance.method(context, this.propertyGetter.propName(), this.args);
         return method.evaluate(context.childContext()).returnedValue;
     }    
 }
