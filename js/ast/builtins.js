@@ -79,16 +79,16 @@ function classBodyStmt(assigns) {
     );
 }
 
-class StringClass {
-    static method(methodName, params = []) {
+class Clz {
+    static methodPrimitive(clz, methodName, params = []) {
         return func(methodName, {
             evaluate(context) {
                 let instance = self(context);
-                let text = instance.getProperty('value').value;
+                let value = instance.getProperty('value').value;
                 return context.returned(
                     new Primitive(
-                        String.prototype[methodName].apply(
-                            text, 
+                        clz.prototype[methodName].apply(
+                            value, 
                             params.map(param => param.evaluate(context).value)
                         )
                     )
@@ -96,17 +96,19 @@ class StringClass {
             }    
         }, params);
     }
+}
 
-    static method0(methodName) {
-        return StringClass.method(methodName);
+class StringClass {
+    static method0Primitive(methodName) {
+        return Clz.methodPrimitive(String, methodName);
     }
 
-    static method1(methodName) {
-        return StringClass.method(methodName, [PARAM1]);
+    static method1Primitive(methodName) {
+        return Clz.methodPrimitive(String, methodName, [PARAM1]);
     }    
 
-    static method2(methodName) {
-        return StringClass.method(methodName, [PARAM1, PARAM2]);
+    static method2Primitive(methodName) {
+        return Clz.methodPrimitive(String, methodName, [PARAM1, PARAM2]);
     }       
 }
 
@@ -119,18 +121,18 @@ StringClass.members = new Map([
             return context;
         }
     }, [PARAM1])],
-    ['toUpperCase', StringClass.method0('toUpperCase')],   
-    ['toLowerCase', StringClass.method0('toLowerCase')],     
-    ['trim', StringClass.method0('trim')],     
-    ['charAt', StringClass.method1('charAt')],
-    ['charCodeAt', StringClass.method1('charCodeAt')],
-    ['codePointAt', StringClass.method1('codePointAt')],
-    ['endsWith', StringClass.method2('endsWith')],
-    ['startsWith', StringClass.method2('startsWith')],
-    ['includes', StringClass.method2('includes')],
-    ['indexOf', StringClass.method2('indexOf')],
-    ['lastIndexOf', StringClass.method2('lastIndexOf')],
-    ['substring', StringClass.method2('substring')] 
+    ['toUpperCase', StringClass.method0Primitive('toUpperCase')],   
+    ['toLowerCase', StringClass.method0Primitive('toLowerCase')],     
+    ['trim', StringClass.method0Primitive('trim')],     
+    ['charAt', StringClass.method1Primitive('charAt')],
+    ['charCodeAt', StringClass.method1Primitive('charCodeAt')],
+    ['codePointAt', StringClass.method1Primitive('codePointAt')],
+    ['endsWith', StringClass.method2Primitive('endsWith')],
+    ['startsWith', StringClass.method2Primitive('startsWith')],
+    ['includes', StringClass.method2Primitive('includes')],
+    ['indexOf', StringClass.method2Primitive('indexOf')],
+    ['lastIndexOf', StringClass.method2Primitive('lastIndexOf')],
+    ['substring', StringClass.method2Primitive('substring')] 
 ]);
 
 const BUILTINS = new Map([
