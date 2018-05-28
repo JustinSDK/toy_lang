@@ -12,17 +12,17 @@ function func(name, node, params = []) {
     return new Func(params, node, name);
 }
 
-function invokeToString(context, v) {
-    let toString = v.getProperty('toString');
+function invokeToString(context, instance) {
+    let toString = instance.getProperty('toString');
     if(toString) {
         let method = new StmtSequence(
-            new VariableAssign(new Variable('this'), v),  
+            new VariableAssign(new Variable('this'), instance),  
             toString.bodyStmt([])
         );
 
         return method.evaluate(context.childContext()).returnedValue.value;
     } 
-    return v.toString();
+    return instance.toString();
 }
 
 function print(context, v) {
