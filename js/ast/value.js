@@ -89,6 +89,14 @@ class Instance extends Value {
         return this.properties.has(name);
     }
 
+    method(name, args = []) {
+        let f = this.getProperty(name);
+        return new StmtSequence(
+            new VariableAssign(new Variable('this'), this),  
+            f.bodyStmt(args.map(arg => arg.evaluate(context)))
+        );
+    }
+
     toString() {
         return `[object]`;
     }

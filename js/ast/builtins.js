@@ -13,15 +13,11 @@ function func(name, node, params = []) {
 }
 
 function invokeToString(context, instance) {
-    let toString = instance.getProperty('toString');
-    if(toString) {
-        let method = new StmtSequence(
-            new VariableAssign(new Variable('this'), instance),  
-            toString.bodyStmt([])
-        );
-
+    if(instance.hasProperty('toString')) {
+        let method = instance.method('toString');
         return method.evaluate(context.childContext()).returnedValue.value;
-    } 
+    }
+    
     return instance.toString();
 }
 
