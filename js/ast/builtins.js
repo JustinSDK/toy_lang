@@ -80,19 +80,29 @@ function classBodyStmt(assigns) {
 }
 
 class Clz {
-    static methodPrimitive(clz, methodName, params = []) {
+    static methodType(clz, rtype, methodName, params = []) {
         return func(methodName, {
             evaluate(context) {
                 let instance = self(context);
                 let value = instance.getProperty('value').value;
                 return context.returned(
-                    new Primitive(
+                    new rtype(
                         clz.prototype[methodName].apply(
                             value, 
                             params.map(param => param.evaluate(context).value)
                         )
                     )
                 );
+            }
+        }, params);
+    }
+
+    static methodVoid(clz, methodName, params = []) {
+        return func(methodName, {
+            evaluate(context) {
+                let instance = self(context);
+                let value = instance.getProperty('value').value;
+                return context.returned(Void);
             }    
         }, params);
     }
@@ -100,15 +110,15 @@ class Clz {
 
 class StringClass {
     static method0Primitive(methodName) {
-        return Clz.methodPrimitive(String, methodName);
+        return Clz.methodType(String, Primitive, methodName);
     }
 
     static method1Primitive(methodName) {
-        return Clz.methodPrimitive(String, methodName, [PARAM1]);
+        return Clz.methodType(String, Primitive, methodName, [PARAM1]);
     }    
 
     static method2Primitive(methodName) {
-        return Clz.methodPrimitive(String, methodName, [PARAM1, PARAM2]);
+        return Clz.methodType(String, Primitive, methodName, [PARAM1, PARAM2]);
     }       
 }
 

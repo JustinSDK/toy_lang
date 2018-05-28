@@ -1,3 +1,5 @@
+import {Void} from './value.js';
+
 export {Return, Apply, FunCall, FunCallWrapper};
 
 class Return {
@@ -29,7 +31,8 @@ class FunCall {
     } 
 
     evaluate(context) {
-        return this.apply.evaluate(context).returnedValue;
+        let returnedValue = this.apply.evaluate(context).returnedValue;
+        return  returnedValue === null ? Void : returnedValue;
     }    
 }
 
