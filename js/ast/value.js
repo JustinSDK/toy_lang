@@ -85,6 +85,10 @@ class Instance extends Value {
         this.properties.set(name, value);
     }
 
+    hasProperty(name) {
+        return this.properties.has(name);
+    }
+
     toString() {
         return `[object]`;
     }
