@@ -9,7 +9,7 @@ export {LINE_PARSER};
 
 const LINE_PARSER = {
     parse(tokenableLines) {
-        if(tokenableLines.length === 0 || tokenableLines[0].value === 'else' || tokenableLines[0].value === 'end') {
+        if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
             return StmtSequence.EMPTY;
         }
 
@@ -122,12 +122,16 @@ function createAssignClass(tokenableLines, argTokenable) {
     return createAssignFunc(tokenableLines, argTokenable, Class)
 }
 
+function isElseLine(tokenableLine) {
+    return tokenableLine.tryTokenables('else')[0];
+}
+
 function createIf(tokenableLines, argTokenable) {
     let remains = tokenableLines.slice(1);     
     let trueStmt = LINE_PARSER.parse(remains);
 
-    let i = matchingElseIdx(trueStmt);
-    let falseStmt = remains[i].value === 'else' ? 
+    let i = countStmts(trueStmt) + 1;
+    let falseStmt = isElseLine(remains[i]) ? 
             LINE_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
 
@@ -152,11 +156,11 @@ function createWhile(tokenableLines, argTokenable) {
     ); 
 }
 
-function matchingElseIdx(stmt, i = 1) {
+function countStmts(stmt, i = 1) {
     if(stmt.secondStmt === StmtSequence.EMPTY) {
         return i;
     }
-    return matchingElseIdx(stmt.secondStmt, i + 1);
+    return countStmts(stmt.secondStmt, i + 1);
 }
 
 function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
@@ -165,9 +169,12 @@ function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
     }
 
     let line = tokenableLines[0].value;
-    let n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def')) ? endCount + 1 : (
-        line === 'end' ? endCount - 1 : endCount
-    );
+    let n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def')) ? 
+                endCount + 1 : ( 
+                    line === '}' && (tokenableLines.length === 1 || !isElseLine(tokenableLines[1])) ? 
+                        endCount - 1 : 
+                        endCount
+            );
 
     return linesAfterCurrentBlock(tokenableLines.slice(1), n);
 }

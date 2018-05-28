@@ -28,75 +28,76 @@
     <ul>
       <li># Multiplication Table</li>
     </ul>
-    <pre><strong><code>def print_row(n)
+    <pre><strong><code>def print_row(n) {
     i = 2
-    while i &lt; 10
+    while i &lt; 10 {
         print(i + '*' + n + '=' + (i * n) + '\t')
         i = i + 1 
-    end
+    }
     println()
-end
+}
 
 i = 1
-while i &lt; 10
+while i &lt; 10 {
     print_row(i)
     i = i + 1
-end</code></strong></pre>
+}</code></strong></pre>
 <ul>
     <li># Tower of Hanoi</li>
   </ul>
-  <pre><strong><code>def hanoi(n, a, b, c) 
-    if n == 1
+  <pre><strong><code>def hanoi(n, a, b, c) {
+    if n == 1 {
         println('Move sheet from ' + a + ' to ' + c)
-    else
+    } 
+    else {
         hanoi(n - 1, a, c, b)
         hanoi(1, a, b, c)
         hanoi(n - 1, b, a, c) 
-    end
-end
+    }
+}
 
 hanoi(3, 'A', 'B', 'C')</code></strong></pre>
 <ul>
     <li># Factorial</li>
   </ul>
-  <pre><strong><code>def factorial(n)
-    if n == 0
+  <pre><strong><code>def factorial(n) {
+    if n == 0 {
         return 1
-    end
+    }
 
     return n * factorial(n - 1)
-end
+}
 
 n = 1
-while n &lt;= 5
+while n &lt;= 5 {
     println(n + '! = ' + factorial(n))
     n = n + 1
-end</code></strong></pre>
+}</code></strong></pre>
 <ul>
     <li># Class</li>
   </ul>
-  <pre><strong><code>class Account
+  <pre><strong><code>class Account {
     # it's a field
     balance = 0 
 
-    def init(number, name)
+    def init(number, name) {
         this.number = number
         this.name = name
-    end
+    }
 
-    def deposit(amount)
-        if amount &lt;= 0
+    def deposit(amount) {
+        if amount &lt;= 0 {
             println('must be positive')
             return
-        end
+        }
 
         this.balance = this.balance + amount
-    end
+    }
 
-    def toString()
+    def toString() {
         return this.number + ', ' + this.name + ', ' + this.balance
-    end
-end
+    }
+}
 
 acct = new Account('123', 'Justin')
 acct.deposit(100)
