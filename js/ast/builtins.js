@@ -79,46 +79,45 @@ function classBodyStmt(assigns) {
     );
 }
 
-class Clz {
-    static methodType(clz, rtype, methodName, params = []) {
-        return func(methodName, {
-            evaluate(context) {
-                let instance = self(context);
-                let value = instance.getProperty('value').value;
-                return context.returned(
-                    new rtype(
-                        clz.prototype[methodName].apply(
-                            value, 
-                            params.map(param => param.evaluate(context).value)
-                        )
+function methodType(clz, rtype, methodName, params = []) {
+    return func(methodName, {
+        evaluate(context) {
+            let instance = self(context);
+            let value = instance.getProperty('value').value;
+            return context.returned(
+                new rtype(
+                    clz.prototype[methodName].apply(
+                        value, 
+                        params.map(param => param.evaluate(context).value)
                     )
-                );
-            }
-        }, params);
-    }
-
-    static methodVoid(clz, methodName, params = []) {
-        return func(methodName, {
-            evaluate(context) {
-                let instance = self(context);
-                let value = instance.getProperty('value').value;
-                return context.returned(Void);
-            }    
-        }, params);
-    }
+                )
+            );
+        }
+    }, params);
 }
+
+function methodVoid(clz, methodName, params = []) {
+    return func(methodName, {
+        evaluate(context) {
+            let instance = self(context);
+            let value = instance.getProperty('value').value;
+            return context.returned(Void);
+        }    
+    }, params);
+}
+
 
 class StringClass {
     static method0Primitive(methodName) {
-        return Clz.methodType(String, Primitive, methodName);
+        return methodType(String, Primitive, methodName);
     }
 
     static method1Primitive(methodName) {
-        return Clz.methodType(String, Primitive, methodName, [PARAM1]);
+        return methodType(String, Primitive, methodName, [PARAM1]);
     }    
 
     static method2Primitive(methodName) {
-        return Clz.methodType(String, Primitive, methodName, [PARAM1, PARAM2]);
+        return methodType(String, Primitive, methodName, [PARAM1, PARAM2]);
     }       
 }
 
