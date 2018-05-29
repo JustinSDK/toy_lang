@@ -105,10 +105,10 @@ println(acct)</code></strong></pre>
 <ul>
     <li># Built-in Classes</li>
   </ul>
-  <pre><strong><code>def list(from, to) {
+  <pre><strong><code>def range(begin, end) {
     lt = new List()
-    i = from
-    while i < to {
+    i = begin
+    while i &lt; end {
         lt.append(i)
         i = i + 1
     }
@@ -123,13 +123,9 @@ def sum(lt) {
     return lt.get(0) + sum(lt.slice(1))
 }
  
-lt = list(1, 11)
+lt = range(1, 11)
  
-println(lt.join(' + ') + ' = ' + sum(lt))
- 
-x = new String('aBc')
-println(x.toUpperCase())
-println(x.toLowerCase())</code></strong></pre>
+println(lt.join(' + ') + ' = ' + sum(lt))</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
