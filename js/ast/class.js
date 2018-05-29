@@ -6,12 +6,16 @@ export {Instalization, Property, MethodCall};
 
 class Instalization {
     constructor(fVariable, args) {
-        this.apply = new Apply(fVariable, args);
+        this.fVariable = fVariable;
         this.args = args;
+        this.apply = new Apply(fVariable, args);
     }
 
     instance(context) {
-        return new Instance(this.apply.evaluate(context).variables);
+        return new Instance(
+            this.fVariable.evaluate(context),
+            this.apply.evaluate(context).variables
+        );
     }
 
     evaluate(context) {

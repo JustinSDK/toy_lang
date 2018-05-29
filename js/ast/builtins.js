@@ -128,7 +128,8 @@ function methodNewInstance(clz, methodName, params = []) {
     return func(methodName, {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
-            let instance = new Instance(new Map(self(context).properties));
+            let origin = self(context);
+            let instance = new Instance(origin.clz, new Map(origin.properties));
             instance.setProperty('value', new Primitive(value));
             return context.returned(instance);
         }

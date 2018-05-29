@@ -66,9 +66,10 @@ class Class extends Func {
 const Void = new Value();
 
 class Instance extends Value {
-    constructor(properties) {
+    constructor(clz, properties) {
         super();
-        this.properties = properties;
+        this.clz = clz;
+        this.properties = new Map(Array.from(properties.entries()).concat([['class', clz]]));
     }
 
     getProperty(name) {
@@ -98,6 +99,6 @@ class Instance extends Value {
     }
 
     toString() {
-        return `[object]`;
+        return `[${this.clz.name} object]`;
     }
 }
