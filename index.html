@@ -105,26 +105,31 @@ println(acct)</code></strong></pre>
 <ul>
     <li># Built-in Classes</li>
   </ul>
-  <pre><strong><code>def sum(lt) {
+  <pre><strong><code>def list(from, to) {
+    lt = new List()
+    i = from
+    while i < to {
+        lt.append(i)
+        i = i + 1
+    }
+    return lt
+}
+
+def sum(lt) {
     if lt.isEmpty() {
         return 0
     }
  
     return lt.get(0) + sum(lt.slice(1))
- }
+}
  
- lt = new List()
- i = 1
- while i &lt;= 10 {
-     lt.append(i)
-     i = i + 1
- }
+lt = list(1, 11)
  
- println(lt.join(' + ') + ' = ' + sum(lt))
+println(lt.join(' + ') + ' = ' + sum(lt))
  
- x = new String('aBc')
- println(x.toUpperCase())
- println(x.toLowerCase())</code></strong></pre>
+x = new String('aBc')
+println(x.toUpperCase())
+println(x.toLowerCase())</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
