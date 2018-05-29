@@ -160,7 +160,7 @@ StringClass.members = new Map([
     ['substring', StringClass.method2Primitive('substring')] 
 ]);
 
-class ArrayClass {
+class ListClass {
     static method0Primitive(methodName) {
         return methodPrimitive(Array, methodName);
     }
@@ -178,7 +178,7 @@ class ArrayClass {
     }       
 }
 
-ArrayClass.members = new Map([
+ListClass.members = new Map([
     ['init', func('init', {
         evaluate(context) {
             let p = new Primitive([]);
@@ -188,11 +188,11 @@ ArrayClass.members = new Map([
             return context;
         }
     }, [PARAM1])],
-    ['toString', ArrayClass.method0Primitive('toString')],
-    ['append', ArrayClass.method1Void('push')],
-    ['indexOf', ArrayClass.method1Primitive('indexOf')],
-    ['slice', ArrayClass.method2NewInstance('slice')],
-    ['join', ArrayClass.method1Primitive('join')],
+    ['toString', ListClass.method0Primitive('toString')],
+    ['append', ListClass.method1Void('push')],
+    ['indexOf', ListClass.method1Primitive('indexOf')],
+    ['slice', ListClass.method2NewInstance('slice')],
+    ['join', ListClass.method1Primitive('join')],
     ['get', func('get', {
         evaluate(context) {
             let value = selfValue(context);
@@ -223,5 +223,5 @@ const BUILTINS = new Map([
     ['hasValue', HasValue],
     ['noValue', NoValue],
     ['String', clz('String', StringClass.members)],
-    ['Array', clz('Array', ArrayClass.members)]
+    ['List', clz('List', ListClass.members)]
 ]);
