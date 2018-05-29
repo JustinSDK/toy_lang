@@ -5,6 +5,7 @@ export {BUILTINS};
 
 const PARAM1 = new Variable('p1');
 const PARAM2 = new Variable('p2');
+const PARAM3 = new Variable('p3');
 
 // built-in functions
 
@@ -107,7 +108,19 @@ function methodVoid(clz, methodName, params = []) {
         evaluate(context) {
             delegate(context, clz, methodName, params);
             return context.returned(Void);
+            
         }    
+    }, params);
+}
+
+function methodInstance(clz, methodName, params = []) {
+    return func(methodName, {
+        evaluate(context) {
+            let value = delegate(context, clz, methodName, params);
+            let instance = self(context);
+            instance.setProperty('value', new Primitive(value));
+            return context.returned(instance);
+        }
     }, params);
 }
 
@@ -175,13 +188,18 @@ class ListClass {
 
     static method2NewInstance(methodName) {
         return methodNewInstance(Array, methodName, [PARAM1, PARAM2]);
-    }       
+    }     
+    
+    static method3Instance(methodName) {
+        return methodInstance(Array, methodName, [PARAM1, PARAM2, PARAM3]);
+    }    
 }
 
 ListClass.members = new Map([
     ['init', func('init', {
         evaluate(context) {
-            let p = new Primitive([]);
+            let value = PARAM1.evaluate(context).value;
+            let p = new Primitive(new Array(value ? value : 0));
             let instance = self(context);
             instance.setProperty('value', p);
             instance.setProperty('length', new Primitive(p.value.length));
@@ -193,6 +211,7 @@ ListClass.members = new Map([
     ['indexOf', ListClass.method1Primitive('indexOf')],
     ['slice', ListClass.method2NewInstance('slice')],
     ['join', ListClass.method1Primitive('join')],
+    ['fill', ListClass.method3Instance('fill')],
     ['get', func('get', {
         evaluate(context) {
             let value = selfValue(context);
