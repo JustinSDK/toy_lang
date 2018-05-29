@@ -1,4 +1,4 @@
-import {Null, Primitive, Func, Class, Instance} from './value.js';
+import {Null, Primitive, Func, Class, Instance, Void} from './value.js';
 import {Variable, StmtSequence, VariableAssign} from './statement.js';
 
 export {BUILTINS};
@@ -68,6 +68,10 @@ function self(context) {
     return context.variables.get('this');
 }
 
+function selfValue(context) {
+    return self(context).getProperty('value').value;
+}
+
 function classBodyStmt(assigns) {
     if(assigns.length === 0) {
         return StmtSequence.EMPTY;
@@ -79,17 +83,19 @@ function classBodyStmt(assigns) {
     );
 }
 
-function methodType(clz, rtype, methodName, params = []) {
+function delegate(context, clz, methodName, params) {
+    return clz.prototype[methodName].apply(
+        selfValue(context), 
+        params.map(param => param.evaluate(context).value)
+    );
+}
+
+function methodPrimitive(clz, methodName, params = []) {
     return func(methodName, {
         evaluate(context) {
-            let instance = self(context);
-            let value = instance.getProperty('value').value;
             return context.returned(
-                new rtype(
-                    clz.prototype[methodName].apply(
-                        value, 
-                        params.map(param => param.evaluate(context).value)
-                    )
+                new Primitive(
+                    delegate(context, clz, methodName, params)
                 )
             );
         }
@@ -99,25 +105,34 @@ function methodType(clz, rtype, methodName, params = []) {
 function methodVoid(clz, methodName, params = []) {
     return func(methodName, {
         evaluate(context) {
-            let instance = self(context);
-            let value = instance.getProperty('value').value;
+            delegate(context, clz, methodName, params);
             return context.returned(Void);
         }    
     }, params);
 }
 
+function methodNewInstance(clz, methodName, params = []) {
+    return func(methodName, {
+        evaluate(context) {
+            let value = delegate(context, clz, methodName, params);
+            let instance = new Instance(new Map(self(context).properties));
+            instance.setProperty('value', new Primitive(value));
+            return context.returned(instance);
+        }
+    }, params);
+}
 
 class StringClass {
     static method0Primitive(methodName) {
-        return methodType(String, Primitive, methodName);
+        return methodPrimitive(String, methodName);
     }
 
     static method1Primitive(methodName) {
-        return methodType(String, Primitive, methodName, [PARAM1]);
+        return methodPrimitive(String, methodName, [PARAM1]);
     }    
 
     static method2Primitive(methodName) {
-        return methodType(String, Primitive, methodName, [PARAM1, PARAM2]);
+        return methodPrimitive(String, methodName, [PARAM1, PARAM2]);
     }       
 }
 
@@ -131,7 +146,8 @@ StringClass.members = new Map([
         }
     }, [PARAM1])],
     ['toUpperCase', StringClass.method0Primitive('toUpperCase')],   
-    ['toLowerCase', StringClass.method0Primitive('toLowerCase')],     
+    ['toLowerCase', StringClass.method0Primitive('toLowerCase')],
+    ['toString', StringClass.method0Primitive('toString')],     
     ['trim', StringClass.method0Primitive('trim')],     
     ['charAt', StringClass.method1Primitive('charAt')],
     ['charCodeAt', StringClass.method1Primitive('charCodeAt')],
@@ -144,10 +160,68 @@ StringClass.members = new Map([
     ['substring', StringClass.method2Primitive('substring')] 
 ]);
 
+class ArrayClass {
+    static method0Primitive(methodName) {
+        return methodPrimitive(Array, methodName);
+    }
+
+    static method1Void(methodName) {
+        return methodVoid(Array, methodName, [PARAM1]);
+    }         
+    
+    static method1Primitive(methodName) {
+        return methodPrimitive(Array, methodName, [PARAM1]);
+    }  
+
+    static method2NewInstance(methodName) {
+        return methodNewInstance(Array, methodName, [PARAM1, PARAM2]);
+    }       
+}
+
+ArrayClass.members = new Map([
+    ['init', func('init', {
+        evaluate(context) {
+            let p = new Primitive([]);
+            let instance = self(context);
+            instance.setProperty('value', p);
+            instance.setProperty('length', new Primitive(p.value.length));
+            return context;
+        }
+    }, [PARAM1])],
+    ['toString', ArrayClass.method0Primitive('toString')],
+    ['append', ArrayClass.method1Void('push')],
+    ['indexOf', ArrayClass.method1Primitive('indexOf')],
+    ['slice', ArrayClass.method2NewInstance('slice')],
+    ['join', ArrayClass.method1Primitive('join')],
+    ['get', func('get', {
+        evaluate(context) {
+            let value = selfValue(context);
+            let arg = PARAM1.evaluate(context).value;
+            return context.returned(new Primitive(value[arg]));
+        }    
+    }, [PARAM1])],
+    ['set', func('set', {
+        evaluate(context) {
+            let value = selfValue(context);
+            let idx = PARAM1.evaluate(context).value;
+            let elem = PARAM2.evaluate(context).value;
+            value[idx] = elem;
+            return context.returned(Void);
+        }    
+    }, [PARAM1, PARAM2])],    
+    ['isEmpty', func('isEmpty', {
+        evaluate(context) {
+            let value = selfValue(context);
+            return context.returned(new Primitive(value.length === 0));
+        }    
+    }, [])]
+]);
+
 const BUILTINS = new Map([
     ['print', Print],
     ['println', Println],
     ['hasValue', HasValue],
     ['noValue', NoValue],
-    ['String', clz('String', StringClass.members)]
+    ['String', clz('String', StringClass.members)],
+    ['Array', clz('Array', ArrayClass.members)]
 ]);
