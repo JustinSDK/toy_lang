@@ -14,7 +14,7 @@ function func(name, node, params = []) {
 }
 
 function invokeToString(context, instance) {
-    if(instance.hasProperty('toString')) {
+    if(instance.hasOwnProperty('toString')) {
         let method = instance.method(context, 'toString');
         return method.evaluate(context.childContext()).returnedValue.value;
     }

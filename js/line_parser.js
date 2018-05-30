@@ -102,13 +102,41 @@ function createReturn(tokenableLines, argTokenable) {
     );
 }
 
-function createAssignFunc(tokenableLines, argTokenable, clz = Func) {
+function funcs(stmt) {
+    if(stmt === StmtSequence.EMPTY) {
+        return [];
+    }
+
+    if(stmt.firstStmt instanceof VariableAssign && stmt.firstStmt.value instanceof Func) {
+        let funcStmt = stmt.firstStmt;
+        return [[funcStmt.variable.name, funcStmt.value]].concat(funcs(stmt.secondStmt));
+    }
+    return funcs(stmt.secondStmt);
+}
+
+function notDefStmt(stmt) {
+    if(stmt === StmtSequence.EMPTY) {
+        return StmtSequence.EMPTY;
+    }
+
+    if(!(stmt.firstStmt instanceof VariableAssign) || !(stmt.firstStmt.value instanceof Func)) {
+        return new StmtSequence(
+            stmt.firstStmt,
+            notDefStmt(stmt.secondStmt)
+        );
+    }
+
+    return notDefStmt(stmt.secondStmt);
+}
+
+function createAssignFunc(tokenableLines, argTokenable) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     let remains = tokenableLines.slice(1);     
+
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
-            new clz(
+            new Func(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
                 LINE_PARSER.parse(remains),
                 fNameTokenable.value
@@ -119,7 +147,22 @@ function createAssignFunc(tokenableLines, argTokenable, clz = Func) {
 }
 
 function createAssignClass(tokenableLines, argTokenable) {
-    return createAssignFunc(tokenableLines, argTokenable, Class)
+    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
+    let remains = tokenableLines.slice(1);     
+    let stmt = LINE_PARSER.parse(remains);
+
+    return new StmtSequence(
+        new VariableAssign(
+            new Variable(fNameTokenable.value), 
+            new Class(
+                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
+                notDefStmt(stmt),
+                new Map(funcs(stmt)),
+                fNameTokenable.value
+            )
+        ),
+        LINE_PARSER.parse(linesAfterCurrentBlock(remains))
+    );   
 }
 
 function isElseLine(tokenableLine) {

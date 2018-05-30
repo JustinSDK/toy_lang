@@ -54,8 +54,17 @@ class Func extends Value {
 }
 
 class Class extends Func {
-    constructor(params, stmt, name = '') {
-        super(params, stmt, name);
+    constructor(params, notMethodStmt, methods, name) {
+        super(params, notMethodStmt, name);
+        this.methods = methods;
+    }
+
+    hasMethod(name) {
+        return this.methods.has(name);
+    }
+
+    getMethod(name) {
+        return this.methods.get(name);
     }
 
     toString() {
@@ -86,18 +95,20 @@ class Instance extends Value {
         this.properties.set(name, value);
     }
 
-    hasProperty(name) {
+    hasOwnProperty(name) {
         return this.properties.has(name);
     }
 
+    hasProperty(name) {
+        return this.hasOwnProperty(name) || this.clz.hasMethod(name);
+    }
+
     method(context, name, args = []) {
-        if(hasProperty(name)) {
-            let f = this.getProperty(name);
-            return new StmtSequence(
-                new VariableAssign(new Variable('this'), this),  
-                f.bodyStmt(args.map(arg => arg.evaluate(context)))
-            );
-        }
+        let f = this.hasOwnProperty(name) ? this.getProperty(name) : this.clz.getMethod(name);
+        return new StmtSequence(
+            new VariableAssign(new Variable('this'), this),  
+            f.bodyStmt(args.map(arg => arg.evaluate(context)))
+        );
     }
 
     toString() {
