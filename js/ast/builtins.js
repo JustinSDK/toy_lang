@@ -14,7 +14,7 @@ function func(name, node, params = []) {
 }
 
 function invokeToString(context, instance) {
-    if(instance.hasOwnProperty('toString')) {
+    if(instance.hasProperty('toString')) {
         let method = instance.method(context, 'toString');
         return method.evaluate(context.childContext()).returnedValue.value;
     }
@@ -61,8 +61,8 @@ const NoValue = func('noValue', {
  
 // built-in classes
 
-function clz(name, members) {
-    return new Class([], classBodyStmt(Array.from(members.entries())), name);
+function clz(name, methods) {
+    return new Class([], StmtSequence.EMPTY, methods, name);
 }
 
 function self(context) {
@@ -150,7 +150,7 @@ class StringClass {
     }       
 }
 
-StringClass.members = new Map([
+StringClass.methods = new Map([
     ['init', func('init', {
         evaluate(context) {
             let instance = self(context);
@@ -196,7 +196,7 @@ class ListClass {
     }    
 }
 
-ListClass.members = new Map([
+ListClass.methods = new Map([
     ['init', func('init', {
         evaluate(context) {
             let value = PARAM1.evaluate(context).value;
@@ -242,6 +242,6 @@ const BUILTINS = new Map([
     ['println', Println],
     ['hasValue', HasValue],
     ['noValue', NoValue],
-    ['String', clz('String', StringClass.members)],
-    ['List', clz('List', ListClass.members)]
-]);
+    ['String', clz('String', StringClass.methods)],
+    ['List', clz('List', ListClass.methods)]
+]); 
