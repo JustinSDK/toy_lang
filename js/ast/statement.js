@@ -1,3 +1,5 @@
+import {Func, Class} from './value.js';
+
 export {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
 
 function nope(value) {}
@@ -70,6 +72,19 @@ class If {
     }   
 }
 
+function isFuncStmt(stmt) {
+    return stmt instanceof VariableAssign && stmt.value instanceof Func;
+}
+
+function keepClosureCtx(context, stmt) {
+    let f = stmt.value;
+    let clz = f.constructor;
+    let nf = clz === Class ? 
+                new clz(f.params, f.stmt, f.methods, f.name, context) : 
+                new clz(f.params, f.stmt, f.name, context);
+    return context.assign(stmt.variable.name, nf);
+}
+
 class StmtSequence {
     constructor(firstStmt, secondStmt) {
         this.firstStmt = firstStmt;
@@ -77,10 +92,14 @@ class StmtSequence {
     }
 
     evaluate(context) {
-        let ctx = this.firstStmt.evaluate(context);
+        let evaluatedCtx = this.firstStmt.evaluate(context);
+        let ctx = isFuncStmt(this.firstStmt) ? keepClosureCtx(evaluatedCtx, this.firstStmt) : evaluatedCtx;
+
+        // not return stmt
         if(ctx.returnedValue === null) {
             return this.secondStmt.evaluate(ctx);
         }
+        
         return ctx;
     }
 }

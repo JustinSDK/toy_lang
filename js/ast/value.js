@@ -30,11 +30,12 @@ Primitive.BoolTrue = new Primitive(true);
 Primitive.BoolFalse = new Primitive(false);
 
 class Func extends Value {
-    constructor(params, stmt, name = '') {
+    constructor(params, stmt, name = '', parentContext = null) {
         super();
         this.params = params;
         this.stmt = stmt;
         this.name = name;
+        this.parentContext = parentContext;
     }
 
     apply(args) {
@@ -45,6 +46,16 @@ class Func extends Value {
     }
 
     bodyStmt(args) {
+        // for closure
+        if(this.parentContext) {
+            return new StmtSequence(
+                VariableAssign.assigns(
+                    Array.from(this.parentContext.variables.keys()).map(name => new Variable(name)), 
+                    Array.from(this.parentContext.variables.values())
+                ),
+                new StmtSequence(this.apply(args), this.stmt)
+            );
+        }
         return new StmtSequence(this.apply(args), this.stmt);
     }
 
@@ -54,7 +65,7 @@ class Func extends Value {
 }
 
 class Class extends Func {
-    constructor(params, notMethodStmt, methods, name) {
+    constructor(params, notMethodStmt, methods, name, parentContext = null) {
         super(params, notMethodStmt, name);
         this.methods = methods;
     }
