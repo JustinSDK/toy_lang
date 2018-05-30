@@ -7,6 +7,16 @@ import {TokenablesParser} from './commons/parser.js';
 
 export {LINE_PARSER};
 
+const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 'new', 'class', 'this'];
+
+function checkNotKeyword(tokenableLines, tokenable) {
+    if(KEYWORDS.includes(tokenable.value)) {
+        throw new SyntaxError(
+            `\n\t${tokenableLines[0].toString()}\n\t\t'${tokenable.value}' is a keyword`
+        );
+    }
+}
+
 const LINE_PARSER = {
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
@@ -20,6 +30,8 @@ const LINE_PARSER = {
 const STMT_PARSER = TokenablesParser.orRules(
     ['variableAssign', {
         burst(tokenableLines, [varTokenable, assignedTokenable]) {
+            checkNotKeyword(tokenableLines, varTokenable);
+
             return createAssign(
                 tokenableLines, 
                 VariableAssign, 
@@ -30,6 +42,8 @@ const STMT_PARSER = TokenablesParser.orRules(
     }],   
     ['propertyAssign', {
         burst(tokenableLines, [varTokenable, propertyTokenable, assignedTokenable]) {
+            checkNotKeyword(tokenableLines, propertyTokenable);
+
             return createAssign(
                 tokenableLines, 
                 PropertyAssign, 
@@ -131,8 +145,9 @@ function notDefStmt(stmt) {
 
 function createAssignFunc(tokenableLines, argTokenable) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
-    let remains = tokenableLines.slice(1);     
+    checkNotKeyword(tokenableLines, fNameTokenable);
 
+    let remains = tokenableLines.slice(1);
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
@@ -148,6 +163,8 @@ function createAssignFunc(tokenableLines, argTokenable) {
 
 function createAssignClass(tokenableLines, argTokenable) {
     let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
+    checkNotKeyword(tokenableLines, fNameTokenable);
+
     let remains = tokenableLines.slice(1);     
     let stmt = LINE_PARSER.parse(remains);
 
