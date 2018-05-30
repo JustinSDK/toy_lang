@@ -1,4 +1,4 @@
-import {Null, Primitive, Func, Class, Instance, Void} from './value.js';
+import {Value, Null, Primitive, Func, Class, Instance, Void} from './value.js';
 import {Variable, StmtSequence, VariableAssign} from './statement.js';
 
 export {BUILTINS};
@@ -61,6 +61,17 @@ const NoValue = func('noValue', {
  
 // built-in classes
 
+class NativeObject extends Value {
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+
+    toString() {
+        return `${this.value}`;
+    }
+}
+
 function clz(name, methods) {
     return new Class([], StmtSequence.EMPTY, methods, name);
 }
@@ -118,7 +129,7 @@ function methodInstance(clz, methodName, params = []) {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
             let instance = self(context);
-            instance.setProperty('value', new Primitive(value));
+            instance.setProperty('value', new NativeObject(value));
             return context.returned(instance);
         }
     }, params);
@@ -130,7 +141,7 @@ function methodNewInstance(clz, methodName, params = []) {
             let value = delegate(context, clz, methodName, params);
             let origin = self(context);
             let instance = new Instance(origin.clz, new Map(origin.properties));
-            instance.setProperty('value', new Primitive(value));
+            instance.setProperty('value', new NativeObject(value));
             return context.returned(instance);
         }
     }, params);
@@ -200,10 +211,10 @@ ListClass.methods = new Map([
     ['init', func('init', {
         evaluate(context) {
             let value = PARAM1.evaluate(context).value;
-            let p = new Primitive(new Array(value ? value : 0));
+            let nativeObj = new NativeObject(new Array(value ? value : 0));
             let instance = self(context);
-            instance.setProperty('value', p);
-            instance.setProperty('length', new Primitive(p.value.length));
+            instance.setProperty('value', nativeObj);
+            instance.setProperty('length', new Primitive(nativeObj.value.length));
             return context;
         }
     }, [PARAM1])],

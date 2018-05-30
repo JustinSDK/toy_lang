@@ -1,5 +1,5 @@
 import {Variable, VariableAssign, StmtSequence} from './statement.js'
-export {Null, Primitive, Func, Void, Instance, Class};
+export {Value, Null, Primitive, Func, Void, Instance, Class};
 
 class Value {
     evaluate(context) {
