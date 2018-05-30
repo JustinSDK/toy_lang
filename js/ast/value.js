@@ -46,16 +46,6 @@ class Func extends Value {
     }
 
     bodyStmt(args) {
-        // for closure
-        if(this.parentContext) {
-            return new StmtSequence(
-                VariableAssign.assigns(
-                    Array.from(this.parentContext.variables.keys()).map(name => new Variable(name)), 
-                    Array.from(this.parentContext.variables.values())
-                ),
-                new StmtSequence(this.apply(args), this.stmt)
-            );
-        }
         return new StmtSequence(this.apply(args), this.stmt);
     }
 

@@ -21,7 +21,11 @@ class Apply {
     evaluate(context) {
         let f = this.fVariable.evaluate(context);
         let bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
-        return bodyStmt.evaluate(context.childContext());
+        return bodyStmt.evaluate(
+            f.parentContext ? 
+                f.parentContext : // closure context
+                context.childContext()
+        );
     }
 }
 
