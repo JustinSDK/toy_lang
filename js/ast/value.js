@@ -14,8 +14,7 @@ class Value {
 // internal null value
 const Null = new Value();
 
-// for encapsulating the types of JavaScript,
-// such as number, text, boolean, array
+// number, text, boolean
 class Primitive extends Value {
     constructor(value) {
         super();
