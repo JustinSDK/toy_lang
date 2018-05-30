@@ -49,6 +49,10 @@ class Func extends Value {
         return new StmtSequence(this.apply(args), this.stmt);
     }
 
+    withParentContext(context) {
+        return new Func(this.params, this.stmt, this.name, context);
+    }
+
     toString() {
         return `[Function ${this.name}]`;
     }
@@ -66,6 +70,10 @@ class Class extends Func {
 
     getMethod(name) {
         return this.methods.get(name);
+    }
+
+    withParentContext(context) {
+        return new Class(this.params, this.stmt, this.methods, this.name, context);
     }
 
     toString() {

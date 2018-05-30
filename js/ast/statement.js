@@ -78,11 +78,7 @@ function isFuncStmt(stmt) {
 
 function keepClosureCtx(context, stmt) {
     let f = stmt.value;
-    let clz = f.constructor;
-    let nf = clz === Class ? 
-                new clz(f.params, f.stmt, f.methods, f.name, context) : 
-                new clz(f.params, f.stmt, f.name, context);
-    return context.assign(stmt.variable.name, nf);
+    return context.assign(stmt.variable.name, f.withParentContext(context));
 }
 
 class StmtSequence {
