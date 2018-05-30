@@ -66,7 +66,7 @@ class Func extends Value {
 
 class Class extends Func {
     constructor(params, notMethodStmt, methods, name, parentContext = null) {
-        super(params, notMethodStmt, name);
+        super(params, notMethodStmt, name, parentContext);
         this.methods = methods;
     }
 

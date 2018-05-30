@@ -229,7 +229,7 @@ function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
     }
 
     let line = tokenableLines[0].value;
-    let n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def')) ? 
+    let n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def') || line.startsWith('class')) ? 
                 endCount + 1 : ( 
                     line === '}' && (tokenableLines.length === 1 || !isElseLine(tokenableLines[1])) ? 
                         endCount - 1 : 
