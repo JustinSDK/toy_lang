@@ -91,11 +91,13 @@ class Instance extends Value {
     }
 
     method(context, name, args = []) {
-        let f = this.getProperty(name);
-        return new StmtSequence(
-            new VariableAssign(new Variable('this'), this),  
-            f.bodyStmt(args.map(arg => arg.evaluate(context)))
-        );
+        if(hasProperty(name)) {
+            let f = this.getProperty(name);
+            return new StmtSequence(
+                new VariableAssign(new Variable('this'), this),  
+                f.bodyStmt(args.map(arg => arg.evaluate(context)))
+            );
+        }
     }
 
     toString() {
