@@ -27,7 +27,8 @@ class Context {
         return new Context(
             this.parent,
             this.output,
-            new Map(Array.from(this.variables.entries()).concat([[variable, value]]))
+            new Map(Array.from(this.variables.entries()).concat([[variable, value]])),
+            this.returnedValue
         );
     }
 
