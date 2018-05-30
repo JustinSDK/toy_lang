@@ -130,6 +130,20 @@ println(lt.join(' + ') + ' = ' + sum(lt))
 x = new String('aBc')
 println(x.toUpperCase())
 println(x.toLowerCase())</code></strong></pre>
+<ul>
+    <li># Closure</li>
+  </ul>
+  <pre><strong><code>def foo() {
+    x = 10
+    def inner(y) {
+        return x + y
+    }
+    return inner
+}
+
+f = foo()
+println(f(20))
+</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
