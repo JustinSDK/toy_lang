@@ -4,9 +4,12 @@ import {Apply} from './function.js';
 
 export {Instalization, Property, MethodCall};
 
-function evalMethod(context, instance, method) {
-    let parentContext = instance.clz.parentContext;
-    return method.evaluate(
+function evalMethod(context, instance, methodName, args) {
+    let methodBodyStmt = instance.method(context, methodName, args);
+    let f = instance.getProperty(methodName);
+    let parentContext = instance.clz.parentContext || 
+                        (f ? f.parentContext : f); // In this case, instance is just a namespace.
+    return methodBodyStmt.evaluate(
         parentContext ?
             parentContext.childContext() : // closure context
             context.childContext()
@@ -31,8 +34,7 @@ class Instalization {
         let thisInstance = this.instance(context);
 
         if(thisInstance.hasProperty('init')) {
-            let method = thisInstance.method(context, 'init', this.args);
-            return evalMethod(context, thisInstance, method).variables.get('this');
+            return evalMethod(context, thisInstance, 'init', this.args).variables.get('this');
         }
         
         return thisInstance;
@@ -111,7 +113,6 @@ class MethodCall {
 
     evaluate(context) {
         let instance = this.propertyGetter.receiver(context);
-        let method = instance.method(context, this.propertyGetter.propName(), this.args);
-        return evalMethod(context, instance, method).returnedValue;
+        return evalMethod(context, instance, this.propertyGetter.propName(), this.args).returnedValue;
     }    
 }
