@@ -23,13 +23,10 @@ class Context {
         return this;
     }
 
+    // For simple support for closure, the 'assign' method changes the state directly.
     assign(variable, value) {
-        return new Context(
-            this.parent,
-            this.output,
-            new Map(Array.from(this.variables.entries()).concat([[variable, value]])),
-            this.returnedValue
-        );
+        this.variables.set(variable, value);
+        return this;
     }
 
     returned(value) {
