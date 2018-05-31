@@ -223,37 +223,44 @@ ListClass.methods = new Map([
         }
     }, [PARAM1])],
     ['toString', ListClass.method0Primitive('toString')],
-    ['append', ListClass.method1Void('push')],
     ['indexOf', ListClass.method1Primitive('indexOf')],
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
     ['fill', ListClass.method3Self('fill')],
+    ['append', func('append', {
+        evaluate(context) {
+            let arr = selfValue(context);
+            let arg = PARAM1.evaluate(context);
+            arr.push(arg);
+            return context.returned(Void);
+        }    
+    }, [PARAM1])],
     ['get', func('get', {
         evaluate(context) {
-            let value = selfValue(context);
-            let arg = PARAM1.evaluate(context).value;
-            return context.returned(new Primitive(value[arg]));
+            let arr = selfValue(context);
+            let idx = PARAM1.evaluate(context).value;
+            return context.returned(arr[idx]);
         }    
     }, [PARAM1])],
     ['set', func('set', {
         evaluate(context) {
-            let value = selfValue(context);
+            let arr = selfValue(context);
             let idx = PARAM1.evaluate(context).value;
-            let elem = PARAM2.evaluate(context).value;
-            value[idx] = elem;
+            let elem = PARAM2.evaluate(context);
+            arr[idx] = elem;
             return context.returned(Void);
         }    
     }, [PARAM1, PARAM2])],
     ['length', func('length', {
         evaluate(context) {
-            let value = selfValue(context);
-            return context.returned(new Primitive(value.length));
+            let arr = selfValue(context);
+            return context.returned(new Primitive(arr.length));
         }    
     }, [])],    
     ['isEmpty', func('isEmpty', {
         evaluate(context) {
-            let value = selfValue(context);
-            return context.returned(new Primitive(value.length === 0));
+            let arr = selfValue(context);
+            return context.returned(new Primitive(arr.length === 0));
         }    
     }, [])]
 ]);
