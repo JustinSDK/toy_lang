@@ -20,8 +20,8 @@ function func(name, node, params = PARAM_LT0) {
 
 function invokeToString(context, instance) {
     if(instance.hasProperty('toString')) {
-        let method = instance.method(context, 'toString');
-        return method.evaluate(context.childContext()).returnedValue.value;
+        let methodBodyStmt = instance.methodBodyStmt(context, 'toString');
+        return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
     }
     
     return instance.toString();

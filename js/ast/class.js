@@ -5,7 +5,7 @@ import {Apply} from './function.js';
 export {Instalization, Property, MethodCall};
 
 function evalMethod(context, instance, methodName, args) {
-    let methodBodyStmt = instance.method(context, methodName, args);
+    let methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
     let f = instance.getProperty(methodName);
     let parentContext = instance.clz.parentContext || 
                         (f ? f.parentContext : f); // In this case, instance is just a namespace.

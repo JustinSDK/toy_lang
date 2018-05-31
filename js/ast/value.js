@@ -112,7 +112,7 @@ class Instance extends Value {
         return this.hasOwnProperty(name) || this.clz.hasMethod(name);
     }
 
-    method(context, name, args = []) {
+    methodBodyStmt(context, name, args = []) {
         let f = this.hasOwnProperty(name) ? this.getProperty(name) : this.clz.getMethod(name);
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
