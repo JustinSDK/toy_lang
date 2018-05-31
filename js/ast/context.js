@@ -11,7 +11,7 @@ class Context {
     }
 
     static initialize(environment) {
-        return new Context(null, environment.output, BUILTINS);
+        return new Context(null, environment.output, new Map(BUILTINS));
     }
 
     childContext() {
