@@ -166,7 +166,6 @@ StringClass.methods = new Map([
         evaluate(context) {
             let instance = self(context);
             instance.setProperty('value', PARAM1.evaluate(context));
-            instance.setProperty('length', new Primitive(PARAM1.evaluate(context).value.length));
             return context;
         }
     }, [PARAM1])],
@@ -182,7 +181,13 @@ StringClass.methods = new Map([
     ['includes', StringClass.method2Primitive('includes')],
     ['indexOf', StringClass.method2Primitive('indexOf')],
     ['lastIndexOf', StringClass.method2Primitive('lastIndexOf')],
-    ['substring', StringClass.method2Primitive('substring')] 
+    ['substring', StringClass.method2Primitive('substring')],
+    ['length', func('length', {
+        evaluate(context) {
+            let value = selfValue(context);
+            return context.returned(new Primitive(value.length));
+        }    
+    }, [])]
 ]);
 
 class ListClass {
@@ -214,7 +219,6 @@ ListClass.methods = new Map([
             let nativeObj = new NativeObject(new Array(value ? value : 0));
             let instance = self(context);
             instance.setProperty('value', nativeObj);
-            instance.setProperty('length', new Primitive(nativeObj.value.length));
             return context;
         }
     }, [PARAM1])],
@@ -239,7 +243,13 @@ ListClass.methods = new Map([
             value[idx] = elem;
             return context.returned(Void);
         }    
-    }, [PARAM1, PARAM2])],    
+    }, [PARAM1, PARAM2])],
+    ['length', func('length', {
+        evaluate(context) {
+            let value = selfValue(context);
+            return context.returned(new Primitive(value.length));
+        }    
+    }, [])],    
     ['isEmpty', func('isEmpty', {
         evaluate(context) {
             let value = selfValue(context);
