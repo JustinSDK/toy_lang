@@ -23,7 +23,7 @@ class Apply {
         let bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
         return bodyStmt.evaluate(
             f.parentContext ? 
-                f.parentContext : // closure context
+                f.parentContext.childContext() : // closure context
                 context.childContext()
         );
     }
