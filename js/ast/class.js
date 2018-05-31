@@ -8,7 +8,7 @@ function evalMethod(context, instance, method) {
     let parentContext = instance.clz.parentContext;
     return method.evaluate(
         parentContext ?
-            parentContext.childContext() :
+            parentContext.childContext() : // closure context
             context.childContext()
     );
 }
