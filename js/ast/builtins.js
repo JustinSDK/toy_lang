@@ -135,7 +135,7 @@ function methodSelf(clz, methodName, params = []) {
     }, params);
 }
 
-function methodNewType(clz, methodName, params = []) {
+function methodNewSameType(clz, methodName, params = []) {
     return func(methodName, {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
@@ -204,7 +204,7 @@ class ListClass {
     }  
 
     static method2NewList(methodName) {
-        return methodNewType(Array, methodName, [PARAM1, PARAM2]);
+        return methodNewSameType(Array, methodName, [PARAM1, PARAM2]);
     }     
     
     static method3Self(methodName) {
