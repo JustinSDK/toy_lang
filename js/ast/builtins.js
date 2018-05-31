@@ -7,6 +7,11 @@ const PARAM1 = new Variable('p1');
 const PARAM2 = new Variable('p2');
 const PARAM3 = new Variable('p3');
 
+const PARAM_LT0 = [];
+const PARAM_LT1 = [PARAM1];
+const PARAM_LT2 = [PARAM1, PARAM2];
+const PARAM_LT3 = [PARAM1, PARAM2, PARAM3];
+
 // built-in functions
 
 function func(name, node, params = []) {
@@ -31,7 +36,7 @@ const Print = func('print', {
         print(context, PARAM1.evaluate(context));
         return context;
     }
-}, [PARAM1]);
+}, PARAM_LT1);
  
 const Println = func('println', {
     evaluate(context) {
@@ -43,21 +48,21 @@ const Println = func('println', {
         context.output('\n');
         return context;
     }
-}, [PARAM1]);
+}, PARAM_LT1);
 
 const HasValue = func('hasValue',{
     evaluate(context) {
         let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
         return context.returned(bool);
     }
-}, [PARAM1]);
+}, PARAM_LT1);
 
 const NoValue = func('noValue', {
     evaluate(context) {
         let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
         return context.returned(bool);
     }
-}, [PARAM1]);
+}, PARAM_LT1);
  
 // built-in classes
 
@@ -153,11 +158,11 @@ class StringClass {
     }
 
     static method1Primitive(methodName) {
-        return methodPrimitive(String, methodName, [PARAM1]);
+        return methodPrimitive(String, methodName, PARAM_LT1);
     }    
 
     static method2Primitive(methodName) {
-        return methodPrimitive(String, methodName, [PARAM1, PARAM2]);
+        return methodPrimitive(String, methodName, PARAM_LT2);
     }       
 }
 
@@ -168,7 +173,7 @@ StringClass.methods = new Map([
             instance.setProperty('value', PARAM1.evaluate(context));
             return context;
         }
-    }, [PARAM1])],
+    }, PARAM_LT1)],
     ['toUpperCase', StringClass.method0Primitive('toUpperCase')],   
     ['toLowerCase', StringClass.method0Primitive('toLowerCase')],
     ['toString', StringClass.method0Primitive('toString')],     
@@ -187,7 +192,7 @@ StringClass.methods = new Map([
             let value = selfValue(context);
             return context.returned(new Primitive(value.length));
         }    
-    }, [])]
+    }, PARAM_LT0)]
 ]);
 
 class ListClass {
@@ -196,19 +201,19 @@ class ListClass {
     }
 
     static method1Void(methodName) {
-        return methodVoid(Array, methodName, [PARAM1]);
+        return methodVoid(Array, methodName, PARAM_LT1);
     }         
     
     static method1Primitive(methodName) {
-        return methodPrimitive(Array, methodName, [PARAM1]);
+        return methodPrimitive(Array, methodName, PARAM_LT1);
     }  
 
     static method2NewList(methodName) {
-        return methodNewSameType(Array, methodName, [PARAM1, PARAM2]);
+        return methodNewSameType(Array, methodName, PARAM_LT2);
     }     
     
     static method3Self(methodName) {
-        return methodSelf(Array, methodName, [PARAM1, PARAM2, PARAM3]);
+        return methodSelf(Array, methodName, PARAM_LT3);
     }    
 }
 
@@ -221,7 +226,7 @@ ListClass.methods = new Map([
             instance.setProperty('value', nativeObj);
             return context;
         }
-    }, [PARAM1])],
+    }, PARAM_LT1)],
     ['toString', ListClass.method0Primitive('toString')],
     ['indexOf', ListClass.method1Primitive('indexOf')],
     ['slice', ListClass.method2NewList('slice')],
@@ -234,14 +239,14 @@ ListClass.methods = new Map([
             arr.push(arg);
             return context.returned(Void);
         }    
-    }, [PARAM1])],
+    }, PARAM_LT1)],
     ['get', func('get', {
         evaluate(context) {
             let arr = selfValue(context);
             let idx = PARAM1.evaluate(context).value;
             return context.returned(arr[idx]);
         }    
-    }, [PARAM1])],
+    }, PARAM_LT1)],
     ['set', func('set', {
         evaluate(context) {
             let arr = selfValue(context);
@@ -250,19 +255,19 @@ ListClass.methods = new Map([
             arr[idx] = elem;
             return context.returned(Void);
         }    
-    }, [PARAM1, PARAM2])],
+    }, PARAM_LT2)],
     ['length', func('length', {
         evaluate(context) {
             let arr = selfValue(context);
             return context.returned(new Primitive(arr.length));
         }    
-    }, [])],    
+    }, PARAM_LT0)],    
     ['isEmpty', func('isEmpty', {
         evaluate(context) {
             let arr = selfValue(context);
             return context.returned(new Primitive(arr.length === 0));
         }    
-    }, [])]
+    }, PARAM_LT0)]
 ]);
 
 const BUILTINS = new Map([
