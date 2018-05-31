@@ -136,14 +136,39 @@ println(x.toLowerCase())</code></strong></pre>
   <pre><strong><code>def foo() {
     x = 10
     def inner(y) {
+        # closure closes the variable x, not its value
         return x + y
     }
+    x = 30 
     return inner
 }
 
 f = foo()
-println(f(20))
-</code></strong></pre>
+println('f(20) is ' + f(20))
+
+def orz() {
+    x = 10
+    class Inner {
+        y = x
+        def init(p) {
+            # closure closes the variable x, not its value
+            this.z = x + p
+        }
+
+        def x() {
+            # closure closes the variable x, not its value
+            return x
+        }
+    }
+    x = 30
+    return Inner
+}
+
+clz = orz()
+obj = new clz(20)
+println('obj.x() is ' + obj.x())
+println('obj.y is ' + obj.y)
+println('obj.z is ' + obj.z)</code></strong></pre>
     <ul>
       <li>Laboratory</li>
     </ul>
