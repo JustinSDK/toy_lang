@@ -14,7 +14,7 @@ const PARAM_LT3 = [PARAM1, PARAM2, PARAM3];
 
 // built-in functions
 
-function func(name, node, params = []) {
+function func(name, node, params = PARAM_LT0) {
     return new Func(params, node, name);
 }
 
@@ -78,7 +78,7 @@ class NativeObject extends Value {
 }
 
 function clz(name, methods) {
-    return new Class([], StmtSequence.EMPTY, methods, name);
+    return new Class(PARAM_LT0, StmtSequence.EMPTY, methods, name);
 }
 
 function self(context) {
@@ -107,7 +107,7 @@ function delegate(context, clz, methodName, params) {
     );
 }
 
-function methodPrimitive(clz, methodName, params = []) {
+function methodPrimitive(clz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
             return context.returned(
@@ -119,7 +119,7 @@ function methodPrimitive(clz, methodName, params = []) {
     }, params);
 }
 
-function methodVoid(clz, methodName, params = []) {
+function methodVoid(clz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
             delegate(context, clz, methodName, params);
@@ -129,7 +129,7 @@ function methodVoid(clz, methodName, params = []) {
     }, params);
 }
 
-function methodSelf(clz, methodName, params = []) {
+function methodSelf(clz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
@@ -140,7 +140,7 @@ function methodSelf(clz, methodName, params = []) {
     }, params);
 }
 
-function methodNewSameType(clz, methodName, params = []) {
+function methodNewSameType(clz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
