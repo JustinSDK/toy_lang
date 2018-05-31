@@ -179,9 +179,9 @@ println('Hello World')</textarea> <br>
     <br>
     <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
-    import {Tokenizer} from './js/tokenizer/tokenizer.js';        
-    import {Context} from './js/ast/context.js';
-    import {ToyParser} from './js/toy_parser.js';
+    import {Tokenizer} from './js/toy_lang/interpreter/tokenizer/tokenizer.js';        
+    import {Context} from './js/toy_lang/interpreter/ast/context.js';
+    import {ToyParser} from './js/toy_lang/interpreter/toy_parser.js';
 
     const ENVIRONMENT = {
         output(value) {
