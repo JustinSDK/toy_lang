@@ -124,7 +124,7 @@ function methodVoid(clz, methodName, params = []) {
     }, params);
 }
 
-function methodInstance(clz, methodName, params = []) {
+function methodSelf(clz, methodName, params = []) {
     return func(methodName, {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
@@ -135,7 +135,7 @@ function methodInstance(clz, methodName, params = []) {
     }, params);
 }
 
-function methodNewInstance(clz, methodName, params = []) {
+function methodNewType(clz, methodName, params = []) {
     return func(methodName, {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
@@ -203,12 +203,12 @@ class ListClass {
         return methodPrimitive(Array, methodName, [PARAM1]);
     }  
 
-    static method2NewInstance(methodName) {
-        return methodNewInstance(Array, methodName, [PARAM1, PARAM2]);
+    static method2NewList(methodName) {
+        return methodNewType(Array, methodName, [PARAM1, PARAM2]);
     }     
     
-    static method3Instance(methodName) {
-        return methodInstance(Array, methodName, [PARAM1, PARAM2, PARAM3]);
+    static method3Self(methodName) {
+        return methodSelf(Array, methodName, [PARAM1, PARAM2, PARAM3]);
     }    
 }
 
@@ -225,9 +225,9 @@ ListClass.methods = new Map([
     ['toString', ListClass.method0Primitive('toString')],
     ['append', ListClass.method1Void('push')],
     ['indexOf', ListClass.method1Primitive('indexOf')],
-    ['slice', ListClass.method2NewInstance('slice')],
+    ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
-    ['fill', ListClass.method3Instance('fill')],
+    ['fill', ListClass.method3Self('fill')],
     ['get', func('get', {
         evaluate(context) {
             let value = selfValue(context);
