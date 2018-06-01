@@ -18,6 +18,22 @@ function func(name, node, params = PARAM_LT0) {
     return new Func(params, node, name);
 }
 
+function func0(name, node) {
+    return func(name, node);
+}
+
+function func1(name, node) {
+    return func(name, node, PARAM_LT1);
+}
+
+function func2(name, node) {
+    return func(name, node, PARAM_LT2);
+}
+
+function func3(name, node) {
+    return func(name, node, PARAM_LT3);
+}
+
 function invokeToString(context, instance) {
     if(instance.hasProperty('toString')) {
         let methodBodyStmt = instance.methodBodyStmt(context, 'toString');
@@ -31,14 +47,14 @@ function print(context, v) {
     context.output(v instanceof Instance ? invokeToString(context, v) : v.toString());
 }
 
-const Print = func('print', {
+const Print = func1('print', {
     evaluate(context) {
         print(context, PARAM1.evaluate(context));
         return context;
     }
-}, PARAM_LT1);
+});
  
-const Println = func('println', {
+const Println = func1('println', {
     evaluate(context) {
         let argument = PARAM1.evaluate(context);
         if(argument !== Null) {
@@ -48,21 +64,21 @@ const Println = func('println', {
         context.output('\n');
         return context;
     }
-}, PARAM_LT1);
+});
 
-const HasValue = func('hasValue',{
+const HasValue = func1('hasValue',{
     evaluate(context) {
         let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
         return context.returned(bool);
     }
-}, PARAM_LT1);
+});
 
-const NoValue = func('noValue', {
+const NoValue = func1('noValue', {
     evaluate(context) {
         let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
         return context.returned(bool);
     }
-}, PARAM_LT1);
+});
  
 // built-in classes
 
@@ -167,13 +183,13 @@ class StringClass {
 }
 
 StringClass.methods = new Map([
-    ['init', func('init', {
+    ['init', func1('init', {
         evaluate(context) {
             let instance = self(context);
             instance.setProperty('value', PARAM1.evaluate(context));
             return context;
         }
-    }, PARAM_LT1)],
+    })],
     ['toUpperCase', StringClass.method0Primitive('toUpperCase')],   
     ['toLowerCase', StringClass.method0Primitive('toLowerCase')],
     ['toString', StringClass.method0Primitive('toString')],     
@@ -187,12 +203,12 @@ StringClass.methods = new Map([
     ['indexOf', StringClass.method2Primitive('indexOf')],
     ['lastIndexOf', StringClass.method2Primitive('lastIndexOf')],
     ['substring', StringClass.method2Primitive('substring')],
-    ['length', func('length', {
+    ['length', func0('length', {
         evaluate(context) {
             let value = selfValue(context);
             return context.returned(new Primitive(value.length));
         }    
-    }, PARAM_LT0)]
+    })]
 ]);
 
 class ListClass {
@@ -218,7 +234,7 @@ class ListClass {
 }
 
 ListClass.methods = new Map([
-    ['init', func('init', {
+    ['init', func1('init', {
         evaluate(context) {
             let value = PARAM1.evaluate(context).value;
             let nativeObj = new NativeObject(new Array(value ? value : 0));
@@ -226,28 +242,28 @@ ListClass.methods = new Map([
             instance.setProperty('value', nativeObj);
             return context;
         }
-    }, PARAM_LT1)],
+    })],
     ['toString', ListClass.method0Primitive('toString')],
     ['indexOf', ListClass.method1Primitive('indexOf')],
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
     ['fill', ListClass.method3Self('fill')],
-    ['append', func('append', {
+    ['append', func1('append', {
         evaluate(context) {
             let arr = selfValue(context);
             let arg = PARAM1.evaluate(context);
             arr.push(arg);
             return context.returned(Void);
         }    
-    }, PARAM_LT1)],
-    ['get', func('get', {
+    })],
+    ['get', func1('get', {
         evaluate(context) {
             let arr = selfValue(context);
             let idx = PARAM1.evaluate(context).value;
             return context.returned(arr[idx]);
         }    
-    }, PARAM_LT1)],
-    ['set', func('set', {
+    })],
+    ['set', func2('set', {
         evaluate(context) {
             let arr = selfValue(context);
             let idx = PARAM1.evaluate(context).value;
@@ -255,19 +271,19 @@ ListClass.methods = new Map([
             arr[idx] = elem;
             return context.returned(Void);
         }    
-    }, PARAM_LT2)],
-    ['length', func('length', {
+    })],
+    ['length', func0('length', {
         evaluate(context) {
             let arr = selfValue(context);
             return context.returned(new Primitive(arr.length));
         }    
-    }, PARAM_LT0)],    
-    ['isEmpty', func('isEmpty', {
+    })],    
+    ['isEmpty', func0('isEmpty', {
         evaluate(context) {
             let arr = selfValue(context);
             return context.returned(new Primitive(arr.length === 0));
         }    
-    }, PARAM_LT0)]
+    })]
 ]);
 
 const BUILTINS = new Map([
