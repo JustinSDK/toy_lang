@@ -86,7 +86,10 @@ const Void = new Value();
 class Instance extends Value {
     constructor(clz, properties, internalNode = null) {
         super();
-        this.clz = clz;
+        /*
+            When clz is null, it's the case which 'Class' of toy_lang is an instance of 'Class' of toy_lang.
+         */
+        this.clz = clz === null ? this : clz; 
         this.properties = new Map(Array.from(properties.entries()).concat([['class', clz]]));
         this.internalNode = internalNode;
     }
