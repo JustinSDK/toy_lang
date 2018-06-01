@@ -78,7 +78,7 @@ function isFuncStmt(stmt) {
 
 function assignFunctionInstance(context, stmt) {
     let f = stmt.value;
-    let fclz = lookUpVariable(context, f instanceof Class ? 'Class' : 'Function');
+    let fclz = lookUpVariable(context, f instanceof Class ? 'Class' : 'Function').clz;
     let instance = new Instance(fclz, fclz.methods, f.withParentContext(context));
     return context.assign(stmt.variable.name, instance);
 }

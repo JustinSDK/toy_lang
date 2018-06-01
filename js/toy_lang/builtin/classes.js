@@ -234,9 +234,14 @@ ClassClass.methods = new Map([
 
 const CLZ = clz('Class', ClassClass.methods);
 
+function classInstance(clz, internalNode) {
+    return new Instance(clz, internalNode.methods, internalNode);
+}
+
 const BUILTIN_CLASSES = new Map([
-    ['String', new Instance(CLZ, StringClass.methods, clz('String', StringClass.methods))],
-    ['List', new Instance(CLZ, ListClass.methods, clz('List', ListClass.methods))],
-    ['Function', clz('Function', FunctionClass.methods)],
-    ['Class', CLZ]
+    ['String', classInstance(CLZ, clz('String', StringClass.methods))],
+    ['List', classInstance(CLZ, clz('List', ListClass.methods))],
+    ['Function', classInstance(CLZ, clz('Function', FunctionClass.methods))],
+    ['Class', classInstance(CLZ, CLZ)]
 ]); 
+
