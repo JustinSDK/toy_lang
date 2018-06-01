@@ -1,86 +1,10 @@
-import {Value, Null, Primitive, Func, Class, Instance, Void} from './interpreter/ast/value.js';
+import {Value, Primitive, Class, Instance, Void} from './interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from './interpreter/ast/statement.js';
 
-export {BUILTINS};
+import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './builtin_bases.js';
+import {func, func0, func1, func2} from './builtin_bases.js';
 
-const PARAM1 = new Variable('p1');
-const PARAM2 = new Variable('p2');
-const PARAM3 = new Variable('p3');
-
-const PARAM_LT0 = [];
-const PARAM_LT1 = [PARAM1];
-const PARAM_LT2 = [PARAM1, PARAM2];
-const PARAM_LT3 = [PARAM1, PARAM2, PARAM3];
-
-// built-in functions
-
-function func(name, node, params = PARAM_LT0) {
-    return new Func(params, node, name);
-}
-
-function func0(name, node) {
-    return func(name, node);
-}
-
-function func1(name, node) {
-    return func(name, node, PARAM_LT1);
-}
-
-function func2(name, node) {
-    return func(name, node, PARAM_LT2);
-}
-
-function func3(name, node) {
-    return func(name, node, PARAM_LT3);
-}
-
-function invokeToString(context, instance) {
-    if(instance.hasProperty('toString')) {
-        let methodBodyStmt = instance.methodBodyStmt(context, 'toString');
-        return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
-    }
-    
-    return instance.toString();
-}
-
-function print(context, v) {
-    context.output(v instanceof Instance ? invokeToString(context, v) : v.toString());
-}
-
-const Print = func1('print', {
-    evaluate(context) {
-        print(context, PARAM1.evaluate(context));
-        return context;
-    }
-});
- 
-const Println = func1('println', {
-    evaluate(context) {
-        let argument = PARAM1.evaluate(context);
-        if(argument !== Null) {
-            print(context, argument);
-        }
-
-        context.output('\n');
-        return context;
-    }
-});
-
-const HasValue = func1('hasValue',{
-    evaluate(context) {
-        let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
-        return context.returned(bool);
-    }
-});
-
-const NoValue = func1('noValue', {
-    evaluate(context) {
-        let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
-        return context.returned(bool);
-    }
-});
- 
-// built-in classes
+export {BUILTIN_CLASSES};
 
 class NativeObject extends Value {
     constructor(value) {
@@ -286,11 +210,7 @@ ListClass.methods = new Map([
     })]
 ]);
 
-const BUILTINS = new Map([
-    ['print', Print],
-    ['println', Println],
-    ['hasValue', HasValue],
-    ['noValue', NoValue],
+const BUILTIN_CLASSES = new Map([
     ['String', clz('String', StringClass.methods)],
     ['List', clz('List', ListClass.methods)]
 ]); 

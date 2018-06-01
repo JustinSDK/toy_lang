@@ -1,6 +1,13 @@
-import {BUILTINS} from './builtins.js';
+import {BUILTIN_FUNCTIONS} from './builtin_functions.js';
+import {BUILTIN_CLASSES} from './builtin_classes.js';
 
 export {Context};
+
+const BUILTINS = new Map(
+    Array.from(BUILTIN_FUNCTIONS.entries()).concat(
+        Array.from(BUILTIN_CLASSES.entries())
+    )
+); 
 
 class Context {
     constructor(parent = null, output = nope, variables = new Map(), returnedValue = null) {
