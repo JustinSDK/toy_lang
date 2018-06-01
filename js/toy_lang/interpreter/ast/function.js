@@ -19,7 +19,7 @@ class Apply {
     }
 
     evaluate(context) {
-        let f = this.fVariable.evaluate(context);
+        let f = this.fVariable.evaluate(context).internalNode;
         let bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
         return bodyStmt.evaluate(
             f.parentContext ? 

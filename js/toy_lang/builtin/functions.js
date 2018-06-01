@@ -1,5 +1,6 @@
 import {Null, Primitive, Instance} from '../interpreter/ast/value.js';
 import {PARAM1, func1} from './func_bases.js';
+import {BUILTIN_CLASSES} from './classes.js';
 
 export {BUILTIN_FUNCTIONS};
 
@@ -49,9 +50,11 @@ const NoValue = func1('noValue', {
     }
 });
 
+const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
+
 const BUILTIN_FUNCTIONS = new Map([
-    ['print', Print],
-    ['println', Println],
-    ['hasValue', HasValue],
-    ['noValue', NoValue]
+    ['print', new Instance(FUNC_CLZ, FUNC_CLZ.methods, Print)],
+    ['println', new Instance(FUNC_CLZ, FUNC_CLZ.methods, Println)],
+    ['hasValue', new Instance(FUNC_CLZ, FUNC_CLZ.methods, HasValue)],
+    ['noValue', new Instance(FUNC_CLZ, FUNC_CLZ.methods, NoValue)]
 ]); 

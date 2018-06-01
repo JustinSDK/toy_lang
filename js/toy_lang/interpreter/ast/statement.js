@@ -1,4 +1,4 @@
-import {Func, Class} from './value.js';
+import {Func, Class, Instance} from './value.js';
 
 export {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
 
@@ -76,9 +76,11 @@ function isFuncStmt(stmt) {
     return stmt instanceof VariableAssign && stmt.value instanceof Func;
 }
 
-function keepClosureCtx(context, stmt) {
+function assignFunctionInstance(context, stmt) {
     let f = stmt.value;
-    return context.assign(stmt.variable.name, f.withParentContext(context));
+    let fclz = lookUpVariable(context, f instanceof Class ? 'Class' : 'Function');
+    let instance = new Instance(fclz, fclz.methods, f.withParentContext(context));
+    return context.assign(stmt.variable.name, instance);
 }
 
 class StmtSequence {
@@ -89,7 +91,7 @@ class StmtSequence {
 
     evaluate(context) {
         let evaluatedCtx = this.firstStmt.evaluate(context);
-        let ctx = isFuncStmt(this.firstStmt) ? keepClosureCtx(evaluatedCtx, this.firstStmt) : evaluatedCtx;
+        let ctx = isFuncStmt(this.firstStmt) ? assignFunctionInstance(evaluatedCtx, this.firstStmt) : evaluatedCtx;
 
         // not return stmt
         if(ctx.returnedValue === null) {

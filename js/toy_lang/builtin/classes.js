@@ -210,8 +210,7 @@ ListClass.methods = new Map([
     })]
 ]);
 
-class FunctionClass {
-}
+class FunctionClass {}
 
 FunctionClass.methods = new Map([
     ['init', func1('init', {
@@ -233,8 +232,33 @@ FunctionClass.methods = new Map([
     })]
 ]);
 
+class ClassClass {}
+
+ClassClass.methods = new Map([
+    ['init', func1('init', {
+        evaluate(context) {
+            let instance = self(context);
+            let clz = PARAM1.evaluate(context);
+            if(clz instanceof Class) {
+                instance.internalNode = clz;
+                return context;
+            }
+            throw TypeError('Not internal Func node');
+        }
+    })],
+    ['toString', func0('toString', {
+        evaluate(context) {
+            let f = self(context).internalNode;
+            return context.returned(new Primitive(f.toString()));
+        }    
+    })]
+]);
+
+const CLZ = clz('Class', ClassClass.methods);
+
 const BUILTIN_CLASSES = new Map([
-    ['String', clz('String', StringClass.methods)],
-    ['List', clz('List', ListClass.methods)],
-    ['Function', clz('Function', FunctionClass.methods)]
+    ['String', new Instance(CLZ, StringClass.methods, clz('String', StringClass.methods))],
+    ['List', new Instance(CLZ, ListClass.methods, clz('List', ListClass.methods))],
+    ['Function', clz('Function', FunctionClass.methods)],
+    ['Class', CLZ]
 ]); 

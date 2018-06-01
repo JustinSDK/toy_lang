@@ -25,7 +25,7 @@ class Instalization {
 
     instance(context) {
         return new Instance(
-            this.fVariable.evaluate(context),
+            this.fVariable.evaluate(context).internalNode,
             this.apply.evaluate(context).variables
         );
     }
