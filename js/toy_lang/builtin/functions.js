@@ -1,5 +1,5 @@
-import {Null, Primitive, Instance} from './interpreter/ast/value.js';
-import {PARAM1, func1} from './builtin_bases.js';
+import {Null, Primitive, Instance} from '../interpreter/ast/value.js';
+import {PARAM1, func1} from './func_bases.js';
 
 export {BUILTIN_FUNCTIONS};
 

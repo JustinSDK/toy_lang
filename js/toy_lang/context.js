@@ -1,5 +1,5 @@
-import {BUILTIN_FUNCTIONS} from './builtin_functions.js';
-import {BUILTIN_CLASSES} from './builtin_classes.js';
+import {BUILTIN_FUNCTIONS} from './builtin/functions.js';
+import {BUILTIN_CLASSES} from './builtin/classes.js';
 
 export {Context};
 

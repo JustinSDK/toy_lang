@@ -1,8 +1,8 @@
-import {Value, Primitive, Class, Instance, Void} from './interpreter/ast/value.js';
-import {Variable, StmtSequence, VariableAssign} from './interpreter/ast/statement.js';
+import {Value, Primitive, Class, Instance, Void} from '../interpreter/ast/value.js';
+import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
-import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './builtin_bases.js';
-import {func, func0, func1, func2} from './builtin_bases.js';
+import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
+import {func, func0, func1, func2} from './func_bases.js';
 
 export {BUILTIN_CLASSES};
 
