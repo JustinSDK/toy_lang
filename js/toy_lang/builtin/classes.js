@@ -1,4 +1,4 @@
-import {Value, Primitive, Class, Instance, Void} from '../interpreter/ast/value.js';
+import {Value, Primitive, Class, Instance, Void, Func} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
@@ -218,8 +218,12 @@ FunctionClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
             let instance = self(context);
-            instance.setProperty('value', PARAM1.evaluate(context));
-            return context;
+            let f = PARAM1.evaluate(context);
+            if(f instanceof Func) {
+                instance.setProperty('value', f);
+                return context;
+            }
+            throw TypeError('Not internal Func node');
         }
     })],
     ['toString', func0('toString', {
