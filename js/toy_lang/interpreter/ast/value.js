@@ -84,10 +84,11 @@ class Class extends Func {
 const Void = new Value();
 
 class Instance extends Value {
-    constructor(clz, properties) {
+    constructor(clz, properties, internalValue = null) {
         super();
         this.clz = clz;
         this.properties = new Map(Array.from(properties.entries()).concat([['class', clz]]));
+        this.internalValue = internalValue;
     }
 
     getProperty(name) {

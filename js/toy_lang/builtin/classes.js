@@ -25,7 +25,7 @@ function self(context) {
     return context.variables.get('this');
 }
 
-function selfValue(context) {
+function selfInternalValue(context) {
     return self(context).getProperty('value').value;
 }
 
@@ -42,7 +42,7 @@ function classBodyStmt(assigns) {
 
 function delegate(context, clz, methodName, params) {
     return clz.prototype[methodName].apply(
-        selfValue(context), 
+        selfInternalValue(context), 
         params.map(param => param.evaluate(context).value)
     );
 }
@@ -129,7 +129,7 @@ StringClass.methods = new Map([
     ['substring', StringClass.method2Primitive('substring')],
     ['length', func0('length', {
         evaluate(context) {
-            let value = selfValue(context);
+            let value = selfInternalValue(context);
             return context.returned(new Primitive(value.length));
         }    
     })]
@@ -174,7 +174,7 @@ ListClass.methods = new Map([
     ['fill', ListClass.method3Self('fill')],
     ['append', func1('append', {
         evaluate(context) {
-            let arr = selfValue(context);
+            let arr = selfInternalValue(context);
             let arg = PARAM1.evaluate(context);
             arr.push(arg);
             return context.returned(Void);
@@ -182,14 +182,14 @@ ListClass.methods = new Map([
     })],
     ['get', func1('get', {
         evaluate(context) {
-            let arr = selfValue(context);
+            let arr = selfInternalValue(context);
             let idx = PARAM1.evaluate(context).value;
             return context.returned(arr[idx]);
         }    
     })],
     ['set', func2('set', {
         evaluate(context) {
-            let arr = selfValue(context);
+            let arr = selfInternalValue(context);
             let idx = PARAM1.evaluate(context).value;
             let elem = PARAM2.evaluate(context);
             arr[idx] = elem;
@@ -198,13 +198,13 @@ ListClass.methods = new Map([
     })],
     ['length', func0('length', {
         evaluate(context) {
-            let arr = selfValue(context);
+            let arr = selfInternalValue(context);
             return context.returned(new Primitive(arr.length));
         }    
     })],    
     ['isEmpty', func0('isEmpty', {
         evaluate(context) {
-            let arr = selfValue(context);
+            let arr = selfInternalValue(context);
             return context.returned(new Primitive(arr.length === 0));
         }    
     })]
