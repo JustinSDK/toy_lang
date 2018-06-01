@@ -17,7 +17,7 @@ class NativeObject extends Value {
     }
 }
 
-function clz(name, methods) {
+function clzNode(name, methods) {
     return new Class(PARAM_LT0, StmtSequence.EMPTY, methods, name);
 }
 
@@ -233,15 +233,15 @@ ClassClass.methods = new Map([
 ]);
 
 function classInstance(clz, internalNode) {
-    return new Instance(clz, internalNode.methods, internalNode);
+    return new Instance(clz, ClassClass.methods, internalNode);
 }
 
-const CLZ = classInstance(null, clz('Class', ClassClass.methods));
+const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
 
 const BUILTIN_CLASSES = new Map([
-    ['String', classInstance(CLZ, clz('String', StringClass.methods))],
-    ['List', classInstance(CLZ, clz('List', ListClass.methods))],
-    ['Function', classInstance(CLZ, clz('Function', FunctionClass.methods))],
+    ['String', classInstance(CLZ, clzNode('String', StringClass.methods))],
+    ['List', classInstance(CLZ, clzNode('List', ListClass.methods))],
+    ['Function', classInstance(CLZ, clzNode('Function', FunctionClass.methods))],
     ['Class', CLZ]
 ]); 
 

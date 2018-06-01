@@ -53,7 +53,7 @@ const NoValue = func1('noValue', {
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcInstance(clz, internalNode) {
-    return new Instance(clz, clz.properties, internalNode);
+    return new Instance(clz, clz.internalNode.methods, internalNode);
 }
 
 const BUILTIN_FUNCTIONS = new Map([
