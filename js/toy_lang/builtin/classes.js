@@ -215,8 +215,8 @@ class FunctionClass {}
 FunctionClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
-            let f = self(context).internalNode;
-            return context.returned(new Primitive(f.toString()));
+            let fNode = self(context).internalNode;
+            return context.returned(new Primitive(`[Function ${fNode.name}]`));
         }    
     })]
 ]);
@@ -226,22 +226,22 @@ class ClassClass {}
 ClassClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
-            let f = self(context).internalNode;
-            return context.returned(new Primitive(f.toString()));
+            let clzNode = self(context).internalNode;
+            return context.returned(new Primitive(`[Class ${clzNode.name}]`));
         }    
     })]
 ]);
-
-const CLZ = clz('Class', ClassClass.methods);
 
 function classInstance(clz, internalNode) {
     return new Instance(clz, internalNode.methods, internalNode);
 }
 
+const CLZ = classInstance(null, clz('Class', ClassClass.methods));
+
 const BUILTIN_CLASSES = new Map([
     ['String', classInstance(CLZ, clz('String', StringClass.methods))],
     ['List', classInstance(CLZ, clz('List', ListClass.methods))],
     ['Function', classInstance(CLZ, clz('Function', FunctionClass.methods))],
-    ['Class', classInstance(CLZ, CLZ)]
+    ['Class', CLZ]
 ]); 
 
