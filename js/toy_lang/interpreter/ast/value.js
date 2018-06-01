@@ -53,8 +53,8 @@ class Func extends Value {
         return new Func(this.params, this.stmt, this.name, context);
     }
 
-    toString() {
-        return `[Function ${this.name}]`;
+    nodeName() {
+        return 'Function';
     }
 }
 
@@ -76,8 +76,8 @@ class Class extends Func {
         return new Class(this.params, this.stmt, this.methods, this.name, context);
     }
 
-    toString() {
-        return `[Class ${this.name}]`;
+    nodeName() {
+        return 'Class';
     }
 }
 
