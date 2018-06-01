@@ -179,9 +179,7 @@ println('Hello World')</textarea> <br>
     <br>
     <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
     <script type="module">
-    import {Tokenizer} from './js/toy_lang/interpreter/tokenizer/tokenizer.js';        
-    import {Context} from './js/toy_lang/context.js';
-    import {ToyParser} from './js/toy_lang/interpreter/toy_parser.js';
+    import {Toy} from './js/toy_lang/toy.js';
 
     const ENVIRONMENT = {
         output(value) {
@@ -193,9 +191,7 @@ println('Hello World')</textarea> <br>
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        new ToyParser(ENVIRONMENT)
-                .parse(new Tokenizer(code))
-                .evaluate(Context.initialize(ENVIRONMENT));
+        new Toy(ENVIRONMENT, code).play();
     });
 </script>
 </body>
