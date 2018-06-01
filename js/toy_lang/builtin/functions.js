@@ -50,11 +50,15 @@ const NoValue = func1('noValue', {
     }
 });
 
-const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
+const FUNC_CLZ = BUILTIN_CLASSES.get('Function').clz;
+
+function funcInstance(clz, internalNode) {
+    return new Instance(clz, clz.methods, internalNode);
+}
 
 const BUILTIN_FUNCTIONS = new Map([
-    ['print', new Instance(FUNC_CLZ, FUNC_CLZ.methods, Print)],
-    ['println', new Instance(FUNC_CLZ, FUNC_CLZ.methods, Println)],
-    ['hasValue', new Instance(FUNC_CLZ, FUNC_CLZ.methods, HasValue)],
-    ['noValue', new Instance(FUNC_CLZ, FUNC_CLZ.methods, NoValue)]
+    ['print', funcInstance(FUNC_CLZ, Print)],
+    ['println', funcInstance(FUNC_CLZ, Println)],
+    ['hasValue', funcInstance(FUNC_CLZ, HasValue)],
+    ['noValue', funcInstance(FUNC_CLZ, NoValue)]
 ]); 
