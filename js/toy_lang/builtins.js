@@ -1,5 +1,5 @@
-import {Value, Null, Primitive, Func, Class, Instance, Void} from './value.js';
-import {Variable, StmtSequence, VariableAssign} from './statement.js';
+import {Value, Null, Primitive, Func, Class, Instance, Void} from './interpreter/ast/value.js';
+import {Variable, StmtSequence, VariableAssign} from './interpreter/ast/statement.js';
 
 export {BUILTINS};
 
