@@ -210,7 +210,28 @@ ListClass.methods = new Map([
     })]
 ]);
 
+class FunctionClass {
+
+}
+
+FunctionClass.methods = new Map([
+    ['init', func1('init', {
+        evaluate(context) {
+            let instance = self(context);
+            instance.setProperty('value', PARAM1.evaluate(context));
+            return context;
+        }
+    })],
+    ['toString', func0('toString', {
+        evaluate(context) {
+            let f = self(context).getProperty('value');
+            return context.returned(new Primitive(f.toString()));
+        }    
+    })]
+]);
+
 const BUILTIN_CLASSES = new Map([
     ['String', clz('String', StringClass.methods)],
-    ['List', clz('List', ListClass.methods)]
+    ['List', clz('List', ListClass.methods)],
+    ['Function', clz('Function', FunctionClass.methods)]
 ]); 
