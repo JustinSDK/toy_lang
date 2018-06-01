@@ -26,7 +26,7 @@ function self(context) {
 }
 
 function selfInternalValue(context) {
-    return self(context).getProperty('value').value;
+    return self(context).internalNode.value;
 }
 
 function classBodyStmt(assigns) {
@@ -74,7 +74,7 @@ function methodSelf(clz, methodName, params = PARAM_LT0) {
         evaluate(context) {
             let value = delegate(context, clz, methodName, params);
             let instance = self(context);
-            instance.setProperty('value', new NativeObject(value));
+            instance.internalNode = new NativeObject(value);
             return context.returned(instance);
         }
     }, params);
@@ -86,7 +86,7 @@ function methodNewSameType(clz, methodName, params = PARAM_LT0) {
             let value = delegate(context, clz, methodName, params);
             let origin = self(context);
             let instance = new Instance(origin.clz, new Map(origin.properties));
-            instance.setProperty('value', new NativeObject(value));
+            instance.internalNode = new NativeObject(value);
             return context.returned(instance);
         }
     }, params);
@@ -110,7 +110,7 @@ StringClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
             let instance = self(context);
-            instance.setProperty('value', PARAM1.evaluate(context));
+            instance.internalNode = PARAM1.evaluate(context);
             return context;
         }
     })],
@@ -163,7 +163,7 @@ ListClass.methods = new Map([
             let value = PARAM1.evaluate(context).value;
             let nativeObj = new NativeObject(new Array(value ? value : 0));
             let instance = self(context);
-            instance.setProperty('value', nativeObj);
+            instance.internalNode = nativeObj;
             return context;
         }
     })],
@@ -211,7 +211,6 @@ ListClass.methods = new Map([
 ]);
 
 class FunctionClass {
-
 }
 
 FunctionClass.methods = new Map([
@@ -220,7 +219,7 @@ FunctionClass.methods = new Map([
             let instance = self(context);
             let f = PARAM1.evaluate(context);
             if(f instanceof Func) {
-                instance.setProperty('value', f);
+                instance.internalNode = f;
                 return context;
             }
             throw TypeError('Not internal Func node');
@@ -228,7 +227,7 @@ FunctionClass.methods = new Map([
     })],
     ['toString', func0('toString', {
         evaluate(context) {
-            let f = self(context).getProperty('value');
+            let f = self(context).internalNode;
             return context.returned(new Primitive(f.toString()));
         }    
     })]
