@@ -213,17 +213,6 @@ ListClass.methods = new Map([
 class FunctionClass {}
 
 FunctionClass.methods = new Map([
-    ['init', func1('init', {
-        evaluate(context) {
-            let instance = self(context);
-            let f = PARAM1.evaluate(context);
-            if(f instanceof Func) {
-                instance.internalNode = f;
-                return context;
-            }
-            throw TypeError('Not internal Func node');
-        }
-    })],
     ['toString', func0('toString', {
         evaluate(context) {
             let f = self(context).internalNode;
@@ -235,17 +224,6 @@ FunctionClass.methods = new Map([
 class ClassClass {}
 
 ClassClass.methods = new Map([
-    ['init', func1('init', {
-        evaluate(context) {
-            let instance = self(context);
-            let clz = PARAM1.evaluate(context);
-            if(clz instanceof Class) {
-                instance.internalNode = clz;
-                return context;
-            }
-            throw TypeError('Not internal Func node');
-        }
-    })],
     ['toString', func0('toString', {
         evaluate(context) {
             let f = self(context).internalNode;
