@@ -141,7 +141,7 @@ StringClass.methods = new Map([
             const instance = new Instance(
                 BUILTIN_CLASSES.get('List'), 
                 ListClass.methods, 
-                new NativeObject(arr)
+                new NativeObject(arr.map(elem => new Primitive(elem)))
             );
             return context.returned(instance);
         }
