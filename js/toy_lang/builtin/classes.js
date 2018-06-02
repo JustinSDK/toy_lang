@@ -127,6 +127,7 @@ StringClass.methods = new Map([
     ['indexOf', StringClass.method2Primitive('indexOf')],
     ['lastIndexOf', StringClass.method2Primitive('lastIndexOf')],
     ['substring', StringClass.method2Primitive('substring')],
+    ['slice', StringClass.method2Primitive('slice')],
     ['length', func0('length', {
         evaluate(context) {
             const value = selfInternalValue(context);
