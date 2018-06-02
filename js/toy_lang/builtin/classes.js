@@ -131,6 +131,14 @@ StringClass.methods = new Map([
     ['lastIndexOf', StringClass.method2Primitive('lastIndexOf')],
     ['substring', StringClass.method2Primitive('substring')],
     ['slice', StringClass.method2Primitive('slice')],
+    ['split', func('split', {
+        evaluate(context) {
+            const arr = delegate(context, String, 'split', PARAM_LT2);
+            const nativeObj = new NativeObject(arr);
+            const instance = new Instance(BUILTIN_CLASSES.get('List'), ListClass.methods, nativeObj);
+            return context.returned(instance);
+        }
+    }, PARAM_LT2)],
     ['length', func0('length', {
         evaluate(context) {
             const value = selfInternalValue(context);
