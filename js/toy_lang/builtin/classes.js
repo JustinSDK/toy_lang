@@ -85,9 +85,13 @@ function methodNewSameType(nativeClz, methodName, params = PARAM_LT0) {
         evaluate(context) {
             const value = delegate(context, nativeClz, methodName, params);
             const origin = self(context);
-            const instance = new Instance(origin.clz, new Map(origin.properties));
-            instance.internalNode = new NativeObject(value);
-            return context.returned(instance);
+            return context.returned(
+                new Instance(
+                    origin.clz, 
+                    new Map(origin.properties), 
+                    new NativeObject(value)
+                )
+            );
         }
     }, params);
 }
