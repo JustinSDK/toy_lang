@@ -79,7 +79,7 @@ function isFuncStmt(stmt) {
 function assignFunctionInstance(context, stmt) {
     const f = stmt.value;
     const fclz = lookUpVariable(context, f.nodeName());
-    const instance = new Instance(fclz, fclz.properties, f.withParentContext(context));
+    const instance = new Instance(fclz, fclz.internalNode.methods, f.withParentContext(context));
     return context.assign(stmt.variable.name, instance);
 }
 
