@@ -1,4 +1,4 @@
-import {Func, Class, Instance} from './value.js';
+import {Func, Class, Instance, Primitive} from './value.js';
 
 export {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
 
@@ -80,6 +80,7 @@ function assignFunctionInstance(context, stmt) {
     const f = stmt.value;
     const fclz = lookUpVariable(context, f.nodeName());
     const instance = new Instance(fclz, fclz.internalNode.methods, f.withParentContext(context));
+    instance.setProperty('name', new Primitive(f.name));
     return context.assign(stmt.variable.name, instance);
 }
 
