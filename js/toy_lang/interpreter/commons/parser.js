@@ -56,8 +56,8 @@ class TokenableRuleChain extends RuleChain {
             throw new SyntaxError(`\n\t${tokenable.toString()}`);
         }
 
-        let rule = this.head();
-        let matchedTokenables = tokenable.tryTokenables(rule.type);
+        const rule = this.head();
+        const matchedTokenables = tokenable.tryTokenables(rule.type);
         if(matchedTokenables.length !== 0) {
             return rule.bud.burst(matchedTokenables);
         }
@@ -93,8 +93,8 @@ class TokenablesRuleChain extends RuleChain {
             throw new SyntaxError(`\n\t${tokenables[0].toString()}`);
         }
 
-        let rule = this.head();
-        let matchedTokenables = tokenables[0].tryTokenables(rule.type);
+        const rule = this.head();
+        const matchedTokenables = tokenables[0].tryTokenables(rule.type);
         if(matchedTokenables.length !== 0) {
             return rule.bud.burst(tokenables, matchedTokenables);
         }

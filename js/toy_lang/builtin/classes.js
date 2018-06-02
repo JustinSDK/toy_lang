@@ -33,7 +33,7 @@ function classBodyStmt(assigns) {
     if(assigns.length === 0) {
         return StmtSequence.EMPTY;
     }
-    let [name, value] = assigns[0];
+    const [name, value] = assigns[0];
     return new StmtSequence(
         new VariableAssign(new Variable(name), value),
         classBodyStmt(assigns.slice(1))
@@ -72,8 +72,8 @@ function methodVoid(clz, methodName, params = PARAM_LT0) {
 function methodSelf(clz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
-            let value = delegate(context, clz, methodName, params);
-            let instance = self(context);
+            const value = delegate(context, clz, methodName, params);
+            const instance = self(context);
             instance.internalNode = new NativeObject(value);
             return context.returned(instance);
         }
@@ -83,9 +83,9 @@ function methodSelf(clz, methodName, params = PARAM_LT0) {
 function methodNewSameType(clz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
-            let value = delegate(context, clz, methodName, params);
-            let origin = self(context);
-            let instance = new Instance(origin.clz, new Map(origin.properties));
+            const value = delegate(context, clz, methodName, params);
+            const origin = self(context);
+            const instance = new Instance(origin.clz, new Map(origin.properties));
             instance.internalNode = new NativeObject(value);
             return context.returned(instance);
         }
@@ -109,7 +109,7 @@ class StringClass {
 StringClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
-            let instance = self(context);
+            const instance = self(context);
             instance.internalNode = PARAM1.evaluate(context);
             return context;
         }
@@ -129,7 +129,7 @@ StringClass.methods = new Map([
     ['substring', StringClass.method2Primitive('substring')],
     ['length', func0('length', {
         evaluate(context) {
-            let value = selfInternalValue(context);
+            const value = selfInternalValue(context);
             return context.returned(new Primitive(value.length));
         }    
     })]
@@ -160,9 +160,9 @@ class ListClass {
 ListClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
-            let value = PARAM1.evaluate(context).value;
-            let nativeObj = new NativeObject(new Array(value ? value : 0));
-            let instance = self(context);
+            const value = PARAM1.evaluate(context).value;
+            const nativeObj = new NativeObject(new Array(value ? value : 0));
+            const instance = self(context);
             instance.internalNode = nativeObj;
             return context;
         }
@@ -174,37 +174,37 @@ ListClass.methods = new Map([
     ['fill', ListClass.method3Self('fill')],
     ['append', func1('append', {
         evaluate(context) {
-            let arr = selfInternalValue(context);
-            let arg = PARAM1.evaluate(context);
+            const arr = selfInternalValue(context);
+            const arg = PARAM1.evaluate(context);
             arr.push(arg);
             return context.returned(Void);
         }    
     })],
     ['get', func1('get', {
         evaluate(context) {
-            let arr = selfInternalValue(context);
-            let idx = PARAM1.evaluate(context).value;
+            const arr = selfInternalValue(context);
+            const idx = PARAM1.evaluate(context).value;
             return context.returned(arr[idx]);
         }    
     })],
     ['set', func2('set', {
         evaluate(context) {
-            let arr = selfInternalValue(context);
-            let idx = PARAM1.evaluate(context).value;
-            let elem = PARAM2.evaluate(context);
+            const arr = selfInternalValue(context);
+            const idx = PARAM1.evaluate(context).value;
+            const elem = PARAM2.evaluate(context);
             arr[idx] = elem;
             return context.returned(Void);
         }    
     })],
     ['length', func0('length', {
         evaluate(context) {
-            let arr = selfInternalValue(context);
+            const arr = selfInternalValue(context);
             return context.returned(new Primitive(arr.length));
         }    
     })],    
     ['isEmpty', func0('isEmpty', {
         evaluate(context) {
-            let arr = selfInternalValue(context);
+            const arr = selfInternalValue(context);
             return context.returned(new Primitive(arr.length === 0));
         }    
     })]
@@ -215,7 +215,7 @@ class FunctionClass {}
 FunctionClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
-            let fNode = self(context).internalNode;
+            const fNode = self(context).internalNode;
             return context.returned(new Primitive(`[Function ${fNode.name}]`));
         }    
     })]
@@ -226,7 +226,7 @@ class ClassClass {}
 ClassClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
-            let clzNode = self(context).internalNode;
+            const clzNode = self(context).internalNode;
             return context.returned(new Primitive(`[Class ${clzNode.name}]`));
         }    
     })]

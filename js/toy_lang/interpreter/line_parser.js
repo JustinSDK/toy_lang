@@ -122,7 +122,7 @@ function funcs(stmt) {
     }
 
     if(stmt.firstStmt instanceof VariableAssign && stmt.firstStmt.value instanceof Func) {
-        let funcStmt = stmt.firstStmt;
+        const funcStmt = stmt.firstStmt;
         return [[funcStmt.variable.name, funcStmt.value]].concat(funcs(stmt.secondStmt));
     }
     return funcs(stmt.secondStmt);
@@ -144,10 +144,10 @@ function notDefStmt(stmt) {
 }
 
 function createAssignFunc(tokenableLines, argTokenable) {
-    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
+    const [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     checkNotKeyword(tokenableLines, fNameTokenable);
 
-    let remains = tokenableLines.slice(1);
+    const remains = tokenableLines.slice(1);
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
@@ -162,11 +162,11 @@ function createAssignFunc(tokenableLines, argTokenable) {
 }
 
 function createAssignClass(tokenableLines, argTokenable) {
-    let [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
+    const [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
     checkNotKeyword(tokenableLines, fNameTokenable);
 
-    let remains = tokenableLines.slice(1);     
-    let stmt = LINE_PARSER.parse(remains);
+    const remains = tokenableLines.slice(1);     
+    const stmt = LINE_PARSER.parse(remains);
 
     return new StmtSequence(
         new VariableAssign(
@@ -187,11 +187,11 @@ function isElseLine(tokenableLine) {
 }
 
 function createIf(tokenableLines, argTokenable) {
-    let remains = tokenableLines.slice(1);     
-    let trueStmt = LINE_PARSER.parse(remains);
+    const remains = tokenableLines.slice(1);     
+    const trueStmt = LINE_PARSER.parse(remains);
 
-    let i = countStmts(trueStmt) + 1;
-    let falseStmt = isElseLine(remains[i]) ? 
+    const i = countStmts(trueStmt) + 1;
+    const falseStmt = isElseLine(remains[i]) ? 
             LINE_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
 
@@ -206,7 +206,7 @@ function createIf(tokenableLines, argTokenable) {
 }
 
 function createWhile(tokenableLines, argTokenable) {
-    let remains = tokenableLines.slice(1);     
+    const remains = tokenableLines.slice(1);     
     return new StmtSequence(
          new While(
             EXPR_PARSER.parse(argTokenable), 
@@ -228,8 +228,8 @@ function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
         return tokenableLines;
     }
 
-    let line = tokenableLines[0].value;
-    let n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def') || line.startsWith('class')) ? 
+    const line = tokenableLines[0].value;
+    const n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def') || line.startsWith('class')) ? 
                 endCount + 1 : ( 
                     line === '}' && (tokenableLines.length === 1 || !isElseLine(tokenableLines[1])) ? 
                         endCount - 1 : 

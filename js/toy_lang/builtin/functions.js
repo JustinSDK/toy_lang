@@ -6,7 +6,7 @@ export {BUILTIN_FUNCTIONS};
 
 function invokeToString(context, instance) {
     if(instance.hasProperty('toString')) {
-        let methodBodyStmt = instance.methodBodyStmt(context, 'toString');
+        const methodBodyStmt = instance.methodBodyStmt(context, 'toString');
         return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
     }
     
@@ -26,7 +26,7 @@ const Print = func1('print', {
  
 const Println = func1('println', {
     evaluate(context) {
-        let argument = PARAM1.evaluate(context);
+        const argument = PARAM1.evaluate(context);
         if(argument !== Null) {
             print(context, argument);
         }
@@ -38,14 +38,14 @@ const Println = func1('println', {
 
 const HasValue = func1('hasValue',{
     evaluate(context) {
-        let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
+        const bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
         return context.returned(bool);
     }
 });
 
 const NoValue = func1('noValue', {
     evaluate(context) {
-        let bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
+        const bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
         return context.returned(bool);
     }
 });

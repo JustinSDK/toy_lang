@@ -5,9 +5,9 @@ import {Apply} from './function.js';
 export {Instalization, Property, MethodCall};
 
 function evalMethod(context, instance, methodName, args) {
-    let methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
-    let f = instance.getProperty(methodName);
-    let parentContext = instance.clz.parentContext || 
+    const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
+    const f = instance.getProperty(methodName);
+    const parentContext = instance.clz.parentContext || 
                         (f ? f.parentContext : f); // In this case, instance is just a namespace.
     return methodBodyStmt.evaluate(
         parentContext ?
@@ -31,7 +31,7 @@ class Instalization {
     }
 
     evaluate(context) {
-        let thisInstance = this.instance(context);
+        const thisInstance = this.instance(context);
 
         if(thisInstance.hasProperty('init')) {
             return evalMethod(context, thisInstance, 'init', this.args).variables.get('this');
@@ -112,7 +112,7 @@ class MethodCall {
     } 
 
     evaluate(context) {
-        let instance = this.propertyGetter.receiver(context);
+        const instance = this.propertyGetter.receiver(context);
         return evalMethod(context, instance, this.propertyGetter.propName(), this.args).returnedValue;
     }    
 }

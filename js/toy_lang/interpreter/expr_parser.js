@@ -86,8 +86,8 @@ function exprAst(tokenables) {
             return reduce(stack, tokenable.value);
         } 
         else if(tokenable.value.startsWith('not')) {
-            let [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
-            let NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
+            const [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
+            const NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
             return stack.push(
                 new NotOperator(
                     OPERAND_PARSER.parse(operandTokenable)
@@ -132,10 +132,10 @@ function digest(tokenables, stack = new Stack(), output = []) {
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
         case '+': case '-': case '*': case '/': case '%':
-            let [s1, o1] = popHighPriority(tokenables[0], stack, output);
+            const [s1, o1] = popHighPriority(tokenables[0], stack, output);
             return digest(tokenables.slice(1), s1.push(tokenables[0]), o1);
         case ')':
-            let [s2, o2] = popAllBeforeLP(stack, output);
+            const [s2, o2] = popAllBeforeLP(stack, output);
             return digest(tokenables.slice(1), s2.pop(), o2);
         default: 
             return digest(tokenables.slice(1), stack, output.concat([tokenables[0]]));
@@ -150,7 +150,7 @@ function popAll(stack, output) {
 }
 
 function toPostfix(tokenables) {
-    let [stack, output] = digest(tokenables);
+    const [stack, output] = digest(tokenables);
     return popAll(stack, output);
 }
 
@@ -161,10 +161,10 @@ function isOperator(value) {
 }
 
 function reduce(stack, value) {
-    let right = stack.top;
-    let s1 = stack.pop();
-    let left = s1.top;
-    let s2 = s1.pop();
-    let Operator = BINARY_OPERATORS.get(value);
+    const right = stack.top;
+    const s1 = stack.pop();
+    const left = s1.top;
+    const s2 = s1.pop();
+    const Operator = BINARY_OPERATORS.get(value);
     return s2.push(new Operator(left, right));
 }

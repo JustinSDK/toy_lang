@@ -3,82 +3,82 @@ export {Tokenizer};
 
 const TOKEN_TESTERS = new Map([
     ['text', function(input) {
-        let matched = REGEX.get('text').exec(input);
+        const matched = REGEX.get('text').exec(input);
         return matched ? [matched[1]] : [];
     }],
     ['number', function(input) {
-        let matched = REGEX.get('number').exec(input);
+        const matched = REGEX.get('number').exec(input);
         return matched ? [input] : [];
     }],
     ['boolean', function(input) {
-        let matched = REGEX.get('boolean').exec(input);
+        const matched = REGEX.get('boolean').exec(input);
         return matched ? [input] : [];
     }],
     ['variable', function(input) {
-        let matched = REGEX.get('variable').exec(input);
+        const matched = REGEX.get('variable').exec(input);
         return matched ? [input] : [];
     }],
     ['fcall', function(input) {
-        let matched = REGEX.get('fcall').exec(input);
+        const matched = REGEX.get('fcall').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],
     ['mcall', function(input) {
-        let matched = REGEX.get('mcall').exec(input);
+        const matched = REGEX.get('mcall').exec(input);
         return matched ? [matched[2], matched[3]].concat(funcArguments(matched[4])) : [];
     }],    
     ['new', function(input) {
-        let matched = REGEX.get('new').exec(input);
+        const matched = REGEX.get('new').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }],    
     ['property', function(input) {
-        let matched = REGEX.get('property').exec(input);
+        const matched = REGEX.get('property').exec(input);
         return matched ? [matched[2], matched[3]] : [];
     }],  
     ['not', function(input) {
-        let matched = REGEX.get('not').exec(input);
+        const matched = REGEX.get('not').exec(input);
         return matched ? ['not', matched[1]] : [];
     }],    
     ['logic', function(input) {
-        let matched = REGEX.get('logic').exec(input);
+        const matched = REGEX.get('logic').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
     ['relation', function(input) {
-        let matched = REGEX.get('relation').exec(input);
+        const matched = REGEX.get('relation').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],
     ['expression', function(input) {
         return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
     }],
     ['func', function(input) {
-        let matched = REGEX.get('func').exec(input);
+        const matched = REGEX.get('func').exec(input);
         return [matched[1]].concat(matched[3] ? matched[3].split(/,\s*/) : []);
     }],
     ['variableAssign', function(input) {
-        let matched = REGEX.get('variableAssign').exec(input);
+        const matched = REGEX.get('variableAssign').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }],
     ['propertyAssign', function(input) {
-        let matched = REGEX.get('propertyAssign').exec(input);
+        const matched = REGEX.get('propertyAssign').exec(input);
         return matched ? [matched[1], matched[2], matched[3]] : [];
     }],    
     ['block', function(input) {
-        let matched = REGEX.get('block').exec(input);
+        const matched = REGEX.get('block').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }],
     ['return', function(input) {
-        let matched = REGEX.get('return').exec(input);
+        const matched = REGEX.get('return').exec(input);
         return matched ? [matched[1]] : [];
     }],
     ['else', function(input) {
-        let matched = REGEX.get('else').exec(input);
+        const matched = REGEX.get('else').exec(input);
         return matched ? matched : [];
     }]   
 ]);
 
 function expr_tokens(input) {
-    let matched = REGEX.get('expression').exec(input);
+    const matched = REGEX.get('expression').exec(input);
     if(matched) {
-        let token = matched[1];
+        const token = matched[1];
         return [token].concat(expr_tokens(input.slice(token.length).trim()));
     } 
     else {
@@ -87,7 +87,7 @@ function expr_tokens(input) {
 }
 
 function funcArguments(input) {
-    let matched = REGEX.get('argList').exec(input);
+    const matched = REGEX.get('argList').exec(input);
     if(matched[1]) {
         return split(matched[1], ',');
     }
@@ -100,9 +100,9 @@ function split(input, separator, x = '', acc = []) {
         return acc.concat([x.trim()]);
     }
 
-    let matched = REGEX.get('commaSeperated').exec(input);
+    const matched = REGEX.get('commaSeperated').exec(input);
     if(matched) {
-        let token = matched[1];
+        const token = matched[1];
         if(token === separator) {
             return split(input.slice(token.length).trim(), separator, '', acc.concat([x]));
         } 

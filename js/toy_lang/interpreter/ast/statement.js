@@ -36,7 +36,7 @@ class VariableAssign {
 }
 
 function lookUpVariable(context, name) {
-    let value = context.variables.get(name);
+    const value = context.variables.get(name);
     return value === undefined ? lookUpVariable(context.parent, name) : value;
 }
 
@@ -48,7 +48,7 @@ class While {
 
     evaluate(context) {
         if(this.boolean.evaluate(context).value) {
-            let ctx = this.stmt.evaluate(context);
+            const ctx = this.stmt.evaluate(context);
             return this.evaluate(ctx);
         }
 
@@ -77,9 +77,9 @@ function isFuncStmt(stmt) {
 }
 
 function assignFunctionInstance(context, stmt) {
-    let f = stmt.value;
-    let fclz = lookUpVariable(context, f.nodeName());
-    let instance = new Instance(fclz, fclz.properties, f.withParentContext(context));
+    const f = stmt.value;
+    const fclz = lookUpVariable(context, f.nodeName());
+    const instance = new Instance(fclz, fclz.properties, f.withParentContext(context));
     return context.assign(stmt.variable.name, instance);
 }
 
@@ -90,8 +90,8 @@ class StmtSequence {
     }
 
     evaluate(context) {
-        let evaluatedCtx = this.firstStmt.evaluate(context);
-        let ctx = isFuncStmt(this.firstStmt) ? assignFunctionInstance(evaluatedCtx, this.firstStmt) : evaluatedCtx;
+        const evaluatedCtx = this.firstStmt.evaluate(context);
+        const ctx = isFuncStmt(this.firstStmt) ? assignFunctionInstance(evaluatedCtx, this.firstStmt) : evaluatedCtx;
 
         // not return stmt
         if(ctx.returnedValue === null) {

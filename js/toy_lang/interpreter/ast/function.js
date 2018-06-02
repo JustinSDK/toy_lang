@@ -19,8 +19,8 @@ class Apply {
     }
 
     evaluate(context) {
-        let f = this.fVariable.evaluate(context).internalNode;
-        let bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
+        const f = this.fVariable.evaluate(context).internalNode;
+        const bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
         return bodyStmt.evaluate(
             f.parentContext ? 
                 f.parentContext.childContext() : // closure context
@@ -35,7 +35,7 @@ class FunCall {
     } 
 
     evaluate(context) {
-        let returnedValue = this.apply.evaluate(context).returnedValue;
+        const returnedValue = this.apply.evaluate(context).returnedValue;
         return  returnedValue === null ? Void : returnedValue;
     }    
 }
