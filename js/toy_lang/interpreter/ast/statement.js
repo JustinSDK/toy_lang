@@ -80,7 +80,6 @@ function assignFunctionInstance(context, stmt) {
     const f = stmt.value;
     const fclz = lookUpVariable(context, f.nodeName());
     const instance = new Instance(fclz, fclz.internalNode.methods, f.withParentContext(context));
-    instance.setProperty('name', new Primitive(f.name));
     return context.assign(stmt.variable.name, instance);
 }
 
