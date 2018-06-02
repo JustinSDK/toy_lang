@@ -40,39 +40,39 @@ function classBodyStmt(assigns) {
     );
 }
 
-function delegate(context, clz, methodName, params) {
-    return clz.prototype[methodName].apply(
+function delegate(context, nativeClz, methodName, params) {
+    return nativeClz.prototype[methodName].apply(
         selfInternalValue(context), 
         params.map(param => param.evaluate(context).value)
     );
 }
 
-function methodPrimitive(clz, methodName, params = PARAM_LT0) {
+function methodPrimitive(nativeClz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
             return context.returned(
                 new Primitive(
-                    delegate(context, clz, methodName, params)
+                    delegate(context, nativeClz, methodName, params)
                 )
             );
         }
     }, params);
 }
 
-function methodVoid(clz, methodName, params = PARAM_LT0) {
+function methodVoid(nativeClz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
-            delegate(context, clz, methodName, params);
+            delegate(context, nativeClz, methodName, params);
             return context.returned(Void);
             
         }    
     }, params);
 }
 
-function methodSelf(clz, methodName, params = PARAM_LT0) {
+function methodSelf(nativeClz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
-            const value = delegate(context, clz, methodName, params);
+            const value = delegate(context, nativeClz, methodName, params);
             const instance = self(context);
             instance.internalNode = new NativeObject(value);
             return context.returned(instance);
@@ -80,10 +80,10 @@ function methodSelf(clz, methodName, params = PARAM_LT0) {
     }, params);
 }
 
-function methodNewSameType(clz, methodName, params = PARAM_LT0) {
+function methodNewSameType(nativeClz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
-            const value = delegate(context, clz, methodName, params);
+            const value = delegate(context, nativeClz, methodName, params);
             const origin = self(context);
             const instance = new Instance(origin.clz, new Map(origin.properties));
             instance.internalNode = new NativeObject(value);
