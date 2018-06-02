@@ -110,14 +110,14 @@ class StringClass {
     }       
 }
 
-StringClass.EMPTYSTR = new Primitive('');
+StringClass.EMPTY_STRING = new Primitive('');
 
 StringClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
             const instance = self(context);
             let text = PARAM1.evaluate(context);
-            instance.internalNode = text === Null ? StringClass.EMPTYSTR : text;
+            instance.internalNode = text === Null ? StringClass.EMPTY_STRING : text;
             return context;
         }
     })],
