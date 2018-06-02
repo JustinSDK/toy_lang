@@ -1,4 +1,4 @@
-import {Value, Primitive, Class, Instance, Void, Func} from '../interpreter/ast/value.js';
+import {Value, Primitive, Class, Instance, Void, Func, Null} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
@@ -106,11 +106,14 @@ class StringClass {
     }       
 }
 
+StringClass.EMPTYSTR = new Primitive('');
+
 StringClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
             const instance = self(context);
-            instance.internalNode = PARAM1.evaluate(context);
+            let text = PARAM1.evaluate(context);
+            instance.internalNode = text === Null ? StringClass.EMPTYSTR : text;
             return context;
         }
     })],
