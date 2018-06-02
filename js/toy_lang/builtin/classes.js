@@ -236,7 +236,7 @@ function classInstance(clz, internalNode) {
     return new Instance(clz, ClassClass.methods, internalNode);
 }
 
-const CLZ = new Instance(null, ClassClass.methods, clzNode('Class', ClassClass.methods));
+const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
 // 'Class' of is an instance of 'Class'
 CLZ.setProperty('class', CLZ);
 
