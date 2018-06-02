@@ -252,14 +252,20 @@ function classInstance(clz, internalNode) {
     return new Instance(clz, ClassClass.methods, internalNode);
 }
 
+function classEntry(clz, name, methods) {
+    let instance = classInstance(clz, clzNode(name, methods));
+    instance.setProperty('name', new Primitive(name));
+    return [name, instance];
+}
+
 const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
 // 'Class' of is an instance of 'Class'
 CLZ.setProperty('class', CLZ);
 
 const BUILTIN_CLASSES = new Map([
-    ['String', classInstance(CLZ, clzNode('String', StringClass.methods))],
-    ['List', classInstance(CLZ, clzNode('List', ListClass.methods))],
-    ['Function', classInstance(CLZ, clzNode('Function', FunctionClass.methods))],
+    classEntry(CLZ, 'String', StringClass.methods),
+    classEntry(CLZ, 'List', ListClass.methods),
+    classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ]
 ]); 
 
