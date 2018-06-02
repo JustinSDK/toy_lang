@@ -236,7 +236,9 @@ function classInstance(clz, internalNode) {
     return new Instance(clz, ClassClass.methods, internalNode);
 }
 
-const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
+const CLZ = new Instance(null, ClassClass.methods, clzNode('Class', ClassClass.methods));
+// 'Class' of is an instance of 'Class'
+CLZ.setProperty('class', CLZ);
 
 const BUILTIN_CLASSES = new Map([
     ['String', classInstance(CLZ, clzNode('String', StringClass.methods))],
