@@ -138,8 +138,11 @@ StringClass.methods = new Map([
     ['split', func2('split', {
         evaluate(context) {
             const arr = delegate(context, String, 'split', PARAM_LT2);
-            const nativeObj = new NativeObject(arr);
-            const instance = new Instance(BUILTIN_CLASSES.get('List'), ListClass.methods, nativeObj);
+            const instance = new Instance(
+                BUILTIN_CLASSES.get('List'), 
+                ListClass.methods, 
+                new NativeObject(arr)
+            );
             return context.returned(instance);
         }
     })],
