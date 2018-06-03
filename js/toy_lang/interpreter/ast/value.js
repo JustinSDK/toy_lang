@@ -116,11 +116,11 @@ class Instance extends Value {
     }
 
     hasProperty(name) {
-        return this.hasOwnProperty(name) || this.clz.hasMethod(name);
+        return this.hasOwnProperty(name) || this.clz.internalNode.hasMethod(name);
     }
 
     methodBodyStmt(context, name, args = []) {
-        const f = this.hasOwnProperty(name) ? this.getProperty(name).internalNode : this.clz.getMethod(name);
+        const f = this.hasOwnProperty(name) ? this.getProperty(name) : this.clz.internalNode.getMethod(name);
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
             f.bodyStmt(args.map(arg => arg.evaluate(context)))

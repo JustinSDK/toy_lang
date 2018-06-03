@@ -264,7 +264,7 @@ ClassClass.methods = new Map([
 ]);
 
 function classInstance(clz, internalNode) {
-    return new Instance(clz, ClassClass.methods, internalNode);
+    return new Instance(clz, [], internalNode);
 }
 
 function classEntry(clz, name, methods) {
