@@ -4,17 +4,8 @@ import {BUILTIN_CLASSES} from './classes.js';
 
 export {BUILTIN_FUNCTIONS};
 
-function invokeToString(context, instance) {
-    if(instance.hasProperty('toString')) {
-        const methodBodyStmt = instance.methodBodyStmt(context, 'toString');
-        return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
-    }
-    
-    return instance.toString();
-}
-
 function print(context, v) {
-    context.output(v instanceof Instance ? invokeToString(context, v) : v.toString());
+    context.output(v.toString(context));
 }
 
 const Print = func1('print', {

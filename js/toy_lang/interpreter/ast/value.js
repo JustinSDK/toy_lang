@@ -127,7 +127,12 @@ class Instance extends Value {
         );
     }
 
-    toString() {
+    toString(context) {
+        if(context && this.hasProperty('toString')) {
+            const methodBodyStmt = this.methodBodyStmt(context, 'toString');
+            return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
+        }
+        
         return `[${this.clzOfLang.internalNode.name} object]`;
     }
 }
