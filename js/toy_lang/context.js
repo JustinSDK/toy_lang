@@ -10,7 +10,7 @@ const BUILTINS = new Map(
 ); 
 
 class Context {
-    constructor(parent = null, output = nope, variables = new Map(), returnedValue = null) {
+    constructor(parent, output = nope, variables = new Map(), returnedValue = null) {
         this.parent = parent;
         this.output = output;
         this.variables = variables;
