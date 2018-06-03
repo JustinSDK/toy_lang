@@ -53,14 +53,14 @@ class Func extends Value {
         return new Func(this.params, this.stmt, this.name, context);
     }
 
-    toyClz(context) {
+    clzOfLang(context) {
         return context.lookUpVariable('Function');;
     }
 
     evaluate(context) {
-        const fClz = this.toyClz(context);
-        const instance = new Instance(fClz, [], this.withParentContext(context));
-        return instance;
+        return new Instance(
+            this.clzOfLang(context), [], this.withParentContext(context)
+        );
     }
 }
 
@@ -82,7 +82,7 @@ class Class extends Func {
         return new Class(this.params, this.stmt, this.methods, this.name, context);
     }
 
-    toyClz(context) {
+    clzOfLang(context) {
         return context.lookUpVariable('Class');;
     }
 }
