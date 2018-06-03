@@ -7,7 +7,7 @@ export {Instalization, Property, MethodCall};
 function evalMethod(context, instance, methodName, args) {
     const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
     const f = instance.getProperty(methodName);
-    const parentContext = instance.clz.parentContext || 
+    const parentContext = instance.clz.internalNode.parentContext || 
                         (f ? f.parentContext : f); // In this case, instance is just a namespace.
     return methodBodyStmt.evaluate(
         parentContext ?
@@ -24,8 +24,9 @@ class Instalization {
     }
 
     instance(context) {
+        const clz = this.fVariable.evaluate(context);
         return new Instance(
-            this.fVariable.evaluate(context),
+            clz,
             this.apply.evaluate(context).variables
         );
     }

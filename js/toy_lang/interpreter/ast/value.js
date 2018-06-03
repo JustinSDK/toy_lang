@@ -59,7 +59,7 @@ class Func extends Value {
 
     evaluate(context) {
         const clz = this.toyClz(context);
-        const instance = new Instance(clz, clz.internalNode.methods, this.withParentContext(context));
+        const instance = new Instance(clz, [], this.withParentContext(context));
         return instance;
     }
 }
@@ -85,6 +85,12 @@ class Class extends Func {
     toyClz(context) {
         return context.lookUpVariable('Class');;
     }
+
+    evaluate(context) {
+        const clz = this.toyClz(context);
+        const instance = new Instance(clz, [], this.withParentContext(context));
+        return instance;
+    }    
 }
 
 const Void = new Value();
@@ -120,7 +126,7 @@ class Instance extends Value {
     }
 
     methodBodyStmt(context, name, args = []) {
-        const f = this.hasOwnProperty(name) ? this.getProperty(name) : this.clz.internalNode.getMethod(name);
+        const f = this.hasOwnProperty(name) ? this.getProperty(name).internalNode : this.clz.internalNode.getMethod(name);
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
             f.bodyStmt(args.map(arg => arg.evaluate(context)))
