@@ -27,17 +27,19 @@ const Println = func1('println', {
     }
 });
 
-const HasValue = func1('hasValue',{
+function toPrimitive(bool) {
+    return bool ? Primitive.BoolTrue : Primitive.BoolFalse;
+}
+
+const HasValue = func1('hasValue', {
     evaluate(context) {
-        const bool = PARAM1.evaluate(context) === Null ? Primitive.BoolFalse : Primitive.BoolTrue;
-        return context.returned(bool);
+        return context.returned(toPrimitive(PARAM1.evaluate(context) !== Null));
     }
 });
 
 const NoValue = func1('noValue', {
     evaluate(context) {
-        const bool = PARAM1.evaluate(context) === Null ? Primitive.BoolTrue : Primitive.BoolFalse;
-        return context.returned(bool);
+        return context.returned(toPrimitive(PARAM1.evaluate(context) === Null));
     }
 });
 
