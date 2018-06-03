@@ -52,8 +52,8 @@ const NoValue = func1('noValue', {
 
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
-function funcEntry(clz, name, internalNode) {
-    return [name, new Instance(clz, [], internalNode)];
+function funcEntry(clzOfLang, name, internalNode) {
+    return [name, new Instance(clzOfLang, [], internalNode)];
 }
 
 const BUILTIN_FUNCTIONS = new Map([

@@ -90,10 +90,10 @@ class Class extends Func {
 const Void = new Value();
 
 class Instance extends Value {
-    constructor(clz, properties, internalNode = null) {
+    constructor(clzOfLang, properties, internalNode = null) {
         super();
-        this.clz = clz; 
-        this.properties = new Map(Array.from(properties.entries()).concat([['class', this.clz]]));
+        this.clzOfLang = clzOfLang; 
+        this.properties = new Map(Array.from(properties.entries()).concat([['class', this.clzOfLang]]));
         this.internalNode = internalNode;
     }
 
@@ -116,11 +116,11 @@ class Instance extends Value {
     }
 
     hasProperty(name) {
-        return this.hasOwnProperty(name) || this.clz.internalNode.hasMethod(name);
+        return this.hasOwnProperty(name) || this.clzOfLang.internalNode.hasMethod(name);
     }
 
     methodBodyStmt(context, name, args = []) {
-        const f = this.hasOwnProperty(name) ? this.getProperty(name).internalNode : this.clz.internalNode.getMethod(name);
+        const f = this.hasOwnProperty(name) ? this.getProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(name);
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
             f.bodyStmt(args.map(arg => arg.evaluate(context)))
@@ -128,6 +128,6 @@ class Instance extends Value {
     }
 
     toString() {
-        return `[${this.clz.name} object]`;
+        return `[${this.clzOfLang.name} object]`;
     }
 }

@@ -87,7 +87,7 @@ function methodNewSameType(nativeClz, methodName, params = PARAM_LT0) {
             const origin = self(context);
             return context.returned(
                 new Instance(
-                    origin.clz, 
+                    origin.clzOfLang, 
                     new Map(origin.properties), 
                     new NativeObject(value)
                 )
@@ -263,17 +263,17 @@ ClassClass.methods = new Map([
     })]
 ]);
 
-function classInstance(clz, internalNode) {
-    return new Instance(clz, [], internalNode);
+function classInstance(clzOfLang, internalNode) {
+    return new Instance(clzOfLang, [], internalNode);
 }
 
-function classEntry(clz, name, methods) {
-    return [name, classInstance(clz, clzNode(name, methods))];
+function classEntry(clzOfLang, name, methods) {
+    return [name, classInstance(clzOfLang, clzNode(name, methods))];
 }
 
 const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
 // 'Class' of is an instance of 'Class'
-CLZ.clz = CLZ;
+CLZ.clzOfLang = CLZ;
 CLZ.setProperty('class', CLZ);
 
 const BUILTIN_CLASSES = new Map([

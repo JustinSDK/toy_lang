@@ -7,7 +7,7 @@ export {Instalization, Property, MethodCall};
 function evalMethod(context, instance, methodName, args) {
     const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
     const fNode = instance.getProperty(methodName);
-    const clzNode = instance.clz.internalNode;
+    const clzNode = instance.clzOfLang.internalNode;
     const parentContext = clzNode.parentContext || 
                         (fNode ? fNode.parentContext : fNode); // In this case, instance is just a namespace.
     return methodBodyStmt.evaluate(
@@ -25,9 +25,9 @@ class Instalization {
     }
 
     instance(context) {
-        const clz = this.fVariable.evaluate(context);
+        const clzOfLang = this.fVariable.evaluate(context);
         return new Instance(
-            clz,
+            clzOfLang,
             this.apply.evaluate(context).variables
         );
     }

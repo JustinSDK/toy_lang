@@ -99,9 +99,9 @@ const STMT_PARSER = TokenablesParser.orRules(
     }]
 );
 
-function createAssign(tokenableLines, clz, target, assignedTokenable) {
+function createAssign(tokenableLines, clzNode, target, assignedTokenable) {
     return new StmtSequence(
-        new clz(
+        new clzNode(
             target, 
             EXPR_PARSER.parse(assignedTokenable)
         ),
