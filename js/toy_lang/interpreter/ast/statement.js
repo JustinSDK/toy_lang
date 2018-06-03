@@ -10,7 +10,7 @@ class Variable {
     }
 
     evaluate(context) {
-        return lookUpVariable(context, this.name);
+        return context.lookUpVariable(this.name);
     }
 }
 
@@ -33,11 +33,6 @@ class VariableAssign {
                       VariableAssign.assigns(variables.slice(1), values.slice(1))
                 );
     }    
-}
-
-function lookUpVariable(context, name) {
-    const value = context.variables.get(name);
-    return value === undefined ? lookUpVariable(context.parent, name) : value;
 }
 
 class While {
@@ -70,17 +65,6 @@ class If {
 
         return this.falseStmt.evaluate(context);
     }   
-}
-
-function isFuncStmt(stmt) {
-    return stmt instanceof VariableAssign && stmt.value instanceof Func;
-}
-
-function assignFunctionInstance(context, stmt) {
-    const f = stmt.value;
-    const fclz = lookUpVariable(context, f.nodeName());
-    const instance = new Instance(fclz, fclz.internalNode.methods, f.withParentContext(context));
-    return context.assign(stmt.variable.name, instance);
 }
 
 class StmtSequence {
