@@ -44,5 +44,10 @@ class Context {
             value
         );
     }
+
+    lookUpVariable(name) {
+        const value = this.variables.get(name);
+        return value ? value : this.parent.lookUpVariable(name);
+    }    
 }
 

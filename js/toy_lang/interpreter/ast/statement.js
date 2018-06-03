@@ -90,14 +90,10 @@ class StmtSequence {
     }
 
     evaluate(context) {
-        const evaluatedCtx = this.firstStmt.evaluate(context);
-        const ctx = isFuncStmt(this.firstStmt) ? assignFunctionInstance(evaluatedCtx, this.firstStmt) : evaluatedCtx;
-
-        // not return stmt
+        const ctx = this.firstStmt.evaluate(context);
         if(ctx.returnedValue === null) {
             return this.secondStmt.evaluate(ctx);
         }
-        
         return ctx;
     }
 }

@@ -56,6 +56,12 @@ class Func extends Value {
     nodeName() {
         return 'Function';
     }
+
+    evaluate(context) {
+        const fclz = context.lookUpVariable(this.nodeName());
+        const instance = new Instance(fclz, fclz.internalNode.methods, this.withParentContext(context));
+        return instance;
+    }
 }
 
 class Class extends Func {
