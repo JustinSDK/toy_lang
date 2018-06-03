@@ -1,4 +1,4 @@
-import {Null, Primitive, Instance} from '../interpreter/ast/value.js';
+import {Null, Primitive, Instance, Void} from '../interpreter/ast/value.js';
 import {PARAM1, func1} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 
@@ -11,7 +11,7 @@ function print(context, v) {
 const Print = func1('print', {
     evaluate(context) {
         print(context, PARAM1.evaluate(context));
-        return context;
+        return context.returned(Void);
     }
 });
  
@@ -23,7 +23,7 @@ const Println = func1('println', {
         }
 
         context.output('\n');
-        return context;
+        return context.returned(Void);
     }
 });
 
