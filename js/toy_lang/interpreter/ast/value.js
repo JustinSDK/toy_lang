@@ -53,13 +53,13 @@ class Func extends Value {
         return new Func(this.params, this.stmt, this.name, context);
     }
 
-    nodeName() {
-        return 'Function';
+    toyClz(context) {
+        return context.lookUpVariable('Function');;
     }
 
     evaluate(context) {
-        const fclz = context.lookUpVariable(this.nodeName());
-        const instance = new Instance(fclz, fclz.internalNode.methods, this.withParentContext(context));
+        const clz = this.toyClz(context);
+        const instance = new Instance(clz, clz.internalNode.methods, this.withParentContext(context));
         return instance;
     }
 }
@@ -82,8 +82,8 @@ class Class extends Func {
         return new Class(this.params, this.stmt, this.methods, this.name, context);
     }
 
-    nodeName() {
-        return 'Class';
+    toyClz(context) {
+        return context.lookUpVariable('Class');;
     }
 }
 
