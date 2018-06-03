@@ -4,10 +4,10 @@ import {Apply} from './function.js';
 
 export {Instalization, Property, MethodCall};
 
-function evalMethod(context, instance, methodName, args) {
-    const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
-    const f = instance.getProperty(methodName);
-    const parentContext = instance.clz.internalNode.parentContext || 
+function evalMethod(context, funcInstance, methodName, args) {
+    const methodBodyStmt = funcInstance.methodBodyStmt(context, methodName, args);
+    const f = funcInstance.getProperty(methodName);
+    const parentContext = funcInstance.clz.internalNode.parentContext || 
                         (f ? f.parentContext : f); // In this case, instance is just a namespace.
     return methodBodyStmt.evaluate(
         parentContext ?

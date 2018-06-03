@@ -58,8 +58,8 @@ class Func extends Value {
     }
 
     evaluate(context) {
-        const clz = this.toyClz(context);
-        const instance = new Instance(clz, [], this.withParentContext(context));
+        const fClz = this.toyClz(context);
+        const instance = new Instance(fClz, [], this.withParentContext(context));
         return instance;
     }
 }
@@ -85,12 +85,6 @@ class Class extends Func {
     toyClz(context) {
         return context.lookUpVariable('Class');;
     }
-
-    evaluate(context) {
-        const clz = this.toyClz(context);
-        const instance = new Instance(clz, [], this.withParentContext(context));
-        return instance;
-    }    
 }
 
 const Void = new Value();
