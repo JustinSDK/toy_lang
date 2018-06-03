@@ -128,6 +128,6 @@ class Instance extends Value {
     }
 
     toString() {
-        return `[${this.clzOfLang.name} object]`;
+        return `[${this.clzOfLang.internalNode.name} object]`;
     }
 }
