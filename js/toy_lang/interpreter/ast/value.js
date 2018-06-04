@@ -97,6 +97,14 @@ class Instance extends Value {
         this.internalNode = internalNode;
     }
 
+    hasOwnProperty(name) {
+        return this.properties.has(name);
+    }
+
+    hasProperty(name) {
+        return this.hasOwnProperty(name) || this.clzOfLang.internalNode.hasMethod(name);
+    }
+
     getOwnProperty(name) {
         return this.properties.get(name);
     }
@@ -114,14 +122,6 @@ class Instance extends Value {
     */
     setOwnProperty(name, value) {
         this.properties.set(name, value);
-    }
-
-    hasOwnProperty(name) {
-        return this.properties.has(name);
-    }
-
-    hasProperty(name) {
-        return this.hasOwnProperty(name) || this.clzOfLang.internalNode.hasMethod(name);
     }
 
     methodBodyStmt(context, name, args = []) {
