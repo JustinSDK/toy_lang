@@ -288,6 +288,14 @@ ClassClass.methods = new Map([
 class ObjectClass {}
 
 ObjectClass.methods = new Map([ 
+    ['ownProperties', func0('ownProperties', {
+        evaluate(context) {
+            const instance = self(context);
+            const entries = Array.from(instance.properties.entries())
+                                 .map(entry => [new Primitive(entry[0]), entry[1]]);
+            return context.returned(new NativeObject(entries));
+        }    
+    })],    
     ['toString', func0('toString', {
         evaluate(context) {
             const instance = self(context);
