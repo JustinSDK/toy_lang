@@ -292,8 +292,18 @@ ObjectClass.methods = new Map([
         evaluate(context) {
             const instance = self(context);
             const entries = Array.from(instance.properties.entries())
-                                 .map(entry => [new Primitive(entry[0]), entry[1]]);
-            return context.returned(new NativeObject(entries));
+                                 .map(entry => new Instance(
+                                        BUILTIN_CLASSES.get('List'), 
+                                        [], 
+                                        new NativeObject([new Primitive(entry[0]), entry[1]])
+                                    )
+                                );
+                                 
+            return context.returned(new Instance(
+                BUILTIN_CLASSES.get('List'), 
+                [], 
+                new NativeObject(entries)
+            ));
         }    
     })],    
     ['toString', func0('toString', {
