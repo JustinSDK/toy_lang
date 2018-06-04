@@ -6,10 +6,11 @@ export {Instalization, Property, MethodCall};
 
 function evalMethod(context, instance, methodName, args) {
     const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
-    const fNode = instance.getProperty(methodName);
+    const fClz = instance.getProperty(methodName);
     const clzNode = instance.clzOfLang.internalNode;
     const parentContext = clzNode.parentContext || 
-                        (fNode ? fNode.parentContext : fNode); // In this case, instance is just a namespace.
+                          (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
+
     return methodBodyStmt.evaluate(
         parentContext ?
             parentContext.childContext() : // closure context
