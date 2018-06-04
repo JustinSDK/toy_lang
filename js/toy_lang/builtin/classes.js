@@ -285,6 +285,18 @@ ClassClass.methods = new Map([
     })]
 ]);
 
+class ObjectClass {}
+
+ObjectClass.methods = new Map([ 
+    ['toString', func0('toString', {
+        evaluate(context) {
+            const instance = self(context);
+            const clzNode = instance.clzOfLang.internalNode;
+            return context.returned(new Primitive(`[${clzNode.name} object]`));
+        }    
+    })]
+]);
+
 function classInstance(clzOfLang, internalNode) {
     return new Instance(clzOfLang, [], internalNode);
 }
@@ -299,6 +311,7 @@ CLZ.clzOfLang = CLZ;
 CLZ.setOwnProperty('class', CLZ);
 
 const BUILTIN_CLASSES = new Map([
+    classEntry(CLZ, 'Object', ObjectClass.methods),
     classEntry(CLZ, 'String', StringClass.methods),
     classEntry(CLZ, 'List', ListClass.methods),
     classEntry(CLZ, 'Function', FunctionClass.methods),
