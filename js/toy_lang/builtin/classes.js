@@ -253,7 +253,20 @@ class FunctionClass {
 
 FunctionClass.methods = new Map([
     ['name', FunctionClass.name()],    
-    ['toString', FunctionClass.toString()]
+    ['toString', FunctionClass.toString()],
+    ['apply', func2('apply', {
+        evaluate(context) {
+            const funcInstance = self(context);            
+            const targetObject = PARAM1.evaluate(context); 
+            const args = PARAM2.evaluate(context);         // List instance
+            const jsArray = args === Null ? [] : args.internalNode.value;
+
+            return new StmtSequence(
+                new VariableAssign(new Variable('this'), targetObject),  
+                funcInstance.internalNode.bodyStmt(jsArray.map(arg => arg.evaluate(context)))
+            ).evaluate(context);
+        }    
+    })]
 ]);
 
 class ClassClass {}
