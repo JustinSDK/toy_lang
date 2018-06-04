@@ -273,7 +273,16 @@ class ClassClass {}
 
 ClassClass.methods = new Map([
     ['name', FunctionClass.name()],     
-    ['toString', FunctionClass.toString()]
+    ['toString', FunctionClass.toString()],
+    ['getMethod', func1('getMethod', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            const methodName = PARAM1.evaluate(context).value;
+            return context.returned(
+                clzInstance.internalNode.getMethod(methodName).evaluate(context)
+            );
+        }    
+    })]
 ]);
 
 function classInstance(clzOfLang, internalNode) {
