@@ -230,8 +230,17 @@ ListClass.methods = new Map([
 ]);
 
 class FunctionClass {
-    static toString() {
-        return func0('toString', {
+    static name(methodName = 'name') {
+        return func0(methodName, {
+            evaluate(context) {
+                const fNode = self(context).internalNode;
+                return context.returned(new Primitive(fNode.name));
+            }    
+        });
+    }
+
+    static toString(methodName = 'toString') {
+        return func0(methodName, {
             evaluate(context) {
                 const instance = self(context);
                 const clzNode = instance.clzOfLang.internalNode;
@@ -243,24 +252,14 @@ class FunctionClass {
 }
 
 FunctionClass.methods = new Map([
-    ['name', func0('name', {
-        evaluate(context) {
-            const fNode = self(context).internalNode;
-            return context.returned(new Primitive(fNode.name));
-        }    
-    })],    
+    ['name', FunctionClass.name()],    
     ['toString', FunctionClass.toString()]
 ]);
 
 class ClassClass {}
 
 ClassClass.methods = new Map([
-    ['name', func0('name', {
-        evaluate(context) {
-            const clzNode = self(context).internalNode;
-            return context.returned(new Primitive(clzNode.name));
-        }    
-    })],     
+    ['name', FunctionClass.name()],     
     ['toString', FunctionClass.toString()]
 ]);
 
