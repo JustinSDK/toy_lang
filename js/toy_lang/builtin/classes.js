@@ -96,6 +96,46 @@ function methodNewSameType(nativeClz, methodName, params = PARAM_LT0) {
     }, params);
 }
 
+class ObjectClass {
+    static getClass() {
+        return  func0('getClass', {
+            evaluate(context) {
+                const instance = self(context);
+                return context.returned(instance.clzOfLang);
+            }    
+        });
+    }
+}
+
+ObjectClass.methods = new Map([ 
+    ['ownProperties', func0('ownProperties', {
+        evaluate(context) {
+            const instance = self(context);
+            const entries = Array.from(instance.properties.entries())
+                                 .map(entry => new Instance(
+                                        BUILTIN_CLASSES.get('List'), 
+                                        [], 
+                                        new NativeObject([new Primitive(entry[0]), entry[1]])
+                                    )
+                                );
+                                 
+            return context.returned(new Instance(
+                BUILTIN_CLASSES.get('List'), 
+                [], 
+                new NativeObject(entries)
+            ));
+        }    
+    })],    
+    ['toString', func0('toString', {
+        evaluate(context) {
+            const instance = self(context);
+            const clzNode = instance.clzOfLang.internalNode;
+            return context.returned(new Primitive(`[${clzNode.name} object]`));
+        }    
+    })],
+    ['getClass', ObjectClass.getClass()]
+]);
+
 class StringClass {
     static method0Primitive(methodName) {
         return methodPrimitive(String, methodName);
@@ -151,7 +191,8 @@ StringClass.methods = new Map([
             const value = selfInternalValue(context);
             return context.returned(new Primitive(value.length));
         }    
-    })]
+    })],
+    ['getClass', ObjectClass.getClass()]
 ]);
 
 class ListClass {
@@ -226,7 +267,8 @@ ListClass.methods = new Map([
             const arr = selfInternalValue(context);
             return context.returned(new Primitive(arr.length === 0));
         }    
-    })]
+    })],
+    ['getClass', ObjectClass.getClass()]
 ]);
 
 class FunctionClass {
@@ -266,7 +308,8 @@ FunctionClass.methods = new Map([
                 funcInstance.internalNode.bodyStmt(jsArray.map(arg => arg.evaluate(context)))
             ).evaluate(context);
         }    
-    })]
+    })],
+    ['getClass', ObjectClass.getClass()]
 ]);
 
 class ClassClass {}
@@ -282,37 +325,8 @@ ClassClass.methods = new Map([
                 clzInstance.internalNode.getMethod(methodName)
             );
         }    
-    })]
-]);
-
-class ObjectClass {}
-
-ObjectClass.methods = new Map([ 
-    ['ownProperties', func0('ownProperties', {
-        evaluate(context) {
-            const instance = self(context);
-            const entries = Array.from(instance.properties.entries())
-                                 .map(entry => new Instance(
-                                        BUILTIN_CLASSES.get('List'), 
-                                        [], 
-                                        new NativeObject([new Primitive(entry[0]), entry[1]])
-                                    )
-                                );
-                                 
-            return context.returned(new Instance(
-                BUILTIN_CLASSES.get('List'), 
-                [], 
-                new NativeObject(entries)
-            ));
-        }    
-    })],    
-    ['toString', func0('toString', {
-        evaluate(context) {
-            const instance = self(context);
-            const clzNode = instance.clzOfLang.internalNode;
-            return context.returned(new Primitive(`[${clzNode.name} object]`));
-        }    
-    })]
+    })],
+    ['getClass', ObjectClass.getClass()]
 ]);
 
 function classInstance(clzOfLang, internalNode) {
