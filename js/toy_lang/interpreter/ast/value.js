@@ -97,7 +97,7 @@ class Instance extends Value {
         this.internalNode = internalNode;
     }
 
-    getProperty(name) {
+    getOwnProperty(name) {
         return this.properties.get(name);
     }
 
@@ -105,9 +105,9 @@ class Instance extends Value {
         Even though I use functional programming to implement toy_lang on purpose, 
         however, toy_lang is an imperative language. Using functional programming to
         implement the setter of an mutable instance will make AST more complex. 
-        For simplicity, the setProperty method modifies the state directly. 
+        For simplicity, the setOwnProperty method modifies the state directly. 
     */
-    setProperty(name, value) {
+    setOwnProperty(name, value) {
         this.properties.set(name, value);
     }
 
@@ -120,7 +120,7 @@ class Instance extends Value {
     }
 
     methodBodyStmt(context, name, args = []) {
-        const f = this.hasOwnProperty(name) ? this.getProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(name);
+        const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(name);
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
             f.bodyStmt(args.map(arg => arg.evaluate(context)))

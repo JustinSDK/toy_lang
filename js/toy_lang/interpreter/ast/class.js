@@ -6,7 +6,7 @@ export {Instalization, Property, MethodCall};
 
 function evalMethod(context, instance, methodName, args) {
     const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
-    const fClz = instance.getProperty(methodName);
+    const fClz = instance.getOwnProperty(methodName);
     const clzNode = instance.clzOfLang.internalNode;
     const parentContext = clzNode.parentContext || 
                           (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
@@ -82,7 +82,7 @@ class PropertyGetter {
 
     evaluate(context) {
         return this.receiver(context)
-                   .getProperty(this.property.propName);
+                   .getOwnProperty(this.property.propName);
     }    
 }
 
@@ -97,9 +97,9 @@ class PropertySetter {
     }    
 
     evaluate(context) {
-        // For simplicity, the setProperty method modifies the state directly. 
+        // For simplicity, the setOwnProperty method modifies the state directly. 
         this.receiver(context)
-            .setProperty(
+            .setOwnProperty(
                 this.property.propName, 
                 this.value.evaluate(context)
             );
