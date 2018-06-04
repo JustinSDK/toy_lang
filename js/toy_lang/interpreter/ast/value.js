@@ -61,7 +61,7 @@ class Func extends Value {
 
     evaluate(context) {
         return new Instance(
-            this.clzOfLang(context), [], this.withParentContext(context)
+            this.clzOfLang(context), new Map(), this.withParentContext(context)
         );
     }
 }
