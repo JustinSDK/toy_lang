@@ -102,7 +102,8 @@ class Instance extends Value {
     }
 
     hasProperty(name) {
-        return this.hasOwnProperty(name) || this.clzOfLang.internalNode.hasMethod(name);
+        return this.hasOwnProperty(name) || 
+               this.clzOfLang.internalNode.hasMethod(name);
     }
 
     getOwnProperty(name) {
