@@ -97,12 +97,13 @@ class Instance extends Value {
         this.internalNode = internalNode;
     }
 
-    getProperty(name) {
-        return this.properties.get(name) || this.clzOfLang.internalNode.getMethod(name);
-    }
-
     getOwnProperty(name) {
         return this.properties.get(name);
+    }
+
+    getProperty(name) {
+        return this.getOwnProperty(name) || 
+               this.clzOfLang.internalNode.getMethod(name);
     }
 
     /*
