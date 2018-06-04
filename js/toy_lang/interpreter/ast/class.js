@@ -82,7 +82,8 @@ class PropertyGetter {
 
     evaluate(context) {
         return this.receiver(context)
-                   .getOwnProperty(this.property.propName);
+                   .getProperty(this.property.propName)
+                   .evaluate(context);
     }    
 }
 
