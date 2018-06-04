@@ -93,7 +93,7 @@ class Instance extends Value {
     constructor(clzOfLang, properties, internalNode = null) {
         super();
         this.clzOfLang = clzOfLang; 
-        this.properties = new Map(Array.from(properties.entries()).concat([['class', this.clzOfLang]]));
+        this.properties = properties;
         this.internalNode = internalNode;
     }
 

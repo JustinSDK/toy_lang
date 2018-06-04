@@ -114,14 +114,14 @@ ObjectClass.methods = new Map([
             const entries = Array.from(instance.properties.entries())
                                  .map(entry => new Instance(
                                         BUILTIN_CLASSES.get('List'), 
-                                        [], 
+                                        new Map(), 
                                         new NativeObject([new Primitive(entry[0]), entry[1]])
                                     )
                                 );
                                  
             return context.returned(new Instance(
                 BUILTIN_CLASSES.get('List'), 
-                [], 
+                new Map(), 
                 new NativeObject(entries)
             ));
         }    
@@ -330,7 +330,7 @@ ClassClass.methods = new Map([
 ]);
 
 function classInstance(clzOfLang, internalNode) {
-    return new Instance(clzOfLang, [], internalNode);
+    return new Instance(clzOfLang, new Map(), internalNode);
 }
 
 function classEntry(clzOfLang, name, methods) {
