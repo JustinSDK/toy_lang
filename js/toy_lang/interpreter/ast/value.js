@@ -13,6 +13,8 @@ class Value {
 
 // internal null value
 const Null = new Value();
+// internal void value
+const Void = Null;
 
 // number, text, boolean
 class Primitive extends Value {
@@ -86,8 +88,6 @@ class Class extends Func {
         return context.lookUpVariable('Class');;
     }
 }
-
-const Void = new Value();
 
 class Instance extends Value {
     constructor(clzOfLang, properties, internalNode = null) {
