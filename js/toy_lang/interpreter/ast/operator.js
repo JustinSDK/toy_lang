@@ -13,8 +13,8 @@ function createOperatorNode(operator) {
             const right = this.right.evaluate(context);
             return new Primitive(
                 operator(
-                    left.value ? left.value : left.toString(context), 
-                    right.value ? right.value : right.toString(context)
+                    left.value === undefined ? left.toString(context) : left.value, 
+                    right.value === undefined ? right.toString(context) : right.value
                 )
             );
         }
