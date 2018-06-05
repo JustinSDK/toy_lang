@@ -9,7 +9,14 @@ function createOperatorNode(operator) {
         }
     
         evaluate(context) {
-            return new Primitive(operator(this.left.evaluate(context).value, this.right.evaluate(context).value));
+            const left = this.left.evaluate(context);
+            const right = this.right.evaluate(context);
+            return new Primitive(
+                operator(
+                    left.value ? left.value : left.toString(context), 
+                    right.value ? right.value : right.toString(context)
+                )
+            );
         }
     }
 }
