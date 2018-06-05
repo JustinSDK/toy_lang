@@ -340,7 +340,6 @@ function classEntry(clzOfLang, name, methods) {
 const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
 // 'Class' of is an instance of 'Class'
 CLZ.clzOfLang = CLZ;
-CLZ.setOwnProperty('class', CLZ);
 
 const BUILTIN_CLASSES = new Map([
     classEntry(CLZ, 'Object', ObjectClass.methods),
