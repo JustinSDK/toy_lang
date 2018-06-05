@@ -32,7 +32,7 @@ const METHODCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})\\.(${VARIABLE_R
 
 const NEW_CLZ_REGEX = new RegExp(`(new (${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
 
-const PROP_REGEX = new RegExp(`((${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source}))`);
+const PROP_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(\\.(${VARIABLE_REGEX.source}))+)`);
 
 const EXPR_REGEX = orRegexs(
     NEW_CLZ_REGEX.source,

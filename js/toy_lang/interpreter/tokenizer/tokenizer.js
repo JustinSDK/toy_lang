@@ -32,7 +32,10 @@ const TOKEN_TESTERS = new Map([
     }],    
     ['property', function(input) {
         const matched = REGEX.get('property').exec(input);
-        return matched ? [matched[2], matched[3]] : [];
+        if(matched) {
+            return matched[1].split('\.');
+        }
+        return [];
     }],  
     ['not', function(input) {
         const matched = REGEX.get('not').exec(input);
@@ -59,7 +62,11 @@ const TOKEN_TESTERS = new Map([
     }],
     ['propertyAssign', function(input) {
         const matched = REGEX.get('propertyAssign').exec(input);
-        return matched ? [matched[2], matched[3], matched[4]] : [];
+        if(matched) {
+            const dotSeperated = matched[1].split('\.');
+            return dotSeperated.concat(matched[5]);
+        }
+        return [];
     }],    
     ['block', function(input) {
         const matched = REGEX.get('block').exec(input);
