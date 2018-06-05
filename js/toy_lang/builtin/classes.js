@@ -125,6 +125,16 @@ ObjectClass.methods = new Map([
                 new NativeObject(entries)
             ));
         }    
+    })],
+    ['hasOwnProperty', func1('hasOwnProperty', {
+        evaluate(context) {
+            const instance = self(context);    
+            return context.returned(
+                instance.hasOwnProperty(PARAM1.evaluate(context).value) ? 
+                    Primitive.BoolTrue : 
+                    Primitive.BoolFalse
+            );
+        }    
     })],    
     ['toString', func0('toString', {
         evaluate(context) {
