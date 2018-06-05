@@ -59,7 +59,7 @@ const TOKEN_TESTERS = new Map([
     }],
     ['propertyAssign', function(input) {
         const matched = REGEX.get('propertyAssign').exec(input);
-        return matched ? [matched[1], matched[2], matched[3]] : [];
+        return matched ? [matched[2], matched[3], matched[4]] : [];
     }],    
     ['block', function(input) {
         const matched = REGEX.get('block').exec(input);

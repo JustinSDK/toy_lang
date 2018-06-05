@@ -71,7 +71,7 @@ const REGEX = new Map([
     ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
-    ['propertyAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
+    ['propertyAssign', new RegExp(`^${PROP_REGEX.source}\\s*=\\s*(.*)$`)],
     ['new', new RegExp(`^${NEW_CLZ_REGEX.source}`)],
     ['return', /^return\s*(.*)$/],
 ]);
