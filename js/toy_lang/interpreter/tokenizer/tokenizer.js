@@ -89,13 +89,13 @@ function expr_tokens(input) {
 function funcArguments(input) {
     const matched = REGEX.get('argList').exec(input);
     if(matched[1]) {
-        return split(matched[1], ',');
+        return splitByComma(matched[1]);
     }
 
     return [];
 }
 
-function split(input, separator, x = '', acc = []) {
+function splitByComma(input, x = '', acc = []) {
     if(input === '') {
         return acc.concat([x.trim()]);
     }
@@ -103,11 +103,11 @@ function split(input, separator, x = '', acc = []) {
     const matched = REGEX.get('commaSeperated').exec(input);
     if(matched) {
         const token = matched[1];
-        if(token === separator) {
-            return split(input.slice(token.length).trim(), separator, '', acc.concat([x]));
+        if(token === ',') {
+            return splitByComma(input.slice(token.length).trim(), '', acc.concat([x]));
         } 
         else {
-            return split(input.slice(token.length).trim(), separator, x + token + ' ', acc);
+            return splitByComma(input.slice(token.length).trim(), x + token + ' ', acc);
         }
     }
     else {
