@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Property, MethodCall} from './ast/class.js';
+import {Properties, MethodCall} from './ast/class.js';
 import {Return, FunCall, FunCallWrapper} from './ast/function.js';
 import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
@@ -41,14 +41,18 @@ const STMT_PARSER = TokenablesParser.orRules(
         }
     }],   
     ['propertyAssign', {
-        burst(tokenableLines, [varTokenable, propertyTokenable, assignedTokenable]) {
-            checkNotKeyword(tokenableLines, propertyTokenable);
+        burst(tokenableLines, tokenables) {
+            const variable = tokenables[0];
+            const properties = tokenables.slice(1, -1);
+            const assigned = tokenables[tokenables.length - 1];
+
+            checkNotKeyword(tokenableLines, properties[properties.length - 1]);
 
             return createAssign(
                 tokenableLines, 
                 PropertyAssign, 
-                new Property(new Variable(varTokenable.value), propertyTokenable.value), 
-                assignedTokenable
+                new Properties(new Variable(variable.value), properties.map(prop => prop.value)), 
+                assigned
             );                
         }
     }],             
@@ -70,7 +74,7 @@ const STMT_PARSER = TokenablesParser.orRules(
             return new StmtSequence(
                 new FunCallWrapper(
                     new MethodCall(
-                        new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                        new Properties(new Variable(nameTokenable.value), [propTokenable.value]).getter(), 
                         argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
                     )
                 ),

@@ -1,7 +1,7 @@
 import {Stack} from './commons/collection.js';
 import {Primitive} from './ast/value.js';
 import {FunCall} from './ast/function.js';
-import {Instalization, Property, MethodCall} from './ast/class.js';
+import {Instalization, Properties, MethodCall} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
@@ -36,15 +36,18 @@ const OPERAND_PARSER = TokenableParser.orRules(
     ['mcall', {
         burst([nameTokenable, propTokenable, ...argTokenables]) {
             return new MethodCall(
-                new Property(new Variable(nameTokenable.value), propTokenable.value).getter(), 
+                new Properties(new Variable(nameTokenable.value), [propTokenable.value]).getter(), 
                 argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
             );
             
         }        
     }],     
     ['property', {
-        burst([nameTokenable, propTokenable]) {
-            return new Property(new Variable(nameTokenable.value), propTokenable.value).getter();
+        burst([nameTokenable, ...propTokenables]) {
+            return new Properties(
+                new Variable(nameTokenable.value), 
+                propTokenables.map(prop => prop.value)
+            ).getter();
         }        
     }],    
     ['text', {

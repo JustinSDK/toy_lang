@@ -2,7 +2,7 @@ import {Variable, VariableAssign, StmtSequence} from './statement.js';
 import {Instance} from './value.js';
 import {Apply} from './function.js';
 
-export {Instalization, Property, MethodCall};
+export {Instalization, Properties, MethodCall};
 
 function evalMethod(context, instance, methodName, args) {
     const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
@@ -44,19 +44,11 @@ class Instalization {
     }   
 }
 
-class Property {
-    constructor(variable, propName) {
+class Properties {
+    constructor(variable, propNames) {
         this.variable = variable;
-        this.propName = propName;
+        this.propNames = propNames;
     }
-
-    receiverName() {
-        return this.variable.name;
-    }
-
-    receiver(context) {
-        return this.variable.evaluate(context);
-    } 
 
     getter() {
         return new PropertyGetter(this);
@@ -72,19 +64,29 @@ class PropertyGetter {
         this.property = property;
     }
 
-    receiver(context) {
-        return this.property.receiver(context);
+    variable() {
+        return this.property.variable;
     }
 
     propName() {
-        return this.property.propName;
+        return this.property.propNames[0];
     }
 
     evaluate(context) {
-        return this.receiver(context)
-                   .getProperty(this.property.propName)
-                   .evaluate(context);
+        return targetProp(context, this.variable().evaluate(context), this.property.propNames);
     }    
+}
+
+function targetProp(context, instance, propNames) {
+    if(propNames.length === 0) {
+        return instance;
+    }
+
+    return targetProp(
+        context,
+        instance.getProperty(propNames[0]).evaluate(context),
+        propNames.slice(1)
+    );
 }
 
 class PropertySetter {
@@ -93,18 +95,21 @@ class PropertySetter {
         this.value = value;
     }
 
-    receiver(context) {
-        return this.property.receiver(context);
+    variable() {
+        return this.property.variable;
     }    
 
     evaluate(context) {
-        // For simplicity, the setOwnProperty method modifies the state directly. 
-        this.receiver(context)
-            .setOwnProperty(
-                this.property.propName, 
+        // For simplicity, the setOwnProperty method modifies the state directly.
+        let instance = targetProp(
+            context, 
+            this.variable().evaluate(context), 
+            this.property.propNames.slice(0, -1)
+        ); 
+        instance.setOwnProperty(
+                this.property.propNames[this.property.propNames.length - 1], 
                 this.value.evaluate(context)
             );
- 
         return context;                                     
     }    
 }
@@ -116,7 +121,7 @@ class MethodCall {
     } 
 
     evaluate(context) {
-        const instance = this.propertyGetter.receiver(context);
+        const instance = this.propertyGetter.variable().evaluate(context);
         return evalMethod(context, instance, this.propertyGetter.propName(), this.args).returnedValue;
     }    
 }
