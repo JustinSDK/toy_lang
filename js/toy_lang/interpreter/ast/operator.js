@@ -1,8 +1,8 @@
 import {Primitive} from './value.js';
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
-function createOperatorNode(operator) {
-    return class BinaryOperator {
+function createPrimitiveBinaryOperatorNode(operator) {
+    return class PrimitiveBinaryOperator {
         constructor(left, right) {
             this.left = left;
             this.right = right;
@@ -36,17 +36,17 @@ const UNARY_OPERATORS = new Map([
 ]);
 
 const BINARY_OPERATORS = new Map([
-    ['+', createOperatorNode((a, b) => a + b)],
-    ['-', createOperatorNode((a, b) => a - b)],
-    ['*', createOperatorNode((a, b) => a * b)],
-    ['/', createOperatorNode((a, b) => a / b)],
-    ['%', createOperatorNode((a, b) => a % b)],
-    ['==', createOperatorNode((a, b) => a === b)],
-    ['!=', createOperatorNode((a, b) => a !== b)],
-    ['>=', createOperatorNode((a, b) => a >= b)],
-    ['>', createOperatorNode((a, b) => a > b)],
-    ['<=', createOperatorNode((a, b) => a <= b)],
-    ['<', createOperatorNode((a, b) => a < b)],
-    ['and', createOperatorNode((a, b) => a && b)],
-    ['or', createOperatorNode((a, b) => a || b)]
+    ['+', createPrimitiveBinaryOperatorNode((a, b) => a + b)],
+    ['-', createPrimitiveBinaryOperatorNode((a, b) => a - b)],
+    ['*', createPrimitiveBinaryOperatorNode((a, b) => a * b)],
+    ['/', createPrimitiveBinaryOperatorNode((a, b) => a / b)],
+    ['%', createPrimitiveBinaryOperatorNode((a, b) => a % b)],
+    ['==', createPrimitiveBinaryOperatorNode((a, b) => a === b)],
+    ['!=', createPrimitiveBinaryOperatorNode((a, b) => a !== b)],
+    ['>=', createPrimitiveBinaryOperatorNode((a, b) => a >= b)],
+    ['>', createPrimitiveBinaryOperatorNode((a, b) => a > b)],
+    ['<=', createPrimitiveBinaryOperatorNode((a, b) => a <= b)],
+    ['<', createPrimitiveBinaryOperatorNode((a, b) => a < b)],
+    ['and', createPrimitiveBinaryOperatorNode((a, b) => a && b)],
+    ['or', createPrimitiveBinaryOperatorNode((a, b) => a || b)]
 ]);
