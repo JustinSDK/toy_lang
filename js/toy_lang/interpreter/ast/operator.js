@@ -1,3 +1,5 @@
+import {FunCall} from './function.js';
+import {Variable} from './statement.js';
 import {Primitive} from './value.js';
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
@@ -21,6 +23,38 @@ function createPrimitiveBinaryOperatorNode(operator) {
     }
 }
 
+function evalMethod(context, instance, methodName, args) {
+    const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
+    const fClz = instance.getOwnProperty(methodName);
+    const clzNode = instance.clzOfLang.internalNode;
+    const parentContext = clzNode.parentContext || 
+                          (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
+
+    return methodBodyStmt.evaluate(
+        parentContext ?
+            parentContext.childContext() : // closure context
+            context.childContext()
+    );
+}
+
+class DotOperator {
+    constructor(receiver, message) {
+        this.receiver = receiver;
+        this.message = message;
+    }
+
+    evaluate(context) {
+        const instance = this.receiver.evaluate(context);
+        if(this.message instanceof Variable) {
+            return instance.getProperty(this.message.name).evaluate(context);
+        } else if(this.message instanceof FunCall) {
+            const methodName = this.message.apply.fVariable.name;
+            const args = this.message.apply.args;
+            return evalMethod(context, instance, methodName, args).returnedValue;
+        }
+    }
+}
+
 class Not {
     constructor(operand) {
         this.operand = operand;
@@ -36,6 +70,7 @@ const UNARY_OPERATORS = new Map([
 ]);
 
 const BINARY_OPERATORS = new Map([
+    ['.', DotOperator],
     ['+', createPrimitiveBinaryOperatorNode((a, b) => a + b)],
     ['-', createPrimitiveBinaryOperatorNode((a, b) => a - b)],
     ['*', createPrimitiveBinaryOperatorNode((a, b) => a * b)],

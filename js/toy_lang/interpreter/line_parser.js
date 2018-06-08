@@ -1,8 +1,7 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Properties, MethodCall} from './ast/class.js';
-import {Return, FunCall, FunCallWrapper} from './ast/function.js';
-import {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
-import {EXPR_PARSER} from './expr_parser.js';
+import {Return, FunCall} from './ast/function.js';
+import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
+import {EXPR_PARSER, exprAst, toPostfix} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
 
 export {LINE_PARSER};
@@ -29,37 +28,33 @@ const LINE_PARSER = {
 
 const STMT_PARSER = TokenablesParser.orRules(
     ['variableAssign', {
-        burst(tokenableLines, [varTokenable, assignedTokenable]) {
+        burst(tokenableLines, [varTokenable, valueTokenable]) {
             checkNotKeyword(tokenableLines, varTokenable);
 
             return createAssign(
                 tokenableLines, 
                 VariableAssign, 
                 new Variable(varTokenable.value), 
-                assignedTokenable
+                valueTokenable
             );
         }
     }],   
     ['propertyAssign', {
-        burst(tokenableLines, tokenables) {
-            const variable = tokenables[0];
-            const properties = tokenables.slice(1, -1);
-            const assigned = tokenables[tokenables.length - 1];
+        burst(tokenableLines, [targetTokenable, propTokenable, valueTokenable]) {
+            checkNotKeyword(tokenableLines, propTokenable);
+            const target = EXPR_PARSER.parse(targetTokenable);
+            const value = EXPR_PARSER.parse(valueTokenable);
 
-            checkNotKeyword(tokenableLines, properties[properties.length - 1]);
-
-            return createAssign(
-                tokenableLines, 
-                PropertyAssign, 
-                new Properties(new Variable(variable.value), properties.map(prop => prop.value)), 
-                assigned
-            );                
+            return new StmtSequence(
+                new PropertyAssign(target, propTokenable.value, value),
+                LINE_PARSER.parse(tokenableLines.slice(1))
+            );
         }
     }],             
     ['fcall', {
         burst(tokenableLines, [fNameTokenable, ...argTokenables]) {            
             return new StmtSequence(
-                new FunCallWrapper(
+                new ExprWrapper(
                     new FunCall(
                         new Variable(fNameTokenable.value),
                         argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)) 
@@ -67,24 +62,6 @@ const STMT_PARSER = TokenablesParser.orRules(
                 ),
                 LINE_PARSER.parse(tokenableLines.slice(1))
             );                
-        }
-    }],        
-    ['mcall', {
-        burst(tokenableLines, [nameTokenable, propTokenable, ...argTokenables]) {
-            return new StmtSequence(
-                new FunCallWrapper(
-                    new MethodCall(
-                        new Properties(new Variable(nameTokenable.value), [propTokenable.value]).getter(), 
-                        argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-                    )
-                ),
-                LINE_PARSER.parse(tokenableLines.slice(1))
-            ); 
-        }
-    }],   
-    ['return', {
-        burst(tokenableLines, [argTokenable]) {
-            return createReturn(tokenableLines, argTokenable); 
         }
     }],             
     ['block', {
@@ -99,6 +76,21 @@ const STMT_PARSER = TokenablesParser.orRules(
                 case 'while':
                     return createWhile(tokenableLines, argTokenable);
             }
+        }
+    }],   
+    ['return', {
+        burst(tokenableLines, [argTokenable]) {
+            return createReturn(tokenableLines, argTokenable); 
+        }
+    }],        
+    ['expression', {
+        burst(tokenableLines, infixTokenables) {
+            return new StmtSequence(
+                new ExprWrapper(
+                    exprAst(toPostfix(infixTokenables))
+                ),
+                LINE_PARSER.parse(tokenableLines.slice(1))
+            ); 
         }
     }]
 );

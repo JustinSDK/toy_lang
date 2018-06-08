@@ -1,6 +1,6 @@
 import {Void} from './value.js';
 
-export {Return, Apply, FunCall, FunCallWrapper};
+export {Return, Apply, FunCall};
 
 class Return {
     constructor(value) {
@@ -39,15 +39,3 @@ class FunCall {
         return  returnedValue === null ? Void : returnedValue;
     }    
 }
-
-class FunCallWrapper {
-    constructor(funcall) {
-        this.funcall = funcall;
-    }
-
-    evaluate(context) {
-        this.funcall.evaluate(context);
-        return context;
-    }    
-}
-

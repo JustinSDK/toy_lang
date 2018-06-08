@@ -63,8 +63,7 @@ const TOKEN_TESTERS = new Map([
     ['propertyAssign', function(input) {
         const matched = REGEX.get('propertyAssign').exec(input);
         if(matched) {
-            const dotSeperated = matched[1].split('\.');
-            return dotSeperated.concat(matched[5]);
+            return matched.slice(1);
         }
         return [];
     }],    

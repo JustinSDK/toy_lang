@@ -9,6 +9,7 @@ const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
 const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
+const DOT_REGEX = /\./;
 const PARENTHESE_REGEX = /\(|\)/;
 
 // For simplicity, only allow three nested parentheses.
@@ -28,21 +29,16 @@ const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGE
 
 const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
-const METHODCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})\\.(${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
-
 const NEW_CLZ_REGEX = new RegExp(`(new (${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
-
-const PROP_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(\\.(${VARIABLE_REGEX.source}))+)`);
 
 const EXPR_REGEX = orRegexs(
     NEW_CLZ_REGEX.source,
     `(not\\s+)?${FUNCALL_REGEX.source}`,
-    `(not\\s+)?${METHODCALL_REGEX.source}`,
-    `(not\\s+)?${PROP_REGEX.source}`,
     `(not\\s+)?${TEXT_REGEX.source}`,
     `(not\\s+)?${NUMBER_REGEX.source}`,
     `(not\\s+)?(${BOOLEAN_REGEX.source})`,
     `(not\\s+)?${VARIABLE_REGEX.source}`,
+    DOT_REGEX.source,
     RELATION_REGEX.source,
     LOGIC_REGEX.source,
     ARITHMETIC_REGEX.source,
@@ -57,10 +53,8 @@ const REGEX = new Map([
     ['boolean', new RegExp(`^(${BOOLEAN_REGEX.source})$`)],
     ['number', new RegExp(`^${NUMBER_REGEX.source}$`)],
     ['text', new RegExp(`^${TEXT_REGEX.source}$`)],
-    ['variable', new RegExp(`^${VARIABLE_REGEX.source}$`)],
+    ['variable', new RegExp(`^${VARIABLE_REGEX.source}`)],
     ['fcall', new RegExp(`^${FUNCALL_REGEX.source}$`)],
-    ['mcall', new RegExp(`^${METHODCALL_REGEX.source}$`)],
-    ['property', new RegExp(`^${PROP_REGEX.source}$`)],
     ['relation', new RegExp(`^(.*)\\s+(${RELATION_REGEX.source})\\s+(.*)$`)],
     ['logic', new RegExp(`^(.*)\\s+(${LOGIC_REGEX.source})\\s+(.*)$`)],
     ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}$`)],
@@ -71,7 +65,7 @@ const REGEX = new Map([
     ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
-    ['propertyAssign', new RegExp(`^${PROP_REGEX.source}\\s*=\\s*(.*)$`)],
+    ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['new', new RegExp(`^${NEW_CLZ_REGEX.source}`)],
     ['return', /^return\s*(.*)$/],
 ]);

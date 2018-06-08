@@ -1,12 +1,12 @@
 import {Stack} from './commons/collection.js';
 import {Primitive} from './ast/value.js';
 import {FunCall} from './ast/function.js';
-import {Instalization, Properties, MethodCall} from './ast/class.js';
+import {Instalization} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
 
-export {EXPR_PARSER};
+export {EXPR_PARSER, exprAst, toPostfix};
 
 const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
@@ -32,24 +32,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
                 argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
             );
         }        
-    }],   
-    ['mcall', {
-        burst([nameTokenable, propTokenable, ...argTokenables]) {
-            return new MethodCall(
-                new Properties(new Variable(nameTokenable.value), [propTokenable.value]).getter(), 
-                argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-            );
-            
-        }        
-    }],     
-    ['property', {
-        burst([nameTokenable, ...propTokenables]) {
-            return new Properties(
-                new Variable(nameTokenable.value), 
-                propTokenables.map(prop => prop.value)
-            ).getter();
-        }        
-    }],    
+    }],  
     ['text', {
         burst([textTokenable]) {
             return new Primitive(textTokenable.value
@@ -104,7 +87,8 @@ function exprAst(tokenables) {
 }
 
 function priority(operator) {
-    return ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
+    return operator === '.' ? 5 :
+           ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
            ['and', 'or'].indexOf(operator) !== -1 ? 3 :
            ['*', '/', '%'].indexOf(operator) !== -1 ? 2 :
            ['+', '-'].indexOf(operator) !== -1 ? 1 : 0;
@@ -132,6 +116,7 @@ function digest(tokenables, stack = new Stack(), output = []) {
     switch(tokenables[0].value) {
         case '(':
             return digest(tokenables.slice(1), stack.push(tokenables[0]), output);
+        case '.':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
         case '+': case '-': case '*': case '/': case '%':
@@ -158,7 +143,8 @@ function toPostfix(tokenables) {
 }
 
 function isOperator(value) {        
-    return ['==', '!=', '>=', '>', '<=', '<',
+    return ['.',
+            '==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
             '+', '-', '*', '/', '%'].indexOf(value) !== -1;
 }

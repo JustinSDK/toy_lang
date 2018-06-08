@@ -1,8 +1,15 @@
-import {Func, Class, Instance, Primitive} from './value.js';
+export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
 
-export {Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
+class ExprWrapper {
+    constructor(expr) {
+        this.expr = expr;
+    }
 
-function nope(value) {}
+    evaluate(context) {
+        this.expr.evaluate(context);
+        return context;
+    }    
+}
 
 class Variable {
     constructor(name) {
@@ -89,11 +96,16 @@ StmtSequence.EMPTY = {
 };
 
 class PropertyAssign {
-    constructor(property, value) {
-        this.property = property.setter(value);
+    constructor(target, propName, value) {
+        this.target = target;
+        this.propName = propName;
+        this.value = value;
     }
 
     evaluate(context) {
-        return this.property.evaluate(context);
+        const instance = this.target.evaluate(context);
+        const value  = this.value.evaluate(context);
+        instance.setOwnProperty(this.propName, value);
+        return context;
     }
 }
