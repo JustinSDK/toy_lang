@@ -6,7 +6,7 @@ import {func, func0, func1, func2} from './func_bases.js';
 
 export {BUILTIN_CLASSES};
 
-class NativeObject extends Value {
+class Native extends Value {
     constructor(value) {
         super();
         this.value = value;
@@ -63,7 +63,7 @@ function methodSelf(nativeClz, methodName, params = PARAM_LT0) {
         evaluate(context) {
             const value = delegate(context, nativeClz, methodName, params);
             const instance = self(context);
-            instance.internalNode = new NativeObject(value);
+            instance.internalNode = new Native(value);
             return context.returned(instance);
         }
     }, params);
@@ -78,7 +78,7 @@ function methodNewSameType(nativeClz, methodName, params = PARAM_LT0) {
                 new Instance(
                     origin.clzOfLang, 
                     new Map(origin.properties), 
-                    new NativeObject(value)
+                    new Native(value)
                 )
             );
         }
@@ -104,14 +104,14 @@ ObjectClass.methods = new Map([
                                  .map(entry => new Instance(
                                         BUILTIN_CLASSES.get('List'), 
                                         new Map(), 
-                                        new NativeObject([new Primitive(entry[0]), entry[1]])
+                                        new Native([new Primitive(entry[0]), entry[1]])
                                     )
                                 );
                                  
             return context.returned(new Instance(
                 BUILTIN_CLASSES.get('List'), 
                 new Map(), 
-                new NativeObject(entries)
+                new Native(entries)
             ));
         }    
     })],
@@ -180,7 +180,7 @@ StringClass.methods = new Map([
             const instance = new Instance(
                 BUILTIN_CLASSES.get('List'), 
                 ListClass.methods, 
-                new NativeObject(arr.map(elem => new Primitive(elem)))
+                new Native(arr.map(elem => new Primitive(elem)))
             );
             return context.returned(instance);
         }
@@ -220,7 +220,7 @@ ListClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
             const value = PARAM1.evaluate(context).value;
-            const nativeObj = new NativeObject(new Array(value ? value : 0));
+            const nativeObj = new Native(new Array(value ? value : 0));
             const instance = self(context);
             instance.internalNode = nativeObj;
             return context;
