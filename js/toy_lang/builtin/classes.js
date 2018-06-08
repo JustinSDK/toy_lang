@@ -29,17 +29,6 @@ function selfInternalValue(context) {
     return self(context).internalNode.value;
 }
 
-function classBodyStmt(assigns) {
-    if(assigns.length === 0) {
-        return StmtSequence.EMPTY;
-    }
-    const [name, value] = assigns[0];
-    return new StmtSequence(
-        new VariableAssign(new Variable(name), value),
-        classBodyStmt(assigns.slice(1))
-    );
-}
-
 function delegate(context, nativeClz, methodName, params) {
     return nativeClz.prototype[methodName].apply(
         selfInternalValue(context), 
