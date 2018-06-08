@@ -31,13 +31,7 @@ class DotOperator {
 
     evaluate(context) {
         const instance = this.receiver.evaluate(context);
-        if(this.message instanceof Variable) {
-            return instance.getProperty(this.message.name).evaluate(context);
-        } else if(this.message instanceof FunCall) {
-            const methodName = this.message.apply.fVariable.name;
-            const args = this.message.apply.args;
-            return instance.evalMethod(context, methodName, args).returnedValue;
-        }
+        return this.message.send(context, instance);
     }
 }
 

@@ -38,4 +38,10 @@ class FunCall {
         const returnedValue = this.apply.evaluate(context).returnedValue;
         return  returnedValue === null ? Void : returnedValue;
     }    
+
+    send(context, instance) {
+        const methodName = this.apply.fVariable.name;
+        const args = this.apply.args;
+        return instance.evalMethod(context, methodName, args).returnedValue;
+    }
 }

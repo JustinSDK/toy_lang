@@ -19,6 +19,10 @@ class Variable {
     evaluate(context) {
         return context.lookUpVariable(this.name);
     }
+
+    send(context, instance) {
+        return instance.getProperty(this.name).evaluate(context);
+    }
 }
 
 class VariableAssign {
