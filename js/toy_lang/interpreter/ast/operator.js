@@ -1,5 +1,3 @@
-import {FunCall} from './function.js';
-import {Variable} from './statement.js';
 import {Primitive} from './value.js';
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
