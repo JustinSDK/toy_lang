@@ -236,7 +236,7 @@ ListClass.methods = new Map([
             const arr = selfInternalValue(context);
             const arg = PARAM1.evaluate(context);
             arr.push(arg);
-            return context.returned(Void);
+            return context.returned(self(context));
         }    
     })],
     ['get', func1('get', {
