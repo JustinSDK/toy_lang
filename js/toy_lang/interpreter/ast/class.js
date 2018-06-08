@@ -3,20 +3,6 @@ import {Apply} from './function.js';
 
 export {Instalization};
 
-function evalMethod(context, instance, methodName, args) {
-    const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
-    const fClz = instance.getOwnProperty(methodName);
-    const clzNode = instance.clzOfLang.internalNode;
-    const parentContext = clzNode.parentContext || 
-                          (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
-
-    return methodBodyStmt.evaluate(
-        parentContext ?
-            parentContext.childContext() : // closure context
-            context.childContext()
-    );
-}
-
 class Instalization {
     constructor(fVariable, args) {
         this.fVariable = fVariable;
@@ -36,7 +22,7 @@ class Instalization {
         const thisInstance = this.instance(context);
 
         if(thisInstance.hasProperty('init')) {
-            return evalMethod(context, thisInstance, 'init', this.args).variables.get('this');
+            return thisInstance.evalMethod(context, 'init', this.args).variables.get('this');
         }
         
         return thisInstance;

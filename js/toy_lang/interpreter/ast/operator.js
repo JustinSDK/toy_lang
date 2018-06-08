@@ -23,20 +23,6 @@ function createPrimitiveBinaryOperatorNode(operator) {
     }
 }
 
-function evalMethod(context, instance, methodName, args) {
-    const methodBodyStmt = instance.methodBodyStmt(context, methodName, args);
-    const fClz = instance.getOwnProperty(methodName);
-    const clzNode = instance.clzOfLang.internalNode;
-    const parentContext = clzNode.parentContext || 
-                          (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
-
-    return methodBodyStmt.evaluate(
-        parentContext ?
-            parentContext.childContext() : // closure context
-            context.childContext()
-    );
-}
-
 class DotOperator {
     constructor(receiver, message) {
         this.receiver = receiver;
@@ -50,7 +36,7 @@ class DotOperator {
         } else if(this.message instanceof FunCall) {
             const methodName = this.message.apply.fVariable.name;
             const args = this.message.apply.args;
-            return evalMethod(context, instance, methodName, args).returnedValue;
+            return instance.evalMethod(context, methodName, args).returnedValue;
         }
     }
 }

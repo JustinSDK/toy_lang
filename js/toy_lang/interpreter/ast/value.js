@@ -133,6 +133,20 @@ class Instance extends Value {
         );
     }
 
+    evalMethod(context, methodName, args) {
+        const methodBodyStmt = this.methodBodyStmt(context, methodName, args);
+        const fClz = this.getOwnProperty(methodName);
+        const clzNode = this.clzOfLang.internalNode;
+        const parentContext = clzNode.parentContext || 
+                              (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
+    
+        return methodBodyStmt.evaluate(
+            parentContext ?
+                parentContext.childContext() : // closure context
+                context.childContext()
+        );
+    }
+
     toString(context) {
         if(context && this.hasProperty('toString')) {
             const methodBodyStmt = this.methodBodyStmt(context, 'toString');
