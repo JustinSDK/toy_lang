@@ -391,7 +391,7 @@ ClassClass.methods = new Map([
             const clzInstance = self(context);
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
-                clzInstance.internalNode.getMethod(methodName)
+                clzInstance.internalNode.getMethod(methodName).evaluate(context)
             );
         }    
     })],
