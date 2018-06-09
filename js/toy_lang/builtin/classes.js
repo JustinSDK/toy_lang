@@ -50,6 +50,105 @@ ObjectClass.methods = new Map([
     ['getClass', ObjectClass.getClass()]
 ]);
 
+class FunctionClass {
+    static name(methodName = 'name') {
+        return func0(methodName, {
+            evaluate(context) {
+                const fNode = self(context).internalNode;
+                return context.returned(new Primitive(fNode.name));
+            }    
+        });
+    }
+
+    static toString(methodName = 'toString') {
+        return func0(methodName, {
+            evaluate(context) {
+                const instance = self(context);
+                const clzNode = instance.clzOfLang.internalNode;
+                const fNode = instance.internalNode;
+                return context.returned(new Primitive(`[${clzNode.name} ${fNode.name}]`));
+            }    
+        });
+    }
+}
+
+FunctionClass.methods = new Map([
+    ['name', FunctionClass.name()],    
+    ['toString', FunctionClass.toString()],
+    ['apply', func2('apply', {
+        evaluate(context) {
+            const funcInstance = self(context);            
+            const targetObject = PARAM1.evaluate(context); 
+            const args = PARAM2.evaluate(context);         // List instance
+            const jsArray = args === Null ? [] : args.internalNode.value;
+
+            return new StmtSequence(
+                new VariableAssign(new Variable('this'), targetObject),  
+                funcInstance.internalNode.bodyStmt(jsArray.map(arg => arg.evaluate(context)))
+            ).evaluate(context);
+        }    
+    })],
+    ['getClass', ObjectClass.getClass()]
+]);
+
+class ClassClass {
+    static classInstance(clzOfLang, internalNode) {
+        return new Instance(clzOfLang, new Map(), internalNode);
+    }
+
+    static classEntry(clzOfLang, name, methods) {
+        return [name, ClassClass.classInstance(clzOfLang, clzNode(name, methods))];
+    }
+}
+
+ClassClass.methods = new Map([
+    ['name', FunctionClass.name()],     
+    ['toString', FunctionClass.toString()],
+    ['addMethod', func1('addMethod', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            clzInstance.internalNode.addMethod(PARAM1.evaluate(context));
+            return context.returned(clzInstance);
+        }    
+    })],
+    ['deleteMethod', func1('deleteMethod', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            clzInstance.internalNode.deleteMethod(PARAM1.evaluate(context).value);
+            return context.returned(clzInstance);
+        }    
+    })],    
+    ['hasMethod', func1('hasMethod', {
+        evaluate(context) {
+            return context.returned(
+                self(context).internalNode.hasMethod(PARAM1.evaluate(context).value) ?
+                     Primitive.BoolTrue : Primitive.BoolFalse
+            );
+        }    
+    })],
+    ['getMethod', func1('getMethod', {
+        evaluate(context) {
+            const methodName = PARAM1.evaluate(context).value;
+            return context.returned(
+                self(context).internalNode.getMethod(methodName).evaluate(context)
+            );
+        }    
+    })],
+    ['methods', func0('methods', {
+        evaluate(context) {
+            const fNodes = Array.from(self(context).internalNode.methods.values());
+            return context.returned(
+                ListClass.listInstance(fNodes.map(fNode => fNode.evaluate(context)))
+            );
+        }    
+    })],
+    ['getClass', ObjectClass.getClass()]
+]);
+
+const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods));
+// 'Class' of is an instance of 'Class'
+CLZ.clzOfLang = CLZ;
+
 class StringClass {
     static method0Primitive(methodName) {
         return methodPrimitive(String, methodName);
@@ -216,110 +315,11 @@ ListClass.methods = new Map([
     ['getClass', ObjectClass.getClass()]
 ]);
 
-class FunctionClass {
-    static name(methodName = 'name') {
-        return func0(methodName, {
-            evaluate(context) {
-                const fNode = self(context).internalNode;
-                return context.returned(new Primitive(fNode.name));
-            }    
-        });
-    }
-
-    static toString(methodName = 'toString') {
-        return func0(methodName, {
-            evaluate(context) {
-                const instance = self(context);
-                const clzNode = instance.clzOfLang.internalNode;
-                const fNode = instance.internalNode;
-                return context.returned(new Primitive(`[${clzNode.name} ${fNode.name}]`));
-            }    
-        });
-    }
-}
-
-FunctionClass.methods = new Map([
-    ['name', FunctionClass.name()],    
-    ['toString', FunctionClass.toString()],
-    ['apply', func2('apply', {
-        evaluate(context) {
-            const funcInstance = self(context);            
-            const targetObject = PARAM1.evaluate(context); 
-            const args = PARAM2.evaluate(context);         // List instance
-            const jsArray = args === Null ? [] : args.internalNode.value;
-
-            return new StmtSequence(
-                new VariableAssign(new Variable('this'), targetObject),  
-                funcInstance.internalNode.bodyStmt(jsArray.map(arg => arg.evaluate(context)))
-            ).evaluate(context);
-        }    
-    })],
-    ['getClass', ObjectClass.getClass()]
-]);
-
-class ClassClass {
-    static classInstance(clzOfLang, internalNode) {
-        return new Instance(clzOfLang, new Map(), internalNode);
-    }
-
-    static classEntry(clzOfLang, name, methods) {
-        return [name, ClassClass.classInstance(clzOfLang, clzNode(name, methods))];
-    }
-}
-
-ClassClass.methods = new Map([
-    ['name', FunctionClass.name()],     
-    ['toString', FunctionClass.toString()],
-    ['addMethod', func1('addMethod', {
-        evaluate(context) {
-            const clzInstance = self(context);
-            clzInstance.internalNode.addMethod(PARAM1.evaluate(context));
-            return context.returned(clzInstance);
-        }    
-    })],
-    ['deleteMethod', func1('deleteMethod', {
-        evaluate(context) {
-            const clzInstance = self(context);
-            clzInstance.internalNode.deleteMethod(PARAM1.evaluate(context).value);
-            return context.returned(clzInstance);
-        }    
-    })],    
-    ['hasMethod', func1('hasMethod', {
-        evaluate(context) {
-            return context.returned(
-                self(context).internalNode.hasMethod(PARAM1.evaluate(context).value) ?
-                     Primitive.BoolTrue : Primitive.BoolFalse
-            );
-        }    
-    })],
-    ['getMethod', func1('getMethod', {
-        evaluate(context) {
-            const methodName = PARAM1.evaluate(context).value;
-            return context.returned(
-                self(context).internalNode.getMethod(methodName).evaluate(context)
-            );
-        }    
-    })],
-    ['methods', func0('methods', {
-        evaluate(context) {
-            const fNodes = Array.from(self(context).internalNode.methods.values());
-            return context.returned(
-                ListClass.listInstance(fNodes.map(fNode => fNode.evaluate(context)))
-            );
-        }    
-    })],
-    ['getClass', ObjectClass.getClass()]
-]);
-
-const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods));
-// 'Class' of is an instance of 'Class'
-CLZ.clzOfLang = CLZ;
-
 const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Object', ObjectClass.methods),
-    ClassClass.classEntry(CLZ, 'String', StringClass.methods),
-    ClassClass.classEntry(CLZ, 'List', ListClass.methods),
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
-    ['Class', CLZ]
+    ['Class', CLZ],
+    ClassClass.classEntry(CLZ, 'String', StringClass.methods),
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods)
 ]); 
 
