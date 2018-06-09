@@ -365,7 +365,15 @@ FunctionClass.methods = new Map([
     ['getClass', ObjectClass.getClass()]
 ]);
 
-class ClassClass {}
+class ClassClass {
+    static classInstance(clzOfLang, internalNode) {
+        return new Instance(clzOfLang, new Map(), internalNode);
+    }
+
+    static classEntry(clzOfLang, name, methods) {
+        return [name, ClassClass.classInstance(clzOfLang, clzNode(name, methods))];
+    }
+}
 
 ClassClass.methods = new Map([
     ['name', FunctionClass.name()],     
@@ -418,23 +426,15 @@ ClassClass.methods = new Map([
     ['getClass', ObjectClass.getClass()]
 ]);
 
-function classInstance(clzOfLang, internalNode) {
-    return new Instance(clzOfLang, new Map(), internalNode);
-}
-
-function classEntry(clzOfLang, name, methods) {
-    return [name, classInstance(clzOfLang, clzNode(name, methods))];
-}
-
-const CLZ = classInstance(null, clzNode('Class', ClassClass.methods));
+const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods));
 // 'Class' of is an instance of 'Class'
 CLZ.clzOfLang = CLZ;
 
 const BUILTIN_CLASSES = new Map([
-    classEntry(CLZ, 'Object', ObjectClass.methods),
-    classEntry(CLZ, 'String', StringClass.methods),
-    classEntry(CLZ, 'List', ListClass.methods),
-    classEntry(CLZ, 'Function', FunctionClass.methods),
+    ClassClass.classEntry(CLZ, 'Object', ObjectClass.methods),
+    ClassClass.classEntry(CLZ, 'String', StringClass.methods),
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods),
+    ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ]
 ]); 
 
