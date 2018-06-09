@@ -125,6 +125,13 @@ ObjectClass.methods = new Map([
             );
         }    
     })],    
+    ['deleteOwnProperty', func1('deleteOwnProperty', {
+        evaluate(context) {
+            const instance = self(context);
+            instance.deleteOwnProperty(PARAM1.evaluate(context).value);           
+            return context;
+        }    
+    })],    
     ['toString', func0('toString', {
         evaluate(context) {
             const instance = self(context);

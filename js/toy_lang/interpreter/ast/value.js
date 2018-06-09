@@ -115,6 +115,10 @@ class Instance extends Value {
                this.clzOfLang.internalNode.getMethod(name);
     }
 
+    deleteOwnProperty(name) {
+        this.properties.delete(name);
+    }
+
     /*
         Even though I use functional programming to implement toy_lang on purpose, 
         however, toy_lang is an imperative language. Using functional programming to
