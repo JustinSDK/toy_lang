@@ -1,89 +1,11 @@
-import {Value, Primitive, Class, Instance, Void, Null} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
-import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
-import {func, func0, func1, func2} from './func_bases.js';
+import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
+import {func0, func1, func2} from './func_bases.js';
+import {Native, clzNode, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue} from './class_bases.js';
 
 export {BUILTIN_CLASSES};
-
-class Native extends Value {
-    constructor(value) {
-        super();
-        this.value = value;
-    }
-
-    toString() {
-        return `${this.value}`;
-    }
-}
-
-function clzNode(name, methods) {
-    return new Class(PARAM_LT0, StmtSequence.EMPTY, methods, name);
-}
-
-function self(context) {
-    return context.variables.get('this');
-}
-
-function selfInternalValue(context) {
-    return self(context).internalNode.value;
-}
-
-function delegate(context, nativeClz, methodName, params) {
-    return nativeClz.prototype[methodName].apply(
-        selfInternalValue(context), 
-        params.map(param => param.evaluate(context).value)
-    );
-}
-
-function methodPrimitive(nativeClz, methodName, params = PARAM_LT0) {
-    return func(methodName, {
-        evaluate(context) {
-            return context.returned(
-                new Primitive(
-                    delegate(context, nativeClz, methodName, params)
-                )
-            );
-        }
-    }, params);
-}
-
-function methodVoid(nativeClz, methodName, params = PARAM_LT0) {
-    return func(methodName, {
-        evaluate(context) {
-            delegate(context, nativeClz, methodName, params);
-            return context.returned(Void);
-            
-        }    
-    }, params);
-}
-
-function methodSelf(nativeClz, methodName, params = PARAM_LT0) {
-    return func(methodName, {
-        evaluate(context) {
-            const value = delegate(context, nativeClz, methodName, params);
-            const instance = self(context);
-            instance.internalNode = new Native(value);
-            return context.returned(instance);
-        }
-    }, params);
-}
-
-function methodNewSameType(nativeClz, methodName, params = PARAM_LT0) {
-    return func(methodName, {
-        evaluate(context) {
-            const value = delegate(context, nativeClz, methodName, params);
-            const origin = self(context);
-            return context.returned(
-                new Instance(
-                    origin.clzOfLang, 
-                    new Map(origin.properties), 
-                    new Native(value)
-                )
-            );
-        }
-    }, params);
-}
 
 class ObjectClass {
     static getClass() {
