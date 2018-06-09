@@ -238,7 +238,7 @@ ListClass.methods = new Map([
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
     ['fill', ListClass.method3Self('fill')],
-    ['append', func1('append', {
+    ['add', func1('add', {
         evaluate(context) {
             const arr = selfInternalValue(context);
             const arg = PARAM1.evaluate(context);
