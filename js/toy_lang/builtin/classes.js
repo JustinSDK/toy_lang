@@ -274,6 +274,31 @@ ListClass.methods = new Map([
             return context.returned(new Primitive(arr.length === 0));
         }    
     })],
+    ['filter', func1('filter', {
+        evaluate(context) {
+            const origin = self(context);
+            const arr = origin.internalNode.value;
+            const fNode = PARAM1.evaluate(context).internalNode;
+            
+            const result = arr.filter(elem => {
+                const bodyStmt = fNode.bodyStmt(
+                    [elem.evaluate(context)]
+                );
+                const bool = bodyStmt.evaluate(
+                    fNode.parentContext ? 
+                        fNode.parentContext.childContext() : // closure context
+                        context.childContext()
+                ).returnedValue;
+
+                return bool.value;
+            });
+            return context.returned(new Instance(
+                origin.clzOfLang, 
+                new Map(origin.properties), 
+                new Native(result)
+            ));
+        }    
+    })],
     ['getClass', ObjectClass.getClass()]
 ]);
 
