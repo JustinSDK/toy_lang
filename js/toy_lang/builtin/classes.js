@@ -291,6 +291,20 @@ ListClass.methods = new Map([
             ));
         }    
     })],
+    ['map', func1('map', {
+        evaluate(context) {
+            const origin = self(context);
+            const arr = origin.internalNode.value;
+            const fNode = PARAM1.evaluate(context).internalNode;
+            const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
+
+            return context.returned(new Instance(
+                origin.clzOfLang, 
+                new Map(origin.properties), 
+                new Native(mapped)
+            ));
+        }    
+    })],
     ['getClass', ObjectClass.getClass()]
 ]);
 
