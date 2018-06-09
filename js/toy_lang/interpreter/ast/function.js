@@ -1,6 +1,6 @@
 import {Void} from './value.js';
 
-export {Return, Apply, FunCall};
+export {Return, FunCall};
 
 class Return {
     constructor(value) {
@@ -12,31 +12,21 @@ class Return {
     }    
 }
 
-class Apply {
+class FunCall {
     constructor(fVariable, args) {
         this.fVariable = fVariable;
         this.args = args;
-    }
-
-    evaluate(context) {
-        const f = this.fVariable.evaluate(context).internalNode;
-        return f.call(context, this.args);
-    }
-}
-
-class FunCall {
-    constructor(fVariable, args) {
-        this.apply = new Apply(fVariable, args);
     } 
 
     evaluate(context) {
-        const returnedValue = this.apply.evaluate(context).returnedValue;
+        const f = this.fVariable.evaluate(context).internalNode;
+        const returnedValue = f.call(context, this.args).returnedValue;
         return  returnedValue === null ? Void : returnedValue;
     }    
 
     send(context, instance) {
-        const methodName = this.apply.fVariable.name;
-        const args = this.apply.args;
+        const methodName = this.fVariable.name;
+        const args = this.args;
         return instance.evalMethod(context, methodName, args).returnedValue;
     }
 }

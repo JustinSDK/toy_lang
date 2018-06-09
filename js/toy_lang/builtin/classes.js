@@ -1,4 +1,4 @@
-import {Value, Primitive, Class, Instance, Void, Func, Null} from '../interpreter/ast/value.js';
+import {Value, Primitive, Class, Instance, Void, Null} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
