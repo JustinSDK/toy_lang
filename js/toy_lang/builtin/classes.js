@@ -21,17 +21,15 @@ class ObjectClass {
 ObjectClass.methods = new Map([ 
     ['ownProperties', func0('ownProperties', {
         evaluate(context) {
-            const instance = self(context);
-            const entries = Array.from(instance.properties.entries())
+            const entries = Array.from(self(context).properties.entries())
                                  .map(entry => ListClass.listInstance([new Primitive(entry[0]), entry[1]]));
             return context.returned(ListClass.listInstance(entries));
         }    
     })],
     ['hasOwnProperty', func1('hasOwnProperty', {
         evaluate(context) {
-            const instance = self(context);    
             return context.returned(
-                instance.hasOwnProperty(PARAM1.evaluate(context).value) ? 
+                self(context).hasOwnProperty(PARAM1.evaluate(context).value) ? 
                     Primitive.BoolTrue : 
                     Primitive.BoolFalse
             );
@@ -39,15 +37,13 @@ ObjectClass.methods = new Map([
     })],    
     ['deleteOwnProperty', func1('deleteOwnProperty', {
         evaluate(context) {
-            const instance = self(context);
-            instance.deleteOwnProperty(PARAM1.evaluate(context).value);           
+            self(context).deleteOwnProperty(PARAM1.evaluate(context).value);           
             return context;
         }    
     })],    
     ['toString', func0('toString', {
         evaluate(context) {
-            const instance = self(context);
-            const clzNode = instance.clzOfLang.internalNode;
+            const clzNode = self(context).clzOfLang.internalNode;
             return context.returned(new Primitive(`[${clzNode.name} object]`));
         }    
     })],
@@ -73,9 +69,8 @@ StringClass.EMPTY_STRING = new Primitive('');
 StringClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
-            const instance = self(context);
             let text = PARAM1.evaluate(context);
-            instance.internalNode = text === Null ? StringClass.EMPTY_STRING : text;
+            self(context).internalNode = text === Null ? StringClass.EMPTY_STRING : text;
             return context;
         }
     })],
@@ -144,8 +139,7 @@ ListClass.methods = new Map([
         evaluate(context) {
             const value = PARAM1.evaluate(context).value;
             const nativeObj = new Native(new Array(value ? value : 0));
-            const instance = self(context);
-            instance.internalNode = nativeObj;
+            self(context).internalNode = nativeObj;
             return context;
         }
     })],
@@ -156,44 +150,38 @@ ListClass.methods = new Map([
     ['fill', ListClass.method3Self('fill')],
     ['add', func1('add', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
             const arg = PARAM1.evaluate(context);
-            arr.push(arg);
+            selfInternalValue(context).push(arg);
             return context.returned(self(context));
         }    
     })],
     ['get', func1('get', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
             const idx = PARAM1.evaluate(context).value;
-            return context.returned(arr[idx]);
+            return context.returned(selfInternalValue(context)[idx]);
         }    
     })],
     ['set', func2('set', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
             const idx = PARAM1.evaluate(context).value;
             const elem = PARAM2.evaluate(context);
-            arr[idx] = elem;
+            selfInternalValue(context)[idx] = elem;
             return context.returned(Void);
         }    
     })],
     ['length', func0('length', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
-            return context.returned(new Primitive(arr.length));
+            return context.returned(new Primitive(selfInternalValue(context).length));
         }    
     })],    
     ['isEmpty', func0('isEmpty', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
-            return context.returned(new Primitive(arr.length === 0));
+            return context.returned(new Primitive(selfInternalValue(context).length === 0));
         }    
     })],
     ['filter', func1('filter', {
         evaluate(context) {
-            const origin = self(context);
-            const arr = origin.internalNode.value;
+            const arr = self(context).internalNode.value;
             const fNode = PARAM1.evaluate(context).internalNode;
             const filtered = arr.filter(elem => {
                 const bool = fNode.call(context, [elem]).returnedValue;
@@ -205,8 +193,7 @@ ListClass.methods = new Map([
     })],
     ['map', func1('map', {
         evaluate(context) {
-            const origin = self(context);
-            const arr = origin.internalNode.value;
+            const arr = self(context).internalNode.value;
             const fNode = PARAM1.evaluate(context).internalNode;
             const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
             return context.returned(ListClass.listInstance(mapped));
@@ -214,8 +201,7 @@ ListClass.methods = new Map([
     })],
     ['forEach', func1('forEach', {
         evaluate(context) {
-            const origin = self(context);
-            const arr = origin.internalNode.value;
+            const arr = self(context).internalNode.value;
             const fNode = PARAM1.evaluate(context).internalNode;
             arr.forEach(elem => fNode.call(context, [elem]));
             return context.returned(Void);
@@ -223,8 +209,7 @@ ListClass.methods = new Map([
     })],    
     ['toString', func0('toString', {
         evaluate(context) {
-            const origin = self(context);
-            const arr = origin.internalNode.value;
+            const arr = self(context).internalNode.value;
             return context.returned(new Primitive(arr.map(elem => elem.toString(context)).join()));
         }    
     })],    
@@ -246,7 +231,7 @@ class FunctionClass {
             evaluate(context) {
                 const instance = self(context);
                 const clzNode = instance.clzOfLang.internalNode;
-                const fNode = self(context).internalNode;
+                const fNode = instance.internalNode;
                 return context.returned(new Primitive(`[${clzNode.name} ${fNode.name}]`));
             }    
         });
@@ -301,26 +286,23 @@ ClassClass.methods = new Map([
     })],    
     ['hasMethod', func1('hasMethod', {
         evaluate(context) {
-            const clzInstance = self(context);
             return context.returned(
-                clzInstance.internalNode.hasMethod(PARAM1.evaluate(context).value) ?
+                self(context).internalNode.hasMethod(PARAM1.evaluate(context).value) ?
                      Primitive.BoolTrue : Primitive.BoolFalse
             );
         }    
     })],
     ['getMethod', func1('getMethod', {
         evaluate(context) {
-            const clzInstance = self(context);
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
-                clzInstance.internalNode.getMethod(methodName).evaluate(context)
+                self(context).internalNode.getMethod(methodName).evaluate(context)
             );
         }    
     })],
     ['methods', func0('methods', {
         evaluate(context) {
-            const clzInstance = self(context);
-            const fNodes = Array.from(clzInstance.internalNode.methods.values());
+            const fNodes = Array.from(self(context).internalNode.methods.values());
             return context.returned(
                 ListClass.listInstance(fNodes.map(fNode => fNode.evaluate(context)))
             );
