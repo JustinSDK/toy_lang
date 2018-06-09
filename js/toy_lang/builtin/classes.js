@@ -363,6 +363,13 @@ class ClassClass {}
 ClassClass.methods = new Map([
     ['name', FunctionClass.name()],     
     ['toString', FunctionClass.toString()],
+    ['addMethod', func1('addMethod', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            clzInstance.internalNode.addMethod(PARAM1.evaluate(context));
+            return context.returned(clzInstance);
+        }    
+    })],
     ['getMethod', func1('getMethod', {
         evaluate(context) {
             const clzInstance = self(context);

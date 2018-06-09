@@ -81,6 +81,11 @@ class Class extends Func {
         this.methods = methods;
     }
 
+    addMethod(fInstance) {
+        const fNode = fInstance.internalNode;
+        this.methods.set(fNode.name, fNode);
+    }
+
     hasMethod(name) {
         return this.methods.has(name);
     }
