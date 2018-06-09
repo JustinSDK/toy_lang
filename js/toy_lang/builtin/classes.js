@@ -23,18 +23,8 @@ ObjectClass.methods = new Map([
         evaluate(context) {
             const instance = self(context);
             const entries = Array.from(instance.properties.entries())
-                                 .map(entry => new Instance(
-                                        BUILTIN_CLASSES.get('List'), 
-                                        new Map(), 
-                                        new Native([new Primitive(entry[0]), entry[1]])
-                                    )
-                                );
-                                 
-            return context.returned(new Instance(
-                BUILTIN_CLASSES.get('List'), 
-                new Map(), 
-                new Native(entries)
-            ));
+                                 .map(entry => ListClass.listInstance([new Primitive(entry[0]), entry[1]]));
+            return context.returned(ListClass.listInstance(entries));
         }    
     })],
     ['hasOwnProperty', func1('hasOwnProperty', {
@@ -106,11 +96,7 @@ StringClass.methods = new Map([
     ['split', func2('split', {
         evaluate(context) {
             const arr = delegate(context, String, 'split', PARAM_LT2);
-            const instance = new Instance(
-                BUILTIN_CLASSES.get('List'), 
-                new Map(), 
-                new Native(arr.map(elem => new Primitive(elem)))
-            );
+            const instance = ListClass.listInstance(arr.map(elem => new Primitive(elem)));
             return context.returned(instance);
         }
     })],
@@ -142,7 +128,15 @@ class ListClass {
     
     static method3Self(methodName) {
         return methodSelf(Array, methodName, PARAM_LT3);
-    }    
+    }  
+    
+    static listInstance(jsArray) {
+        return new Instance(
+            BUILTIN_CLASSES.get('List'), 
+            new Map(), 
+            new Native(jsArray)
+        );
+    }
 }
 
 ListClass.methods = new Map([
@@ -205,12 +199,8 @@ ListClass.methods = new Map([
                 const bool = fNode.call(context, [elem]).returnedValue;
                 return bool.value;
             });
-
-            return context.returned(new Instance(
-                origin.clzOfLang, 
-                new Map(origin.properties), 
-                new Native(filtered)
-            ));
+            
+            return context.returned(ListClass.listInstance(filtered));
         }    
     })],
     ['map', func1('map', {
@@ -219,12 +209,7 @@ ListClass.methods = new Map([
             const arr = origin.internalNode.value;
             const fNode = PARAM1.evaluate(context).internalNode;
             const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
-
-            return context.returned(new Instance(
-                origin.clzOfLang, 
-                new Map(origin.properties), 
-                new Native(mapped)
-            ));
+            return context.returned(ListClass.listInstance(mapped));
         }    
     })],
     ['forEach', func1('forEach', {
@@ -337,11 +322,7 @@ ClassClass.methods = new Map([
             const clzInstance = self(context);
             const fNodes = Array.from(clzInstance.internalNode.methods.values());
             return context.returned(
-                new Instance(
-                    BUILTIN_CLASSES.get('List'), 
-                    new Map(), 
-                    new Native(fNodes.map(fNode => fNode.evaluate(context)))
-                )
+                ListClass.listInstance(fNodes.map(fNode => fNode.evaluate(context)))
             );
         }    
     })],
