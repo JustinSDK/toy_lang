@@ -314,6 +314,13 @@ ListClass.methods = new Map([
             return context.returned(Void);
         }    
     })],    
+    ['toString', func0('toString', {
+        evaluate(context) {
+            const origin = self(context);
+            const arr = origin.internalNode.value;
+            return context.returned(new Primitive(arr.map(elem => elem.toString(context)).join()));
+        }    
+    })],    
     ['getClass', ObjectClass.getClass()]
 ]);
 
