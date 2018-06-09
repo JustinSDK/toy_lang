@@ -370,6 +370,13 @@ ClassClass.methods = new Map([
             return context.returned(clzInstance);
         }    
     })],
+    ['deleteMethod', func1('deleteMethod', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            clzInstance.internalNode.deleteMethod(PARAM1.evaluate(context).value);
+            return context.returned(clzInstance);
+        }    
+    })],    
     ['getMethod', func1('getMethod', {
         evaluate(context) {
             const clzInstance = self(context);
