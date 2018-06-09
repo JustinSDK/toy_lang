@@ -279,23 +279,15 @@ ListClass.methods = new Map([
             const origin = self(context);
             const arr = origin.internalNode.value;
             const fNode = PARAM1.evaluate(context).internalNode;
-            
-            const result = arr.filter(elem => {
-                const bodyStmt = fNode.bodyStmt(
-                    [elem.evaluate(context)]
-                );
-                const bool = bodyStmt.evaluate(
-                    fNode.parentContext ? 
-                        fNode.parentContext.childContext() : // closure context
-                        context.childContext()
-                ).returnedValue;
-
+            const filtered = arr.filter(elem => {
+                const bool = fNode.call(context, [elem]).returnedValue;
                 return bool.value;
             });
+
             return context.returned(new Instance(
                 origin.clzOfLang, 
                 new Map(origin.properties), 
-                new Native(result)
+                new Native(filtered)
             ));
         }    
     })],
