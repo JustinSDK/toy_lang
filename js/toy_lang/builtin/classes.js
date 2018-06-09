@@ -305,6 +305,15 @@ ListClass.methods = new Map([
             ));
         }    
     })],
+    ['forEach', func1('forEach', {
+        evaluate(context) {
+            const origin = self(context);
+            const arr = origin.internalNode.value;
+            const fNode = PARAM1.evaluate(context).internalNode;
+            arr.forEach(elem => fNode.call(context, [elem]));
+            return context.returned(Void);
+        }    
+    })],    
     ['getClass', ObjectClass.getClass()]
 ]);
 
