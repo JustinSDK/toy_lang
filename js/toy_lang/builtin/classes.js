@@ -377,6 +377,15 @@ ClassClass.methods = new Map([
             return context.returned(clzInstance);
         }    
     })],    
+    ['hasMethod', func1('hasMethod', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            return context.returned(
+                clzInstance.internalNode.hasMethod(PARAM1.evaluate(context).value) ?
+                     Primitive.BoolTrue : Primitive.BoolFalse
+            );
+        }    
+    })],
     ['getMethod', func1('getMethod', {
         evaluate(context) {
             const clzInstance = self(context);
