@@ -186,7 +186,7 @@ StringClass.methods = new Map([
             const arr = delegate(context, String, 'split', PARAM_LT2);
             const instance = new Instance(
                 BUILTIN_CLASSES.get('List'), 
-                ListClass.methods, 
+                new Map(), 
                 new Native(arr.map(elem => new Primitive(elem)))
             );
             return context.returned(instance);
@@ -392,6 +392,19 @@ ClassClass.methods = new Map([
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
                 clzInstance.internalNode.getMethod(methodName).evaluate(context)
+            );
+        }    
+    })],
+    ['methods', func0('methods', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            const fNodes = Array.from(clzInstance.internalNode.methods.values());
+            return context.returned(
+                new Instance(
+                    BUILTIN_CLASSES.get('List'), 
+                    new Map(), 
+                    new Native(fNodes.map(fNode => fNode.evaluate(context)))
+                )
             );
         }    
     })],
