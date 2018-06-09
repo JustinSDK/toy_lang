@@ -40,7 +40,7 @@ class Func extends Value {
         this.parentContext = parentContext;
     }
 
-    apply(args) {
+    assignToParams(args) {
         return VariableAssign.assigns(
             this.params, 
             this.params.map((_, idx) => args[idx] ? args[idx] : Null)
@@ -48,7 +48,7 @@ class Func extends Value {
     }
 
     bodyStmt(args) {
-        return new StmtSequence(this.apply(args), this.stmt);
+        return new StmtSequence(this.assignToParams(args), this.stmt);
     }
 
     withParentContext(context) {
