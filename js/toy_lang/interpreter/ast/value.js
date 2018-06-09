@@ -51,6 +51,15 @@ class Func extends Value {
         return new StmtSequence(this.assignToParams(args), this.stmt);
     }
 
+    call(context, args) {
+        const bodyStmt = this.bodyStmt(args.map(arg => arg.evaluate(context)));
+        return bodyStmt.evaluate(
+            this.parentContext ? 
+                this.parentContext.childContext() : // closure context
+                context.childContext()
+        );
+    }
+
     withParentContext(context) {
         return new Func(this.params, this.stmt, this.name, context);
     }

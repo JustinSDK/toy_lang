@@ -20,12 +20,7 @@ class Apply {
 
     evaluate(context) {
         const f = this.fVariable.evaluate(context).internalNode;
-        const bodyStmt = f.bodyStmt(this.args.map(arg => arg.evaluate(context)));
-        return bodyStmt.evaluate(
-            f.parentContext ? 
-                f.parentContext.childContext() : // closure context
-                context.childContext()
-        );
+        return f.call(context, this.args);
     }
 }
 
