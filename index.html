@@ -220,6 +220,33 @@ println(c1.lessThan(c2))
 println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
 println(c1.greaterEqualsThan(c2))</code></strong></pre>
+<ul>
+    <li># meta programming</li>
+  </ul>
+  <pre><strong><code>println(Object.methods())
+Object.deleteMethod('toString')    
+println(Object.methods())
+
+def toString() {
+    # List instance
+    props = this.ownProperties() 
+    i = 0
+    lt = new List()
+    while i < props.length() {
+        # List instance which contains name and value
+        prop = props.get(i) 
+        lt.add(prop.join())
+        i = i + 1
+    }
+    return lt.join('\n')
+}
+
+o = new Object()
+o.x = 10
+o.y = 20
+o.z = 30
+
+println(toString.apply(o))</code></strong></pre>
     <script type="module">
     import {Toy} from './js/toy_lang/toy.js';
 
