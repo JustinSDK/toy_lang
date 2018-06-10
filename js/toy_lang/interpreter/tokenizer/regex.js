@@ -10,6 +10,7 @@ const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
 const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
 const DOT_REGEX = /\./;
+const NOT_REGEX = /not/;
 const PARENTHESE_REGEX = /\(|\)/;
 
 // For simplicity, only allow three nested parentheses.
@@ -33,12 +34,13 @@ const NEW_CLZ_REGEX = new RegExp(`(new (${VARIABLE_REGEX.source})(${ARGUMENT_LT_
 
 const EXPR_REGEX = orRegexs(
     NEW_CLZ_REGEX.source,
-    `(not\\s+)?${FUNCALL_REGEX.source}`,
-    `(not\\s+)?${TEXT_REGEX.source}`,
-    `(not\\s+)?${NUMBER_REGEX.source}`,
-    `(not\\s+)?${BOOLEAN_REGEX.source}`,
-    `(not\\s+)?${VARIABLE_REGEX.source}`,
+    FUNCALL_REGEX.source,
+    TEXT_REGEX.source,
+    NUMBER_REGEX.source,
+    BOOLEAN_REGEX.source,
+    VARIABLE_REGEX.source,
     DOT_REGEX.source,
+    NOT_REGEX.source,
     RELATION_REGEX.source,
     LOGIC_REGEX.source,
     ARITHMETIC_REGEX.source,

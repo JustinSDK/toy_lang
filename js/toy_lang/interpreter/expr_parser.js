@@ -87,7 +87,8 @@ function exprAst(tokenables) {
 }
 
 function priority(operator) {
-    return operator === '.' ? 5 :
+    return operator === '.' ? 6 :
+           operator === 'not' ? 5 :
            ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
            ['and', 'or'].indexOf(operator) !== -1 ? 3 :
            ['*', '/', '%'].indexOf(operator) !== -1 ? 2 :
@@ -117,6 +118,7 @@ function digest(tokenables, stack = new Stack(), output = []) {
         case '(':
             return digest(tokenables.slice(1), stack.push(tokenables[0]), output);
         case '.':
+        case 'not':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
         case '+': case '-': case '*': case '/': case '%':
@@ -143,13 +145,21 @@ function toPostfix(tokenables) {
 }
 
 function isOperator(value) {        
-    return ['.',
+    return ['.', 
+            'not',
             '==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
             '+', '-', '*', '/', '%'].indexOf(value) !== -1;
 }
 
 function reduce(stack, value) {
+    if(value === 'not') {
+        const NotOperator = UNARY_OPERATORS.get(value);
+        const operand = stack.top;
+        const s1 = stack.pop();
+        return s1.push(new NotOperator(operand));
+    }
+
     const right = stack.top;
     const s1 = stack.pop();
     const left = s1.top;
