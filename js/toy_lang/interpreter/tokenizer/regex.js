@@ -36,7 +36,7 @@ const EXPR_REGEX = orRegexs(
     `(not\\s+)?${FUNCALL_REGEX.source}`,
     `(not\\s+)?${TEXT_REGEX.source}`,
     `(not\\s+)?${NUMBER_REGEX.source}`,
-    `(not\\s+)?(${BOOLEAN_REGEX.source})`,
+    `(not\\s+)?${BOOLEAN_REGEX.source}`,
     `(not\\s+)?${VARIABLE_REGEX.source}`,
     DOT_REGEX.source,
     RELATION_REGEX.source,
