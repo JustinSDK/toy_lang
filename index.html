@@ -15,7 +15,7 @@
     <style type="text/css">
         textarea {
            width:100%;
-           height:400px;
+           height:300px;
            resize:none;
            overflow:auto;
         }   
@@ -24,7 +24,16 @@
   <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
     <p>You can find the source code on <a href="https://github.com/JustinSDK/toy_lang">Github</a>. 
         Toy lang is the first language I made and might be a prototype if you want to design your own language.  
-        The following examples contain several syntaxes of Toy lang.  ES6 modules support is required. </p>
+        ES6 modules support is required. </p>
+        <ul>
+            <li>Laboratory</li>
+          </ul>
+          <textarea id="code"># Is a language easier if 'Hello World' is easier?
+println('Hello World')</textarea> <br>
+          <br>
+          <button id="run">Run It</button> <br>
+          <br>
+          <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
     <ul>
       <li># Multiplication Table</li>
     </ul>
@@ -167,15 +176,50 @@ obj = new clz(20)
 println('obj.x() is ' + obj.x())
 println('obj.y is ' + obj.y)
 println('obj.z is ' + obj.z)</code></strong></pre>
-    <ul>
-      <li>Laboratory</li>
-    </ul>
-    <textarea id="code"># Is a language easier if 'Hello World' is easier?
-println('Hello World')</textarea> <br>
-    <br>
-    <button id="run">Run It</button> <br>
-    <br>
-    <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
+<ul>
+    <li># Mixin</li>
+  </ul>
+  <pre><strong><code>class Ordered {
+    def lessThan(that) {
+        return this.compare(that) &lt; 0
+    }
+
+    def lessEqualsThan(that) {
+        return this.lessThan(that) || this.equals(that)
+    }
+
+    def greaterThan(that) {
+        return not this.lessEqualsThan(that)
+    }
+
+    def greaterEqualsThan(that) {
+        return not this.lessThan(that)
+    }
+}
+
+class Circle {
+    def init(radius) {
+        this.radius = radius
+    }
+
+    def compare(that) {
+        return this.radius - that.radius
+    }
+
+    def equals(that) {
+        return this.radius === that.radius;
+    }
+}
+
+Circle.mixin(Ordered)
+
+c1 = new Circle(10)
+c2 = new Circle(20)
+
+println(c1.lessThan(c2))
+println(c1.lessEqualsThan(c2))
+println(c1.greaterThan(c2))
+println(c1.greaterEqualsThan(c2))</code></strong></pre>
     <script type="module">
     import {Toy} from './js/toy_lang/toy.js';
 
