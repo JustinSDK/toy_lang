@@ -142,6 +142,14 @@ ClassClass.methods = new Map([
             );
         }    
     })],
+    ['mixin', func1('mixin', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            Array.from(PARAM1.evaluate(context).internalNode.methods.values())
+                 .forEach(f => clzInstance.internalNode.addMethod(f.evaluate(context)));
+            return context.returned(clzInstance);
+        }    
+    })],
     ['getClass', ObjectClass.getClass()]
 ]);
 
