@@ -63,7 +63,6 @@ const REGEX = new Map([
     ['expression', new RegExp(`^${EXPR_REGEX.source}`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
-    ['not', /^not\s+(.*)$/],
     ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],

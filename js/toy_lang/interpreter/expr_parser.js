@@ -71,15 +71,7 @@ function exprAst(tokenables) {
         if(isOperator(tokenable.value)) {
             return reduce(stack, tokenable.value);
         } 
-        else if(tokenable.value.startsWith('not')) {
-            const [unaryTokenable, operandTokenable] = tokenable.tryTokenables('not');
-            const NotOperator = UNARY_OPERATORS.get(unaryTokenable.value);
-            return stack.push(
-                new NotOperator(
-                    OPERAND_PARSER.parse(operandTokenable)
-                )
-            );
-        }
+
         return stack.push(
             OPERAND_PARSER.parse(tokenable)
         );
