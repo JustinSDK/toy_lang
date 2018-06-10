@@ -232,7 +232,7 @@ def toString() {
     props = this.ownProperties() 
     i = 0
     lt = new List()
-    while i < props.length() {
+    while i &lt; props.length() {
         # List instance which contains name and value
         prop = props.get(i) 
         lt.add(prop.join())
@@ -246,7 +246,14 @@ o.x = 10
 o.y = 20
 o.z = 30
 
-println(toString.apply(o))</code></strong></pre>
+println(toString.apply(o))
+
+def foo(p) {
+    return this.x + this.y + this.z + p
+}
+
+# The 2nd parameter of the apply method accepts a List instance. 
+println(foo.apply(o, new List().add(40)))</code></strong></pre>
     <script type="module">
     import {Toy} from './js/toy_lang/toy.js';
 
