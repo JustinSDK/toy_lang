@@ -19,7 +19,7 @@ class Instalization {
     evaluate(context) {
         const thisInstance = this.instance(context);
 
-        if(thisInstance.hasProperty(context, 'init')) {
+        if(thisInstance.clzOfLang.internalNode.hasOwnMethod('init')) {
             return thisInstance.evalMethod(context, 'init', this.args).variables.get('this');
         }
         
