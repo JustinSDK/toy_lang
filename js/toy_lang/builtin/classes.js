@@ -104,10 +104,10 @@ class ClassClass {
 ClassClass.methods = new Map([
     ['name', FunctionClass.name()],     
     ['toString', FunctionClass.toString()],
-    ['addMethod', func1('addMethod', {
+    ['addOwnMethod', func1('addOwnMethod', {
         evaluate(context) {
             const clzInstance = self(context);
-            clzInstance.internalNode.addMethod(PARAM1.evaluate(context));
+            clzInstance.internalNode.addOwnMethod(PARAM1.evaluate(context));
             return context.returned(clzInstance);
         }    
     })],
@@ -162,7 +162,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const clzInstance = self(context);
             Array.from(PARAM1.evaluate(context).internalNode.methods.values())
-                 .forEach(f => clzInstance.internalNode.addMethod(f.evaluate(context)));
+                 .forEach(f => clzInstance.internalNode.addOwnMethod(f.evaluate(context)));
             return context.returned(clzInstance);
         }    
     })],

@@ -82,7 +82,7 @@ class Class extends Func {
         this.parentNames = parentNames;
     }
 
-    addMethod(fInstance) {
+    addOwnMethod(fInstance) {
         const fNode = fInstance.internalNode;
         this.methods.set(fNode.name, fNode);
     }
