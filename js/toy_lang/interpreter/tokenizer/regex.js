@@ -33,22 +33,23 @@ const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIAB
 const NEW_CLZ_REGEX = new RegExp(`(new (${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
 
 const EXPR_REGEX = orRegexs(
-    NEW_CLZ_REGEX.source,
-    FUNCALL_REGEX.source,
-    TEXT_REGEX.source,
-    NUMBER_REGEX.source,
-    BOOLEAN_REGEX.source,
-    VARIABLE_REGEX.source,
-    DOT_REGEX.source,
-    NOT_REGEX.source,
-    RELATION_REGEX.source,
-    LOGIC_REGEX.source,
-    ARITHMETIC_REGEX.source,
-    PARENTHESE_REGEX.source
+    NEW_CLZ_REGEX,
+    FUNCALL_REGEX,
+    TEXT_REGEX,
+    NUMBER_REGEX,
+    BOOLEAN_REGEX,
+    VARIABLE_REGEX,
+    DOT_REGEX,
+    NOT_REGEX,
+    RELATION_REGEX,
+    LOGIC_REGEX,
+    ARITHMETIC_REGEX,
+    PARENTHESE_REGEX
 );
 
 function orRegexs(...regexs) {
-    return new RegExp(`(${regexs.join('|')})`);
+    const regexSources = regexs.map(regex => regex.source).join('|');
+    return new RegExp(`(${regexSources})`);
 }
 
 const REGEX = new Map([
