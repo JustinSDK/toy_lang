@@ -76,10 +76,10 @@ class Func extends Value {
 }
 
 class Class extends Func {
-    constructor(params, notMethodStmt, methods, name, parentContext = null, parentNames = ['Object']) {
+    constructor(params, notMethodStmt, methods, name, parentContext = null, parentClzNames = ['Object']) {
         super(params, notMethodStmt, name, parentContext);
         this.methods = methods;
-        this.parentNames = parentNames;
+        this.parentClzNames = parentClzNames;
     }
 
     addOwnMethod(fInstance) {
@@ -105,11 +105,11 @@ class Class extends Func {
         }
 
         // BFS
-        if(this.parentNames.some(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))) {
+        if(this.parentClzNames.some(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))) {
             return true;
         }
 
-        return this.parentNames.filter(parentName => parentName !== 'Object')
+        return this.parentClzNames.filter(parentName => parentName !== 'Object')
                                .map(parentName => context.lookUpVariable(parentName).internalNode)
                                .map(parentClzNode => parentClzNode.parentNames)
                                .reduce((ppNamesAcct, ppNames) => ppNamesAcct.concat(ppNames), [])
@@ -130,13 +130,13 @@ class Class extends Func {
             return false;
         }
         
-        const parentName = this.parentNames.find(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))
+        const parentName = this.parentClzNames.find(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))
         // BFS
         if(parentName) {
             return context.lookUpVariable(parentName).internalNode.getOwnMethod(name);
         }
                         
-        const ppName = this.parentNames
+        const ppName = this.parentClzNames
                                .filter(parentName => parentName !== 'Object')
                                .map(parentName => context.lookUpVariable(parentName).internalNode)
                                .map(parentClzNode => parentClzNode.parentNames)
