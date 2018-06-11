@@ -134,6 +134,14 @@ ClassClass.methods = new Map([
             );
         }    
     })],
+    ['getOwnMethod', func1('getOwnMethod', {
+        evaluate(context) {
+            const methodName = PARAM1.evaluate(context).value;
+            return context.returned(
+                self(context).internalNode.getOwnMethod(methodName).evaluate(context)
+            );
+        }    
+    })],
     ['getMethod', func1('getMethod', {
         evaluate(context) {
             const methodName = PARAM1.evaluate(context).value;

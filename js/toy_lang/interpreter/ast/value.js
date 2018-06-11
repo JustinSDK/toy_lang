@@ -116,6 +116,10 @@ class Class extends Func {
                                .some(ppName => context.lookUpVariable(ppName).internalNode.hasMethod(context, name));
     }
 
+    getOwnMethod(name) {
+        return this.methods.get(name);
+    }
+
     getMethod(name) {
         return this.methods.get(name);
     }
