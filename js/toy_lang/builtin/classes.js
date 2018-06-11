@@ -1,4 +1,4 @@
-import {Class, Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
@@ -344,9 +344,6 @@ const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
-    ClassClass.classEntry(CLZ, 'List', ListClass.methods),
-    // Multi Inheritance test fixtures
-    ['Test', new Instance(CLZ, new Map(), new Class([], StmtSequence.EMPTY, new Map([['x', 10]]), 'Test', null, ['String', 'Function']))],
-    ['Test2', new Instance(CLZ, new Map(), new Class([], StmtSequence.EMPTY, new Map([['y', 10]]), 'Test2', null, ['Test']))]
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods)
 ]); 
 
