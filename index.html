@@ -223,9 +223,9 @@ println(c1.greaterEqualsThan(c2))</code></strong></pre>
 <ul>
     <li># meta programming</li>
   </ul>
-  <pre><strong><code>println(Object.methods())
+  <pre><strong><code>println(Object.ownMethods())
 Object.deleteOwnMethod('toString')    
-println(Object.methods())
+println(Object.ownMethods())
 
 def toString() {
     # List instance

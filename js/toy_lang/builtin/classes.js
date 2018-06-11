@@ -150,7 +150,7 @@ ClassClass.methods = new Map([
             );
         }    
     })],
-    ['methods', func0('methods', {
+    ['ownMethods', func0('ownMethods', {
         evaluate(context) {
             const fNodes = Array.from(self(context).internalNode.methods.values());
             return context.returned(
