@@ -45,19 +45,31 @@ const UNARY_OPERATORS = new Map([
     ['not', Not]
 ]);
 
+function p(v) {
+    return new Primitive(v);
+}
+
+function bool(v) {
+    return v ? Primitive.BoolTrue : Primitive.BoolFalse;
+}
+
+function boolOrp(v) {
+    return (typeof v) === 'boolean' ? bool(v) : p(v);
+}
+
 const BINARY_OPERATORS = new Map([
     ['.', DotOperator],
-    ['+', createPrimitiveBinaryOperatorNode((a, b) => new Primitive(a + b))],
-    ['-', createPrimitiveBinaryOperatorNode((a, b) => new Primitive(a - b))],
-    ['*', createPrimitiveBinaryOperatorNode((a, b) => new Primitive(a * b))],
-    ['/', createPrimitiveBinaryOperatorNode((a, b) => new Primitive(a / b))],
-    ['%', createPrimitiveBinaryOperatorNode((a, b) => new Primitive(a % b))],
-    ['==', createPrimitiveBinaryOperatorNode((a, b) => a === b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['!=', createPrimitiveBinaryOperatorNode((a, b) => a !== b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['>=', createPrimitiveBinaryOperatorNode((a, b) => a >= b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['>', createPrimitiveBinaryOperatorNode((a, b) => a > b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['<=', createPrimitiveBinaryOperatorNode((a, b) => a <= b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['<', createPrimitiveBinaryOperatorNode((a, b) => a < b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['and', createPrimitiveBinaryOperatorNode((a, b) => a && b ? Primitive.BoolTrue : Primitive.BoolFalse)],
-    ['or', createPrimitiveBinaryOperatorNode((a, b) => a || b ? Primitive.BoolTrue : Primitive.BoolFalse)]
+    ['+', createPrimitiveBinaryOperatorNode((a, b) => p(a + b))],
+    ['-', createPrimitiveBinaryOperatorNode((a, b) => p(a - b))],
+    ['*', createPrimitiveBinaryOperatorNode((a, b) => p(a * b))],
+    ['/', createPrimitiveBinaryOperatorNode((a, b) => p(a / b))],
+    ['%', createPrimitiveBinaryOperatorNode((a, b) => p(a % b))],
+    ['==', createPrimitiveBinaryOperatorNode((a, b) => bool(a === b))],
+    ['!=', createPrimitiveBinaryOperatorNode((a, b) => bool(a !== b))],
+    ['>=', createPrimitiveBinaryOperatorNode((a, b) => bool(a >= b))],
+    ['>', createPrimitiveBinaryOperatorNode((a, b) => bool(a > b))],
+    ['<=', createPrimitiveBinaryOperatorNode((a, b) => bool(a <= b))],
+    ['<', createPrimitiveBinaryOperatorNode((a, b) => bool(a < b))],
+    ['and', createPrimitiveBinaryOperatorNode((a, b) => boolOrp(a && b))],
+    ['or', createPrimitiveBinaryOperatorNode((a, b) => boolOrp(a || b))]
 ]);
