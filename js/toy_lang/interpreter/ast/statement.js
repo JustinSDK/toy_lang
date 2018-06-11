@@ -21,7 +21,7 @@ class Variable {
     }
 
     send(context, instance) {
-        return instance.getProperty(this.name).evaluate(context);
+        return instance.getProperty(context, this.name).evaluate(context);
     }
 }
 

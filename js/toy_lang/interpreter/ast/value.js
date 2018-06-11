@@ -120,8 +120,29 @@ class Class extends Func {
         return this.methods.get(name);
     }
 
-    getMethod(name) {
-        return this.methods.get(name);
+    getMethod(context, name) {
+        const ownMethod = this.getOwnMethod(name);
+        if(ownMethod) {
+            return ownMethod;
+        }
+
+        if(this.name === 'Object') {
+            return false;
+        }
+        
+        const parentName = this.parentNames.find(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))
+        // BFS
+        if(parentName) {
+            return context.lookUpVariable(parentName).internalNode.getOwnMethod(name);
+        }
+                        
+        const ppName = this.parentNames
+                               .filter(parentName => parentName !== 'Object')
+                               .map(parentName => context.lookUpVariable(parentName).internalNode)
+                               .map(parentClzNode => parentClzNode.parentNames)
+                               .reduce((ppNamesAcct, ppNames) => ppNamesAcct.concat(ppNames), [])
+                               .find(ppName => context.lookUpVariable(ppName).internalNode.hasMethod(context, name));
+        return context.lookUpVariable(ppName).internalNode.getOwnMethod(name);
     }
 
     withParentContext(context) {
@@ -154,9 +175,9 @@ class Instance extends Value {
         return this.properties.get(name);
     }
 
-    getProperty(name) {
+    getProperty(context, name) {
         return this.getOwnProperty(name) || 
-               this.clzOfLang.internalNode.getMethod(name);
+               this.clzOfLang.internalNode.getMethod(context, name);
     }
 
     deleteOwnProperty(name) {
@@ -174,7 +195,7 @@ class Instance extends Value {
     }
 
     methodBodyStmt(context, name, args = []) {
-        const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(name);
+        const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(context, name);
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
             f.bodyStmt(args.map(arg => arg.evaluate(context)))
