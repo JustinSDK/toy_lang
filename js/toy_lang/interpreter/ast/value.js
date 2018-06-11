@@ -87,7 +87,7 @@ class Class extends Func {
         this.methods.set(fNode.name, fNode);
     }
 
-    deleteMethod(name) {
+    deleteOwnMethod(name) {
         this.methods.delete(name);
     }
 
