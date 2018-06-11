@@ -19,7 +19,7 @@ class Instalization {
     evaluate(context) {
         const thisInstance = this.instance(context);
 
-        if(thisInstance.hasProperty('init')) {
+        if(thisInstance.hasProperty(context, 'init')) {
             return thisInstance.evalMethod(context, 'init', this.args).variables.get('this');
         }
         

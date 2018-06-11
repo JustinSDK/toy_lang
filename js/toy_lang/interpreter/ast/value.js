@@ -76,9 +76,10 @@ class Func extends Value {
 }
 
 class Class extends Func {
-    constructor(params, notMethodStmt, methods, name, parentContext = null) {
+    constructor(params, notMethodStmt, methods, name, parentContext = null, parentNames = ['Object']) {
         super(params, notMethodStmt, name, parentContext);
         this.methods = methods;
+        this.parentNames = parentNames;
     }
 
     addMethod(fInstance) {
@@ -90,8 +91,29 @@ class Class extends Func {
         this.methods.delete(name);
     }
 
-    hasMethod(name) {
+    hasOwnMethod(name) {
         return this.methods.has(name);
+    }    
+
+    hasMethod(context, name) {
+        if(this.hasOwnMethod(name)) {
+            return true;
+        }
+
+        if(this.name === 'Object') {
+            return false;
+        }
+
+        // BFS
+        if(this.parentNames.some(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))) {
+            return true;
+        }
+
+        return this.parentNames.filter(parentName => parentName !== 'Object')
+                               .map(parentName => context.lookUpVariable(parentName).internalNode)
+                               .map(parentClzNode => parentClzNode.parentNames)
+                               .reduce((ppNamesAcct, ppNames) => ppNamesAcct.concat(ppNames), [])
+                               .some(ppName => context.lookUpVariable(ppName).internalNode.hasMethod(context, name));
     }
 
     getMethod(name) {
@@ -119,9 +141,9 @@ class Instance extends Value {
         return this.properties.has(name);
     }
 
-    hasProperty(name) {
+    hasProperty(context, name) {
         return this.hasOwnProperty(name) || 
-               this.clzOfLang.internalNode.hasMethod(name);
+               this.clzOfLang.internalNode.hasMethod(context, name);
     }
 
     getOwnProperty(name) {
@@ -170,7 +192,7 @@ class Instance extends Value {
     }
 
     toString(context) {
-        if(context && this.hasProperty('toString')) {
+        if(context && this.hasProperty(context, 'toString')) {
             const methodBodyStmt = this.methodBodyStmt(context, 'toString');
             return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
         }

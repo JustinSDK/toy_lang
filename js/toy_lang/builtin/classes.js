@@ -1,4 +1,4 @@
-import {Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
+import {Class, Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
@@ -118,10 +118,18 @@ ClassClass.methods = new Map([
             return context.returned(clzInstance);
         }    
     })],    
+    ['hasOwnMethod', func1('hasOwnMethod', {
+        evaluate(context) {
+            return context.returned(
+                self(context).internalNode.hasOwnMethod(PARAM1.evaluate(context).value) ?
+                     Primitive.BoolTrue : Primitive.BoolFalse
+            );
+        }    
+    })],    
     ['hasMethod', func1('hasMethod', {
         evaluate(context) {
             return context.returned(
-                self(context).internalNode.hasMethod(PARAM1.evaluate(context).value) ?
+                self(context).internalNode.hasMethod(context, PARAM1.evaluate(context).value) ?
                      Primitive.BoolTrue : Primitive.BoolFalse
             );
         }    
@@ -130,7 +138,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
-                self(context).internalNode.getMethod(methodName).evaluate(context)
+                self(context).internalNode.getMethod(context, methodName).evaluate(context)
             );
         }    
     })],
@@ -328,6 +336,9 @@ const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
-    ClassClass.classEntry(CLZ, 'List', ListClass.methods)
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods),
+    // Multi Inheritance test fixtures
+    ['Test', new Instance(CLZ, new Map(), new Class([], StmtSequence.EMPTY, new Map([['x', 10]]), 'Test', null, ['String', 'Function']))],
+    ['Test2', new Instance(CLZ, new Map(), new Class([], StmtSequence.EMPTY, new Map([['y', 10]]), 'Test2', null, ['Test']))]
 ]); 
 
