@@ -101,9 +101,9 @@ class Class extends Func {
         }
 
         return this.hasOwnMethod(name) || 
-               this.parentClzNames.some(parentClzName => clzNode(context, parentClzName).hasOwnMethod(name)) ||
+               this.parentClzNames.some(clzName => clzNode(context, clzName).hasOwnMethod(name)) ||
                grandParentClzNames(context, this.parentClzNames).some(
-                    grandParentClzName => clzNode(context, grandParentClzName).hasMethod(context, name)
+                    clzName => clzNode(context, clzName).hasMethod(context, name)
                );
     }
 
@@ -123,14 +123,14 @@ class Class extends Func {
 
         // BFS
         const parentClzName = this.parentClzNames.find(
-            parentClzName => clzNode(context, parentClzName).hasOwnMethod(name)
+            clzName => clzNode(context, clzName).hasOwnMethod(name)
         );
         if(parentClzName) {
             return clzNode(context, parentClzName).getOwnMethod(name);
         }
                         
         const grandParentClzName = grandParentClzNames(context, this.parentClzNames).find(
-            grandParentClzName => clzNode(context, grandParentClzName).hasMethod(context, name)
+            clzName => clzNode(context, clzName).hasMethod(context, name)
         );
         return clzNode(context, grandParentClzName).getOwnMethod(name);
     }
