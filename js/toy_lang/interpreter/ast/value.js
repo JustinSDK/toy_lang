@@ -101,9 +101,9 @@ class Class extends Func {
         }
 
         return this.hasOwnMethod(name) || 
-               this.parentClzNames.some(parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name)) ||
+               this.parentClzNames.some(parentClzName => clzNode(context, parentClzName).hasOwnMethod(name)) ||
                grandParentClzNames(context, this.parentClzNames).some(
-                    grandParentClzName => context.lookUpVariable(grandParentClzName).internalNode.hasMethod(context, name)
+                    grandParentClzName => clzNode(context, grandParentClzName).hasMethod(context, name)
                );
     }
 
@@ -123,16 +123,16 @@ class Class extends Func {
 
         // BFS
         const parentClzName = this.parentClzNames.find(
-            parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name)
+            parentClzName => clzNode(context, parentClzName).hasOwnMethod(name)
         );
         if(parentClzName) {
-            return context.lookUpVariable(parentClzName).internalNode.getOwnMethod(name);
+            return clzNode(context, parentClzName).getOwnMethod(name);
         }
                         
         const grandParentClzName = grandParentClzNames(context, this.parentClzNames).find(
-            grandParentClzName => context.lookUpVariable(grandParentClzName).internalNode.hasMethod(context, name)
+            grandParentClzName => clzNode(context, grandParentClzName).hasMethod(context, name)
         );
-        return context.lookUpVariable(grandParentClzName).internalNode.getOwnMethod(name);
+        return clzNode(context, grandParentClzName).getOwnMethod(name);
     }
 
     withParentContext(context) {
@@ -142,6 +142,10 @@ class Class extends Func {
     clzOfLang(context) {
         return context.lookUpVariable('Class');;
     }
+}
+
+function clzNode(context, clzName) {
+    return context.lookUpVariable(parentClzName).internalNode;
 }
 
 function grandParentClzNames(context, parentClzNames) {
