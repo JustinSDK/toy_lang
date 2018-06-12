@@ -266,11 +266,13 @@ println(foo.apply(o, new List().add(40)))</code></strong></pre>
         println('ma')
     }
 }
+
 class PB {
     def mb() {
         println('mb')
     }
 }
+
 class C(PA, PB) {
     def init() {
         PA.getMethod('init').apply(this) # super init
@@ -280,12 +282,13 @@ class C(PA, PB) {
     def mc() {
         println('mc')
     }
-    
+
     def ma() {
         PA.getMethod('ma').apply(this) # super method
         println('c.ma()')
     }
 }
+
 c = new C()
 c.ma()
 c.mb()
