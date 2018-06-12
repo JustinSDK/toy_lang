@@ -164,14 +164,17 @@ function createAssignClass(tokenableLines, argTokenable) {
     const remains = tokenableLines.slice(1);     
     const stmt = LINE_PARSER.parse(remains);
 
+    const parentClzNames = paramTokenables.map(paramTokenable => paramTokenable.value);
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
             new Class(
-                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
+                [], 
                 notDefStmt(stmt),
                 new Map(funcs(stmt)),
-                fNameTokenable.value
+                fNameTokenable.value,
+                null,
+                parentClzNames.length === 0 ? ['Object'] : parentClzNames
             )
         ),
         LINE_PARSER.parse(linesAfterCurrentBlock(remains))
