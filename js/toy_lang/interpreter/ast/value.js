@@ -105,12 +105,12 @@ class Class extends Func {
         }
 
         // BFS
-        if(this.parentClzNames.some(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))) {
+        if(this.parentClzNames.some(parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name))) {
             return true;
         }
 
-        return grandParentNames(context, this.parentClzNames).some(
-            grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name)
+        return grandParentClzNames(context, this.parentClzNames).some(
+            grandParentClzName => context.lookUpVariable(grandParentClzName).internalNode.hasMethod(context, name)
         );
     }
 
@@ -128,16 +128,16 @@ class Class extends Func {
             return false;
         }
         
-        const parentName = this.parentClzNames.find(parentName => context.lookUpVariable(parentName).internalNode.hasOwnMethod(name))
+        const parentClzName = this.parentClzNames.find(parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name))
         // BFS
-        if(parentName) {
-            return context.lookUpVariable(parentName).internalNode.getOwnMethod(name);
+        if(parentClzName) {
+            return context.lookUpVariable(parentClzName).internalNode.getOwnMethod(name);
         }
                         
-        const grandParentName = grandParentNames(context, this.parentClzNames).find(
-            grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name)
+        const grandParentClzName = grandParentClzNames(context, this.parentClzNames).find(
+            grandParentClzName => context.lookUpVariable(grandParentClzName).internalNode.hasMethod(context, name)
         );
-        return context.lookUpVariable(grandParentName).internalNode.getOwnMethod(name);
+        return context.lookUpVariable(grandParentClzName).internalNode.getOwnMethod(name);
     }
 
     withParentContext(context) {
@@ -149,7 +149,7 @@ class Class extends Func {
     }
 }
 
-function grandParentNames(context, parentClzNames) {
+function grandParentClzNames(context, parentClzNames) {
     return parentClzNames.filter(parentName => parentName !== 'Object')
                          .map(parentName => context.lookUpVariable(parentName).internalNode)
                          .map(parentClzNode => parentClzNode.parentNames)
