@@ -112,8 +112,8 @@ class Class extends Func {
         return this.parentClzNames.filter(parentName => parentName !== 'Object')
                                .map(parentName => context.lookUpVariable(parentName).internalNode)
                                .map(parentClzNode => parentClzNode.parentNames)
-                               .reduce((ppNamesAcct, ppNames) => ppNamesAcct.concat(ppNames), [])
-                               .some(ppName => context.lookUpVariable(ppName).internalNode.hasMethod(context, name));
+                               .reduce((grandParentNamesAcct, grandParentNames) => grandParentNamesAcct.concat(grandParentNames), [])
+                               .some(grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name));
     }
 
     getOwnMethod(name) {
@@ -140,8 +140,8 @@ class Class extends Func {
                                .filter(parentName => parentName !== 'Object')
                                .map(parentName => context.lookUpVariable(parentName).internalNode)
                                .map(parentClzNode => parentClzNode.parentNames)
-                               .reduce((ppNamesAcct, ppNames) => ppNamesAcct.concat(ppNames), [])
-                               .find(ppName => context.lookUpVariable(ppName).internalNode.hasMethod(context, name));
+                               .reduce((grandParentNamesAcct, grandParentNames) => grandParentNamesAcct.concat(grandParentNames), [])
+                               .find(grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name));
         return context.lookUpVariable(ppName).internalNode.getOwnMethod(name);
     }
 
