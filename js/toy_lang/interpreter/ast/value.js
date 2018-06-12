@@ -109,11 +109,9 @@ class Class extends Func {
             return true;
         }
 
-        return this.parentClzNames.filter(parentName => parentName !== 'Object')
-                               .map(parentName => context.lookUpVariable(parentName).internalNode)
-                               .map(parentClzNode => parentClzNode.parentNames)
-                               .reduce((grandParentNamesAcct, grandParentNames) => grandParentNamesAcct.concat(grandParentNames), [])
-                               .some(grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name));
+        return grandParentNames(context, this.parentClzNames).some(
+            grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name)
+        );
     }
 
     getOwnMethod(name) {
@@ -136,13 +134,10 @@ class Class extends Func {
             return context.lookUpVariable(parentName).internalNode.getOwnMethod(name);
         }
                         
-        const ppName = this.parentClzNames
-                               .filter(parentName => parentName !== 'Object')
-                               .map(parentName => context.lookUpVariable(parentName).internalNode)
-                               .map(parentClzNode => parentClzNode.parentNames)
-                               .reduce((grandParentNamesAcct, grandParentNames) => grandParentNamesAcct.concat(grandParentNames), [])
-                               .find(grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name));
-        return context.lookUpVariable(ppName).internalNode.getOwnMethod(name);
+        const grandParentName = grandParentNames(context, this.parentClzNames).find(
+            grandParentName => context.lookUpVariable(grandParentName).internalNode.hasMethod(context, name)
+        );
+        return context.lookUpVariable(grandParentName).internalNode.getOwnMethod(name);
     }
 
     withParentContext(context) {
@@ -152,6 +147,13 @@ class Class extends Func {
     clzOfLang(context) {
         return context.lookUpVariable('Class');;
     }
+}
+
+function grandParentNames(context, parentClzNames) {
+    return parentClzNames.filter(parentName => parentName !== 'Object')
+                         .map(parentName => context.lookUpVariable(parentName).internalNode)
+                         .map(parentClzNode => parentClzNode.parentNames)
+                         .reduce((grandParentNamesAcct, grandParentNames) => grandParentNamesAcct.concat(grandParentNames), [])
 }
 
 class Instance extends Value {
