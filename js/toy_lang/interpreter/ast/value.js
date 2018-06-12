@@ -96,22 +96,15 @@ class Class extends Func {
     }    
 
     hasMethod(context, name) {
-        if(this.hasOwnMethod(name)) {
-            return true;
-        }
-
         if(this.name === 'Object') {
-            return false;
+            return this.hasOwnMethod(name);
         }
 
-        // BFS
-        if(this.parentClzNames.some(parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name))) {
-            return true;
-        }
-
-        return grandParentClzNames(context, this.parentClzNames).some(
-            grandParentClzName => context.lookUpVariable(grandParentClzName).internalNode.hasMethod(context, name)
-        );
+        return this.hasOwnMethod(name) || 
+               this.parentClzNames.some(parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name)) ||
+               grandParentClzNames(context, this.parentClzNames).some(
+                    grandParentClzName => context.lookUpVariable(grandParentClzName).internalNode.hasMethod(context, name)
+               );
     }
 
     getOwnMethod(name) {
@@ -119,17 +112,19 @@ class Class extends Func {
     }
 
     getMethod(context, name) {
+        if(this.name === 'Object') {
+            return this.getOwnMethod(name);
+        }
+
         const ownMethod = this.getOwnMethod(name);
         if(ownMethod) {
             return ownMethod;
         }
 
-        if(this.name === 'Object') {
-            return false;
-        }
-        
-        const parentClzName = this.parentClzNames.find(parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name))
         // BFS
+        const parentClzName = this.parentClzNames.find(
+            parentClzName => context.lookUpVariable(parentClzName).internalNode.hasOwnMethod(name)
+        );
         if(parentClzName) {
             return context.lookUpVariable(parentClzName).internalNode.getOwnMethod(name);
         }
