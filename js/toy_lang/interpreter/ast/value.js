@@ -136,7 +136,7 @@ class Class extends Func {
     }
 
     withParentContext(context) {
-        return new Class(this.params, this.stmt, this.methods, this.name, context);
+        return new Class(this.params, this.stmt, this.methods, this.name, context, this.parentClzNames);
     }
 
     clzOfLang(context) {
@@ -145,7 +145,7 @@ class Class extends Func {
 }
 
 function clzNode(context, clzName) {
-    return context.lookUpVariable(parentClzName).internalNode;
+    return context.lookUpVariable(clzName).internalNode;
 }
 
 function grandParentClzNames(context, parentClzNames) {
