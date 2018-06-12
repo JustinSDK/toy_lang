@@ -254,6 +254,81 @@ def foo(p) {
 
 # The 2nd parameter of the apply method accepts a List instance. 
 println(foo.apply(o, new List().add(40)))</code></strong></pre>
+<ul>
+    <li># Inheritance 1</li>
+  </ul>
+  <pre><strong><code>class PA {
+    def init() {
+        println('PA init')
+    }
+
+    def ma() {
+        println('ma')
+    }
+}
+class PB {
+    def mb() {
+        println('mb')
+    }
+}
+class C(PA, PB) {
+    def init() {
+        PA.getMethod('init').apply(this) # super init
+        println('C init')
+    }
+
+    def mc() {
+        println('mc')
+    }
+    def ma() {
+        PA.getMethod('ma').apply(this) # super method
+        println('c.ma()')
+    }
+}
+c = new C()
+c.ma()
+c.mb()
+c.mc()</code></strong></pre>
+<ul>
+    <li># Inheritance 2</li>
+  </ul>
+  <pre><strong><code>class Ordered {
+    def lessThan(that) {
+        return this.compare(that) < 0
+    }
+
+    def lessEqualsThan(that) {
+        return this.lessThan(that) || this.equals(that)
+    }
+
+    def greaterThan(that) {
+        return not this.lessEqualsThan(that)
+    }
+
+    def greaterEqualsThan(that) {
+        return not this.lessThan(that)
+    }
+}
+
+class Circle(Ordered) {
+    def init(radius) {
+        this.radius = radius
+    }
+
+    def compare(that) {
+        return this.radius - that.radius
+    }
+
+    def equals(that) {
+        return this.radius === that.radius;
+    }
+}
+c1 = new Circle(10)
+c2 = new Circle(20)
+println(c1.lessThan(c2))
+println(c1.lessEqualsThan(c2))
+println(c1.greaterThan(c2))
+println(c1.greaterEqualsThan(c2))</code></strong></pre>
     <script type="module">
     import {Toy} from './js/toy_lang/toy.js';
 
