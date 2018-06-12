@@ -150,10 +150,10 @@ class Class extends Func {
 }
 
 function grandParentClzNames(context, parentClzNames) {
-    return parentClzNames.filter(parentName => parentName !== 'Object')
-                         .map(parentName => context.lookUpVariable(parentName).internalNode)
-                         .map(parentClzNode => parentClzNode.parentNames)
-                         .reduce((grandParentNamesAcct, grandParentNames) => grandParentNamesAcct.concat(grandParentNames), [])
+    return parentClzNames.filter(parentClzName => parentClzName !== 'Object')
+                         .map(parentClzName => context.lookUpVariable(parentClzName).internalNode)
+                         .map(parentClzNode => parentClzNode.parentClzNames)
+                         .reduce((grandParentClzNamesAcct, grandParentClzNames) => grandParentClzNamesAcct.concat(grandParentClzNames), [])
 }
 
 class Instance extends Value {
