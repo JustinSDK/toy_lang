@@ -149,10 +149,10 @@ function clzNode(context, clzName) {
 }
 
 function grandParentClzNames(context, parentClzNames) {
-    return parentClzNames.filter(parentClzName => parentClzName !== 'Object')
-                         .map(parentClzName => context.lookUpVariable(parentClzName).internalNode)
-                         .map(parentClzNode => parentClzNode.parentClzNames)
-                         .reduce((grandParentClzNamesAcct, grandParentClzNames) => grandParentClzNamesAcct.concat(grandParentClzNames), [])
+    return parentClzNames.filter(clzName => clzName !== 'Object') // Object is the top class. No more lookup.
+                         .map(clzName => clzNode(context, clzName))
+                         .map(clzNode => clzNode.parentClzNames)
+                         .reduce((acct, grandParentClzNames) => acct.concat(grandParentClzNames), [])
 }
 
 class Instance extends Value {
