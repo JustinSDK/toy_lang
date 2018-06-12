@@ -76,8 +76,8 @@ class Func extends Value {
 }
 
 class Class extends Func {
-    constructor(params, notMethodStmt, methods, name, parentContext = null, parentClzNames = ['Object']) {
-        super(params, notMethodStmt, name, parentContext);
+    constructor(notMethodStmt, methods, name, parentClzNames = ['Object'], parentContext = null) {
+        super([], notMethodStmt, name, parentContext);
         this.methods = methods;
         this.parentClzNames = parentClzNames;
     }
@@ -136,7 +136,7 @@ class Class extends Func {
     }
 
     withParentContext(context) {
-        return new Class(this.params, this.stmt, this.methods, this.name, context, this.parentClzNames);
+        return new Class(this.stmt, this.methods, this.name, this.parentClzNames, context);
     }
 
     clzOfLang(context) {

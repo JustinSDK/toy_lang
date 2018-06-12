@@ -168,12 +168,10 @@ function createAssignClass(tokenableLines, argTokenable) {
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
-            new Class(
-                [], 
+            new Class( 
                 notDefStmt(stmt),
                 new Map(funcs(stmt)),
                 fNameTokenable.value,
-                null,
                 parentClzNames.length === 0 ? ['Object'] : parentClzNames
             )
         ),

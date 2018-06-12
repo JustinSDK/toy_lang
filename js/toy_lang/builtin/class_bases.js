@@ -18,7 +18,7 @@ class Native extends Value {
 }
 
 function clzNode(name, methods) {
-    return new Class(PARAM_LT0, StmtSequence.EMPTY, methods, name);
+    return new Class(StmtSequence.EMPTY, methods, name);
 }
 
 function self(context) {
