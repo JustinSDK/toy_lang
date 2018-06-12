@@ -280,6 +280,7 @@ class C(PA, PB) {
     def mc() {
         println('mc')
     }
+    
     def ma() {
         PA.getMethod('ma').apply(this) # super method
         println('c.ma()')
