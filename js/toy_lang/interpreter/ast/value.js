@@ -30,6 +30,10 @@ class Primitive extends Value {
     static boolNode(value) {
         return value ? BOOL_TRUE : BOOL_FALSE;
     }
+
+    static from(v) {
+        return (typeof v) === 'boolean' ? Primitive.boolNode(v) : new Primitive(v);
+    }    
 }
 
 const BOOL_TRUE = new Primitive(true);

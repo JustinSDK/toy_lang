@@ -40,7 +40,7 @@ function methodPrimitive(nativeClz, methodName, params = PARAM_LT0) {
     return func(methodName, {
         evaluate(context) {
             return context.returned(
-                new Primitive(
+                Primitive.from(
                     delegate(context, nativeClz, methodName, params)
                 )
             );
