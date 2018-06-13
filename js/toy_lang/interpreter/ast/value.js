@@ -26,10 +26,14 @@ class Primitive extends Value {
     toString() {
         return `${this.value}`;
     }
+
+    static boolNode(value) {
+        return value ? BOOL_TRUE : BOOL_FALSE;
+    }
 }
 
-Primitive.BoolTrue = new Primitive(true);
-Primitive.BoolFalse = new Primitive(false);
+const BOOL_TRUE = new Primitive(true);
+const BOOL_FALSE = new Primitive(false);
 
 class Func extends Value {
     constructor(params, stmt, name = '', parentContext = null) {

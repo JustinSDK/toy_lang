@@ -29,9 +29,7 @@ ObjectClass.methods = new Map([
     ['hasOwnProperty', func1('hasOwnProperty', {
         evaluate(context) {
             return context.returned(
-                self(context).hasOwnProperty(PARAM1.evaluate(context).value) ? 
-                    Primitive.BoolTrue : 
-                    Primitive.BoolFalse
+                Primitive.boolNode(self(context).hasOwnProperty(PARAM1.evaluate(context).value))
             );
         }    
     })],    
@@ -121,16 +119,14 @@ ClassClass.methods = new Map([
     ['hasOwnMethod', func1('hasOwnMethod', {
         evaluate(context) {
             return context.returned(
-                self(context).internalNode.hasOwnMethod(PARAM1.evaluate(context).value) ?
-                     Primitive.BoolTrue : Primitive.BoolFalse
+                Primitive.boolNode(self(context).internalNode.hasOwnMethod(PARAM1.evaluate(context).value))
             );
         }    
     })],    
     ['hasMethod', func1('hasMethod', {
         evaluate(context) {
             return context.returned(
-                self(context).internalNode.hasMethod(context, PARAM1.evaluate(context).value) ?
-                     Primitive.BoolTrue : Primitive.BoolFalse
+                Primitive.boolNode(self(context).internalNode.hasMethod(context, PARAM1.evaluate(context).value))
             );
         }    
     })],
@@ -299,7 +295,7 @@ ListClass.methods = new Map([
     })],    
     ['isEmpty', func0('isEmpty', {
         evaluate(context) {
-            return context.returned(new Primitive(selfInternalValue(context).length === 0));
+            return context.returned(Primitive.boolNode(selfInternalValue(context).length === 0));
         }    
     })],
     ['filter', func1('filter', {

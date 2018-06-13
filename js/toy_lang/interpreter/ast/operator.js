@@ -49,7 +49,7 @@ class NotOperator {
     }
 
     evaluate(context) {
-        return new Primitive(!this.operand.evaluate(context).value);
+        return Primitive.boolNode(!this.operand.evaluate(context).value);
     }
 }
 
@@ -62,12 +62,8 @@ function p(v) {
     return new Primitive(v);
 }
 
-function bool(v) {
-    return v ? Primitive.BoolTrue : Primitive.BoolFalse;
-}
-
 function boolOrp(v) {
-    return (typeof v) === 'boolean' ? bool(v) : p(v);
+    return (typeof v) === 'boolean' ? Primitive.boolNode(v) : p(v);
 }
 
 const BINARY_OPERATORS = new Map([
@@ -77,12 +73,12 @@ const BINARY_OPERATORS = new Map([
     ['*', createPrimitiveBinaryOperatorNode((a, b) => p(a * b))],
     ['/', createPrimitiveBinaryOperatorNode((a, b) => p(a / b))],
     ['%', createPrimitiveBinaryOperatorNode((a, b) => p(a % b))],
-    ['==', createPrimitiveBinaryOperatorNode((a, b) => bool(a === b))],
-    ['!=', createPrimitiveBinaryOperatorNode((a, b) => bool(a !== b))],
-    ['>=', createPrimitiveBinaryOperatorNode((a, b) => bool(a >= b))],
-    ['>', createPrimitiveBinaryOperatorNode((a, b) => bool(a > b))],
-    ['<=', createPrimitiveBinaryOperatorNode((a, b) => bool(a <= b))],
-    ['<', createPrimitiveBinaryOperatorNode((a, b) => bool(a < b))],
+    ['==', createPrimitiveBinaryOperatorNode((a, b) => Primitive.boolNode(a === b))],
+    ['!=', createPrimitiveBinaryOperatorNode((a, b) => Primitive.boolNode(a !== b))],
+    ['>=', createPrimitiveBinaryOperatorNode((a, b) => Primitive.boolNodebool(a >= b))],
+    ['>', createPrimitiveBinaryOperatorNode((a, b) => Primitive.boolNode(a > b))],
+    ['<=', createPrimitiveBinaryOperatorNode((a, b) => Primitive.boolNode(a <= b))],
+    ['<', createPrimitiveBinaryOperatorNode((a, b) => Primitive.boolNode(a < b))],
     ['and', createPrimitiveBinaryOperatorNode((a, b) => boolOrp(a && b))],
     ['or', createPrimitiveBinaryOperatorNode((a, b) => boolOrp(a || b))]
 ]);
