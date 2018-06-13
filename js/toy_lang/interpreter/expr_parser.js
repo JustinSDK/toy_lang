@@ -68,9 +68,13 @@ const OPERAND_PARSER = TokenableParser.orRules(
 
 function exprAst(tokenables) {
     return tokenables.reduce((stack, tokenable) => {
-        if(isOperator(tokenable.value)) {
-            return reduce(stack, tokenable.value);
+        if(isBinaryOperator(tokenable.value)) {
+            return reduceBinary(stack, tokenable.value);
         } 
+
+        if(isUnaryOperator(tokenable.value)) {
+            return reduceUnary(stack, tokenable.value);
+        }         
 
         return stack.push(
             OPERAND_PARSER.parse(tokenable)
@@ -136,22 +140,25 @@ function toPostfix(tokenables) {
     return popAll(stack, output);
 }
 
-function isOperator(value) {        
+function isUnaryOperator(value) {
+    return ['not'].indexOf(value) !== -1;
+}
+
+function isBinaryOperator(value) {        
     return ['.', 
-            'not',
             '==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
             '+', '-', '*', '/', '%'].indexOf(value) !== -1;
 }
 
-function reduce(stack, value) {
-    if(value === 'not') {
-        const NotOperator = UNARY_OPERATORS.get(value);
-        const operand = stack.top;
-        const s1 = stack.pop();
-        return s1.push(new NotOperator(operand));
-    }
+function reduceUnary(stack, value) {
+    const UnaryOperator = UNARY_OPERATORS.get(value);
+    const operand = stack.top;
+    const s1 = stack.pop();
+    return s1.push(new UnaryOperator(operand));
+}
 
+function reduceBinary(stack, value) {
     const right = stack.top;
     const s1 = stack.pop();
     const left = s1.top;
