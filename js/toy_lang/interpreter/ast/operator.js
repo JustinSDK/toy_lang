@@ -1,4 +1,6 @@
 import {Primitive} from './value.js';
+import {Instalization} from './class.js';
+
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
 function createPrimitiveBinaryOperatorNode(operator) {
@@ -19,6 +21,16 @@ function createPrimitiveBinaryOperatorNode(operator) {
     }
 }
 
+class NewOperator {
+    constructor(operand) {
+        this.operand = operand;
+    }
+
+    evaluate(context) {
+        return new Instalization(this.operand.fVariable, this.operand.args).evaluate(context);
+    }
+}
+
 class DotOperator {
     constructor(receiver, message) {
         this.receiver = receiver;
@@ -31,7 +43,7 @@ class DotOperator {
     }
 }
 
-class Not {
+class NotOperator {
     constructor(operand) {
         this.operand = operand;
     }
@@ -42,7 +54,8 @@ class Not {
 }
 
 const UNARY_OPERATORS = new Map([
-    ['not', Not]
+    ['new', NewOperator], 
+    ['not', NotOperator]
 ]);
 
 function p(v) {

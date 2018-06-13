@@ -9,6 +9,7 @@ const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
 const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
+const NEW_REGEX = /new/;
 const DOT_REGEX = /\./;
 const NOT_REGEX = /not/;
 const PARENTHESE_REGEX = /\(|\)/;
@@ -30,10 +31,8 @@ const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGE
 
 const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
-const NEW_CLZ_REGEX = new RegExp(`(new (${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
-
 const EXPR_REGEX = orRegexs(
-    NEW_CLZ_REGEX,
+    NEW_REGEX,
     FUNCALL_REGEX,
     TEXT_REGEX,
     NUMBER_REGEX,
@@ -68,6 +67,5 @@ const REGEX = new Map([
     ['else', /^else\s+{$/],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
-    ['new', new RegExp(`^${NEW_CLZ_REGEX.source}`)],
     ['return', /^return\s*(.*)$/],
 ]);

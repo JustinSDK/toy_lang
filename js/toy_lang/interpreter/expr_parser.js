@@ -1,7 +1,6 @@
 import {Stack} from './commons/collection.js';
 import {Primitive} from './ast/value.js';
 import {FunCall} from './ast/function.js';
-import {Instalization} from './ast/class.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
@@ -17,14 +16,6 @@ const EXPR_PARSER = TokenableParser.orRules(
 );
 
 const OPERAND_PARSER = TokenableParser.orRules(
-    ['new', {
-        burst([classNameTokenable, ...argTokenables]) {
-            return new Instalization(
-                new Variable(classNameTokenable.value), 
-                argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
-            );
-        }        
-    }],  
     ['fcall', {
         burst([fNameTokenable, ...argTokenables]) {
             return new FunCall(
@@ -83,7 +74,8 @@ function exprAst(tokenables) {
 }
 
 function priority(operator) {
-    return operator === '.' ? 6 :
+    return operator === 'new' ? 7 :
+           operator === '.' ? 6 :
            operator === 'not' ? 5 :
            ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
            ['and', 'or'].indexOf(operator) !== -1 ? 3 :
@@ -113,6 +105,7 @@ function digest(tokenables, stack = new Stack(), output = []) {
     switch(tokenables[0].value) {
         case '(':
             return digest(tokenables.slice(1), stack.push(tokenables[0]), output);
+        case 'new':
         case '.':
         case 'not':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
@@ -141,7 +134,7 @@ function toPostfix(tokenables) {
 }
 
 function isUnaryOperator(value) {
-    return ['not'].indexOf(value) !== -1;
+    return ['new', 'not'].indexOf(value) !== -1;
 }
 
 function isBinaryOperator(value) {        
