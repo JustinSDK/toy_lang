@@ -1,5 +1,4 @@
-import {Primitive} from './value.js';
-import {Instalization} from './class.js';
+import {Instance, Primitive} from './value.js';
 
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
@@ -23,12 +22,27 @@ function createPrimitiveBinaryOperatorNode(operator) {
 
 class NewOperator {
     constructor(operand) {
-        this.operand = operand;
+        this.fVariable = operand.fVariable;
+        this.args = operand.args;
+    }
+
+    instance(context) {
+        const clzOfLang = this.fVariable.evaluate(context);
+        return new Instance(
+            clzOfLang,
+            clzOfLang.internalNode.call(context, this.args).variables
+        );
     }
 
     evaluate(context) {
-        return new Instalization(this.operand.fVariable, this.operand.args).evaluate(context);
-    }
+        const thisInstance = this.instance(context);
+
+        if(thisInstance.clzOfLang.internalNode.hasOwnMethod('init')) {
+            return thisInstance.evalMethod(context, 'init', this.args).variables.get('this');
+        }
+        
+        return thisInstance;
+    }   
 }
 
 class DotOperator {
