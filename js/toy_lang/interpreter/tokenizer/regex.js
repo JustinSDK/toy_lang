@@ -57,8 +57,6 @@ const REGEX = new Map([
     ['text', new RegExp(`^${TEXT_REGEX.source}$`)],
     ['variable', new RegExp(`^${VARIABLE_REGEX.source}`)],
     ['fcall', new RegExp(`^${FUNCALL_REGEX.source}$`)],
-    ['relation', new RegExp(`^(.*)\\s+(${RELATION_REGEX.source})\\s+(.*)$`)],
-    ['logic', new RegExp(`^(.*)\\s+(${LOGIC_REGEX.source})\\s+(.*)$`)],
     ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}$`)],
     ['expression', new RegExp(`^${EXPR_REGEX.source}`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
