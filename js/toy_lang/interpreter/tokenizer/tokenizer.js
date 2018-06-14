@@ -22,29 +22,6 @@ const TOKEN_TESTERS = new Map([
         const matched = REGEX.get('fcall').exec(input);
         return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }], 
-    ['new', function(input) {
-        const matched = REGEX.get('new').exec(input);
-        return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
-    }],    
-    ['property', function(input) {
-        const matched = REGEX.get('property').exec(input);
-        if(matched) {
-            return matched[1].split('\.');
-        }
-        return [];
-    }],  
-    ['not', function(input) {
-        const matched = REGEX.get('not').exec(input);
-        return matched ? ['not', matched[1]] : [];
-    }],    
-    ['logic', function(input) {
-        const matched = REGEX.get('logic').exec(input);
-        return matched ? [matched[1], matched[2], matched[3]] : [];
-    }],
-    ['relation', function(input) {
-        const matched = REGEX.get('relation').exec(input);
-        return matched ? [matched[1], matched[2], matched[3]] : [];
-    }],
     ['expression', function(input) {
         return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
     }],
