@@ -45,7 +45,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],
     ['boolean', {
         burst([boolTokenable]) {
-            return boolTokenable.value === 'true' ? Primitive.BoolTrue : Primitive.BoolFalse;
+            return Primitive.boolNode(boolTokenable.value === 'true');
         }        
     }],    
     ['variable', {
