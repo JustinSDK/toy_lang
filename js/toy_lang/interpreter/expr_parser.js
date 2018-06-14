@@ -9,7 +9,7 @@ export {EXPR_PARSER, exprAst, toPostfix};
 
 const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
-        burst([...infixTokenables]) {
+        burst(infixTokenables) {
             return exprAst(toPostfix(infixTokenables));
         }
     }]
