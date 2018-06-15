@@ -51,19 +51,6 @@ const STMT_PARSER = TokenablesParser.orRules(
             );
         }
     }],             
-    ['fcall', {
-        burst(tokenableLines, [fNameTokenable, ...argTokenables]) {            
-            return new StmtSequence(
-                new ExprWrapper(
-                    new FunCall(
-                        new Variable(fNameTokenable.value),
-                        argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)) 
-                    )
-                ),
-                LINE_PARSER.parse(tokenableLines.slice(1))
-            );                
-        }
-    }],             
     ['block', {
         burst(tokenableLines, [cmdTokenable, argTokenable]) {
             switch(cmdTokenable.value) {
