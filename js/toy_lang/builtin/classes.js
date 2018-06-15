@@ -167,7 +167,7 @@ ClassClass.methods = new Map([
             const parentClzNames = self(context).internalNode.parentClzNames;
             return context.returned(
                 ListClass.listInstance(
-                    parentClzNames.map(parentClzName => new Primitive(parentClzName))
+                    parentClzNames.map(parentClzName => context.lookUpVariable(parentClzName))
                 )
             );
         }    
@@ -175,7 +175,8 @@ ClassClass.methods = new Map([
     ['setParents', func1('setParents', {
         evaluate(context) {
             const clzInstance = self(context);
-            const parentClzNames = PARAM1.evaluate(context).internalNode.value.map(primitive => primitive.value);
+            const parentClzNames = PARAM1.evaluate(context).internalNode.value
+                                         .map(clzInstance => clzInstance.internalNode.name);
             clzInstance.internalNode.parentClzNames = parentClzNames;
             return context.returned(clzInstance);
         }    

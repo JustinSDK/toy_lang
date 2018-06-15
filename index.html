@@ -345,19 +345,22 @@ println(foo.apply(o, new List().add(40)))</code></strong></pre>
         println('pa')
     }
 }
+
 class PB {
     def pb() {
         println('pb')
     }
 }
+
 class C {
     def c() {
         println('c') 
     }
 }
+
 println(C.parents())
 
-println(C.setParents(new List().add('PA').add('PB')).parents())
+println(C.setParents(new List().add(PA).add(PB)).parents())
 
 new C().pa()
 new C().pb()
