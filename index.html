@@ -277,7 +277,7 @@ class PB {
 
 class C(PA, PB) {
     def init() {
-        PA.getMethod('init').apply(this) # super init
+        PA.method('init').apply(this) # super init
         println('C init')
     }
 
@@ -286,7 +286,7 @@ class C(PA, PB) {
     }
 
     def ma() {
-        PA.getMethod('ma').apply(this) # super method
+        PA.method('ma').apply(this) # super method
         println('c.ma()')
     }
 }

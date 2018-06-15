@@ -130,7 +130,7 @@ ClassClass.methods = new Map([
             );
         }    
     })],
-    ['getOwnMethod', func1('getOwnMethod', {
+    ['ownMethod', func1('ownMethod', {
         evaluate(context) {
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
@@ -138,7 +138,7 @@ ClassClass.methods = new Map([
             );
         }    
     })],
-    ['getMethod', func1('getMethod', {
+    ['method', func1('method', {
         evaluate(context) {
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
