@@ -22,7 +22,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
                 new Variable(fNameTokenable.value), 
                 argLtChainTokenable.tryTokenables('argLists')
                                    .map(argLtTokenable => argLtTokenable.tryTokenables('args'))
-                                   .map(argTokenables => argTokenables.map(EXPR_PARSER.parse))
+                                   .map(argTokenables => argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)))
             );
         }        
     }],  
