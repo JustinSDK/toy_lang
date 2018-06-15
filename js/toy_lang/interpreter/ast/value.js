@@ -90,9 +90,9 @@ class Class extends Func {
         this.parentClzNames = parentClzNames;
     }
 
-    addOwnMethod(fInstance) {
+    addOwnMethod(name, fInstance) {
         const fNode = fInstance.internalNode;
-        this.methods.set(fNode.name, fNode);
+        this.methods.set(name, fNode);
     }
 
     deleteOwnMethod(name) {
