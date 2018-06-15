@@ -9,7 +9,7 @@ export {BUILTIN_CLASSES};
 
 class ObjectClass {
     static getClass() {
-        return  func0('getClass', {
+        return  func0('class', {
             evaluate(context) {
                 const instance = self(context);
                 return context.returned(instance.clzOfLang);
