@@ -223,40 +223,6 @@ println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
 println(c1.greaterEqualsThan(c2))</code></strong></pre>
 <ul>
-    <li># meta programming</li>
-  </ul>
-  <pre><strong><code>println(Object.ownMethods())
-Object.deleteOwnMethod('toString')    
-println(Object.ownMethods())
-
-def toString() {
-    # List instance
-    props = this.ownProperties() 
-    i = 0
-    lt = new List()
-    while i &lt; props.length() {
-        # List instance which contains name and value
-        prop = props.get(i) 
-        lt.add(prop.join())
-        i = i + 1
-    }
-    return lt.join('\n')
-}
-
-o = new Object()
-o.x = 10
-o.y = 20
-o.z = 30
-
-println(toString.apply(o))
-
-def foo(p) {
-    return this.x + this.y + this.z + p
-}
-
-# The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o, new List().add(40)))</code></strong></pre>
-<ul>
     <li># Inheritance 1</li>
   </ul>
   <pre><strong><code>class PA {
@@ -337,6 +303,66 @@ println(c1.lessThan(c2))
 println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
 println(c1.greaterEqualsThan(c2))</code></strong></pre>
+<ul>
+    <li># meta programming 1</li>
+  </ul>
+  <pre><strong><code>println(Object.ownMethods())
+Object.deleteOwnMethod('toString')    
+println(Object.ownMethods())
+
+def toString() {
+    # List instance
+    props = this.ownProperties() 
+    i = 0
+    lt = new List()
+    while i &lt; props.length() {
+        # List instance which contains name and value
+        prop = props.get(i) 
+        lt.add(prop.join())
+        i = i + 1
+    }
+    return lt.join('\n')
+}
+
+o = new Object()
+o.x = 10
+o.y = 20
+o.z = 30
+
+println(toString.apply(o))
+
+def foo(p) {
+    return this.x + this.y + this.z + p
+}
+
+# The 2nd parameter of the apply method accepts a List instance. 
+println(foo.apply(o, new List().add(40)))</code></strong></pre>
+<ul>
+    <li># meta programming 2</li>
+  </ul>
+  <pre><strong><code>class PA {
+    def pa() {
+        println('pa')
+    }
+}
+class PB {
+    def pb() {
+        println('pb')
+    }
+}
+class C {
+    def c() {
+        println('c') 
+    }
+}
+println(C.parents())
+
+println(C.setParents(new List().add('PA').add('PB')).parents())
+
+new C().pa()
+new C().pb()
+new C().c()
+</code></strong></pre>
     <script type="module">
     import {Toy} from './js/toy_lang/toy.js';
 
