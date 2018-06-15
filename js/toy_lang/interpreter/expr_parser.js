@@ -17,10 +17,12 @@ const EXPR_PARSER = TokenableParser.orRules(
 
 const OPERAND_PARSER = TokenableParser.orRules(
     ['fcall', {
-        burst([fNameTokenable, ...argTokenables]) {
+        burst([fNameTokenable, argLtChainTokenable]) {
             return new FunCall(
                 new Variable(fNameTokenable.value), 
-                argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable))
+                argLtChainTokenable.tryTokenables('argLists')
+                                   .map(argLtTokenable => argLtTokenable.tryTokenables('args'))
+                                   .map(argTokenables => argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)))
             );
         }        
     }],  

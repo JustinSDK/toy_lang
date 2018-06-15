@@ -27,7 +27,7 @@ function nestingParentheses(level) {
 
 const ARGUMENT_LT_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\)`);
 
-const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})(${ARGUMENT_LT_REGEX.source}))`);
+const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})((${ARGUMENT_LT_REGEX.source})+))`);
 
 const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
@@ -57,7 +57,7 @@ const REGEX = new Map([
     ['text', new RegExp(`^${TEXT_REGEX.source}$`)],
     ['variable', new RegExp(`^${VARIABLE_REGEX.source}`)],
     ['fcall', new RegExp(`^${FUNCALL_REGEX.source}$`)],
-    ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}$`)],
+    ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}`)],
     ['expression', new RegExp(`^${EXPR_REGEX.source}`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],

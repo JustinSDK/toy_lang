@@ -13,9 +13,9 @@ class Return {
 }
 
 class FunCall {
-    constructor(fVariable, args) {
+    constructor(fVariable, argsList) {
         this.fVariable = fVariable;
-        this.args = args;
+        this.args = argsList[0];
     } 
 
     evaluate(context) {

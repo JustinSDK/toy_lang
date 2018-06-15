@@ -20,7 +20,8 @@ const TOKEN_TESTERS = new Map([
     }],
     ['fcall', function(input) {
         const matched = REGEX.get('fcall').exec(input);
-        return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
+        return matched ? [matched[2], matched[3]] : [];
+        //return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }], 
     ['expression', function(input) {
         return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
@@ -51,8 +52,23 @@ const TOKEN_TESTERS = new Map([
     ['else', function(input) {
         const matched = REGEX.get('else').exec(input);
         return matched ? matched : [];
+    }],
+    ['argLists', function(input) {
+        return argLists(input);
+    }],
+    ['args', function(input) {
+        return funcArguments(input);
     }]   
 ]);
+
+function argLists(input) {
+    const matched = REGEX.get('argList').exec(input);
+    if(matched) {
+        return [matched[0]].concat(argLists(input.slice(matched[0].length)));
+    }
+        
+    return [];
+}
 
 function expr_tokens(input) {
     const matched = REGEX.get('expression').exec(input);
