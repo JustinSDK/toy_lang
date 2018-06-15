@@ -164,11 +164,11 @@ function grandParentClzNames(context, parentClzNames) {
 }
 
 class Instance extends Value {
-    constructor(clzOfLang, properties, internalNode = null) {
+    constructor(clzOfLang, properties, internalNode) {
         super();
         this.clzOfLang = clzOfLang; 
         this.properties = properties;
-        this.internalNode = internalNode;
+        this.internalNode = internalNode || this;
     }
 
     hasOwnProperty(name) {
