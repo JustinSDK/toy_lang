@@ -160,6 +160,16 @@ ClassClass.methods = new Map([
                  .forEach(f => clzInstance.internalNode.addOwnMethod(f.name, f.evaluate(context)));
             return context.returned(clzInstance);
         }    
+    })],
+    ['parents', func0('parents', {
+        evaluate(context) {
+            const parentClzNames = self(context).internalNode.parentClzNames;
+            return context.returned(
+                ListClass.listInstance(
+                    parentClzNames.map(parentClzName => new Primitive(parentClzName))
+                )
+            );
+        }    
     })]
 ]);
 
@@ -217,8 +227,7 @@ StringClass.methods = new Map([
             const value = selfInternalValue(context);
             return context.returned(new Primitive(value.length));
         }    
-    })],
-    ['getClass', ObjectClass.getClass()]
+    })]
 ]);
 
 class ListClass {
@@ -329,8 +338,7 @@ ListClass.methods = new Map([
             const arr = self(context).internalNode.value;
             return context.returned(new Primitive(arr.map(elem => elem.toString(context)).join()));
         }    
-    })],    
-    ['getClass', ObjectClass.getClass()]
+    })]
 ]);
 
 const BUILTIN_CLASSES = new Map([
