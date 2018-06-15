@@ -21,7 +21,6 @@ const TOKEN_TESTERS = new Map([
     ['fcall', function(input) {
         const matched = REGEX.get('fcall').exec(input);
         return matched ? [matched[2], matched[3]] : [];
-        //return matched ? [matched[2]].concat(funcArguments(matched[3])) : [];
     }], 
     ['expression', function(input) {
         return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
