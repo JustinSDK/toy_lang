@@ -170,6 +170,14 @@ ClassClass.methods = new Map([
                 )
             );
         }    
+    })],
+    ['setParents', func1('setParents', {
+        evaluate(context) {
+            const clzInstance = self(context);
+            const parentClzNames = PARAM1.evaluate(context).internalNode.value.map(primitive => primitive.value);
+            clzInstance.internalNode.parentClzNames = parentClzNames;
+            return context.returned(clzInstance);
+        }    
     })]
 ]);
 
