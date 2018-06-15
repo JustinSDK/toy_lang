@@ -17,8 +17,8 @@ class Native extends Value {
     }
 }
 
-function clzNode(name, methods) {
-    return new Class(StmtSequence.EMPTY, methods, name);
+function clzNode(name, methods, parents) {
+    return new Class(StmtSequence.EMPTY, methods, name, parents);
 }
 
 function self(context) {
