@@ -119,14 +119,18 @@ ClassClass.methods = new Map([
     ['hasOwnMethod', func1('hasOwnMethod', {
         evaluate(context) {
             return context.returned(
-                Primitive.boolNode(self(context).internalNode.hasOwnMethod(PARAM1.evaluate(context).value))
+                Primitive.boolNode(
+                    self(context).internalNode.hasOwnMethod(PARAM1.evaluate(context).value)
+                )
             );
         }    
     })],    
     ['hasMethod', func1('hasMethod', {
         evaluate(context) {
             return context.returned(
-                Primitive.boolNode(self(context).internalNode.hasMethod(context, PARAM1.evaluate(context).value))
+                Primitive.boolNode(
+                    self(context).internalNode.hasMethod(context, PARAM1.evaluate(context).value)
+                )
             );
         }    
     })],
@@ -268,6 +272,15 @@ class ListClass {
             new Native(jsArray)
         );
     }
+
+    static predictableMethod(context, fName) {
+        const arr = self(context).internalNode.value;
+        const fNode = PARAM1.evaluate(context).internalNode;
+        return arr[fName](elem => {
+            const bool = fNode.call(context, [elem]).returnedValue;
+            return bool.value;
+        });
+    }  
 }
 
 ListClass.methods = new Map([
@@ -316,15 +329,10 @@ ListClass.methods = new Map([
         }    
     })],
     ['filter', func1('filter', {
-        evaluate(context) {
-            const arr = self(context).internalNode.value;
-            const fNode = PARAM1.evaluate(context).internalNode;
-            const filtered = arr.filter(elem => {
-                const bool = fNode.call(context, [elem]).returnedValue;
-                return bool.value;
-            });
-            
-            return context.returned(ListClass.listInstance(filtered));
+        evaluate(context) {           
+            return context.returned(
+                ListClass.listInstance(ListClass.predictableMethod(context, 'filter'))
+            );
         }    
     })],
     ['map', func1('map', {
@@ -345,32 +353,24 @@ ListClass.methods = new Map([
     })],    
     ['all', func1('all', {
         evaluate(context) {
-            const arr = self(context).internalNode.value;
-            const fNode = PARAM1.evaluate(context).internalNode;
-            const result = arr.every(elem => {
-                const bool = fNode.call(context, [elem]).returnedValue;
-                return bool.value;
-            });
-            
-            return context.returned(Primitive.boolNode(result));
+            return context.returned(
+                Primitive.boolNode(ListClass.predictableMethod(context, 'every'))
+            );
         }    
     })],
     ['any', func1('any', {
         evaluate(context) {
-            const arr = self(context).internalNode.value;
-            const fNode = PARAM1.evaluate(context).internalNode;
-            const result = arr.some(elem => {
-                const bool = fNode.call(context, [elem]).returnedValue;
-                return bool.value;
-            });
-            
-            return context.returned(Primitive.boolNode(result));
+            return context.returned(
+                Primitive.boolNode(ListClass.predictableMethod(context, 'some'))
+            );
         }    
     })],    
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = self(context).internalNode.value;
-            return context.returned(new Primitive(arr.map(elem => elem.toString(context)).join()));
+            return context.returned(
+                new Primitive(arr.map(elem => elem.toString(context)).join())
+            );
         }    
     })]
 ]);
