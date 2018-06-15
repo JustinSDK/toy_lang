@@ -343,6 +343,30 @@ ListClass.methods = new Map([
             return context.returned(Void);
         }    
     })],    
+    ['all', func1('all', {
+        evaluate(context) {
+            const arr = self(context).internalNode.value;
+            const fNode = PARAM1.evaluate(context).internalNode;
+            const result = arr.every(elem => {
+                const bool = fNode.call(context, [elem]).returnedValue;
+                return bool.value;
+            });
+            
+            return context.returned(Primitive.boolNode(result));
+        }    
+    })],
+    ['any', func1('any', {
+        evaluate(context) {
+            const arr = self(context).internalNode.value;
+            const fNode = PARAM1.evaluate(context).internalNode;
+            const result = arr.some(elem => {
+                const bool = fNode.call(context, [elem]).returnedValue;
+                return bool.value;
+            });
+            
+            return context.returned(Primitive.boolNode(result));
+        }    
+    })],    
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = self(context).internalNode.value;
