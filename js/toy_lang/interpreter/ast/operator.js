@@ -23,7 +23,7 @@ function createPrimitiveBinaryOperatorNode(operator) {
 class NewOperator {
     constructor(operand) {
         this.fVariable = operand.fVariable;
-        this.args = operand.args;
+        this.args = operand.argsList[0];
     }
 
     instance(context) {
