@@ -99,6 +99,7 @@ class ClassClass {
 }
 
 ClassClass.methods = new Map([
+    ['name', FunctionClass.name()], 
     ['toString', FunctionClass.toString()],
     ['addOwnMethod', func2('addOwnMethod', {
         evaluate(context) {
@@ -181,7 +182,7 @@ ClassClass.methods = new Map([
     })]
 ]);
 
-const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods, ['Function']));
+const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods));
 // 'Class' of is an instance of 'Class'
 CLZ.clzOfLang = CLZ;
 
