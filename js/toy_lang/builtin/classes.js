@@ -45,7 +45,7 @@ ObjectClass.methods = new Map([
             return context.returned(new Primitive(`[${clzNode.name} object]`));
         }    
     })],
-    ['getClass', ObjectClass.getClass()]
+    ['class', ObjectClass.getClass()]
 ]);
 
 class FunctionClass {
@@ -85,8 +85,7 @@ FunctionClass.methods = new Map([
                 funcInstance.internalNode.bodyStmt(jsArray.map(arg => arg.evaluate(context)))
             ).evaluate(context);
         }    
-    })],
-    ['getClass', ObjectClass.getClass()]
+    })]
 ]);
 
 class ClassClass {
@@ -162,8 +161,7 @@ ClassClass.methods = new Map([
                  .forEach(f => clzInstance.internalNode.addOwnMethod(f.name, f.evaluate(context)));
             return context.returned(clzInstance);
         }    
-    })],
-    ['getClass', ObjectClass.getClass()]
+    })]
 ]);
 
 const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods));
