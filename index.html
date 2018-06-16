@@ -19,6 +19,11 @@
            resize:none;
            overflow:auto;
         }   
+
+        li {
+            color:brown;
+            font-family: Arial, Helvetica, sans-serif;
+        }
     </style>
   </head>
   <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
@@ -37,7 +42,7 @@ println('Hello World')</textarea> <br>
     <ul>
       <li># Multiplication Table</li>
     </ul>
-    <pre><strong><code>def print_row(n) {
+    <pre><code>def print_row(n) {
     i = 2
     while i &lt; 10 {
         print(i + '*' + n + '=' + (i * n) + '\t')
@@ -50,11 +55,11 @@ i = 1
 while i &lt; 10 {
     print_row(i)
     i = i + 1
-}</code></strong></pre>
+}</code></pre>
 <ul>
     <li># Tower of Hanoi</li>
   </ul>
-  <pre><strong><code>def hanoi(n, a, b, c) {
+  <pre><code>def hanoi(n, a, b, c) {
     if n == 1 {
         println('Move sheet from ' + a + ' to ' + c)
     } 
@@ -65,11 +70,11 @@ while i &lt; 10 {
     }
 }
 
-hanoi(3, 'A', 'B', 'C')</code></strong></pre>
+hanoi(3, 'A', 'B', 'C')</code></pre>
 <ul>
     <li># Factorial</li>
   </ul>
-  <pre><strong><code>def factorial(n) {
+  <pre><code>def factorial(n) {
     if n == 0 {
         return 1
     }
@@ -81,11 +86,11 @@ n = 1
 while n &lt;= 5 {
     println(n + '! = ' + factorial(n))
     n = n + 1
-}</code></strong></pre>
+}</code></pre>
 <ul>
     <li># Class</li>
   </ul>
-  <pre><strong><code>class Account {
+  <pre><code>class Account {
     # it's a field
     balance = 0 
 
@@ -111,11 +116,11 @@ while n &lt;= 5 {
 acct = new Account('123', 'Justin')
 acct.deposit(100)
 
-println(acct)</code></strong></pre>
+println(acct)</code></pre>
 <ul>
     <li># Built-in Classes</li>
   </ul>
-  <pre><strong><code>def range(begin, end) {
+  <pre><code>def range(begin, end) {
     lt = new List()
     i = begin
     while i &lt; end {
@@ -137,11 +142,11 @@ lt = range(1, 11)
 println(lt.join(' + ') + ' = ' + sum(lt))
 
 println(new String('aBc').toUpperCase())
-println(new String('aBc').toLowerCase())</code></strong></pre>
+println(new String('aBc').toLowerCase())</code></pre>
 <ul>
     <li># Closure</li>
   </ul>
-  <pre><strong><code>def foo() {
+  <pre><code>def foo() {
     x = 10
     def inner(y) {
         # closure closes the variable x, not its value
@@ -177,11 +182,11 @@ obj = new clz(20)
 
 println('obj.x() is ' + obj.x())
 println('obj.y is ' + obj.y)
-println('obj.z is ' + obj.z)</code></strong></pre>
+println('obj.z is ' + obj.z)</code></pre>
 <ul>
     <li># Lambda expression</li>
   </ul>
-  <pre><strong><code>lt = new List().add(1).add(2).add(3).add(4)
+  <pre><code>lt = new List().add(1).add(2).add(3).add(4)
 println(lt.filter(elem -> elem >= 2).map(elem -> elem * 100))
 
 def foo(x, y) {
@@ -200,11 +205,11 @@ println(orz()(100, 200))
 # IIFE
 (() -> println('XD'))()
 (x -> println(x))('XD')
-println(((x, y) -> x + y)(1, 2))</code></strong></pre>
+println(((x, y) -> x + y)(1, 2))</code></pre>
 <ul>
     <li># Mixin</li>
   </ul>
-  <pre><strong><code>class Ordered {
+  <pre><code>class Ordered {
     def lessThan(that) {
         return this.compare(that) &lt; 0
     }
@@ -244,11 +249,11 @@ c2 = new Circle(20)
 println(c1.lessThan(c2))
 println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
-println(c1.greaterEqualsThan(c2))</code></strong></pre>
+println(c1.greaterEqualsThan(c2))</code></pre>
 <ul>
     <li># Inheritance 1</li>
   </ul>
-  <pre><strong><code>class PA {
+  <pre><code>class PA {
     def init() {
         println('PA init')
     }
@@ -283,11 +288,11 @@ class C(PA, PB) {
 c = new C()
 c.ma()
 c.mb()
-c.mc()</code></strong></pre>
+c.mc()</code></pre>
 <ul>
     <li># Inheritance 2</li>
   </ul>
-  <pre><strong><code>class Ordered {
+  <pre><code>class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
     }
@@ -325,11 +330,11 @@ c2 = new Circle(20)
 println(c1.lessThan(c2))
 println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
-println(c1.greaterEqualsThan(c2))</code></strong></pre>
+println(c1.greaterEqualsThan(c2))</code></pre>
 <ul>
     <li># meta programming 1</li>
   </ul>
-  <pre><strong><code>println(Object.ownMethods())
+  <pre><code>println(Object.ownMethods())
 Object.deleteOwnMethod('toString')    
 println(Object.ownMethods())
 
@@ -359,11 +364,11 @@ def foo(p) {
 }
 
 # The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o, new List().add(40)))</code></strong></pre>
+println(foo.apply(o, new List().add(40)))</code></pre>
 <ul>
     <li># meta programming 2</li>
   </ul>
-  <pre><strong><code>class PA {
+  <pre><code>class PA {
     def pa() {
         println('pa')
     }
@@ -387,7 +392,9 @@ println(C.setParents(new List().add(PA).add(PB)).parents())
 
 new C().pa()
 new C().pb()
-new C().c()</code></strong></pre>
+new C().c()</code></pre>
+<hr>
+<center><a href="https://openhome.cc">openhome.cc</a></center>
     <script type="module">
     import {Toy} from './js/toy_lang/toy.js';
 
