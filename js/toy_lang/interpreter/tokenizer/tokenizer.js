@@ -25,6 +25,12 @@ const TOKEN_TESTERS = new Map([
     ['expression', function(input) {
         return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
     }],
+    ['lambda', function(input) {
+        const matched = REGEX.get('lambda').exec(input);
+        return matched ? [matched[8]].concat(
+            matched[1].startsWith('(') ? funcArguments(matched[1]).map(p => p.trim()) : [matched[1]]
+        ) : [];
+    }], 
     ['func', function(input) {
         const matched = REGEX.get('func').exec(input);
         return [matched[1]].concat(matched[3] ? matched[3].split(/,\s*/) : []);

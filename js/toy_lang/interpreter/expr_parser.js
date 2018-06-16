@@ -1,6 +1,6 @@
 import {Stack} from './commons/collection.js';
-import {Primitive} from './ast/value.js';
-import {FunCall} from './ast/function.js';
+import {Primitive, Func} from './ast/value.js';
+import {FunCall, Return} from './ast/function.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
@@ -16,6 +16,15 @@ const EXPR_PARSER = TokenableParser.orRules(
 );
 
 const OPERAND_PARSER = TokenableParser.orRules(
+    ['lambda', {
+        burst([bodyTokenable, ...paramTokenables]) {
+            return new Func(
+                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
+                new Return(EXPR_PARSER.parse(bodyTokenable)),
+                "''"
+            );
+        }        
+    }],  
     ['fcall', {
         burst([fNameTokenable, argLtChainTokenable]) {
             return new FunCall(

@@ -25,13 +25,18 @@ function nestingParentheses(level) {
     return `([^()]|\\(${nestingParentheses(level - 1)}\\))*`;
 }
 
-const ARGUMENT_LT_REGEX = new RegExp(`\\((${nestingParentheses(NESTED_PARENTHESES_LEVEL)})\\)`);
+const NESTING_PARENTHESES = nestingParentheses(NESTED_PARENTHESES_LEVEL);
+
+const ARGUMENT_LT_REGEX = new RegExp(`\\((${NESTING_PARENTHESES})\\)`);
 
 const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})((${ARGUMENT_LT_REGEX.source})+))`);
 
 const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
+const LAMBDA_EXPR_REGEX = new RegExp(`((${PARAM_LT_REGEX.source})|(${VARIABLE_REGEX.source}))\\s*->\\s*(${NESTING_PARENTHESES})`);
+
 const EXPR_REGEX = orRegexs(
+    LAMBDA_EXPR_REGEX,
     NEW_REGEX,
     FUNCALL_REGEX,
     TEXT_REGEX,
@@ -59,6 +64,7 @@ const REGEX = new Map([
     ['fcall', new RegExp(`^${FUNCALL_REGEX.source}$`)],
     ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}`)],
     ['expression', new RegExp(`^${EXPR_REGEX.source}`)],
+    ['lambda', new RegExp(`^${LAMBDA_EXPR_REGEX.source}`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
     ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
