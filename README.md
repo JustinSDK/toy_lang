@@ -15,7 +15,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 
 - Multiplication Table
 
-```    
+```python
 def print_row(n) {
     i = 2
     while i < 10 {
@@ -34,7 +34,7 @@ while i < 10 {
 
 - Tower of Hanoi
 
-```
+```python
 def hanoi(n, a, b, c) {
     if n == 1 {
         println('Move sheet from ' + a + ' to ' + c)
@@ -51,7 +51,7 @@ hanoi(3, 'A', 'B', 'C')
 
 - Factorial
 
-```
+```python
 def factorial(n) {
     if n == 0 {
         return 1
@@ -69,7 +69,7 @@ while n <= 5 {
 
 - Class
 
-```
+```python
 class Account {
     # it's a field
     balance = 0 
@@ -101,7 +101,7 @@ println(acct)
 
 - Built-in Classes
 
-```
+```python
 def range(begin, end) {
     lt = new List()
     i = begin
@@ -129,7 +129,7 @@ println(new String('aBc').toLowerCase())
 
 - Closure
 
-```
+```python
 def foo() {
     x = 10
     def inner(y) {
@@ -171,7 +171,7 @@ println('obj.z is ' + obj.z)
 
 - Lambda expression
 
-```
+```python
 lt = new List().add(1).add(2).add(3).add(4)
 println(lt.filter(elem -> elem >= 2).map(elem -> elem * 100))
 
@@ -196,7 +196,7 @@ println(((x, y) -> x + y)(1, 2))
 
 - Mixin
 
-```
+```python
 class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
@@ -242,7 +242,7 @@ println(c1.greaterEqualsThan(c2))
 
 - Inheritance 1
 
-```
+```python
 class PA {
     def init() {
         println('PA init')
@@ -283,7 +283,7 @@ c.mc()
 
 - Inheritance 2
 
-```
+```python
 class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
@@ -327,7 +327,7 @@ println(c1.greaterEqualsThan(c2))
 
 - meta programming 1
 
-```
+```python
 println(Object.ownMethods())
 Object.deleteOwnMethod('toString')    
 println(Object.ownMethods())
@@ -363,7 +363,7 @@ println(foo.apply(o, new List().add(40)))
 
 - meta programming 2
 
-```
+```python
 class PA {
     def pa() {
         println('pa')
