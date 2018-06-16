@@ -173,7 +173,7 @@ println('obj.z is ' + obj.z)
 
 ```python
 lt = new List().add(1).add(2).add(3).add(4)
-println(lt.filter(elem -> elem >= 2).map(elem -> elem * 100))
+lt.filter(elem -> elem >= 2).map(elem -> elem * 100).forEach(println)
 
 def foo(x, y) {
     return () -> x + y
