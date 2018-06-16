@@ -18,6 +18,8 @@
            height:300px;
            resize:none;
            overflow:auto;
+           background: #000;
+           color:whitesmoke;
         }   
 
         li {
@@ -25,24 +27,27 @@
             font-family: Arial, Helvetica, sans-serif;
         }
     </style>
+    <link rel="stylesheet" href="https://openhome.cc/Gossip/css/caterpillar.css">
+    <script async src="https://openhome.cc/Gossip/google-code-prettify/run_prettify.js"></script>
   </head>
   <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
     <p>View it on <a href="https://github.com/JustinSDK/toy_lang">Github</a>. 
         Toy lang is the first language I made and might be a prototype if you want to design your own language.  
         ES6 modules support is required. </p>
-        <ul>
-            <li>Laboratory</li>
-          </ul>
+        <hr>
+        <h1>Playground</h1>
           <textarea id="code"># Is a language easier if 'Hello World' is easier?
 println('Hello World')</textarea> <br>
           <br>
           <button id="run">Run It</button> <br>
           <br>
           <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
+          <hr>
+<h1>Examples</h1>
     <ul>
       <li># Multiplication Table</li>
     </ul>
-    <pre><code>def print_row(n) {
+    <pre class="prettyprint"><code>def print_row(n) {
     i = 2
     while i &lt; 10 {
         print(i + '*' + n + '=' + (i * n) + '\t')
@@ -59,7 +64,7 @@ while i &lt; 10 {
 <ul>
     <li># Tower of Hanoi</li>
   </ul>
-  <pre><code>def hanoi(n, a, b, c) {
+  <pre class="prettyprint"><code>def hanoi(n, a, b, c) {
     if n == 1 {
         println('Move sheet from ' + a + ' to ' + c)
     } 
@@ -74,7 +79,7 @@ hanoi(3, 'A', 'B', 'C')</code></pre>
 <ul>
     <li># Factorial</li>
   </ul>
-  <pre><code>def factorial(n) {
+  <pre class="prettyprint"><code>def factorial(n) {
     if n == 0 {
         return 1
     }
@@ -90,7 +95,7 @@ while n &lt;= 5 {
 <ul>
     <li># Class</li>
   </ul>
-  <pre><code>class Account {
+  <pre class="prettyprint"><code>class Account {
     # it's a field
     balance = 0 
 
@@ -120,7 +125,7 @@ println(acct)</code></pre>
 <ul>
     <li># Built-in Classes</li>
   </ul>
-  <pre><code>def range(begin, end) {
+  <pre class="prettyprint"><code>def range(begin, end) {
     lt = new List()
     i = begin
     while i &lt; end {
@@ -146,7 +151,7 @@ println(new String('aBc').toLowerCase())</code></pre>
 <ul>
     <li># Closure</li>
   </ul>
-  <pre><code>def foo() {
+  <pre class="prettyprint"><code>def foo() {
     x = 10
     def inner(y) {
         # closure closes the variable x, not its value
@@ -186,7 +191,7 @@ println('obj.z is ' + obj.z)</code></pre>
 <ul>
     <li># Lambda expression</li>
   </ul>
-  <pre><code>lt = new List().add(1).add(2).add(3).add(4)
+  <pre class="prettyprint"><code>lt = new List().add(1).add(2).add(3).add(4)
 println(lt.filter(elem -> elem >= 2).map(elem -> elem * 100))
 
 def foo(x, y) {
@@ -209,7 +214,7 @@ println(((x, y) -> x + y)(1, 2))</code></pre>
 <ul>
     <li># Mixin</li>
   </ul>
-  <pre><code>class Ordered {
+  <pre class="prettyprint"><code>class Ordered {
     def lessThan(that) {
         return this.compare(that) &lt; 0
     }
@@ -253,7 +258,7 @@ println(c1.greaterEqualsThan(c2))</code></pre>
 <ul>
     <li># Inheritance 1</li>
   </ul>
-  <pre><code>class PA {
+  <pre class="prettyprint"><code>class PA {
     def init() {
         println('PA init')
     }
@@ -292,7 +297,7 @@ c.mc()</code></pre>
 <ul>
     <li># Inheritance 2</li>
   </ul>
-  <pre><code>class Ordered {
+  <pre class="prettyprint"><code>class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
     }
@@ -334,7 +339,7 @@ println(c1.greaterEqualsThan(c2))</code></pre>
 <ul>
     <li># meta programming 1</li>
   </ul>
-  <pre><code>println(Object.ownMethods())
+  <pre class="prettyprint"><code>println(Object.ownMethods())
 Object.deleteOwnMethod('toString')    
 println(Object.ownMethods())
 
@@ -368,7 +373,7 @@ println(foo.apply(o, new List().add(40)))</code></pre>
 <ul>
     <li># meta programming 2</li>
   </ul>
-  <pre><code>class PA {
+  <pre class="prettyprint"><code>class PA {
     def pa() {
         println('pa')
     }
