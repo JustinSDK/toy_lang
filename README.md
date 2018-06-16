@@ -66,6 +66,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 
 - Class
 
+
 	class Account {
 	    # it's a field
 	    balance = 0 
