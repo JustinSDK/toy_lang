@@ -69,7 +69,7 @@ while n <= 5 {
 
 - Class
 
-```python
+```java
 class Account {
     # it's a field
     balance = 0 
@@ -101,7 +101,7 @@ println(acct)
 
 - Built-in Classes
 
-```python
+```java
 def range(begin, end) {
     lt = new List()
     i = begin
@@ -129,7 +129,7 @@ println(new String('aBc').toLowerCase())
 
 - Closure
 
-```python
+```javascript
 def foo() {
     x = 10
     def inner(y) {
@@ -171,7 +171,7 @@ println('obj.z is ' + obj.z)
 
 - Lambda expression
 
-```python
+```java
 lt = new List().add(1).add(2).add(3).add(4)
 lt.filter(elem -> elem >= 2).map(elem -> elem * 100).forEach(println)
 
@@ -196,7 +196,7 @@ println(((x, y) -> x + y)(1, 2))
 
 - Mixin
 
-```python
+```ruby
 class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
@@ -327,7 +327,7 @@ println(c1.greaterEqualsThan(c2))
 
 - meta programming 1
 
-```python
+```javascript
 println(Object.ownMethods())
 Object.deleteOwnMethod('toString')    
 println(Object.ownMethods())
@@ -363,7 +363,7 @@ println(foo.apply(o, new List().add(40)))
 
 - meta programming 2
 
-```python
+```javascript
 class PA {
     def pa() {
         println('pa')
