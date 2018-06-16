@@ -28,7 +28,9 @@ const TOKEN_TESTERS = new Map([
     ['lambda', function(input) {
         const matched = REGEX.get('lambda').exec(input);
         return matched ? [matched[8]].concat(
-            matched[1].startsWith('(') ? funcArguments(matched[1]).map(p => p.trim()) : [matched[1]]
+            matched[1].startsWith('(') ? 
+                  matched[1].slice(1, -1).split(',').map(p => p.trim())
+                  : [matched[1]]
         ) : [];
     }], 
     ['iife', function(input) {
