@@ -25,6 +25,17 @@ const OPERAND_PARSER = TokenableParser.orRules(
             );
         }        
     }],  
+    ['iife', {
+        burst([lambdaExprTokenable, argLtChainTokenable]) {
+
+            return new FunCall(
+                OPERAND_PARSER.parse(lambdaExprTokenable), 
+                argLtChainTokenable.tryTokenables('argLists')
+                                   .map(argLtTokenable => argLtTokenable.tryTokenables('args'))
+                                   .map(argTokenables => argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)))
+            );
+        }        
+    }],  
     ['fcall', {
         burst([fNameTokenable, argLtChainTokenable]) {
             return new FunCall(

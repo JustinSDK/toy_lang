@@ -31,6 +31,10 @@ const TOKEN_TESTERS = new Map([
             matched[1].startsWith('(') ? funcArguments(matched[1]).map(p => p.trim()) : [matched[1]]
         ) : [];
     }], 
+    ['iife', function(input) {
+        const matched = REGEX.get('iife').exec(input);
+        return matched ? [matched[2], matched[15]] : [];
+    }], 
     ['func', function(input) {
         const matched = REGEX.get('func').exec(input);
         return [matched[1]].concat(matched[3] ? matched[3].split(/,\s*/) : []);

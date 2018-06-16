@@ -35,7 +35,10 @@ const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIAB
 
 const LAMBDA_EXPR_REGEX = new RegExp(`((${PARAM_LT_REGEX.source})|(${VARIABLE_REGEX.source}))\\s*->\\s*(${NESTING_PARENTHESES})`);
 
+const IIFE_REGEX = new RegExp(`(\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_LT_REGEX.source})+))`);
+
 const EXPR_REGEX = orRegexs(
+    IIFE_REGEX,
     LAMBDA_EXPR_REGEX,
     NEW_REGEX,
     FUNCALL_REGEX,
@@ -65,6 +68,7 @@ const REGEX = new Map([
     ['argList', new RegExp(`^${ARGUMENT_LT_REGEX.source}`)],
     ['expression', new RegExp(`^${EXPR_REGEX.source}`)],
     ['lambda', new RegExp(`^${LAMBDA_EXPR_REGEX.source}`)],
+    ['iife', new RegExp(`^${IIFE_REGEX.source}$`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
     ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
