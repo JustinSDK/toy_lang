@@ -94,10 +94,8 @@ class StmtSequence {
             return ctx;
         } catch(e) {
             if(!e.lineNumbers) {
-                const err = new ReferenceError(e.message);
-                err.lineNumbers = [this.lineNumber];
-                err.context = context;
-                throw err;
+                e.lineNumbers = [this.lineNumber];
+                e.context = context;
             }
             if(this.firstStmt instanceof ExprWrapper && e.context !== context) {
                 e.context = context;
