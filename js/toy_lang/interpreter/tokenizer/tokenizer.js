@@ -144,8 +144,9 @@ class Tokenizer {
 
     tokenizableLines() {
         return this.code.trim().split('\n')
+                        .map(line => line.replace(/#.*/, '')) // A comment starts with #
                         .map(line => line.trim())
                         .map((line, idx) => new Tokenable('line', idx + 1, line))
-                        .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")); // A comment starts with #
+                        .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")); 
     }
 }
