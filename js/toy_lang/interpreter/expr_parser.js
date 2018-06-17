@@ -21,7 +21,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
             return new Func(
                 paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
                 new Return(EXPR_PARSER.parse(bodyTokenable)),
-                "''"
+                "''" // anonymous
             );
         }        
     }],  
