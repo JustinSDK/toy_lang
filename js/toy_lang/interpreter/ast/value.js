@@ -56,7 +56,7 @@ class Func extends Value {
     }
 
     bodyStmt(args) {
-        return new StmtSequence(this.assignToParams(args), this.stmt);
+        return new StmtSequence(this.assignToParams(args), this.stmt, this.stmt.lineNumber);
     }
 
     call(context, args) {
@@ -207,9 +207,11 @@ class Instance extends Value {
 
     methodBodyStmt(context, name, args = []) {
         const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(context, name);
+        const bodystmt = f.bodyStmt(args.map(arg => arg.evaluate(context)));
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
-            f.bodyStmt(args.map(arg => arg.evaluate(context)))
+            bodystmt,
+            bodystmt.lineNumber
         );
     }
 

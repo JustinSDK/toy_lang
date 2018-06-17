@@ -17,7 +17,7 @@ class Toy {
                    .evaluate(Context.initialize(this.env));
         }
         catch(e) {
-            this.env.output(`${e}`);
+            this.env.output(`\n${e}`);
             throw e;
         }
     }

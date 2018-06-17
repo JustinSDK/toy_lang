@@ -47,7 +47,8 @@ const STMT_PARSER = TokenablesParser.orRules(
 
             return new StmtSequence(
                 new PropertyAssign(target, propTokenable.value, value),
-                LINE_PARSER.parse(tokenableLines.slice(1))
+                LINE_PARSER.parse(tokenableLines.slice(1)),
+                tokenableLines[0].lineNumber
             );
         }
     }],             
@@ -76,7 +77,8 @@ const STMT_PARSER = TokenablesParser.orRules(
                 new ExprWrapper(
                     exprAst(toPostfix(infixTokenables))
                 ),
-                LINE_PARSER.parse(tokenableLines.slice(1))
+                LINE_PARSER.parse(tokenableLines.slice(1)),
+                tokenableLines[0].lineNumber
             ); 
         }
     }]
@@ -88,14 +90,16 @@ function createAssign(tokenableLines, clzNode, target, assignedTokenable) {
             target, 
             EXPR_PARSER.parse(assignedTokenable)
         ),
-        LINE_PARSER.parse(tokenableLines.slice(1))
+        LINE_PARSER.parse(tokenableLines.slice(1)),
+        tokenableLines[0].lineNumber
     );
 }
 
 function createReturn(tokenableLines, argTokenable) { 
     return new StmtSequence(
         new Return(argTokenable.value === '' ? Void : EXPR_PARSER.parse(argTokenable)),
-        LINE_PARSER.parse(tokenableLines.slice(1))
+        LINE_PARSER.parse(tokenableLines.slice(1)),
+        tokenableLines[0].lineNumber
     );
 }
 
@@ -119,7 +123,8 @@ function notDefStmt(stmt) {
     if(!(stmt.firstStmt instanceof VariableAssign) || !(stmt.firstStmt.value instanceof Func)) {
         return new StmtSequence(
             stmt.firstStmt,
-            notDefStmt(stmt.secondStmt)
+            notDefStmt(stmt.secondStmt),
+            stmt.firstStmt.lineNumber
         );
     }
 
@@ -140,7 +145,8 @@ function createAssignFunc(tokenableLines, argTokenable) {
                 fNameTokenable.value
             )
         ),
-        LINE_PARSER.parse(linesAfterCurrentBlock(remains))
+        LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+        tokenableLines[0].lineNumber
     );    
 }
 
@@ -162,7 +168,8 @@ function createAssignClass(tokenableLines, argTokenable) {
                 parentClzNames.length === 0 ? ['Object'] : parentClzNames
             )
         ),
-        LINE_PARSER.parse(linesAfterCurrentBlock(remains))
+        LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+        tokenableLines[0].lineNumber
     );   
 }
 
@@ -185,7 +192,8 @@ function createIf(tokenableLines, argTokenable) {
                 trueStmt,
                 falseStmt
             ),
-            LINE_PARSER.parse(linesAfterCurrentBlock(remains))
+            LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+            tokenableLines[0].lineNumber
     );
 }
 
@@ -196,7 +204,8 @@ function createWhile(tokenableLines, argTokenable) {
             EXPR_PARSER.parse(argTokenable), 
             LINE_PARSER.parse(remains)
          ),
-         LINE_PARSER.parse(linesAfterCurrentBlock(remains))
+         LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+         tokenableLines[0].lineNumber
     ); 
 }
 

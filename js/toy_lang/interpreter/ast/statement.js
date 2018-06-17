@@ -79,17 +79,25 @@ class If {
 }
 
 class StmtSequence {
-    constructor(firstStmt, secondStmt) {
+    constructor(firstStmt, secondStmt, lineNumber) {
         this.firstStmt = firstStmt;
         this.secondStmt = secondStmt;
+        this.lineNumber = lineNumber;
     }
 
     evaluate(context) {
-        const ctx = this.firstStmt.evaluate(context);
-        if(ctx.returnedValue === null) {
-            return this.secondStmt.evaluate(ctx);
+        try {
+            const ctx = this.firstStmt.evaluate(context);
+            if(ctx.returnedValue === null) {
+                return this.secondStmt.evaluate(ctx);
+            }
+            return ctx;
+        } catch(e) {
+            if(!e.message.includes('line')) {
+                throw new ReferenceError(`\n\tline ${this.lineNumber}  ${e.message}`);
+            }
+            throw e;
         }
-        return ctx;
     }
 }
 
