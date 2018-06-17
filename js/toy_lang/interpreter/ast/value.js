@@ -120,27 +120,12 @@ class Class extends Func {
     }
 
     getMethod(context, name) {
-        if(this.name === 'Object') {
-            return this.getOwnMethod(name);
-        }
-
         const ownMethod = this.getOwnMethod(name);
-        if(ownMethod) {
-            return ownMethod;
+        if(this.name === 'Object') {
+            errorIfUndefined(ownMethod, name);
         }
 
-        // BFS
-        const parentClzName = this.parentClzNames.find(
-            clzName => clzNode(context, clzName).hasOwnMethod(name)
-        );
-        if(parentClzName) {
-            return clzNode(context, parentClzName).getOwnMethod(name);
-        }
-                        
-        const grandParentClzName = grandParentClzNames(context, this.parentClzNames).find(
-            clzName => clzNode(context, clzName).hasMethod(context, name)
-        );
-        return clzNode(context, grandParentClzName).getOwnMethod(name);
+        return ownMethod ? ownMethod : lookupParentClzes(context, this, name);
     }
 
     withParentContext(context) {
@@ -150,6 +135,29 @@ class Class extends Func {
     clzOfLang(context) {
         return context.lookUpVariable('Class');;
     }
+}
+
+function errorIfUndefined(v, name) {
+    if(v === undefined) {
+        throw new ReferenceError(`${name} is not defined`);
+    }
+}
+
+function lookupParentClzes(context, clz, name) {
+    // BFS
+    const parentClzName = clz.parentClzNames.find(
+        clzName => clzNode(context, clzName).hasOwnMethod(name)
+    );
+    if(parentClzName) {
+        return clzNode(context, parentClzName).getOwnMethod(name);
+    }
+                    
+    const grandParentClzName = grandParentClzNames(context, clz.parentClzNames).find(
+        clzName => clzNode(context, clzName).hasMethod(context, name)
+    );
+
+    errorIfUndefined(grandParentClzName, name);
+    return clzNode(context, grandParentClzName).getOwnMethod(name);
 }
 
 function clzNode(context, clzName) {
