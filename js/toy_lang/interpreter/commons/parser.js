@@ -26,6 +26,10 @@ class RuleChain {
     isEmpty() {
         return this.rules.length === 0;
     }
+
+    length() {
+        return this.rules.length;
+    }
 }
 
 class Parser {
@@ -89,7 +93,7 @@ class TokenablesRuleChain extends RuleChain {
     }
 
     parse(tokenables) {
-        if(this.isEmpty()) {
+        if(this.length() === 1 && !tokenables[0].value.endsWith(')')) {
             throw new SyntaxError(`\n\t${tokenables[0].toString()}`);
         }
 
