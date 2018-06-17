@@ -13,17 +13,17 @@ class Return {
 }
 
 class FunCall {
-    constructor(fVariable, argsList) {
-        this.fVariable = fVariable;
+    constructor(func, argsList) {
+        this.func = func;
         this.argsList = argsList;
     } 
 
     evaluate(context) {
-        return callChain(context, this.fVariable.evaluate(context).internalNode, this.argsList);
+        return callChain(context, this.func.evaluate(context).internalNode, this.argsList);
     }    
 
     send(context, instance) {
-        const methodName = this.fVariable.name;
+        const methodName = this.func.name;
         const args = this.argsList[0];
         const returnedValue = instance.evalMethod(context, methodName, args).returnedValue;
 

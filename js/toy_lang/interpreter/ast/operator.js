@@ -22,12 +22,12 @@ function createPrimitiveBinaryOperatorNode(operator) {
 
 class NewOperator {
     constructor(operand) {
-        this.fVariable = operand.fVariable;
+        this.clz = operand.func;
         this.args = operand.argsList[0];
     }
 
     instance(context) {
-        const clzOfLang = this.fVariable.evaluate(context);
+        const clzOfLang = this.clz.evaluate(context);
         return new Instance(
             clzOfLang,
             clzOfLang.internalNode.call(context, this.args).variables
