@@ -47,7 +47,15 @@ class Context {
 
     lookUpVariable(name) {
         const value = this.variables.get(name);
-        return value ? value : this.parent.lookUpVariable(name);
+        if(value !== undefined) {
+            return value;
+        }
+
+        if(this.parent) {
+            return this.parent.lookUpVariable(name);
+        }
+        
+        throw new ReferenceError(`${name} is not defined`);
     }    
 }
 
