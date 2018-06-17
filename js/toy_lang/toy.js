@@ -7,17 +7,27 @@ export {Toy};
 class Toy {
     constructor(env, code) {
         this.env = env;
-        this.code = code;
+        this.tokenizer = new Tokenizer(code);
     }
 
     play() {
         try {
             new ToyParser(this.env)
-                   .parse(new Tokenizer(this.code))
+                   .parse(this.tokenizer)
                    .evaluate(Context.initialize(this.env));
         }
         catch(e) {
             this.env.output(`\n${e}`);
+            if(e.lineNumbers) {
+                const tokenizableLines = this.tokenizer.tokenizableLines();
+                e.lineNumbers.map(lineNumber => {
+                                const tokenizableLine = tokenizableLines.find(
+                                    tokenizableLine => tokenizableLine.lineNumber === lineNumber
+                                );
+                                return `at ${tokenizableLine.value} line (${lineNumber})`;
+                             })
+                             .forEach(line => this.env.output(`\n\t${line}`));                              
+            }
             throw e;
         }
     }

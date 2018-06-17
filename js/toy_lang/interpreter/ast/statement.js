@@ -93,8 +93,15 @@ class StmtSequence {
             }
             return ctx;
         } catch(e) {
-            if(!e.message.includes('line')) {
-                throw new ReferenceError(`\n\tline ${this.lineNumber}  ${e.message}`);
+            if(!e.lineNumbers) {
+                const err = new ReferenceError(e.message);
+                err.lineNumbers = [this.lineNumber];
+                err.context = context;
+                throw err;
+            }
+            if(this.firstStmt instanceof ExprWrapper && e.context !== context) {
+                e.context = context;
+                e.lineNumbers.push(this.lineNumber);
             }
             throw e;
         }

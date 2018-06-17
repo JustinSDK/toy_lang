@@ -139,14 +139,14 @@ class Tokenable {
 
 class Tokenizer {
     constructor(code) {
-        this.code = code;
-    }
-
-    tokenizableLines() {
-        return this.code.trim().split('\n')
+        this.lines = code.trim().split('\n')
                         .map(line => line.replace(/#.*/, '')) // A comment starts with #
                         .map(line => line.trim())
                         .map((line, idx) => new Tokenable('line', idx + 1, line))
                         .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")); 
+    }
+
+    tokenizableLines() {
+        return this.lines;
     }
 }
