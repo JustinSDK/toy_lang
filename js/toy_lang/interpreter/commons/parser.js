@@ -94,6 +94,7 @@ class TokenablesRuleChain extends RuleChain {
 
     parse(tokenables) {
         if(this.length() === 1 && !tokenables[0].value.endsWith(')')) {
+            // not fcall, iife, new or mcall statement
             throw new SyntaxError(`\n\t${tokenables[0].toString()}`);
         }
 
