@@ -27,23 +27,12 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],  
     ['iife', {
         burst([lambdaExprTokenable, argLtChainTokenable]) {
-
-            return new FunCall(
-                OPERAND_PARSER.parse(lambdaExprTokenable), 
-                argLtChainTokenable.tryTokenables('argLists')
-                                   .map(argLtTokenable => argLtTokenable.tryTokenables('args'))
-                                   .map(argTokenables => argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)))
-            );
+            return createFuncall(OPERAND_PARSER.parse(lambdaExprTokenable), argLtChainTokenable);
         }        
     }],  
     ['fcall', {
         burst([fNameTokenable, argLtChainTokenable]) {
-            return new FunCall(
-                new Variable(fNameTokenable.value), 
-                argLtChainTokenable.tryTokenables('argLists')
-                                   .map(argLtTokenable => argLtTokenable.tryTokenables('args'))
-                                   .map(argTokenables => argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)))
-            );
+            return createFuncall(new Variable(fNameTokenable.value), argLtChainTokenable);
         }        
     }],  
     ['text', {
@@ -76,6 +65,15 @@ const OPERAND_PARSER = TokenableParser.orRules(
         }
     }] 
 );
+
+function createFuncall(func, argLtChainTokenable) {
+    return new FunCall(
+        func, 
+        argLtChainTokenable.tryTokenables('argLists')
+                           .map(argLtTokenable => argLtTokenable.tryTokenables('args'))
+                           .map(argTokenables => argTokenables.map(argTokenable => EXPR_PARSER.parse(argTokenable)))
+    );
+}
 
 // expression
 
