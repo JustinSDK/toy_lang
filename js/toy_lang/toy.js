@@ -21,7 +21,7 @@ class Toy {
             if(e.lineNumbers) {
                 const tokenizableLines = this.tokenizer.tokenizableLines();
                 e.lineNumbers.map(lineNumber => tokenizableLines.find(tokenizableLine => tokenizableLine.lineNumber === lineNumber))
-                             .map(tokenizableLine => `at ${tokenizableLine.value} (main.toy:${tokenizableLine.lineNumber})`)
+                             .map(tokenizableLine => `at ${tokenizableLine.value} (line:${tokenizableLine.lineNumber})`)
                              .forEach(line => this.env.output(`\n\t${line}`));                              
             }
             throw e;
