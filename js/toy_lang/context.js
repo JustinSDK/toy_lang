@@ -9,6 +9,14 @@ const BUILTINS = new Map(
     )
 ); 
 
+const RUNTIME_CHECKER = {
+    refErrIfNoValue(v, name) {
+        if(!v) {
+            throw new ReferenceError(`${name} is not defined`);
+        }
+    }
+};
+
 class Context {
     constructor(parent, output = nope, variables = new Map(), returnedValue = null) {
         this.parent = parent;
@@ -50,12 +58,12 @@ class Context {
         if(value !== undefined) {
             return value;
         }
-
-        if(this.parent) {
-            return this.parent.lookUpVariable(name);
-        }
         
-        throw new ReferenceError(`${name} is not defined`);
-    }    
+        RUNTIME_CHECKER.refErrIfNoValue(this.parent, name);
+        return this.parent.lookUpVariable(name);
+    }   
+    
+    get RUNTIME_CHECKER() {
+        return RUNTIME_CHECKER;
+    }
 }
-

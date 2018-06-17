@@ -122,7 +122,7 @@ class Class extends Func {
     getMethod(context, name) {
         const ownMethod = this.getOwnMethod(name);
         if(this.name === 'Object') {
-            errorIfUndefined(ownMethod, name);
+            context.RUNTIME_CHECKER.refErrIfNoValue(ownMethod, name);
         }
 
         return ownMethod ? ownMethod : lookupParentClzes(context, this, name);
@@ -134,12 +134,6 @@ class Class extends Func {
 
     clzOfLang(context) {
         return context.lookUpVariable('Class');;
-    }
-}
-
-function errorIfUndefined(v, name) {
-    if(v === undefined) {
-        throw new ReferenceError(`${name} is not defined`);
     }
 }
 
@@ -156,7 +150,7 @@ function lookupParentClzes(context, clz, name) {
         clzName => clzNode(context, clzName).hasMethod(context, name)
     );
 
-    errorIfUndefined(grandParentClzName, name);
+    context.RUNTIME_CHECKER.refErrIfNoValue(grandParentClzName, name);
     return clzNode(context, grandParentClzName).getOwnMethod(name);
 }
 
