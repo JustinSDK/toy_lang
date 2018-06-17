@@ -413,12 +413,7 @@ new C().c()</code></pre>
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        try {
-            new Toy(ENVIRONMENT, code).play();
-        }
-        catch(e) {
-            tty.textContent = e;
-        }
+        new Toy(ENVIRONMENT, code).play();
     });
 </script>
 </body>

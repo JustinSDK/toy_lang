@@ -8,13 +8,7 @@ class ToyParser {
     }
 
     parse(tokenizer) {
-        try {
-            return new Interceptor(LINE_PARSER).parse(tokenizer.tokenizableLines());
-        }
-        catch(ex) {
-            this.environment.output(ex);
-            throw ex;
-        }
+        return new Interceptor(LINE_PARSER).parse(tokenizer.tokenizableLines());
     }
 }
 

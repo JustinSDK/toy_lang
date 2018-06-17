@@ -11,8 +11,13 @@ class Toy {
     }
 
     play() {
-        new ToyParser(this.env)
-              .parse(new Tokenizer(this.code))
-              .evaluate(Context.initialize(this.env));
+        try {
+            new ToyParser(this.env)
+                   .parse(new Tokenizer(this.code))
+                   .evaluate(Context.initialize(this.env));
+        }
+        catch(e) {
+            this.env.output(e);
+        }
     }
 }
