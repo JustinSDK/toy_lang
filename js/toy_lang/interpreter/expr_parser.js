@@ -7,10 +7,26 @@ import {TokenableParser} from './commons/parser.js';
 
 export {EXPR_PARSER, exprAst, toPostfix};
 
+class Interceptor {
+    constructor(ast) {
+        this.ast = ast;
+    }
+
+    evaluate(context) {
+        try {
+            return this.ast.evaluate(context);
+        } 
+        catch(ex) {
+            ex.message = 'illegal expression';
+            throw ex;
+        }
+    }
+}
+
 const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
         burst(infixTokenables) {
-            return exprAst(toPostfix(infixTokenables));
+            return new Interceptor(exprAst(toPostfix(infixTokenables)));
         }
     }]
 );

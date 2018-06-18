@@ -123,22 +123,6 @@ function splitByComma(input, x = '', acc = []) {
 
 const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 'new', 'class', 'this'];
 
-function syntaxErr(message, tokenable) {
-    const err = new SyntaxError(message);
-    err.code = tokenable.value;
-    err.lineNumber = tokenable.lineNumber;
-    throw err;
-}
-
-const ERRORS = {
-    errIfKeyword(tokenableLines, tokenable) {
-        if(KEYWORDS.includes(tokenable.value)) {
-            syntaxErr(`'${tokenable.value}' is a keyword`, tokenableLines[0]);
-        }
-    },
-    syntaxErr : syntaxErr
-};
-
 class Tokenable {
     constructor(type, lineNumber, value) {
         this.type = type;

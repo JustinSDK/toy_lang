@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Return, FunCall} from './ast/function.js';
+import {Return} from './ast/function.js';
 import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {EXPR_PARSER, exprAst, toPostfix} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
@@ -19,7 +19,7 @@ class Interceptor {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
-            tokenableLines[0].syntaxErr('illegal start of expression');
+            tokenableLines[0].syntaxErr('illegal statement');
         }
     }
 }

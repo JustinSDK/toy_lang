@@ -94,8 +94,8 @@ class TokenablesRuleChain extends RuleChain {
 
     parse(tokenables) {
         if(this.length() === 1 && !tokenables[0].value.endsWith(')')) {
-            // not fcall, iife, new or mcall statement
-            tokenables[0].syntaxErr('not a statement');
+            // not fcall, iife, new or mcall 
+            tokenables[0].syntaxErr('illegal start of expression');
         }
 
         const rule = this.head();
