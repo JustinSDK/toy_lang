@@ -83,7 +83,7 @@ const STMT_PARSER = TokenablesParser.orRules(
         burst(tokenableLines, infixTokenables) {
             return new StmtSequence(
                 new ExprWrapper(
-                    exprAst(toPostfix(infixTokenables))
+                    EXPR_PARSER.exprAst(infixTokenables)
                 ),
                 LINE_PARSER.parse(tokenableLines.slice(1)),
                 tokenableLines[0].lineNumber

@@ -23,13 +23,19 @@ class Interceptor {
     }
 }
 
+function interceptExprAst(infixTokenables) {
+    return new Interceptor(exprAst(toPostfix(infixTokenables)));
+}
+
 const EXPR_PARSER = TokenableParser.orRules(
     ['expression', {
         burst(infixTokenables) {
-            return new Interceptor(exprAst(toPostfix(infixTokenables)));
+            return interceptExprAst(infixTokenables);
         }
     }]
 );
+
+EXPR_PARSER.exprAst = interceptExprAst;
 
 const OPERAND_PARSER = TokenableParser.orRules(
     ['lambda', {
