@@ -6,7 +6,25 @@ import {TokenablesParser} from './commons/parser.js';
 
 export {LINE_PARSER};
 
-const LINE_PARSER = {
+class Interceptor {
+    constructor(parser) {
+        this.parser = parser;
+    }
+
+    parse(tokenableLines) {
+        try {
+            return this.parser.parse(tokenableLines);
+        } 
+        catch(ex) {
+            if(ex instanceof SyntaxError) {
+                throw ex;
+            }
+            tokenableLines[0].syntaxErr('illegal start of expression');
+        }
+    }
+}
+
+const LINE_PARSER = new Interceptor({
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
             return StmtSequence.EMPTY;
@@ -14,7 +32,7 @@ const LINE_PARSER = {
 
         return STMT_PARSER.parse(tokenableLines);   
     }
-};
+});
 
 const STMT_PARSER = TokenablesParser.orRules(
     ['variableAssign', {
