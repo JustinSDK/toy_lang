@@ -4,27 +4,12 @@ import {FunCall, Return} from './ast/function.js';
 import {Variable} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
+import {EvalExInterceptor} from './commons/interceptor.js';
 
 export {EXPR_PARSER, exprAst, toPostfix};
 
-class Interceptor {
-    constructor(ast) {
-        this.ast = ast;
-    }
-
-    evaluate(context) {
-        try {
-            return this.ast.evaluate(context);
-        } 
-        catch(ex) {
-            ex.message = 'illegal expression';
-            throw ex;
-        }
-    }
-}
-
 function interceptExprAst(infixTokenables) {
-    return new Interceptor(exprAst(toPostfix(infixTokenables)));
+    return new EvalExInterceptor(exprAst(toPostfix(infixTokenables)));
 }
 
 const EXPR_PARSER = TokenableParser.orRules(

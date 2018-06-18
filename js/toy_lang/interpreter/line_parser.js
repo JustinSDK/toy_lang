@@ -3,28 +3,11 @@ import {Return} from './ast/function.js';
 import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {EXPR_PARSER, exprAst, toPostfix} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
+import {ParseExInterceptor} from './commons/interceptor.js';
 
 export {LINE_PARSER};
 
-class Interceptor {
-    constructor(parser) {
-        this.parser = parser;
-    }
-
-    parse(tokenableLines) {
-        try {
-            return this.parser.parse(tokenableLines);
-        } 
-        catch(ex) {
-            if(ex instanceof SyntaxError) {
-                throw ex;
-            }
-            tokenableLines[0].syntaxErr('illegal statement');
-        }
-    }
-}
-
-const LINE_PARSER = new Interceptor({
+const LINE_PARSER = new ParseExInterceptor({
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
             return StmtSequence.EMPTY;
