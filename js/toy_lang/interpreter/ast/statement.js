@@ -97,7 +97,7 @@ class StmtSequence {
                 e.lineNumbers = [this.lineNumber];
                 e.context = context;
             }
-            if(this.firstStmt instanceof ExprWrapper && e.context !== context) {
+            if(e.context !== context) {
                 e.context = context;
                 e.lineNumbers.push(this.lineNumber);
             }
