@@ -57,7 +57,7 @@ class TokenableRuleChain extends RuleChain {
 
     parse(tokenable) {
         if(this.isEmpty()) {
-            throw new SyntaxError(`\n\t${tokenable.toString()}`);
+            tokenable.syntaxErr('illegal start of expression');
         }
 
         const rule = this.head();
@@ -95,7 +95,7 @@ class TokenablesRuleChain extends RuleChain {
     parse(tokenables) {
         if(this.length() === 1 && !tokenables[0].value.endsWith(')')) {
             // not fcall, iife, new or mcall statement
-            throw new SyntaxError(`\n\t${tokenables[0].toString()}`);
+            tokenables[0].syntaxErr('not a statement');
         }
 
         const rule = this.head();

@@ -6,17 +6,6 @@ import {TokenablesParser} from './commons/parser.js';
 
 export {LINE_PARSER};
 
-const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 'new', 'class', 'this'];
-
-function checkNotKeyword(tokenableLines, tokenable) {
-    if(KEYWORDS.includes(tokenable.value)) {
-        const err = new SyntaxError(`'${tokenable.value}' is a keyword`);
-        err.code = tokenableLines[0].value;
-        err.lineNumber = tokenable.lineNumber;
-        throw err;
-    }
-}
-
 const LINE_PARSER = {
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
@@ -30,7 +19,7 @@ const LINE_PARSER = {
 const STMT_PARSER = TokenablesParser.orRules(
     ['variableAssign', {
         burst(tokenableLines, [varTokenable, valueTokenable]) {
-            checkNotKeyword(tokenableLines, varTokenable);
+            varTokenable.errIfKeyword();
 
             return createAssign(
                 tokenableLines, 
@@ -42,7 +31,7 @@ const STMT_PARSER = TokenablesParser.orRules(
     }],   
     ['propertyAssign', {
         burst(tokenableLines, [targetTokenable, propTokenable, valueTokenable]) {
-            checkNotKeyword(tokenableLines, propTokenable);
+            propTokenable.errIfKeyword();
             const target = EXPR_PARSER.parse(targetTokenable);
             const value = EXPR_PARSER.parse(valueTokenable);
 
@@ -133,8 +122,8 @@ function notDefStmt(stmt) {
 }
 
 function createAssignFunc(tokenableLines, argTokenable) {
-    const [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
-    checkNotKeyword(tokenableLines, fNameTokenable);
+    const [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');    
+    fNameTokenable.errIfKeyword();
 
     const remains = tokenableLines.slice(1);
     return new StmtSequence(
@@ -153,7 +142,7 @@ function createAssignFunc(tokenableLines, argTokenable) {
 
 function createAssignClass(tokenableLines, argTokenable) {
     const [fNameTokenable, ...paramTokenables] = argTokenable.tryTokenables('func');
-    checkNotKeyword(tokenableLines, fNameTokenable);
+    fNameTokenable.errIfKeyword();
 
     const remains = tokenableLines.slice(1);     
     const stmt = LINE_PARSER.parse(remains);

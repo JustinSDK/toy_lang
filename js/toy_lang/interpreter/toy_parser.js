@@ -25,8 +25,7 @@ class Interceptor {
             if(ex instanceof SyntaxError) {
                 throw ex;
             }
-            
-            throw new SyntaxError(`\n\t${tokenableLines[0].toString()}`);
+            tokenableLines[0].syntaxErr('illegal start of expression');
         }
     }
 }
