@@ -7,11 +7,21 @@ export {Toy};
 class Toy {
     constructor(env, code) {
         this.env = env;
-        this.tokenizer = new Tokenizer(code);
+        this.code = code;
+        this.tokenizer = tokenizer(this);
     }
 
     play() {
-        evaluate(this, parse(this));
+        parseThenEval(this);
+    }
+}
+
+function tokenizer(toy) {
+    try {
+        return new Tokenizer(toy.code);
+    } catch(e) {
+        toy.env.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
+        throw e;
     }
 }
 
@@ -24,9 +34,9 @@ function parse(toy) {
     }
 }
 
-function evaluate(toy, ast) {
+function parseThenEval(toy) {
     try {
-        ast.evaluate(Context.initialize(toy.env));
+        parse(toy).evaluate(Context.initialize(toy.env));
     }
     catch(e) {
         toy.env.output(`\n${e}`);

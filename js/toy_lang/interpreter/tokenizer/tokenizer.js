@@ -187,6 +187,11 @@ function lineIdx(lines) {
         if(!lines[i].value.endsWith('\\')) {
             return [line + lines[i].value, i];
         }
+
+        if(lines.length === i + 1) {
+            lines[i].syntaxErr('illegal cross-line backslash');
+        }
+
         return __lineIdx(line + lines[i].value.slice(0, -1).trim(), i + 1);
     }
     
