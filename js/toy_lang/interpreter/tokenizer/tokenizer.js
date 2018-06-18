@@ -154,14 +154,41 @@ class Tokenable {
 
 class Tokenizer {
     constructor(code) {
-        this.lines = code.trim().split('\n')
-                        .map(line => line.replace(/(('(.*)#(.*)'[^#]*)*)(#.*)?$/, '$1')) // A comment starts with #
+        this.lines = concatExpr(
+            code.trim().split('\n')
+                        // a comment starts with #
+                        .map(line => line.replace(/(('(.*)#(.*)'[^#]*)*)(#.*)?$/, '$1')) // comment after a line
                         .map(line => line.trim())
                         .map((line, idx) => new Tokenable('line', idx + 1, line))
-                        .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")); 
+                        .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")) 
+        );
     }
 
     tokenizableLines() {
         return this.lines;
     }
+}
+
+function concatExpr(lines) {
+    if(lines.length === 0) {
+        return [];
+    }
+    
+    if(lines[0].value.endsWith('\\')) {
+        let [line, i] = lineIdx(lines);
+        return [new Tokenable('line', lines[0].lineNumber, line)].concat(concatExpr(lines.slice(i + 1)));
+    }
+    
+    return [lines[0]].concat(concatExpr(lines.slice(1)));
+}
+
+function lineIdx(lines) {
+    function __lineIdx(line, i = 1) {
+        if(!lines[i].value.endsWith('\\')) {
+            return [line + lines[i].value, i];
+        }
+        return __lineIdx(line + lines[i].value.slice(0, -1).trim(), i + 1);
+    }
+    
+    return __lineIdx(lines[0].value.slice(0, -1).trim());
 }
