@@ -173,7 +173,11 @@ println('obj.z is ' + obj.z)
 
 ```java
 lt = new List().add(1).add(2).add(3).add(4)
-lt.filter(elem -> elem >= 2).map(elem -> elem * 100).forEach(println)
+
+# use \ for cross-line expression       
+lt.filter(elem -> elem >= 2) \
+  .map(elem -> elem * 100)   \
+  .forEach(println)
 
 def foo(x, y) {
     return () -> x + y
@@ -383,8 +387,8 @@ class C {
 }
 
 println(C.parents())
-
-println(C.setParents(new List().add(PA).add(PB)).parents())
+C.setParents(new List().add(PA).add(PB))
+println(C.parents())
 
 new C().pa()
 new C().pb()
