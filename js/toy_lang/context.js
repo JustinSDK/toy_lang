@@ -14,6 +14,12 @@ const RUNTIME_CHECKER = {
         if(!v) {
             throw new ReferenceError(`${name} is not defined`);
         }
+    },
+
+    evalErrIfNoValue(v, message) {
+        if(!v) {
+            throw new EvalError(message);
+        }
     }
 };
 

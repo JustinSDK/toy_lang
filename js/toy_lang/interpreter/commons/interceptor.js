@@ -28,7 +28,7 @@ class EvalExInterceptor {
             return this.ast.evaluate(context);
         } 
         catch(ex) {
-            if(!ex instanceof ReferenceError) {
+            if(ex instanceof TypeError) {
                 ex.message = 'illegal expression';
             }
             throw ex;
