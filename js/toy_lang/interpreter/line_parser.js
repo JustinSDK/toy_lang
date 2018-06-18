@@ -10,9 +10,10 @@ const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 'n
 
 function checkNotKeyword(tokenableLines, tokenable) {
     if(KEYWORDS.includes(tokenable.value)) {
-        throw new SyntaxError(
-            `\n\t${tokenableLines[0].toString()}\n\t\t'${tokenable.value}' is a keyword`
-        );
+        const err = new SyntaxError(`'${tokenable.value}' is a keyword`);
+        err.code = tokenableLines[0].value;
+        err.lineNumber = tokenable.lineNumber;
+        throw err;
     }
 }
 

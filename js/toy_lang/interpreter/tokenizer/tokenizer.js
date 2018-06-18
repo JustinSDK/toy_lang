@@ -133,7 +133,7 @@ class Tokenable {
     }     
 
     toString() {
-        return `line ${this.lineNumber}\t${this.value}`;
+        return `${this.lineNumber}:${this.value}`;
     }    
 }
 
