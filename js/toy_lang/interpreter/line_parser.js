@@ -111,16 +111,18 @@ function createReturn(tokenableLines, argTokenable) {
     );
 }
 
+function isDef(stmt) {
+    return stmt.firstStmt instanceof VariableAssign && stmt.firstStmt.value instanceof Func;
+}
+
 function funcs(stmt) {
     if(stmt === StmtSequence.EMPTY) {
         return [];
     }
 
-    if(stmt.firstStmt instanceof VariableAssign && stmt.firstStmt.value instanceof Func) {
-        const funcStmt = stmt.firstStmt;
-        return [[funcStmt.variable.name, funcStmt.value]].concat(funcs(stmt.secondStmt));
-    }
-    return funcs(stmt.secondStmt);
+    return isDef(stmt) ? 
+             [[stmt.firstStmt.variable.name, stmt.firstStmt.value]].concat(funcs(stmt.secondStmt)) :
+             funcs(stmt.secondStmt);
 }
 
 function notDefStmt(stmt) {
@@ -128,15 +130,9 @@ function notDefStmt(stmt) {
         return StmtSequence.EMPTY;
     }
 
-    if(!(stmt.firstStmt instanceof VariableAssign) || !(stmt.firstStmt.value instanceof Func)) {
-        return new StmtSequence(
-            stmt.firstStmt,
-            notDefStmt(stmt.secondStmt),
-            stmt.firstStmt.lineNumber
-        );
-    }
-
-    return notDefStmt(stmt.secondStmt);
+    return !isDef(stmt) ? 
+            new StmtSequence(stmt.firstStmt, notDefStmt(stmt.secondStmt), stmt.firstStmt.lineNumber) : 
+            notDefStmt(stmt.secondStmt);
 }
 
 function createAssignFunc(tokenableLines, argTokenable) {
