@@ -32,20 +32,26 @@ function evalStmt(stmt) {
 }
 
 class Context {
-    constructor(parent, output = nope, variables = new Map(), returnedValue = null, selfOrEval = evalStmt) {
-        this.parent = parent;
-        this.output = output;
-        this.variables = variables;
-        this.returnedValue = returnedValue;
-        this.selfOrEval = selfOrEval;
+    constructor(option) {
+        this.output = option.output;
+        this.parent = option.parent || null;
+        this.variables = option.variables || new Map();
+        this.returnedValue = option.returnedValue || null;
+        this.selfOrEval = option.selfOrEval || evalStmt;
     }
 
     static initialize(environment) {
-        return new Context(null, environment.output, new Map(BUILTINS));
+        return new Context({
+            output : environment.output,
+            variables : new Map(BUILTINS)
+        });
     }
 
     childContext() {
-        return new Context(this, this.output)
+        return new Context({
+            parent : this,
+            output : this.output
+        });
     }
 
     output(value) {
@@ -60,13 +66,13 @@ class Context {
     }
 
     returned(value) {
-        return new Context(
-            this.parent,
-            this.output,
-            this.variables,
-            value,
-            self
-        );
+        return new Context({
+            parent : this.parent,
+            output : this.output,
+            variables : this.variables,
+            returnedValue : value,
+            selfOrEval : self
+        });
     }
 
     lookUpVariable(name) {
