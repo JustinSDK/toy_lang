@@ -32,12 +32,12 @@ function evalStmt(stmt) {
 }
 
 class Context {
-    constructor(option) {
-        this.output = option.output;
-        this.parent = option.parent || null;
-        this.variables = option.variables || new Map();
-        this.returnedValue = option.returnedValue || null;
-        this.selfOrEval = option.selfOrEval || evalStmt;
+    constructor({output, parent, variables, returnedValue, selfOrEval}) {
+        this.output = output;
+        this.parent = parent || null;
+        this.variables = variables || new Map();
+        this.returnedValue = returnedValue || null;
+        this.selfOrEval = selfOrEval || evalStmt;
     }
 
     static initialize(environment) {
