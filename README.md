@@ -207,7 +207,7 @@ class Ordered {
     }
 
     def lessEqualsThan(that) {
-        return this.lessThan(that) || this.equals(that)
+        return this.lessThan(that) or this.equals(that)
     }
 
     def greaterThan(that) {
@@ -229,7 +229,7 @@ class Circle {
     }
 
     def equals(that) {
-        return this.radius === that.radius
+        return this.radius == that.radius
     }
 }
 
@@ -294,7 +294,7 @@ class Ordered {
     }
 
     def lessEqualsThan(that) {
-        return this.lessThan(that) || this.equals(that)
+        return this.lessThan(that) or this.equals(that)
     }
 
     def greaterThan(that) {
@@ -316,7 +316,7 @@ class Circle(Ordered) {
     }
 
     def equals(that) {
-        return this.radius === that.radius
+        return this.radius == that.radius
     }
 }
 

@@ -223,7 +223,7 @@ println(((x, y) -> x + y)(1, 2))</code></pre>
     }
 
     def lessEqualsThan(that) {
-        return this.lessThan(that) || this.equals(that)
+        return this.lessThan(that) or this.equals(that)
     }
 
     def greaterThan(that) {
@@ -245,7 +245,7 @@ class Circle {
     }
 
     def equals(that) {
-        return this.radius === that.radius
+        return this.radius == that.radius
     }
 }
 
@@ -306,7 +306,7 @@ c.mc()</code></pre>
     }
 
     def lessEqualsThan(that) {
-        return this.lessThan(that) || this.equals(that)
+        return this.lessThan(that) or this.equals(that)
     }
 
     def greaterThan(that) {
@@ -328,7 +328,7 @@ class Circle(Ordered) {
     }
 
     def equals(that) {
-        return this.radius === that.radius
+        return this.radius == that.radius
     }
 }
 

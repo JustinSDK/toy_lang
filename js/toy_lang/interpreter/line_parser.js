@@ -18,6 +18,11 @@ const LINE_PARSER = new ParseExInterceptor({
 });
 
 const STMT_PARSER = TokenablesParser.orRules(
+    ['return', {
+        burst(tokenableLines, [argTokenable]) {
+            return createReturn(tokenableLines, argTokenable); 
+        }
+    }],    
     ['variableAssign', {
         burst(tokenableLines, [varTokenable, valueTokenable]) {
             varTokenable.errIfKeyword();
@@ -56,12 +61,7 @@ const STMT_PARSER = TokenablesParser.orRules(
                     return createWhile(tokenableLines, argTokenable);
             }
         }
-    }],   
-    ['return', {
-        burst(tokenableLines, [argTokenable]) {
-            return createReturn(tokenableLines, argTokenable); 
-        }
-    }],        
+    }],       
     ['expression', {
         burst(tokenableLines, infixTokenables) {
             return new StmtSequence(
