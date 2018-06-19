@@ -88,10 +88,7 @@ class StmtSequence {
     evaluate(context) {
         try {
             const ctx = this.firstStmt.evaluate(context);
-            if(ctx.returnedValue === null) {
-                return this.secondStmt.evaluate(ctx);
-            }
-            return ctx;
+            return ctx.selfOrEval(this.secondStmt);
         } catch(e) {
             if(!e.lineNumbers) {
                 e.lineNumbers = [this.lineNumber];

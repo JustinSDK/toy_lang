@@ -23,12 +23,21 @@ const RUNTIME_CHECKER = {
     }
 };
 
+function self(stmt) {
+    return this;
+}
+
+function evalStmt(stmt) {
+    return stmt.evaluate(this);
+}
+
 class Context {
-    constructor(parent, output = nope, variables = new Map(), returnedValue = null) {
+    constructor(parent, output = nope, variables = new Map(), returnedValue = null, selfOrEval = evalStmt) {
         this.parent = parent;
         this.output = output;
         this.variables = variables;
         this.returnedValue = returnedValue;
+        this.selfOrEval = selfOrEval;
     }
 
     static initialize(environment) {
@@ -55,7 +64,8 @@ class Context {
             this.parent,
             this.output,
             this.variables,
-            value
+            value,
+            self
         );
     }
 
