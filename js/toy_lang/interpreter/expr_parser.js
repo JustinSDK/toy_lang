@@ -87,11 +87,11 @@ function createFuncall(func, argLtChainTokenable) {
 function exprAst(tokenables) {
     return tokenables.reduce((stack, tokenable) => {
         if(isBinaryOperator(tokenable.value)) {
-            return reduceBinary(stack, tokenable.value);
+            return reduceBinary(stack, tokenable);
         } 
 
         if(isUnaryOperator(tokenable.value)) {
-            return reduceUnary(stack, tokenable.value);
+            return reduceUnary(stack, tokenable);
         }         
 
         return stack.push(
@@ -171,18 +171,20 @@ function isBinaryOperator(value) {
             '+', '-', '*', '/', '%'].indexOf(value) !== -1;
 }
 
-function reduceUnary(stack, value) {
-    const UnaryOperator = UNARY_OPERATORS.get(value);
+function reduceUnary(stack, tokenable) {
+    const UnaryOperator = UNARY_OPERATORS.get(tokenable.value);
     const operand = stack.top;
     const s1 = stack.pop();
     return s1.push(new UnaryOperator(operand));
 }
 
-function reduceBinary(stack, value) {
+function reduceBinary(stack, tokenable) {
     const right = stack.top;
     const s1 = stack.pop();
     const left = s1.top;
     const s2 = s1.pop();
-    const Operator = BINARY_OPERATORS.get(value);
+    const Operator = BINARY_OPERATORS.get(tokenable.value);
+    tokenable.errIfNoValue(left, 'no left operand');
+    tokenable.errIfNoValue(right, 'no right operand');
     return s2.push(new Operator(left, right));
 }

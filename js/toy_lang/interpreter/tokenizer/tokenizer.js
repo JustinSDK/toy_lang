@@ -150,6 +150,12 @@ class Tokenable {
             this.syntaxErr(`'${this.value}' is a keyword`);
         }
     }
+
+    errIfNoValue(v, message) {
+        if(!v) {
+            this.syntaxErr(message);
+        }
+    }
 }
 
 class Tokenizer {

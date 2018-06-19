@@ -35,8 +35,9 @@ function parse(toy) {
 }
 
 function parseThenEval(toy) {
+    const ast = parse(toy);
     try {
-        parse(toy).evaluate(Context.initialize(toy.env));
+        ast.evaluate(Context.initialize(toy.env));
     }
     catch(e) {
         toy.env.output(`\n${e}`);

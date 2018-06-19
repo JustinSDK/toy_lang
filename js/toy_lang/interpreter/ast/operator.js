@@ -52,7 +52,6 @@ class DotOperator {
     }
 
     evaluate(context) {
-        context.RUNTIME_CHECKER.evalErrIfNoValue(this.receiver, 'no target object');
         const instance = this.receiver.evaluate(context);
         return this.message.send(context, instance);
     }
