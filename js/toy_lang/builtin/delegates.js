@@ -192,7 +192,16 @@ ListClass.methods = new Map([
             });
             return context.returned(r || Null);
         }    
-    })],    
+    })],  
+    ['includes', func1('find', {
+        evaluate(context) {
+            const arr = selfInternalValue(context);
+            const target = PARAM1.evaluate(context);
+            return context.returned(
+                Primitive.boolNode(arr.some(elem => elem.equals(target)))
+            );
+        }    
+    })],  
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = self(context).internalNode.value;
