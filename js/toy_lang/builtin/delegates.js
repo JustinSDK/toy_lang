@@ -210,6 +210,17 @@ ListClass.methods = new Map([
             );
         }    
     })],  
+    ['findIndex', func1('findIndex', {
+        evaluate(context) {
+            const arr = selfInternalValue(context);
+            const fNode = PARAM1.evaluate(context).internalNode;
+            const idx = arr.findIndex(elem => {
+                const bool = fNode.call(context, [elem]).returnedValue;
+                return bool.value;
+            });
+            return context.returned(new Primitive(idx));
+        }    
+    })],  
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = selfInternalValue(context);
