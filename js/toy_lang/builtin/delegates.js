@@ -88,7 +88,7 @@ class ListClass {
     }
 
     static predictableMethod(context, fName) {
-        const arr = self(context).internalNode.value;
+        const arr = selfInternalValue(context);
         const fNode = PARAM1.evaluate(context).internalNode;
         return arr[fName](elem => {
             const bool = fNode.call(context, [elem]).returnedValue;
@@ -180,6 +180,17 @@ ListClass.methods = new Map([
             return context.returned(
                 Primitive.boolNode(ListClass.predictableMethod(context, 'some'))
             );
+        }    
+    })],    
+    ['find', func1('find', {
+        evaluate(context) {
+            const arr = selfInternalValue(context);
+            const fNode = PARAM1.evaluate(context).internalNode;
+            const r = arr.find(elem => {
+                const bool = fNode.call(context, [elem]).returnedValue;
+                return bool.value;
+            });
+            return context.returned(r || Null);
         }    
     })],    
     ['toString', func0('toString', {
