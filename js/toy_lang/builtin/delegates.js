@@ -107,7 +107,6 @@ ListClass.methods = new Map([
         }
     })],
     ['toString', ListClass.method0Primitive('toString')],
-    ['indexOf', ListClass.method1Primitive('indexOf')],
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
     ['fill', ListClass.method3Self('fill')],
@@ -199,6 +198,15 @@ ListClass.methods = new Map([
             const target = PARAM1.evaluate(context);
             return context.returned(
                 Primitive.boolNode(arr.some(elem => elem.value === target.value))
+            );
+        }    
+    })],  
+    ['indexOf', func1('indexOf', {
+        evaluate(context) {
+            const arr = selfInternalValue(context);
+            const target = PARAM1.evaluate(context);
+            return context.returned(
+                new Primitive(arr.findIndex(elem => elem.value === target.value))
             );
         }    
     })],  

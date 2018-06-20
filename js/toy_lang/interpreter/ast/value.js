@@ -171,6 +171,7 @@ class Instance extends Value {
         this.clzOfLang = clzOfLang; 
         this.properties = properties;
         this.internalNode = internalNode || this;
+        this.value = this;
     }
 
     hasOwnProperty(name) {
@@ -236,9 +237,5 @@ class Instance extends Value {
         }
         
         return `[${this.clzOfLang.internalNode.name} object]`;
-    }
-
-    get value() {
-        return this;
     }
 }
