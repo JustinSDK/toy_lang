@@ -10,30 +10,8 @@ export {EXPR_PARSER};
 
 function interceptExprAst(infixTokenables) {
     return new EvalExInterceptor(
-        exprAst(toPostfix(processNegative(infixTokenables)))
+        exprAst(toPostfix(infixTokenables))
     );
-}
-
-function processNegative(infixTokenables) {
-    function _process(i) {
-        if(i === infixTokenables.length) {
-            return [];
-        }
-
-        if(infixTokenables[i].value === '-' && notOperator(infixTokenables[i - 1])) {
-            return [infixTokenables[i].replaceValue('$neg')].concat(_process(i + 1));
-        }
-        return [infixTokenables[i]].concat(_process(i + 1));
-    }
-
-    return _process(0);
-}
-
-function notOperator(tokenable) {
-    return tokenable === undefined || 
-           tokenable.value === '(' || 
-           isUnaryOperator(tokenable.value) || 
-           isBinaryOperator(tokenable.value);
 }
 
 const EXPR_PARSER = TokenableParser.orRules(
@@ -149,29 +127,40 @@ function popAllBeforeLP(stack, output) {
     return [stack, output];
 }
 
-function digest(tokenables, stack = new Stack(), output = []) {
+function digest(tokenables, stack = new Stack(), output = [], prevTokenable = null) {
     if(tokenables.length === 0) {
         return [stack, output];
     }
 
     switch(tokenables[0].value) {
         case '(':
-            return digest(tokenables.slice(1), stack.push(tokenables[0]), output);
+            return digest(tokenables.slice(1), stack.push(tokenables[0]), output, tokenables[0]);
         case 'new':
         case '.':
         case '$neg':
         case 'not':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
-        case '+': case '-': case '*': case '/': case '%':
+        case '+': case '*': case '/': case '%':
             const [s1, o1] = popHighPriority(tokenables[0], stack, output);
-            return digest(tokenables.slice(1), s1.push(tokenables[0]), o1);
+            return digest(tokenables.slice(1), s1.push(tokenables[0]), o1, tokenables[0]);
+        case '-':
+            const tokenable = notOperand(prevTokenable) ? tokenables[0].replaceValue('$neg') : tokenables[0];
+            const [s2, o2] = popHighPriority(tokenable, stack, output);
+            return digest(tokenables.slice(1), s2.push(tokenable), o2, tokenables[0]);
         case ')':
-            const [s2, o2] = popAllBeforeLP(stack, output);
-            return digest(tokenables.slice(1), s2.pop(), o2);
+            const [s3, o3] = popAllBeforeLP(stack, output);
+            return digest(tokenables.slice(1), s3.pop(), o3, tokenables[0]);
         default: 
-            return digest(tokenables.slice(1), stack, output.concat([tokenables[0]]));
+            return digest(tokenables.slice(1), stack, output.concat([tokenables[0]]), tokenables[0]);
     }
+}
+
+function notOperand(tokenable) {
+    return tokenable === null || 
+           tokenable.value === '(' || 
+           isUnaryOperator(tokenable.value) || 
+           isBinaryOperator(tokenable.value);
 }
 
 function popAll(stack, output) {
