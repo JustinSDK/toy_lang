@@ -6,7 +6,7 @@ import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
 import {EvalExInterceptor} from './commons/interceptor.js';
 
-export {EXPR_PARSER, exprAst, toPostfix};
+export {EXPR_PARSER};
 
 function interceptExprAst(infixTokenables) {
     return new EvalExInterceptor(exprAst(toPostfix(infixTokenables)));

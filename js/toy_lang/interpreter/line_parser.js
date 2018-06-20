@@ -1,7 +1,7 @@
 import {Func, Void, Class} from './ast/value.js';
 import {Return} from './ast/function.js';
 import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
-import {EXPR_PARSER, exprAst, toPostfix} from './expr_parser.js';
+import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
 import {ParseExInterceptor} from './commons/interceptor.js';
 
@@ -148,12 +148,12 @@ function createAssignClass(tokenableLines, argTokenable) {
     return new StmtSequence(
         new VariableAssign(
             new Variable(fNameTokenable.value), 
-            new Class( 
-                notDefStmt(stmt),
-                new Map(funcs(stmt)),
-                fNameTokenable.value,
-                parentClzNames.length === 0 ? ['Object'] : parentClzNames
-            )
+            new Class({
+                notMethodStmt : notDefStmt(stmt), 
+                methods : new Map(funcs(stmt)), 
+                name : fNameTokenable.value, 
+                parentClzNames : parentClzNames.length === 0 ? ['Object'] : parentClzNames
+            })
         ),
         LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
         tokenableLines[0].lineNumber
