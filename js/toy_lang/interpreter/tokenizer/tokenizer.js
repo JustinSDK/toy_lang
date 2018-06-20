@@ -23,7 +23,7 @@ const TOKEN_TESTERS = new Map([
         return matched ? [matched[2], matched[3]] : [];
     }], 
     ['expression', function(input) {
-        return expr_tokens(input.startsWith('-') ? '0 ' + input : input);
+        return expr_tokens(input);
     }],
     ['lambda', function(input) {
         const matched = REGEX.get('lambda').exec(input);
@@ -155,6 +155,10 @@ class Tokenable {
         if(!v) {
             this.syntaxErr(message);
         }
+    }
+
+    replaceValue(v) {
+        return new Tokenable(this.type, this.lineNumber, v);
     }
 }
 

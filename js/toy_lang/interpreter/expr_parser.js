@@ -9,7 +9,28 @@ import {EvalExInterceptor} from './commons/interceptor.js';
 export {EXPR_PARSER};
 
 function interceptExprAst(infixTokenables) {
-    return new EvalExInterceptor(exprAst(toPostfix(infixTokenables)));
+    return new EvalExInterceptor(
+        exprAst(toPostfix(processNegative(infixTokenables)))
+    );
+}
+
+function processNegative(infixTokenables) {
+    function _process(i) {
+        if(i === infixTokenables.length) {
+            return [];
+        }
+
+        if(infixTokenables[i].value === '-' && (i === 0 || isOperator(infixTokenables[i - 1].value))) {
+            return [infixTokenables[i].replaceValue('$neg')].concat(_process(i + 1));
+        }
+        return [infixTokenables[i]].concat(_process(i + 1));
+    }
+
+    return _process(0);
+}
+
+function isOperator(value) {
+    return isUnaryOperator(value) || isBinaryOperator(value);
 }
 
 const EXPR_PARSER = TokenableParser.orRules(
@@ -101,8 +122,9 @@ function exprAst(tokenables) {
 }
 
 function priority(operator) {
-    return operator === 'new' ? 7 :
-           operator === '.' ? 6 :
+    return operator === 'new' ? 8 :
+           operator === '.' ? 7 :
+           operator === '$neg' ? 6 :
            operator === 'not' ? 5 :
            ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
            ['and', 'or'].indexOf(operator) !== -1 ? 3 :
@@ -134,6 +156,7 @@ function digest(tokenables, stack = new Stack(), output = []) {
             return digest(tokenables.slice(1), stack.push(tokenables[0]), output);
         case 'new':
         case '.':
+        case '$neg':
         case 'not':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
@@ -161,7 +184,7 @@ function toPostfix(tokenables) {
 }
 
 function isUnaryOperator(value) {
-    return ['new', 'not'].indexOf(value) !== -1;
+    return ['new', 'not', '$neg'].indexOf(value) !== -1;
 }
 
 function isBinaryOperator(value) {        

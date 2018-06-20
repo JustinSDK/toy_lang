@@ -57,6 +57,16 @@ class DotOperator {
     }
 }
 
+class NegOperator {
+    constructor(operand) {
+        this.operand = operand;
+    }
+
+    evaluate(context) {
+        return new Primitive(-this.operand.evaluate(context).value);
+    }
+}
+
 class NotOperator {
     constructor(operand) {
         this.operand = operand;
@@ -69,7 +79,8 @@ class NotOperator {
 
 const UNARY_OPERATORS = new Map([
     ['new', NewOperator], 
-    ['not', NotOperator]
+    ['not', NotOperator],
+    ['$neg', NegOperator]
 ]);
 
 function p(v) {
