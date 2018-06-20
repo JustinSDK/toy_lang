@@ -20,7 +20,7 @@ function processNegative(infixTokenables) {
             return [];
         }
 
-        if(infixTokenables[i].value === '-' && (i === 0 || isOperator(infixTokenables[i - 1].value))) {
+        if(infixTokenables[i].value === '-' && notOperator(infixTokenables[i - 1])) {
             return [infixTokenables[i].replaceValue('$neg')].concat(_process(i + 1));
         }
         return [infixTokenables[i]].concat(_process(i + 1));
@@ -29,8 +29,11 @@ function processNegative(infixTokenables) {
     return _process(0);
 }
 
-function isOperator(value) {
-    return isUnaryOperator(value) || isBinaryOperator(value);
+function notOperator(tokenable) {
+    return tokenable === undefined || 
+           tokenable.value === '(' || 
+           isUnaryOperator(tokenable.value) || 
+           isBinaryOperator(tokenable.value);
 }
 
 const EXPR_PARSER = TokenableParser.orRules(
