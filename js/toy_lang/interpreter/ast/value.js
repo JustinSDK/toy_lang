@@ -34,10 +34,6 @@ class Primitive extends Value {
     static from(v) {
         return (typeof v) === 'boolean' ? Primitive.boolNode(v) : new Primitive(v);
     }    
-
-    equals(that) {
-        return this.value === that.value;
-    }
 }
 
 const BOOL_TRUE = new Primitive(true);
@@ -242,7 +238,7 @@ class Instance extends Value {
         return `[${this.clzOfLang.internalNode.name} object]`;
     }
 
-    equals(that) {
-        return this === that;
+    get value() {
+        return this;
     }
 }
