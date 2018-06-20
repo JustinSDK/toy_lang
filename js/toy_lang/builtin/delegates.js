@@ -153,7 +153,7 @@ ListClass.methods = new Map([
     })],
     ['map', func1('map', {
         evaluate(context) {
-            const arr = self(context).internalNode.value;
+            const arr = selfInternalValue(context);
             const fNode = PARAM1.evaluate(context).internalNode;
             const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
             return context.returned(ListClass.listInstance(context, mapped));
@@ -161,7 +161,7 @@ ListClass.methods = new Map([
     })],
     ['forEach', func1('forEach', {
         evaluate(context) {
-            const arr = self(context).internalNode.value;
+            const arr = selfInternalValue(context);
             const fNode = PARAM1.evaluate(context).internalNode;
             arr.forEach(elem => fNode.call(context, [elem]));
             return context.returned(Void);
@@ -212,7 +212,7 @@ ListClass.methods = new Map([
     })],  
     ['toString', func0('toString', {
         evaluate(context) {
-            const arr = self(context).internalNode.value;
+            const arr = selfInternalValue(context);
             return context.returned(
                 new Primitive(arr.map(elem => elem.toString(context)).join())
             );
