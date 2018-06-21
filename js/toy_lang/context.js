@@ -77,13 +77,9 @@ class Context {
     }
 
     throwed(value) {
-        return new Context({
-            parent : this.parent,
-            output : this.output,
-            variables : this.variables,
-            throwedValue : value,
-            selfOrEval : self
-        });
+        this.throwedValue = value;
+        this.selfOrEval = self;
+        return this;
     }
 
     lookUpVariable(name) {
