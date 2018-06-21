@@ -81,7 +81,7 @@ class Account {
 
     def deposit(amount) {
         if amount <= 0 {
-            println('must be positive')
+            throw 'must be positive'
             return
         }
 
