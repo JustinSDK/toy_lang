@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Return} from './ast/function.js';
+import {Throw, Return} from './ast/function.js';
 import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
@@ -22,7 +22,7 @@ const STMT_PARSER = TokenablesParser.orRules(
         burst(tokenableLines, [argTokenable]) {
             return createReturn(tokenableLines, argTokenable); 
         }
-    }],    
+    }],  
     ['variableAssign', {
         burst(tokenableLines, [varTokenable, valueTokenable]) {
             varTokenable.errIfKeyword();
@@ -114,7 +114,7 @@ function notDefStmt(stmt) {
     }
 
     return !isDef(stmt) ? 
-            new StmtSequence(stmt.firstStmt, notDefStmt(stmt.secondStmt), stmt.firstStmt.lineNumber) : 
+            new StmtSequence(stmt.firstStmt, notDefStmt(stmt.secondStmt), stmt.lineNumber) : 
             notDefStmt(stmt.secondStmt);
 }
 
