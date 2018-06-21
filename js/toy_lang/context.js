@@ -32,11 +32,12 @@ function evalStmt(stmt) {
 }
 
 class Context {
-    constructor({output, parent, variables, returnedValue, selfOrEval}) {
+    constructor({output, parent, variables, returnedValue, throwedValue, selfOrEval}) {
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.returnedValue = returnedValue || null;
+        this.throwedValue = throwedValue || null;
         this.selfOrEval = selfOrEval || evalStmt;
     }
 
@@ -71,6 +72,16 @@ class Context {
             output : this.output,
             variables : this.variables,
             returnedValue : value,
+            selfOrEval : self
+        });
+    }
+
+    throwed(value) {
+        return new Context({
+            parent : this.parent,
+            output : this.output,
+            variables : this.variables,
+            throwedValue : value,
             selfOrEval : self
         });
     }
