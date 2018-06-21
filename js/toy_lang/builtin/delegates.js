@@ -113,6 +113,7 @@ ListClass.methods = new Map([
     ['toString', ListClass.method0Primitive('toString')],
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
+    ['reverse', ListClass.method0Self('reverse')],       
     ['fill', ListClass.method3Self('fill')],
     ['add', func1('add', {
         evaluate(context) {
@@ -225,7 +226,24 @@ ListClass.methods = new Map([
             return context.returned(new Primitive(idx));
         }    
     })],  
-    ['reverse', ListClass.method0Self('reverse')],      
+    ['sort', func1('sort', {
+        evaluate(context) {
+            const arr = selfInternalValue(context);
+            const comparator = PARAM1.evaluate(context);
+            
+            if(arr.length !== 0) {
+                if(comparator === Null) {
+                    arr.sort(typeof (arr[0].value) === 'number' ? (n1, n2) => n1.value - n2.value : undefined);
+                }
+                else {
+                    const fNode = comparator.internalNode;
+                    arr.sort((elem1, elem2) => fNode.call(context, [elem1, elem2]).returnedValue.value);
+                }
+            }
+           
+            return context.returned(self(context));
+        }    
+    })],   
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = selfInternalValue(context);
