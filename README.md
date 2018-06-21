@@ -82,7 +82,6 @@ class Account {
     def deposit(amount) {
         if amount <= 0 {
             throw 'must be positive'
-            return
         }
 
         this.balance = this.balance + amount
