@@ -28,7 +28,7 @@ class Throw {
         }
                 
         ctxOrValue.lineNumbers = [];
-        return context.throwed(ctxOrValue);
+        return context.thrown(ctxOrValue);
     }    
 }
 

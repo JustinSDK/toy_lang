@@ -76,7 +76,7 @@ class Context {
         });
     }
 
-    throwed(value) {
+    thrown(value) {
         this.throwedValue = value;
         this.selfOrEval = self;
         return this;
