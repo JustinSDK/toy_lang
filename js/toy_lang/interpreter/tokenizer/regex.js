@@ -76,4 +76,5 @@ const REGEX = new Map([
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['return', /^return\s*(.*)$/],
+    ['throw', /^throw\s*(.*)$/]
 ]);
