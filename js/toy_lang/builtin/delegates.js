@@ -211,10 +211,19 @@ ListClass.methods = new Map([
             const arr = selfInternalValue(context);
             const target = PARAM1.evaluate(context);
             return context.returned(
-                new Primitive(arr.findIndex(elem => elem.value === target.value))
+                new Primitive(arr.map(elem => elem.value).indexOf(target.value))
             );
         }    
     })],  
+    ['lastIndexOf', func1('lastIndexOf', {
+        evaluate(context) {
+            const arr = selfInternalValue(context);
+            const target = PARAM1.evaluate(context);
+            return context.returned(
+                new Primitive(arr.map(elem => elem.value).lastIndexOf(target.value))
+            );
+        }    
+    })],      
     ['findIndex', func1('findIndex', {
         evaluate(context) {
             const arr = selfInternalValue(context);
