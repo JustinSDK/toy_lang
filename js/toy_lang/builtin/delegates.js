@@ -229,9 +229,9 @@ ListClass.methods = new Map([
     ['sort', func1('sort', {
         evaluate(context) {
             const arr = selfInternalValue(context);
-            const comparator = PARAM1.evaluate(context);
-            
-            if(arr.length !== 0) {
+
+            if(arr.length !== 0) {                
+                const comparator = PARAM1.evaluate(context);
                 if(comparator === Null) {
                     arr.sort(typeof (arr[0].value) === 'number' ? (n1, n2) => n1.value - n2.value : undefined);
                 }
