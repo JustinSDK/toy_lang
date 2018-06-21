@@ -23,6 +23,11 @@ const STMT_PARSER = TokenablesParser.orRules(
             return createReturn(tokenableLines, argTokenable); 
         }
     }],  
+    ['throw', {
+        burst(tokenableLines, [argTokenable]) {
+            return createThrow(tokenableLines, argTokenable); 
+        }
+    }],       
     ['variableAssign', {
         burst(tokenableLines, [varTokenable, valueTokenable]) {
             varTokenable.errIfKeyword();
@@ -89,6 +94,14 @@ function createAssign(tokenableLines, clzNode, target, assignedTokenable) {
 function createReturn(tokenableLines, argTokenable) { 
     return new StmtSequence(
         new Return(argTokenable.value === '' ? Void : EXPR_PARSER.parse(argTokenable)),
+        LINE_PARSER.parse(tokenableLines.slice(1)),
+        tokenableLines[0].lineNumber
+    );
+}
+
+function createThrow(tokenableLines, argTokenable) { 
+    return new StmtSequence(
+        new Throw(EXPR_PARSER.parse(argTokenable)),
         LINE_PARSER.parse(tokenableLines.slice(1)),
         tokenableLines[0].lineNumber
     );
