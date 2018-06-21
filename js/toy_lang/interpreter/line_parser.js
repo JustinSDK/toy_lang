@@ -174,7 +174,7 @@ function createAssignClass(tokenableLines, argTokenable) {
 }
 
 function isElseLine(tokenableLine) {
-    return tokenableLine.tryTokenables('else')[0];
+    return tokenableLine && tokenableLine.tryTokenables('else')[0];
 }
 
 function createIf(tokenableLines, argTokenable) {
