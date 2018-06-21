@@ -6,7 +6,12 @@ class ExprWrapper {
     }
 
     evaluate(context) {
-        this.expr.evaluate(context);
+        const ctxOrValue = this.expr.evaluate(context);
+
+        if(ctxOrValue.throwedValue) {
+            return ctxOrValue;
+        }
+
         return context;
     }    
 }
@@ -32,7 +37,13 @@ class VariableAssign {
     }
 
     evaluate(context) {
-        return context.assign(this.variable.name, this.value.evaluate(context));;
+        const ctxOrValue = this.value.evaluate(context);
+
+        if(ctxOrValue.throwedValue) {
+            return  ctxOrValue;
+        }
+        
+        return context.assign(this.variable.name, ctxOrValue);;
     }
 
     static assigns(variables, values) {
@@ -53,7 +64,12 @@ class While {
     }
 
     evaluate(context) {
-        if(this.boolean.evaluate(context).value) {
+        const ctxOrValue = this.boolean.evaluate(context);
+        if(ctxOrValue.throwedValue) {
+            return  ctxOrValue;
+        }
+
+        if(ctxOrValue.value) {
             const ctx = this.stmt.evaluate(context);
             return this.evaluate(ctx);
         }
@@ -70,7 +86,12 @@ class If {
     }
 
     evaluate(context) {
-        if(this.boolean.evaluate(context).value) {
+        const ctxOrValue = this.boolean.evaluate(context);
+        if(ctxOrValue.throwedValue) {
+            return ctxOrValue;
+        }
+
+        if(ctxOrValue.value) {
             return this.trueStmt.evaluate(context);
         }
 
@@ -88,6 +109,17 @@ class StmtSequence {
     evaluate(context) {
         try {
             const ctx = this.firstStmt.evaluate(context);
+
+            if(ctx.throwedValue) {
+                if(context === ctx && ctx.throwedValue.lineNumbers.length === 0) {
+                    ctx.throwedValue.lineNumbers.push(this.lineNumber);
+                }
+                else if(context !== ctx) {
+                    ctx.throwedValue.lineNumbers.push(this.lineNumber);
+                }
+                return ctx;
+            }
+
             return ctx.selfOrEval(this.secondStmt);
         } catch(e) {
             if(!e.lineNumbers) {
@@ -118,8 +150,13 @@ class PropertyAssign {
 
     evaluate(context) {
         const instance = this.target.evaluate(context);
-        const value  = this.value.evaluate(context);
-        instance.setOwnProperty(this.propName, value);
+        const ctxOrValue  = this.value.evaluate(context);
+
+        if(ctxOrValue.throwedValue) {
+            return ctxOrValue; 
+        }
+
+        instance.setOwnProperty(this.propName, ctxOrValue);
         return context;
     }
 }

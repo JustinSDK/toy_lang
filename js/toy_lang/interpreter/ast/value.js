@@ -60,7 +60,13 @@ class Func extends Value {
     }
 
     call(context, args) {
-        const bodyStmt = this.bodyStmt(args.map(arg => arg.evaluate(context)));
+        const ctxOrValues = args.map(arg => arg.evaluate(context));
+        const ctxOrValue = ctxOrValues.find(ctxOrValue => ctxOrValue.throwedValue);
+        if(ctxOrValue) {
+            return ctxOrValue;
+        }
+
+        const bodyStmt = this.bodyStmt(ctxOrValues);
         return bodyStmt.evaluate(
             this.parentContext ? 
                 this.parentContext.childContext() : // closure context

@@ -37,16 +37,24 @@ function parse(toy) {
 function parseThenEval(toy) {
     const ast = parse(toy);
     try {
-        ast.evaluate(Context.initialize(toy.env));
+        const ctx = ast.evaluate(Context.initialize(toy.env));
+        if(ctx.throwedValue !== null) {
+            ctx.output(`Thrown: ${ctx.throwedValue}`);
+            printStackTrace(toy, ctx.throwedValue.lineNumbers);
+        }
     }
     catch(e) {
         toy.env.output(`\n${e}`);
         if(e.lineNumbers) {
-            const tokenizableLines = toy.tokenizer.tokenizableLines();
-            e.lineNumbers.map(lineNumber => tokenizableLines.find(tokenizableLine => tokenizableLine.lineNumber === lineNumber))
-                         .map(tokenizableLine => `at ${tokenizableLine.value} (line:${tokenizableLine.lineNumber})`)
-                         .forEach(line => toy.env.output(`\n\t${line}`));                              
+            printStackTrace(toy, e.lineNumbers);         
         }
         throw e;
     }
+}
+
+function printStackTrace(toy, lineNumbers) {
+    const tokenizableLines = toy.tokenizer.tokenizableLines();
+    lineNumbers.map(lineNumber => tokenizableLines.find(tokenizableLine => tokenizableLine.lineNumber === lineNumber))
+               .map(tokenizableLine => `at ${tokenizableLine.value} (line:${tokenizableLine.lineNumber})`)
+               .forEach(line => toy.env.output(`\n\t${line}`));  
 }

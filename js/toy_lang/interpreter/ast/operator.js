@@ -11,7 +11,15 @@ function createPrimitiveBinaryOperatorNode(operator) {
     
         evaluate(context) {
             const left = this.left.evaluate(context);
+            if(left.throwedValue) {
+                return left; 
+            }
+            
             const right = this.right.evaluate(context);
+            if(right.throwedValue) {
+                return right; 
+            }
+
             return operator(
                 left.value === undefined ? left.toString(context) : left.value, 
                 right.value === undefined ? right.toString(context) : right.value
@@ -28,20 +36,29 @@ class NewOperator {
 
     instance(context) {
         const clzOfLang = this.clz.evaluate(context);
+        // run class body
+        const ctx = clzOfLang.internalNode.call(context, this.args);
+        if(ctx.throwedValue) {
+            return ctx;
+        }
+
         return new Instance(
             clzOfLang,
-            clzOfLang.internalNode.call(context, this.args).variables
+            ctx.variables
         );
     }
 
     evaluate(context) {
-        const thisInstance = this.instance(context);
+        const ctxOrInstance = this.instance(context);
 
-        if(thisInstance.clzOfLang.internalNode.hasOwnMethod('init')) {
-            return thisInstance.evalMethod(context, 'init', this.args).variables.get('this');
+        if(!ctxOrInstance.throwedValue && ctxOrInstance.clzOfLang.internalNode.hasOwnMethod('init')) {
+            const ctx = ctxOrInstance.evalMethod(context, 'init', this.args);
+            if(ctx.throwedValue) {
+                return ctx;
+            }
         }
         
-        return thisInstance;
+        return ctxOrInstance;
     }   
 }
 
@@ -52,8 +69,11 @@ class DotOperator {
     }
 
     evaluate(context) {
-        const instance = this.receiver.evaluate(context);
-        return this.message.send(context, instance);
+        const ctxOrInstance = this.receiver.evaluate(context);
+        if(ctxOrInstance.throwedValue) {
+            return ctxOrInstance; 
+        }
+        return this.message.send(context, ctxOrInstance);
     }
 }
 
@@ -63,7 +83,12 @@ class NegOperator {
     }
 
     evaluate(context) {
-        return new Primitive(-this.operand.evaluate(context).value);
+        const ctxOrValue = this.operand.evaluate(context);
+        if(ctxOrValue.throwedValue) {
+            return ctxOrValue; 
+        }
+
+        return new Primitive(-ctxOrValue.value);
     }
 }
 
@@ -73,7 +98,11 @@ class NotOperator {
     }
 
     evaluate(context) {
-        return Primitive.boolNode(!this.operand.evaluate(context).value);
+        const ctxOrValue = this.operand.evaluate(context);
+        if(ctxOrValue.throwedValue) {
+            return ctxOrValue; 
+        }
+        return Primitive.boolNode(!ctxOrValue.value);
     }
 }
 
