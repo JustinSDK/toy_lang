@@ -63,6 +63,10 @@ class ListClass {
         return methodPrimitive(Array, methodName);
     }
 
+    static method0Self(methodName) {
+        return methodSelf(Array, methodName);
+    }          
+
     static method1Void(methodName) {
         return methodVoid(Array, methodName, PARAM_LT1);
     }         
@@ -74,7 +78,7 @@ class ListClass {
     static method2NewList(methodName) {
         return methodNewSameType(Array, methodName, PARAM_LT2);
     }     
-    
+
     static method3Self(methodName) {
         return methodSelf(Array, methodName, PARAM_LT3);
     }  
@@ -221,6 +225,7 @@ ListClass.methods = new Map([
             return context.returned(new Primitive(idx));
         }    
     })],  
+    ['reverse', ListClass.method0Self('reverse')],      
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = selfInternalValue(context);
