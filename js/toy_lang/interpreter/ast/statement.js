@@ -107,7 +107,7 @@ class StmtSequence {
                     return leftContext;
                 },
                 rightContext => {
-                    return rightContext.selfOrCall(c => this.secondStmt.evaluate(c))
+                    return rightContext.notReturn(c => this.secondStmt.evaluate(c))
                 }
             );
         } catch(e) {

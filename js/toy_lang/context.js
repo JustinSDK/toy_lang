@@ -40,12 +40,12 @@ function eitherLeft(left, right) {
 }
 
 class Context {
-    constructor({output, parent, variables, returnedValue, selfOrCall, either, thrownContext, throwedValue, notThrown}) {
+    constructor({output, parent, variables, returnedValue, notReturn, either, thrownContext, throwedValue, notThrown}) {
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.returnedValue = returnedValue || null;
-        this.selfOrCall = selfOrCall || call;
+        this.notReturn = notReturn || call;
         this.either = either || eitherRight;
         this.thrownContext = thrownContext || null;
         this.throwedValue = throwedValue || null;
@@ -83,7 +83,7 @@ class Context {
             output : this.output,
             variables : this.variables,
             returnedValue : value,
-            selfOrCall : self
+            notReturn : self
         });
     }
 
