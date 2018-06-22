@@ -120,7 +120,7 @@ class StmtSequence {
                 return ctx;
             }
 
-            return ctx.selfOrEval(this.secondStmt);
+            return ctx.selfOrCall(() => this.secondStmt.evaluate(ctx));
         } catch(e) {
             if(!e.lineNumbers) {
                 e.lineNumbers = [this.lineNumber];

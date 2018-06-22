@@ -27,18 +27,18 @@ function self(stmt) {
     return this;
 }
 
-function evalStmt(stmt) {
-    return stmt.evaluate(this);
+function call(f) {
+    return f();
 }
 
 class Context {
-    constructor({output, parent, variables, returnedValue, throwedValue, selfOrEval}) {
+    constructor({output, parent, variables, returnedValue, throwedValue, selfOrCall}) {
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.returnedValue = returnedValue || null;
         this.throwedValue = throwedValue || null;
-        this.selfOrEval = selfOrEval || evalStmt;
+        this.selfOrCall = selfOrCall || call;
     }
 
     static initialize(environment) {
@@ -72,13 +72,13 @@ class Context {
             output : this.output,
             variables : this.variables,
             returnedValue : value,
-            selfOrEval : self
+            selfOrCall : self
         });
     }
 
     thrown(value) {
         this.throwedValue = value;
-        this.selfOrEval = self;
+        this.selfOrCall = self;
         return this;
     }
 
