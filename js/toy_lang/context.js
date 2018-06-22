@@ -32,13 +32,14 @@ function call(f) {
 }
 
 class Context {
-    constructor({output, parent, variables, returnedValue, throwedValue, selfOrCall}) {
+    constructor({output, parent, variables, returnedValue, throwedValue, selfOrCall, ifValue}) {
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.returnedValue = returnedValue || null;
         this.throwedValue = throwedValue || null;
         this.selfOrCall = selfOrCall || call;
+        this.ifValue = ifValue || call;
     }
 
     static initialize(environment) {
@@ -78,7 +79,7 @@ class Context {
 
     thrown(value) {
         this.throwedValue = value;
-        this.selfOrCall = self;
+        this.ifValue = self;
         return this;
     }
 
