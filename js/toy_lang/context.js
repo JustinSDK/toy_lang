@@ -23,7 +23,7 @@ const RUNTIME_CHECKER = {
     }
 };
 
-function self(stmt) {
+function self(f) {
     return this;
 }
 
