@@ -169,12 +169,12 @@ class Tokenable {
 class Tokenizer {
     constructor(code) {
         this.lines = concatExpr(
-            code.trim().split('\n')
-                        // a comment starts with #
-                        .map(line => line.replace(/(('(.*)#(.*)'[^#]*)*)(#.*)?$/, '$1')) // comment after a line
-                        .map(line => line.trim())
-                        .map((line, idx) => new Tokenable('line', idx + 1, line))
-                        .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")) 
+            code.split('\n')
+                // a comment starts with #
+                .map(line => line.replace(/(('(.*)#(.*)'[^#]*)*)(#.*)?$/, '$1')) // comment after a line
+                .map(line => line.trim())
+                .map((line, idx) => new Tokenable('line', idx + 1, line))
+                .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")) 
         );
     }
 
