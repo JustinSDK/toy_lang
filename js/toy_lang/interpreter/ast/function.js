@@ -8,11 +8,8 @@ class Return {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.value.evaluate(context);
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue; 
-        }
-        return context.returned(ctxOrValue);
+        const maybeCtx = this.value.evaluate(context);
+        return maybeCtx.notThrown(value => context.returned(value));
     }    
 }
 
@@ -22,13 +19,11 @@ class Throw {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.value.evaluate(context);
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue; 
-        }
-                
-        ctxOrValue.lineNumbers = [];
-        return context.thrown(ctxOrValue);
+        const maybeCtx = this.value.evaluate(context);
+        return maybeCtx.notThrown(ex => {
+            ex.lineNumbers = [];
+            return context.thrown(ex);
+        });
     }    
 }
 
@@ -47,29 +42,24 @@ class FunCall {
         const args = this.argsList[0];
 
         const ctx = instance.evalMethod(context, methodName, args);
-        if(ctx.throwedValue !== null) {
-            return ctx;
-        }
-
-        const returnedValue = ctx.returnedValue;
-        if(this.argsList.length > 1) {
-            return callChain(context, returnedValue.internalNode, this.argsList.slice(1));
-        }
-        return returnedValue === null ? Void : returnedValue; 
+        return ctx.notThrown(c => {
+            const returnedValue = c.returnedValue;
+            if(this.argsList.length > 1) {
+                return callChain(context, returnedValue.internalNode, this.argsList.slice(1));
+            }
+            return returnedValue === null ? Void : returnedValue; 
+        });
     }
 }
 
 function callChain(context, f, argsList) {
     const args = argsList[0];
     const ctx = f.call(context, args);
-
-    if(ctx.throwedValue !== null) {
-        return ctx;
-    }
-
-    const returnedValue = ctx.returnedValue;
-    if(argsList.length > 1) {
-        return callChain(context, returnedValue.internalNode, argsList.slice(1));
-    }
-    return returnedValue === null ? Void : returnedValue;
+    return ctx.notThrown(c => {
+        const returnedValue = c.returnedValue;
+        if(argsList.length > 1) {
+            return callChain(context, returnedValue.internalNode, argsList.slice(1));
+        }
+        return returnedValue === null ? Void : returnedValue;
+    });
 }

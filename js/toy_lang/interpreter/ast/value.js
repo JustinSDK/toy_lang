@@ -6,6 +6,10 @@ class Value {
         return this;
     }      
 
+    notThrown(f) {
+        return f(this);
+    }
+
     toString() {
         return '';
     }

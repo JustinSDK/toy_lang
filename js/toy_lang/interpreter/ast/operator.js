@@ -10,20 +10,16 @@ function createPrimitiveBinaryOperatorNode(operator) {
         }
     
         evaluate(context) {
-            const left = this.left.evaluate(context);
-            if(left.throwedValue) {
-                return left; 
-            }
-            
-            const right = this.right.evaluate(context);
-            if(right.throwedValue) {
-                return right; 
-            }
-
-            return operator(
-                left.value === undefined ? left.toString(context) : left.value, 
-                right.value === undefined ? right.toString(context) : right.value
-            );
+            const maybeCtxLeft = this.left.evaluate(context);
+            return maybeCtxLeft.notThrown(left => {
+                const maybeCtxRight = this.right.evaluate(context);
+                return maybeCtxRight.notThrown(right => {
+                    return operator(
+                        left.value === undefined ? left.toString(context) : left.value, 
+                        right.value === undefined ? right.toString(context) : right.value
+                    );
+                });
+            });
         }
     }
 }
@@ -38,27 +34,23 @@ class NewOperator {
         const clzOfLang = this.clz.evaluate(context);
         // run class body
         const ctx = clzOfLang.internalNode.call(context, this.args);
-        if(ctx.throwedValue) {
-            return ctx;
-        }
-
-        return new Instance(
-            clzOfLang,
-            ctx.variables
-        );
+        return ctx.notThrown(c => {
+            return new Instance(
+                clzOfLang,
+                c.variables
+            );
+        });
     }
 
     evaluate(context) {
-        const ctxOrInstance = this.instance(context);
-
-        if(!ctxOrInstance.throwedValue && ctxOrInstance.clzOfLang.internalNode.hasOwnMethod('init')) {
-            const ctx = ctxOrInstance.evalMethod(context, 'init', this.args);
-            if(ctx.throwedValue) {
-                return ctx;
+        const maybeContext = this.instance(context);
+        return maybeContext.notThrown(ctx => {
+            if(ctx.clzOfLang.internalNode.hasOwnMethod('init')) {
+                const maybeCtx = maybeContext.evalMethod(context, 'init', this.args);
+                return maybeCtx.notThrown(c => c.variables.get('this'));
             }
-        }
-        
-        return ctxOrInstance;
+            return ctx;
+        });    
     }   
 }
 
@@ -69,11 +61,8 @@ class DotOperator {
     }
 
     evaluate(context) {
-        const ctxOrInstance = this.receiver.evaluate(context);
-        if(ctxOrInstance.throwedValue) {
-            return ctxOrInstance; 
-        }
-        return this.message.send(context, ctxOrInstance);
+        const maybeContext = this.receiver.evaluate(context);
+        return maybeContext.notThrown(receiver => this.message.send(context, receiver));
     }
 }
 
@@ -83,12 +72,8 @@ class NegOperator {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.operand.evaluate(context);
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue; 
-        }
-
-        return new Primitive(-ctxOrValue.value);
+        const maybeContext = this.operand.evaluate(context);
+        return maybeContext.notThrown(v => new Primitive(-v.value));
     }
 }
 
@@ -98,11 +83,8 @@ class NotOperator {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.operand.evaluate(context);
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue; 
-        }
-        return Primitive.boolNode(!ctxOrValue.value);
+        const maybeContext = this.operand.evaluate(context);
+        return maybeContext.notThrown(v => Primitive.boolNode(!v.value));
     }
 }
 

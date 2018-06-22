@@ -6,13 +6,8 @@ class ExprWrapper {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.expr.evaluate(context);
-
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue;
-        }
-
-        return context;
+        const maybeContext = this.expr.evaluate(context);
+        return maybeContext.notThrown(_ => context);
     }    
 }
 
@@ -37,13 +32,10 @@ class VariableAssign {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.value.evaluate(context);
-
-        if(ctxOrValue.throwedValue) {
-            return  ctxOrValue;
-        }
-        
-        return context.assign(this.variable.name, ctxOrValue);;
+        const maybeContext = this.value.evaluate(context);
+        return maybeContext.notThrown(value => {
+             return context.assign(this.variable.name, value);
+        });
     }
 
     static assigns(variables, values) {
@@ -64,17 +56,15 @@ class While {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.boolean.evaluate(context);
-        if(ctxOrValue.throwedValue) {
-            return  ctxOrValue;
-        }
-
-        if(ctxOrValue.value) {
-            const ctx = this.stmt.evaluate(context);
-            return this.evaluate(ctx);
-        }
-
-        return context;
+        const maybeContext = this.boolean.evaluate(context);
+        return maybeContext.notThrown(v => {
+            if(v.value) {
+                const ctx = this.stmt.evaluate(context);
+                return this.evaluate(ctx);
+            }
+    
+            return context;
+        });
     }   
 }
 
@@ -86,16 +76,13 @@ class If {
     }
 
     evaluate(context) {
-        const ctxOrValue = this.boolean.evaluate(context);
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue;
-        }
-
-        if(ctxOrValue.value) {
-            return this.trueStmt.evaluate(context);
-        }
-
-        return this.falseStmt.evaluate(context);
+        const maybeContext = this.boolean.evaluate(context);
+        return maybeContext.notThrown(v => {
+            if(v.value) {
+                return this.trueStmt.evaluate(context);
+            }
+            return this.falseStmt.evaluate(context);
+        });
     }   
 }
 
@@ -109,18 +96,20 @@ class StmtSequence {
     evaluate(context) {
         try {
             const ctx = this.firstStmt.evaluate(context);
-
-            if(ctx.throwedValue) {
-                if(context === ctx && ctx.throwedValue.lineNumbers.length === 0) {
-                    ctx.throwedValue.lineNumbers.push(this.lineNumber);
+            return ctx.either(
+                leftContext => {
+                    if(leftContext.throwedValue.lineNumbers.length === 0) {
+                        leftContext.throwedValue.lineNumbers.push(this.lineNumber);
+                    }
+                    else if(context !== leftContext.thrownContext) {
+                        leftContext.throwedValue.lineNumbers.push(this.lineNumber);
+                    }
+                    return leftContext;
+                },
+                rightContext => {
+                    return rightContext.selfOrCall(c => this.secondStmt.evaluate(c))
                 }
-                else if(context !== ctx) {
-                    ctx.throwedValue.lineNumbers.push(this.lineNumber);
-                }
-                return ctx;
-            }
-
-            return ctx.selfOrCall(() => this.secondStmt.evaluate(ctx));
+            );
         } catch(e) {
             if(!e.lineNumbers) {
                 e.lineNumbers = [this.lineNumber];
@@ -149,14 +138,13 @@ class PropertyAssign {
     }
 
     evaluate(context) {
-        const instance = this.target.evaluate(context);
-        const ctxOrValue  = this.value.evaluate(context);
-
-        if(ctxOrValue.throwedValue) {
-            return ctxOrValue; 
-        }
-
-        instance.setOwnProperty(this.propName, ctxOrValue);
-        return context;
+        const maybeContextInstance = this.target.evaluate(context);
+        return maybeContextInstance.notThrown(instance => { 
+            const maybeContextValue  = this.value.evaluate(context);
+            return maybeContextValue.notThrown(value => {
+                instance.setOwnProperty(this.propName, value);
+                return context;
+            });
+        });
     }
 }

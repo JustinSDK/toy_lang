@@ -28,18 +28,28 @@ function self(f) {
 }
 
 function call(f) {
-    return f();
+    return f(this);
+}
+
+function eitherRight(left, right) {
+    return right(this);
+}
+
+function eitherLeft(left, right) {
+    return left(this);
 }
 
 class Context {
-    constructor({output, parent, variables, returnedValue, throwedValue, selfOrCall, ifValue}) {
+    constructor({output, parent, variables, returnedValue, throwedValue, selfOrCall, notThrown, either, thrownContext}) {
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.returnedValue = returnedValue || null;
         this.throwedValue = throwedValue || null;
         this.selfOrCall = selfOrCall || call;
-        this.ifValue = ifValue || call;
+        this.notThrown = notThrown || call; 
+        this.either = either || eitherRight;
+        this.thrownContext = thrownContext || null;
     }
 
     static initialize(environment) {
@@ -78,9 +88,15 @@ class Context {
     }
 
     thrown(value) {
-        this.throwedValue = value;
-        this.ifValue = self;
-        return this;
+        return new Context({
+            parent : this.parent,
+            output : this.output,
+            variables : this.variables,
+            throwedValue : value,
+            notThrown : self,
+            either : eitherLeft,
+            thrownContext : this
+        });
     }
 
     lookUpVariable(name) {
