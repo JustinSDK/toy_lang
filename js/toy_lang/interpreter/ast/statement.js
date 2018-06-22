@@ -98,29 +98,29 @@ class StmtSequence {
             const ctx = this.firstStmt.evaluate(context);
             return ctx.either(
                 leftContext => {
-                    if(leftContext.throwedValue.lineNumbers.length === 0) {
-                        leftContext.throwedValue.lineNumbers.push(this.lineNumber);
-                    }
-                    else if(context !== leftContext.thrownContext) {
+                    if(leftContext.throwedValue.lineNumbers.length === 0 || 
+                       context !== leftContext.thrownContext) {
                         leftContext.throwedValue.lineNumbers.push(this.lineNumber);
                     }
                     return leftContext;
                 },
-                rightContext => {
-                    return rightContext.notReturn(c => this.secondStmt.evaluate(c))
-                }
+                rightContext =>  rightContext.notReturn(c => this.secondStmt.evaluate(c))
             );
         } catch(e) {
-            if(!e.lineNumbers) {
-                e.lineNumbers = [this.lineNumber];
-                e.context = context;
-            }
-            if(e.context !== context) {
-                e.context = context;
-                e.lineNumbers.push(this.lineNumber);
-            }
+            addStackTrace(context, e, this.lineNumber);
             throw e;
         }
+    }
+}
+
+function addStackTrace(context, e, lineNumber) {
+    if(!e.lineNumbers) {
+        e.lineNumbers = [lineNumber];
+        e.context = context;
+    }
+    if(e.context !== context) {
+        e.context = context;
+        e.lineNumbers.push(lineNumber);
     }
 }
 
