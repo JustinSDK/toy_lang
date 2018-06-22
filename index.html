@@ -415,7 +415,7 @@ new C().c()</code></pre>
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        new Toy(ENVIRONMENT, code).play();
+        new Toy(ENVIRONMENT, 'main.toy', code).play();
     });
 </script>
 </body>
