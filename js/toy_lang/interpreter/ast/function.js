@@ -1,31 +1,6 @@
 import {Void} from './value.js';
 
-export {Return, Throw, FunCall};
-
-class Return {
-    constructor(value) {
-        this.value = value;
-    }
-
-    evaluate(context) {
-        const maybeCtx = this.value.evaluate(context);
-        return maybeCtx.notThrown(value => context.returned(value));
-    }    
-}
-
-class Throw {
-    constructor(value) {
-        this.value = value;
-    }
-
-    evaluate(context) {
-        const maybeCtx = this.value.evaluate(context);
-        return maybeCtx.notThrown(ex => {
-            ex.lineNumbers = [];
-            return context.thrown(ex);
-        });
-    }    
-}
+export {FunCall};
 
 class FunCall {
     constructor(func, argsList) {

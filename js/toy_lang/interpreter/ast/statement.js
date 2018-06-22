@@ -1,4 +1,4 @@
-export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence};
+export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Return, Throw};
 
 class ExprWrapper {
     constructor(expr) {
@@ -147,4 +147,30 @@ class PropertyAssign {
             });
         });
     }
+}
+
+
+class Return {
+    constructor(value) {
+        this.value = value;
+    }
+
+    evaluate(context) {
+        const maybeCtx = this.value.evaluate(context);
+        return maybeCtx.notThrown(value => context.returned(value));
+    }    
+}
+
+class Throw {
+    constructor(value) {
+        this.value = value;
+    }
+
+    evaluate(context) {
+        const maybeCtx = this.value.evaluate(context);
+        return maybeCtx.notThrown(ex => {
+            ex.lineNumbers = [];
+            return context.thrown(ex);
+        });
+    }    
 }

@@ -1,6 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Throw, Return} from './ast/function.js';
-import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence} from './ast/statement.js';
+import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Throw, Return} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
 import {ParseExInterceptor} from './commons/interceptor.js';

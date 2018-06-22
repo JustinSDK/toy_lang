@@ -1,7 +1,7 @@
 import {Stack} from './commons/collection.js';
 import {Primitive, Func} from './ast/value.js';
-import {FunCall, Return} from './ast/function.js';
-import {Variable} from './ast/statement.js';
+import {FunCall} from './ast/function.js';
+import {Variable, Return} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
 import {EvalExInterceptor} from './commons/interceptor.js';
