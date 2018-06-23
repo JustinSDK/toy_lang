@@ -1,5 +1,5 @@
 import {Null, Primitive, Instance, Void} from '../interpreter/ast/value.js';
-import {PARAM1, PARAM2, PARAM3, func0, func1, func3} from './func_bases.js';
+import {PARAM1, PARAM2, PARAM3, func0, func1, func3, format} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {Variable} from '../interpreter/ast/statement.js';
 
@@ -73,13 +73,6 @@ const Format = func3('format', {
         return context.returned(new Primitive(str));
     }
 });
-
-function format(template) {
-    const args = Array.prototype.slice.call(arguments, 1);
-    return template.replace(/{(\d+)}/g, (match, number) => { 
-        return typeof args[number] != 'undefined' ? args[number] : match;
-    });
-}
 
 const Printf = func0('printf', {
     evaluate(context) {

@@ -3,6 +3,7 @@ import {Variable} from '../interpreter/ast/statement.js';
 
 export {PARAM1, PARAM2, PARAM3, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3};
 export {func, func0, func1, func2, func3};
+export {format};
 
 const PARAM1 = new Variable('p1');
 const PARAM2 = new Variable('p2');
@@ -31,4 +32,11 @@ function func2(name, node) {
 
 function func3(name, node) {
     return func(name, node, PARAM_LT3);
+}
+
+function format(template) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    return template.replace(/{(\d+)}/g, (match, number) => { 
+        return typeof args[number] != 'undefined' ? args[number] : match;
+    });
 }
