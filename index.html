@@ -82,7 +82,10 @@ hanoi(3, 'A', 'B', 'C')</code></pre>
     return n * factorial(n - 1)
 }
 
-range(1, 6).forEach(n -> printf('{0}! = {1}\n', n, factorial(n)))</code></pre>
+# use \ for cross-line expression
+range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
+           .forEach(println)
+</code></pre>
 <ul>
     <li># Class</li>
   </ul>
@@ -171,8 +174,7 @@ println('obj.z is ' + obj.z)</code></pre>
 <ul>
     <li># Lambda expression</li>
   </ul>
-  <pre class="prettyprint"><code># use \ for cross-line expression       
-list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
+  <pre class="prettyprint"><code>list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
                    .map(elem -> elem * 100)   \
                    .forEach(println)
 

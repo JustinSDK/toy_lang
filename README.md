@@ -56,7 +56,9 @@ def factorial(n) {
     return n * factorial(n - 1)
 }
 
-range(1, 6).forEach(n -> printf('{0}! = {1}\n', n, factorial(n)))
+# use \ for cross-line expression
+range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
+           .forEach(println)
 ```
 
 - Class
@@ -152,8 +154,7 @@ println('obj.z is ' + obj.z)
 
 - Lambda expression
 
-```java
-# use \ for cross-line expression       
+```java    
 list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
                    .map(elem -> elem * 100)   \
                    .forEach(println)
