@@ -47,7 +47,7 @@ hanoi(3, 'A', 'B', 'C')
 
 - Factorial
 
-```python
+```Java
 def factorial(n) {
     if n == 0 {
         return 1
