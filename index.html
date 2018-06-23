@@ -47,7 +47,11 @@ println('Hello World')</textarea> <br>
       <li># Multiplication Table</li>
     </ul>
     <pre class="prettyprint"><code>def print_row(n) {
-    range(2, 10).forEach(i -> print(i + '*' + n + '=' + (i * n) + '\t'))
+    i = 2
+    while i &lt; 10 {
+        print(i + '*' + n + '=' + (i * n) + '\t')
+        i = i + 1 
+    }
     println()
 }
 
