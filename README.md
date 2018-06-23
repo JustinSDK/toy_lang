@@ -17,11 +17,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 
 ```python
 def print_row(n) {
-    i = 2
-    while i < 10 {
-        print(i + '*' + n + '=' + (i * n) + '\t')
-        i = i + 1 
-    }
+    range(2, 10).forEach(i -> print(i + '*' + n + '=' + (i * n) + '\t'))
     println()
 }
 
