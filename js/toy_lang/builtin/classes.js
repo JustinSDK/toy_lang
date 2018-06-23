@@ -197,7 +197,7 @@ const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Object', ObjectClass.methods),
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
-    ClassClass.classEntry(CLZ, 'String', StringClass.methods),
+    ClassClass.classEntry(CLZ, 'String', StringClass.methods, StringClass.newInstance),
     ClassClass.classEntry(CLZ, 'List', ListClass.methods, ListClass.newInstance)
 ]); 
 

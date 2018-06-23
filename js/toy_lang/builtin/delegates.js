@@ -1,6 +1,6 @@
 import {Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
 import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
-import {func0, func1, func2} from './func_bases.js';
+import {func0, func1, func2, format} from './func_bases.js';
 import {Native, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue} from './class_bases.js';
 
 export {StringClass, ListClass};
@@ -16,7 +16,15 @@ class StringClass {
 
     static method2Primitive(methodName) {
         return methodPrimitive(String, methodName, PARAM_LT2);
-    }       
+    }     
+
+    static newInstance(context, str) {
+        return new Instance(
+            context.lookUpVariable('String'),
+            new Map(), 
+            new Primitive(str)
+        );
+    }
 }
 
 StringClass.EMPTY_STRING = new Primitive('');
@@ -54,6 +62,14 @@ StringClass.methods = new Map([
         evaluate(context) {
             const value = selfInternalValue(context);
             return context.returned(new Primitive(value.length));
+        }    
+    })],
+    ['format', func0('format', {
+        evaluate(context) {
+            const value = selfInternalValue(context);
+            const args = context.lookUpVariable('arguments').internalNode.value;
+            const str = format.apply(undefined, [value].concat(args.map(arg => arg.value)));
+            return context.returned(new Primitive(str));
         }    
     })]
 ]);
