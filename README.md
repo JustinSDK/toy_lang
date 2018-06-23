@@ -104,7 +104,7 @@ def sum(lt) {
 }
     
 lt = range(1, 11)
-println(lt.join(' + ') + ' = ' + sum(lt))
+printf('{0}={1}\n', lt.join('+'), sum(lt))
 
 println(new String('aBc').toUpperCase())
 println(new String('aBc').toLowerCase())
