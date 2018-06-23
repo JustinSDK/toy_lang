@@ -48,8 +48,8 @@ println('Hello World')</textarea> <br>
     </ul>
     <pre class="prettyprint"><code>def print_row(n) {
     i = 2
-    while i &lt; 10 {
-        print(i + '*' + n + '=' + (i * n) + '\t')
+    while i < 10 {
+        printf('{0}*{1}={2}\t', i, n, i * n)
         i = i + 1 
     }
     println()
@@ -61,7 +61,7 @@ range(1, 10).forEach(print_row)</code></pre>
   </ul>
   <pre class="prettyprint"><code>def hanoi(n, a, b, c) {
     if n == 1 {
-        println('Move sheet from ' + a + ' to ' + c)
+        printf('Move sheet from {0} to {1}\n', a , c)
     } 
     else {
         hanoi(n - 1, a, c, b)
@@ -82,7 +82,7 @@ hanoi(3, 'A', 'B', 'C')</code></pre>
     return n * factorial(n - 1)
 }
 
-range(1, 6).forEach(n -> println(n + '! = ' + factorial(n)))</code></pre>
+range(1, 6).forEach(n -> printf('{0}! = {1}\n', n, factorial(n)))</code></pre>
 <ul>
     <li># Class</li>
   </ul>
@@ -104,7 +104,7 @@ range(1, 6).forEach(n -> println(n + '! = ' + factorial(n)))</code></pre>
     }
 
     def toString() {
-        return this.number + ', ' + this.name + ', ' + this.balance
+        return format('{0}, {1}, {2}', this.number, this.name, this.balance)
     }
 }
 
@@ -124,7 +124,7 @@ println(acct)</code></pre>
 }
  
 lt = range(1, 11)
-println(lt.join(' + ') + ' = ' + sum(lt))
+printf('{0}={1}\n', lt.join('+'), sum(lt))
 
 println(new String('aBc').toUpperCase())
 println(new String('aBc').toLowerCase())</code></pre>

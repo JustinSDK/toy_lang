@@ -19,7 +19,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 def print_row(n) {
     i = 2
     while i < 10 {
-        print(i + '*' + n + '=' + (i * n) + '\t')
+        printf('{0}*{1}={2}\t', i, n, i * n)
         i = i + 1 
     }
     println()
@@ -33,7 +33,7 @@ range(1, 10).forEach(print_row)
 ```python
 def hanoi(n, a, b, c) {
     if n == 1 {
-        println('Move sheet from ' + a + ' to ' + c)
+        printf('Move sheet from {0} to {1}\n', a , c)
     } 
     else {
         hanoi(n - 1, a, c, b)
@@ -56,7 +56,7 @@ def factorial(n) {
     return n * factorial(n - 1)
 }
 
-range(1, 6).forEach(n -> println(n + '! = ' + factorial(n)))
+range(1, 6).forEach(n -> printf('{0}! = {1}\n', n, factorial(n)))
 ```
 
 - Class
@@ -80,7 +80,7 @@ class Account {
     }
 
     def toString() {
-        return this.number + ', ' + this.name + ', ' + this.balance
+        return format('{0}, {1}, {2}', this.number, this.name, this.balance)
     }
 }
 
