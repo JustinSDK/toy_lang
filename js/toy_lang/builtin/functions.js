@@ -66,6 +66,20 @@ const Range = func3('range', {
     }
 });
 
+const Format = func3('format', {
+    evaluate(context) {
+        const args = context.lookUpVariable('arguments').internalNode.value;
+        const str = format.apply(undefined, args.map(arg => arg.value));
+        return context.returned(new Primitive(str));
+    }
+});
+
+function format(template) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    return template.replace(/{(\d+)}/g, (match, number) => { 
+        return typeof args[number] != 'undefined' ? args[number] : match;
+    });
+}
 
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
@@ -79,5 +93,6 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue),
     funcEntry(FUNC_CLZ, 'list', List),
-    funcEntry(FUNC_CLZ, 'range', Range)
+    funcEntry(FUNC_CLZ, 'range', Range),
+    funcEntry(FUNC_CLZ, 'format', Format)
 ]); 
