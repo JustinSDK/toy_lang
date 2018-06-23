@@ -83,7 +83,7 @@ FunctionClass.methods = new Map([
 
             return new StmtSequence(
                 new VariableAssign(new Variable('this'), targetObject),  
-                funcInstance.internalNode.bodyStmt(jsArray.map(arg => arg.evaluate(context)))
+                funcInstance.internalNode.bodyStmt(context, jsArray.map(arg => arg.evaluate(context)))
             ).evaluate(context);
         }    
     })]
@@ -94,8 +94,8 @@ class ClassClass {
         return new Instance(clzOfLang, new Map(), internalNode);
     }
 
-    static classEntry(clzOfLang, name, methods) {
-        return [name, ClassClass.classInstance(clzOfLang, clzNode(name, methods))];
+    static classEntry(clzOfLang, name, methods, newInstance) {
+        return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods, newInstance}))];
     }
 }
 
@@ -189,7 +189,7 @@ ClassClass.methods = new Map([
     })]
 ]);
 
-const CLZ = ClassClass.classInstance(null, clzNode('Class', ClassClass.methods));
+const CLZ = ClassClass.classInstance(null, clzNode({name : 'Class', methods : ClassClass.methods}));
 // 'Class' of is an instance of 'Class'
 CLZ.clzOfLang = CLZ;
 
@@ -198,6 +198,6 @@ const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
-    ClassClass.classEntry(CLZ, 'List', ListClass.methods)
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods, ListClass.newInstance)
 ]); 
 

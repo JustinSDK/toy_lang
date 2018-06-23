@@ -91,6 +91,14 @@ class ListClass {
         );
     }
 
+    static newInstance(listClzInstance, jsArray) {
+        return new Instance(
+            listClzInstance,
+            new Map(), 
+            new Native(jsArray)
+        );
+    }
+
     static predictableMethod(context, fName) {
         const arr = selfInternalValue(context);
         const fNode = PARAM1.evaluate(context).internalNode;

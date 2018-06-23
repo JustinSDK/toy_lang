@@ -9,7 +9,7 @@ const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
 const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
-const NEW_REGEX = /new/;
+const NEW_REGEX = /new$/;
 const DOT_REGEX = /\./;
 const NOT_REGEX = /not/;
 const PARENTHESE_REGEX = /\(|\)/;

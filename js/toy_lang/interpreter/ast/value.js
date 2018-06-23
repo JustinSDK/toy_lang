@@ -52,15 +52,18 @@ class Func extends Value {
         this.parentContext = parentContext;
     }
 
-    assignToParams(args) {
+    assignToParams(context, args) {
+        const listClzInstance = context.lookUpVariable('List');
+        const listClzNode = listClzInstance.internalNode;
+        const argumentsListInstance = listClzNode.newInstance(listClzInstance, args);
         return VariableAssign.assigns(
-            this.params, 
-            this.params.map((_, idx) => args[idx] ? args[idx] : Null)
+            this.params.concat([new Variable('arguments')]), 
+            this.params.map((_, idx) => args[idx] ? args[idx] : Null).concat([argumentsListInstance])
         );
     }
 
-    bodyStmt(args) {
-        return new StmtSequence(this.assignToParams(args), this.stmt, this.stmt.lineNumber);
+    bodyStmt(context, args) {
+        return new StmtSequence(this.assignToParams(context, args), this.stmt, this.stmt.lineNumber);
     }
 
     call(context, args) {
@@ -72,7 +75,7 @@ class Func extends Value {
             }
         }
 
-        const bodyStmt = this.bodyStmt(ctxValues);
+        const bodyStmt = this.bodyStmt(context, ctxValues);
         return bodyStmt.evaluate(
             this.parentContext ? 
                 this.parentContext.childContext() : // closure context
@@ -108,10 +111,11 @@ function evaluateArgs(context, args) {
 }
 
 class Class extends Func {
-    constructor({notMethodStmt, methods, name, parentClzNames, parentContext}) {
+    constructor({notMethodStmt, methods, name, parentClzNames, parentContext, newInstance}) {
         super([], notMethodStmt, name, parentContext || null);
         this.parentClzNames = parentClzNames || ['Object'];
         this.methods = methods;
+        this.newInstance = newInstance || null;
     }
 
     addOwnMethod(name, fInstance) {
@@ -238,7 +242,7 @@ class Instance extends Value {
 
     methodBodyStmt(context, name, args = []) {
         const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(context, name);
-        const bodystmt = f.bodyStmt(args.map(arg => arg.evaluate(context)));
+        const bodystmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
         return new StmtSequence(
             new VariableAssign(new Variable('this'), this),  
             bodystmt,
