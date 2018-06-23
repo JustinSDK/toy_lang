@@ -5,8 +5,8 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 - Keywords: `if`, `else`, `while`, `def`, `return`, `and`, `or`, `not`, `new`, `class`, `this`, `arguments`
 - Literals: 3.14 (number), `true`, `false`, `'Hello, World'` (string), `\r`, `'\n'`, `'\t'`, `'\\'`, `'\''`
 - Operators: `new`, `.`, `==`, `!=`, `>=`, `>`, `<=`, `<`, `and`, `or`, `not`, `+`, `-`, `*`, `/`, `%`
-- Built-in functions: `print(v)`, `println([v])`, `hasValue(v)`, `noValue(v)`, `list()`
-- Built-in classes: `Object()`, `Class`, `Function`, `String(text)`, `List(initialLength)`
+- Built-in functions: `print`, `println`, `printf`, `hasValue`, `noValue`, `list`, `format`
+- Built-in classes: `Object`, `Class`, `Function`, `String`, `List`
 - Comment: `#`
 
 [Play It](https://openhome.cc/Gossip/Computation/toy_lang/)
