@@ -10,6 +10,10 @@ class Value {
         return f(this);
     }
 
+    box(context) {
+        return this;
+    }
+
     toString() {
         return '';
     }
@@ -29,6 +33,11 @@ class Primitive extends Value {
 
     toString() {
         return `${this.value}`;
+    }
+
+    // currently only support text
+    box(context) {
+        return context.lookUpVariable('String').internalNode.newInstance(context, this.value);
     }
 
     static boolNode(value) {
