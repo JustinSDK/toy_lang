@@ -2,11 +2,11 @@
 
 Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b90137387ad3518d4e99d15ba). It's the first language I made. ES6 modules support is required.
 
-- Keywords: `if`, `else`, `while`, `def`, `return`, `and`, `or`, `not`, `new`, `class`, `this`
+- Keywords: `if`, `else`, `while`, `def`, `return`, `and`, `or`, `not`, `new`, `class`, `this`, `arguments`
 - Literals: 3.14 (number), `true`, `false`, `'Hello, World'` (string), `\r`, `'\n'`, `'\t'`, `'\\'`, `'\''`
 - Operators: `new`, `.`, `==`, `!=`, `>=`, `>`, `<=`, `<`, `and`, `or`, `not`, `+`, `-`, `*`, `/`, `%`
-- Built-in functions: `print(v)`, `println([v])`, `hasValue(v)`, `noValue(v)`
-- Built-in classes: `Object`, `Class`, `Function`, `String(text)`, `List(initialLength)`
+- Built-in functions: `print(v)`, `println([v])`, `hasValue(v)`, `noValue(v)`, `list()`
+- Built-in classes: `Object()`, `Class`, `Function`, `String(text)`, `List(initialLength)`
 - Comment: `#`
 
 [Play It](https://openhome.cc/Gossip/Computation/toy_lang/)
@@ -171,12 +171,10 @@ println('obj.z is ' + obj.z)
 - Lambda expression
 
 ```java
-lt = new List().add(1).add(2).add(3).add(4)
-
 # use \ for cross-line expression       
-lt.filter(elem -> elem >= 2) \
-  .map(elem -> elem * 100)   \
-  .forEach(println)
+list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
+                   .map(elem -> elem * 100)   \
+                   .forEach(println)
 
 def foo(x, y) {
     return () -> x + y
@@ -361,7 +359,7 @@ def foo(p) {
 }
 
 # The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o, new List().add(40)))
+println(foo.apply(o, list(40)))
 ```
 
 - meta programming 2
@@ -386,7 +384,7 @@ class C {
 }
 
 println(C.parents())
-C.setParents(new List().add(PA).add(PB))
+C.setParents(list(PA, PB))
 println(C.parents())
 
 new C().pa()
