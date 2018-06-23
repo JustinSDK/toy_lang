@@ -61,7 +61,7 @@ const Range = func3('range', {
 
         const listClzInstance = context.lookUpVariable('List');
         const listClzNode = listClzInstance.internalNode;
-        const list = listClzNode.newInstance(listClzInstance, jsArray);                              
+        const list = listClzNode.newInstance(context, jsArray);                              
         return context.returned(list);
     }
 });

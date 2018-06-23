@@ -55,7 +55,7 @@ class Func extends Value {
     assignToParams(context, args) {
         const listClzInstance = context.lookUpVariable('List');
         const listClzNode = listClzInstance.internalNode;
-        const argumentsListInstance = listClzNode.newInstance(listClzInstance, args);
+        const argumentsListInstance = listClzNode.newInstance(context, args);  
         return VariableAssign.assigns(
             this.params.concat([new Variable('arguments')]), 
             this.params.map((_, idx) => args[idx] ? args[idx] : Null).concat([argumentsListInstance])

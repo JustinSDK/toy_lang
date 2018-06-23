@@ -23,8 +23,8 @@ ObjectClass.methods = new Map([
     ['ownProperties', func0('ownProperties', {
         evaluate(context) {
             const entries = Array.from(self(context).properties.entries())
-                                 .map(entry => ListClass.listInstance(context, [new Primitive(entry[0]), entry[1]]));
-            return context.returned(ListClass.listInstance(context, entries));
+                                 .map(entry => ListClass.newInstance(context, [new Primitive(entry[0]), entry[1]]));
+            return context.returned(ListClass.newInstance(context, entries));
         }    
     })],
     ['hasOwnProperty', func1('hasOwnProperty', {
@@ -155,7 +155,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const fNodes = Array.from(self(context).internalNode.methods.values());
             return context.returned(
-                ListClass.listInstance(context, fNodes.map(fNode => fNode.evaluate(context)))
+                ListClass.newInstance(context, fNodes.map(fNode => fNode.evaluate(context)))
             );
         }    
     })],
@@ -171,7 +171,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const parentClzNames = self(context).internalNode.parentClzNames;
             return context.returned(
-                ListClass.listInstance(
+                ListClass.newInstance(
                     context,
                     parentClzNames.map(parentClzName => context.lookUpVariable(parentClzName))
                 )

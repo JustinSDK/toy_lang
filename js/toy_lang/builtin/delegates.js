@@ -46,7 +46,7 @@ StringClass.methods = new Map([
     ['split', func2('split', {
         evaluate(context) {
             const arr = delegate(context, String, 'split', PARAM_LT2);
-            const instance = ListClass.listInstance(context, arr.map(elem => new Primitive(elem)));
+            const instance = ListClass.newInstance(context, arr.map(elem => new Primitive(elem)));
             return context.returned(instance);
         }
     })],
@@ -83,17 +83,9 @@ class ListClass {
         return methodSelf(Array, methodName, PARAM_LT3);
     }  
     
-    static listInstance(context, jsArray) {
+    static newInstance(context, jsArray) {
         return new Instance(
             context.lookUpVariable('List'),
-            new Map(), 
-            new Native(jsArray)
-        );
-    }
-
-    static newInstance(listClzInstance, jsArray) {
-        return new Instance(
-            listClzInstance,
             new Map(), 
             new Native(jsArray)
         );
@@ -157,7 +149,7 @@ ListClass.methods = new Map([
     ['filter', func1('filter', {
         evaluate(context) {           
             return context.returned(
-                ListClass.listInstance(
+                ListClass.newInstance(
                     context,
                     ListClass.predictableMethod(context, 'filter')
                 )
@@ -169,7 +161,7 @@ ListClass.methods = new Map([
             const arr = selfInternalValue(context);
             const fNode = PARAM1.evaluate(context).internalNode;
             const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
-            return context.returned(ListClass.listInstance(context, mapped));
+            return context.returned(ListClass.newInstance(context, mapped));
         }    
     })],
     ['forEach', func1('forEach', {
