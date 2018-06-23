@@ -55,11 +55,7 @@ println('Hello World')</textarea> <br>
     println()
 }
 
-i = 1
-while i &lt; 10 {
-    print_row(i)
-    i = i + 1
-}</code></pre>
+range(1, 10).forEach(print_row)</code></pre>
 <ul>
     <li># Tower of Hanoi</li>
   </ul>
@@ -86,11 +82,7 @@ hanoi(3, 'A', 'B', 'C')</code></pre>
     return n * factorial(n - 1)
 }
 
-n = 1
-while n &lt;= 5 {
-    println(n + '! = ' + factorial(n))
-    n = n + 1
-}</code></pre>
+range(1, 6).forEach(n -> println(n + '! = ' + factorial(n)))</code></pre>
 <ul>
     <li># Class</li>
   </ul>
@@ -123,17 +115,7 @@ println(acct)</code></pre>
 <ul>
     <li># Built-in Classes</li>
   </ul>
-  <pre class="prettyprint"><code>def range(begin, end) {
-    lt = new List()
-    i = begin
-    while i &lt; end {
-        lt.add(i)
-        i = i + 1
-    }
-    return lt
-}
-
-def sum(lt) {
+  <pre class="prettyprint"><code>def sum(lt) {
     if lt.isEmpty() {
         return 0
     }
@@ -344,17 +326,9 @@ Object.deleteOwnMethod('toString')
 println(Object.ownMethods())
 
 def toString() {
-    # List instance
-    props = this.ownProperties() 
-    i = 0
-    lt = new List()
-    while i &lt; props.length() {
-        # List instance which contains name and value
-        prop = props.get(i) 
-        lt.add(prop.join())
-        i = i + 1
-    }
-    return lt.join('\n')
+    props = this.ownProperties()
+    # each prop is a List instance which contains name and value
+    return  props.map(prop -> prop.join()).join('\n')
 }
 
 o = new Object()

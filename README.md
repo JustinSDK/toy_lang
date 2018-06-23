@@ -25,11 +25,7 @@ def print_row(n) {
     println()
 }
 
-i = 1
-while i < 10 {
-    print_row(i)
-    i = i + 1
-}
+range(1, 10).forEach(print_row)
 ```
 
 - Tower of Hanoi
@@ -60,11 +56,7 @@ def factorial(n) {
     return n * factorial(n - 1)
 }
 
-n = 1
-while n <= 5 {
-    println(n + '! = ' + factorial(n))
-    n = n + 1
-}
+range(1, 6).forEach(n -> println(n + '! = ' + factorial(n)))
 ```
 
 - Class
@@ -101,16 +93,6 @@ println(acct)
 - Built-in Classes
 
 ```java
-def range(begin, end) {
-    lt = new List()
-    i = begin
-    while i < end {
-        lt.add(i)
-        i = i + 1
-    }
-    return lt
-}
-
 def sum(lt) {
     if lt.isEmpty() {
         return 0
@@ -334,17 +316,9 @@ Object.deleteOwnMethod('toString')
 println(Object.ownMethods())
 
 def toString() {
-    # List instance
-    props = this.ownProperties() 
-    i = 0
-    lt = new List()
-    while i < props.length() {
-        # List instance which contains name and value
-        prop = props.get(i) 
-        lt.add(prop.join())
-        i = i + 1
-    }
-    return lt.join('\n')
+    props = this.ownProperties()
+    # each prop is a List instance which contains name and value
+    return  props.map(prop -> prop.join()).join('\n')
 }
 
 o = new Object()
