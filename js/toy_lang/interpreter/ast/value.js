@@ -64,13 +64,15 @@ class Func extends Value {
     }
 
     call(context, args) {
-        const ctxOrValues = args.map(arg => arg.evaluate(context));
-        const ctxOrValue = ctxOrValues.find(ctxOrValue => ctxOrValue.throwedValue);
-        if(ctxOrValue) {
-            return ctxOrValue;
+        const ctxValues = evaluateArgs(context, args);
+        if(ctxValues.length !== 0) {
+            const ctxValue = ctxValues.slice(-1)[0];
+            if(ctxValue.throwedValue) {
+                return ctxValue;
+            }
         }
 
-        const bodyStmt = this.bodyStmt(ctxOrValues);
+        const bodyStmt = this.bodyStmt(ctxValues);
         return bodyStmt.evaluate(
             this.parentContext ? 
                 this.parentContext.childContext() : // closure context
@@ -91,6 +93,18 @@ class Func extends Value {
             this.clzOfLang(context), new Map(), this.withParentContext(context)
         );
     }
+}
+
+function evaluateArgs(context, args) {
+    if(args.length === 0) {
+        return [];
+    }
+    const arg = args[0];
+    const ctxValue = arg.evaluate(context);
+    if(ctxValue.throwedValue) {
+        return [ctxValue];
+    }
+    return [ctxValue].concat(evaluateArgs(context, args.slice(1)));
 }
 
 class Class extends Func {
