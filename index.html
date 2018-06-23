@@ -189,12 +189,12 @@ println('obj.z is ' + obj.z)</code></pre>
 <ul>
     <li># Lambda expression</li>
   </ul>
-  <pre class="prettyprint"><code>lt = new List().add(1).add(2).add(3).add(4)
+  <pre class="prettyprint"><code>
       
 # use \ for cross-line expression       
-lt.filter(elem -> elem >= 2) \
-  .map(elem -> elem * 100)   \
-  .forEach(println)
+list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
+                   .map(elem -> elem * 100)   \
+                   .forEach(println)
 
 def foo(x, y) {
     return () -> x + y
@@ -371,7 +371,7 @@ def foo(p) {
 }
 
 # The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o, new List().add(40)))</code></pre>
+println(foo.apply(o, list(40)))</code></pre>
 <ul>
     <li># meta programming 2</li>
   </ul>
@@ -394,7 +394,7 @@ class C {
 }
 
 println(C.parents())
-C.setParents(new List().add(PA).add(PB))
+C.setParents(list(PA, PB))
 println(C.parents())
 
 new C().pa()
