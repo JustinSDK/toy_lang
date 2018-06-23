@@ -1,6 +1,7 @@
 import {Null, Primitive, Instance, Void} from '../interpreter/ast/value.js';
-import {PARAM1, func1} from './func_bases.js';
+import {PARAM1, func0, func1} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
+import {Variable} from '../interpreter/ast/statement.js';
 
 export {BUILTIN_FUNCTIONS};
 
@@ -39,6 +40,14 @@ const NoValue = func1('noValue', {
     }
 });
 
+const ARGUMENTS = new Variable('arguments');
+
+const List = func0('list', {
+    evaluate(context) {
+        return context.returned(ARGUMENTS.evaluate(context));
+    }
+});
+
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -49,5 +58,6 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'print', Print),
     funcEntry(FUNC_CLZ, 'println', Println),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
-    funcEntry(FUNC_CLZ, 'noValue', NoValue)
+    funcEntry(FUNC_CLZ, 'noValue', NoValue),
+    funcEntry(FUNC_CLZ, 'list', List)
 ]); 
