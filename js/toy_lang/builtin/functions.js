@@ -81,6 +81,15 @@ function format(template) {
     });
 }
 
+const Printf = func0('printf', {
+    evaluate(context) {
+        const args = context.lookUpVariable('arguments').internalNode.value;
+        const str = format.apply(undefined, args.map(arg => arg.value));
+        print(context, str);
+        return context.returned(Void);
+    }
+});
+
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -94,5 +103,6 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'noValue', NoValue),
     funcEntry(FUNC_CLZ, 'list', List),
     funcEntry(FUNC_CLZ, 'range', Range),
-    funcEntry(FUNC_CLZ, 'format', Format)
+    funcEntry(FUNC_CLZ, 'format', Format),
+    funcEntry(FUNC_CLZ, 'printf', Printf)
 ]); 
