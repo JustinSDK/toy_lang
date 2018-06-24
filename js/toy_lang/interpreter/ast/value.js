@@ -1,5 +1,5 @@
 import {Variable, VariableAssign, StmtSequence} from './statement.js'
-export {Value, Null, Primitive, Func, Void, Instance, Class};
+export {Value, Null, Primitive, Func, Void, Instance, Class, Thrown};
 
 class Value {
     evaluate(context) {
@@ -280,5 +280,17 @@ class Instance extends Value {
         }
         
         return `[${this.clzOfLang.internalNode.name} object]`;
+    }
+}
+
+class Thrown extends Value {
+    constructor(value, lineNumbers = []) {
+        super();
+        this.value = value;
+        this.lineNumbers = lineNumbers;
+    }
+
+    addLineNumber(lineNumber) {
+        this.lineNumbers.push(lineNumber);
     }
 }

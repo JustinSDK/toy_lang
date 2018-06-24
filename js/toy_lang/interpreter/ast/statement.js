@@ -1,3 +1,5 @@
+import {Thrown} from './value.js';
+
 export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Return, Throw};
 
 class ExprWrapper {
@@ -100,7 +102,7 @@ class StmtSequence {
                 leftContext => {
                     if(leftContext.throwedValue.lineNumbers.length === 0 || 
                        context !== leftContext.thrownContext) {
-                        leftContext.throwedValue.lineNumbers.push(this.lineNumber);
+                        leftContext.throwedValue.addLineNumber(this.lineNumber);
                     }
                     return leftContext;
                 },
@@ -168,9 +170,8 @@ class Throw {
 
     evaluate(context) {
         const maybeCtx = this.value.evaluate(context);
-        return maybeCtx.notThrown(ex => {
-            ex.lineNumbers = [];
-            return context.thrown(ex);
+        return maybeCtx.notThrown(v => {
+            return context.thrown(new Thrown(v));
         });
     }    
 }
