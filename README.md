@@ -232,8 +232,9 @@ class PA {
         println('PA init')
     }
 
-    def ma() {
-        println('ma')
+    def ma(x, y) {
+        println(x)
+        println(y)
     }
 }
 
@@ -245,7 +246,7 @@ class PB {
 
 class C(PA, PB) {
     def init() {
-        PA.method('init').apply(this) # super init
+        this.super(PA, 'init')
         println('C init')
     }
 
@@ -253,14 +254,14 @@ class C(PA, PB) {
         println('mc')
     }
 
-    def ma() {
-        PA.method('ma').apply(this) # super method
+    def ma(x, y) {
+        this.super(PA, 'ma', x + 1, y + 1)
         println('c.ma()')
     }
 }
 
 c = new C()
-c.ma()
+c.ma(10, 20)
 c.mb()
 c.mc()
 ```
