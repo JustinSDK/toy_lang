@@ -100,9 +100,9 @@ class StmtSequence {
             const ctx = this.firstStmt.evaluate(context);
             return ctx.either(
                 leftContext => {
-                    if(leftContext.throwedValue.lineNumbers.length === 0 || 
+                    if(leftContext.thrownNode.lineNumbers.length === 0 || 
                        context !== leftContext.thrownContext) {
-                        leftContext.throwedValue.addLineNumber(this.lineNumber);
+                        leftContext.thrownNode.addLineNumber(this.lineNumber);
                     }
                     return leftContext;
                 },

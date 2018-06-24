@@ -40,7 +40,7 @@ function eitherLeft(left, right) {
 }
 
 class Context { 
-    constructor({fileName, output, parent, variables, returnedValue, notReturn, either, thrownContext, throwedValue, notThrown}) {
+    constructor({fileName, output, parent, variables, returnedValue, notReturn, either, thrownContext, thrownNode, notThrown}) {
         this.fileName = fileName;
         this.output = output;
         this.parent = parent || null;
@@ -49,7 +49,7 @@ class Context {
         this.notReturn = notReturn || call;
         this.either = either || eitherRight;
         this.thrownContext = thrownContext || null;
-        this.throwedValue = throwedValue || null;
+        this.thrownNode = thrownNode || null;
         this.notThrown = notThrown || call; 
     }
 
@@ -91,7 +91,7 @@ class Context {
         });
     }
 
-    thrown(value) {
+    thrown(thrownNode) {
         return new Context({
             fileName : this.fileName,
             parent : this.parent,
@@ -99,7 +99,7 @@ class Context {
             variables : this.variables,
             either : eitherLeft,
             thrownContext : this,
-            throwedValue : value,
+            thrownNode : thrownNode,
             notThrown : self
         });
     }

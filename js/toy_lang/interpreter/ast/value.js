@@ -97,7 +97,7 @@ class Func extends Value {
         const ctxValues = evaluateArgs(context, args);
         if(ctxValues.length !== 0) {
             const ctxValue = ctxValues.slice(-1)[0];
-            if(ctxValue.throwedValue) {
+            if(ctxValue.thrownNode) {
                 return ctxValue;
             }
         }
@@ -131,7 +131,7 @@ function evaluateArgs(context, args) {
     }
     const arg = args[0];
     const ctxValue = arg.evaluate(context);
-    if(ctxValue.throwedValue) {
+    if(ctxValue.thrownNode) {
         return [ctxValue];
     }
     return [ctxValue].concat(evaluateArgs(context, args.slice(1)));

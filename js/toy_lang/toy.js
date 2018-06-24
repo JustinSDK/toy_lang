@@ -39,9 +39,9 @@ function parseThenEval(toy) {
     const ast = parse(toy);
     try {
         const ctx = ast.evaluate(Context.initialize(toy.env, toy.fileName));
-        if(ctx.throwedValue !== null) {
-            ctx.output(`Thrown: ${ctx.throwedValue}`);
-            printStackTrace(toy, ctx.throwedValue.lineNumbers);
+        if(ctx.thrownNode !== null) {
+            ctx.output(`Thrown: ${ctx.thrownNode}`);
+            printStackTrace(toy, ctx.thrownNode.lineNumbers);
         }
     }
     catch(e) {
