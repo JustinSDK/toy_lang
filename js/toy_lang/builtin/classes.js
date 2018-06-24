@@ -1,4 +1,4 @@
-import {Primitive, Instance, Null} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Null, Thrown} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2} from './func_bases.js';
@@ -46,7 +46,28 @@ ObjectClass.methods = new Map([
             return context.returned(new Primitive(`[${clzNode.name} object]`));
         }    
     })],
-    ['class', ObjectClass.getClass()]
+    ['class', ObjectClass.getClass()],
+    ['super', func0('super', {
+        evaluate(context) {
+            const instance = self(context);
+            const args = context.lookUpVariable('arguments').internalNode.value;
+            const parentClz = args[0].internalNode;
+            const parentClzNames = instance.clzOfLang.internalNode.parentClzNames;
+            if(parentClzNames.every(parentClzName => parentClzName !== parentClz.name)) {
+                // currently a text is thrown. I'll design an exception type later.
+                return context.thrown(
+                    new Thrown('obj.super(parent): the type of obj must be the direct subtype of parent')
+                );
+            }
+ 
+            const name = args[1].value;
+            const func = parentClz.getOwnMethod(name);           
+            return new StmtSequence(
+                new VariableAssign(Variable.of('this'), instance),  
+                func.bodyStmt(context, args.slice(2))
+            ).evaluate(context);
+        }    
+    })]
 ]);
 
 class FunctionClass {
