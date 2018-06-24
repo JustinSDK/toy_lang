@@ -94,8 +94,8 @@ class ClassClass {
         return new Instance(clzOfLang, new Map(), internalNode);
     }
 
-    static classEntry(clzOfLang, name, methods, newInstance) {
-        return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods, newInstance}))];
+    static classEntry(clzOfLang, name, methods) {
+        return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods}))];
     }
 }
 
@@ -155,6 +155,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const fNodes = Array.from(self(context).internalNode.methods.values());
             return context.returned(
+                
                 ListClass.newInstance(context, fNodes.map(fNode => fNode.evaluate(context)))
             );
         }    
@@ -197,7 +198,7 @@ const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Object', ObjectClass.methods),
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
-    ClassClass.classEntry(CLZ, 'String', StringClass.methods, StringClass.newInstance),
-    ClassClass.classEntry(CLZ, 'List', ListClass.methods, ListClass.newInstance)
+    ClassClass.classEntry(CLZ, 'String', StringClass.methods),
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods)
 ]); 
 

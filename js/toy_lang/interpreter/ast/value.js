@@ -1,5 +1,5 @@
 import {Variable, VariableAssign, StmtSequence} from './statement.js'
-export {Value, Null, Primitive, Func, Void, Instance, Class, Thrown};
+export {Value, Native, Null, Primitive, Func, Void, Instance, Class, Thrown, newInstance};
 
 class Value {
     evaluate(context) {
@@ -24,6 +24,26 @@ const Null = new Value();
 // internal void value
 const Void = Null;
 
+function newInstance(context, clzName, node, value) {
+    return new Instance(
+        context.lookUpVariable(clzName),
+        new Map(), 
+        new node(value)
+    );
+}
+
+
+class Native extends Value {
+    constructor(value) {
+        super();
+        this.value = value;
+    }
+
+    toString() {
+        return `${this.value}`;
+    }
+}
+
 // number, text, boolean
 class Primitive extends Value {
     constructor(value) {
@@ -37,7 +57,7 @@ class Primitive extends Value {
 
     // currently only support text
     box(context) {
-        return context.lookUpVariable('String').internalNode.newInstance(context, this.value);
+        return newInstance(context, 'String', Primitive, this.value);
     }
 
     static boolNode(value) {
@@ -62,9 +82,7 @@ class Func extends Value {
     }
 
     assignToParams(context, args) {
-        const listClzInstance = context.lookUpVariable('List');
-        const listClzNode = listClzInstance.internalNode;
-        const argumentsListInstance = listClzNode.newInstance(context, args);  
+        const argumentsListInstance = newInstance(context, 'List', Native, args); 
         return VariableAssign.assigns(
             this.params.concat([new Variable('arguments')]), 
             this.params.map((_, idx) => args[idx] ? args[idx] : Null).concat([argumentsListInstance])
@@ -120,11 +138,10 @@ function evaluateArgs(context, args) {
 }
 
 class Class extends Func {
-    constructor({notMethodStmt, methods, name, parentClzNames, parentContext, newInstance}) {
+    constructor({notMethodStmt, methods, name, parentClzNames, parentContext}) {
         super([], notMethodStmt, name, parentContext || null);
         this.parentClzNames = parentClzNames || ['Object'];
         this.methods = methods;
-        this.newInstance = newInstance || null;
     }
 
     addOwnMethod(name, fInstance) {

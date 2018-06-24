@@ -1,4 +1,4 @@
-import {Null, Primitive, Instance, Void} from '../interpreter/ast/value.js';
+import {Native, Null, Primitive, Instance, Void, newInstance} from '../interpreter/ast/value.js';
 import {PARAM1, PARAM2, PARAM3, func0, func1, func3, format} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {Variable} from '../interpreter/ast/statement.js';
@@ -58,11 +58,8 @@ const Range = func3('range', {
         const jsArray = new Array(parseInt((stop - start) / step))
                               .fill(undefined)
                               .map((_, i) => new Primitive(i * step + start));
-
-        const listClzInstance = context.lookUpVariable('List');
-        const listClzNode = listClzInstance.internalNode;
-        const list = listClzNode.newInstance(context, jsArray);                              
-        return context.returned(list);
+                             
+        return context.returned(newInstance(context, 'List', Native, jsArray));
     }
 });
 

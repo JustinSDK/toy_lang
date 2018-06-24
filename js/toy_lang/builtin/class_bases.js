@@ -1,29 +1,17 @@
-import {Value, Primitive, Class, Instance, Void} from '../interpreter/ast/value.js';
+import {Native, Primitive, Class, Instance, Void} from '../interpreter/ast/value.js';
 import {StmtSequence} from '../interpreter/ast/statement.js';
 
 import {PARAM_LT0} from './func_bases.js';
 import {func} from './func_bases.js';
 
-export {Native, clzNode, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue};
+export {clzNode, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue};
 
-class Native extends Value {
-    constructor(value) {
-        super();
-        this.value = value;
-    }
-
-    toString() {
-        return `${this.value}`;
-    }
-}
-
-function clzNode({name, methods, parents, newInstance}) {
+function clzNode({name, methods, parents}) {
     return new Class({
         notMethodStmt : StmtSequence.EMPTY, 
         methods : methods, 
         name : name, 
-        parentClzNames : parents,
-        newInstance : newInstance
+        parentClzNames : parents
     });
 }
 

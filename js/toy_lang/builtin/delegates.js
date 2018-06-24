@@ -1,7 +1,7 @@
-import {Primitive, Instance, Void, Null} from '../interpreter/ast/value.js';
+import {Native, Primitive, Void, Null, newInstance} from '../interpreter/ast/value.js';
 import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
 import {func0, func1, func2, format} from './func_bases.js';
-import {Native, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue} from './class_bases.js';
+import {methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue} from './class_bases.js';
 
 export {StringClass, ListClass};
 
@@ -17,14 +17,6 @@ class StringClass {
     static method2Primitive(methodName) {
         return methodPrimitive(String, methodName, PARAM_LT2);
     }     
-
-    static newInstance(context, str) {
-        return new Instance(
-            context.lookUpVariable('String'),
-            new Map(), 
-            new Primitive(str)
-        );
-    }
 }
 
 StringClass.EMPTY_STRING = new Primitive('');
@@ -100,11 +92,7 @@ class ListClass {
     }  
     
     static newInstance(context, jsArray) {
-        return new Instance(
-            context.lookUpVariable('List'),
-            new Map(), 
-            new Native(jsArray)
-        );
+        return newInstance(context, 'List', Native, jsArray);
     }
 
     static predictableMethod(context, fName) {
