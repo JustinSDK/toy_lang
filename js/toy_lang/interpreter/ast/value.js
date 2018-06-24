@@ -293,4 +293,8 @@ class Thrown extends Value {
     addLineNumber(lineNumber) {
         this.lineNumbers.push(lineNumber);
     }
+
+    toString() {
+        return `${this.value}`;
+    }
 }
