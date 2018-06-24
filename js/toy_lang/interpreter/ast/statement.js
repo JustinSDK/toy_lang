@@ -127,6 +127,8 @@ function addStackTrace(context, e, lineNumber) {
 }
 
 StmtSequence.EMPTY = {
+    // We don't care about emtpy statements so the lineNumber 0 is enough.
+    lineNumber : 0, 
     evaluate(context) {
         return context;
     }
