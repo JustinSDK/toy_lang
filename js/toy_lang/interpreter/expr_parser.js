@@ -152,7 +152,10 @@ function digest(tokenables, stack = new Stack(), output = [], prevTokenable = nu
             const [s3, o3] = popAllBeforeLP(stack, output);
             return digest(tokenables.slice(1), s3.pop(), o3, tokenables[0]);
         default: 
-            return digest(tokenables.slice(1), stack, output.concat([tokenables[0]]), tokenables[0]);
+            if(notOperand(prevTokenable)) {
+                return digest(tokenables.slice(1), stack, output.concat([tokenables[0]]), tokenables[0]);
+            }
+            throw prevTokenable.syntaxErr('illegal expression');
     }
 }
 
