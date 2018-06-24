@@ -13,6 +13,8 @@ class ExprWrapper {
     }    
 }
 
+const variables = new Map();
+
 class Variable {
     constructor(name) {
         this.name = name;
@@ -24,6 +26,15 @@ class Variable {
 
     send(context, instance) {
         return instance.getProperty(context, this.name).evaluate(context);
+    }
+
+    static of(name) {
+        if(variables.has(name)) {
+            return variables.get(name);
+        }
+        const variable = new Variable(name);
+        variables.set(name, variable);
+        return variable;
     }
 }
 

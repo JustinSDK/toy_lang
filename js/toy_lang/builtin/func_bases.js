@@ -5,9 +5,9 @@ export {PARAM1, PARAM2, PARAM3, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3};
 export {func, func0, func1, func2, func3};
 export {format};
 
-const PARAM1 = new Variable('p1');
-const PARAM2 = new Variable('p2');
-const PARAM3 = new Variable('p3');
+const PARAM1 = Variable.of('p1');
+const PARAM2 = Variable.of('p2');
+const PARAM3 = Variable.of('p3');
 
 const PARAM_LT0 = [];
 const PARAM_LT1 = [PARAM1];

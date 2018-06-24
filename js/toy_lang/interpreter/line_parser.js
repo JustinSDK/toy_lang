@@ -34,7 +34,7 @@ const STMT_PARSER = TokenablesParser.orRules(
             return createAssign(
                 tokenableLines, 
                 VariableAssign, 
-                new Variable(varTokenable.value), 
+                Variable.of(varTokenable.value), 
                 valueTokenable
             );
         }
@@ -137,9 +137,9 @@ function createAssignFunc(tokenableLines, argTokenable) {
     const remains = tokenableLines.slice(1);
     return new StmtSequence(
         new VariableAssign(
-            new Variable(fNameTokenable.value), 
+            Variable.of(fNameTokenable.value), 
             new Func(
-                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
+                paramTokenables.map(paramTokenable => Variable.of(paramTokenable.value)), 
                 LINE_PARSER.parse(remains),
                 fNameTokenable.value
             )
@@ -159,7 +159,7 @@ function createAssignClass(tokenableLines, argTokenable) {
     const parentClzNames = paramTokenables.map(paramTokenable => paramTokenable.value);
     return new StmtSequence(
         new VariableAssign(
-            new Variable(fNameTokenable.value), 
+            Variable.of(fNameTokenable.value), 
             new Class({
                 notMethodStmt : notDefStmt(stmt), 
                 methods : new Map(funcs(stmt)), 

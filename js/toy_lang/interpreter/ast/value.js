@@ -84,7 +84,7 @@ class Func extends Value {
     assignToParams(context, args) {
         const argumentsListInstance = newInstance(context, 'List', Native, args); 
         return VariableAssign.assigns(
-            this.params.concat([new Variable('arguments')]), 
+            this.params.concat([Variable.of('arguments')]), 
             this.params.map((_, idx) => args[idx] ? args[idx] : Null).concat([argumentsListInstance])
         );
     }
@@ -270,7 +270,7 @@ class Instance extends Value {
         const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(context, name);
         const bodystmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
         return new StmtSequence(
-            new VariableAssign(new Variable('this'), this),  
+            new VariableAssign(Variable.of('this'), this),  
             bodystmt,
             bodystmt.lineNumber
         );

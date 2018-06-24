@@ -28,7 +28,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     ['lambda', {
         burst([bodyTokenable, ...paramTokenables]) {
             return new Func(
-                paramTokenables.map(paramTokenable => new Variable(paramTokenable.value)), 
+                paramTokenables.map(paramTokenable => Variable.of(paramTokenable.value)), 
                 new Return(EXPR_PARSER.parse(bodyTokenable)),
                 "''" // anonymous
             );
@@ -41,7 +41,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],  
     ['fcall', {
         burst([fNameTokenable, argLtChainTokenable]) {
-            return createFuncall(new Variable(fNameTokenable.value), argLtChainTokenable);
+            return createFuncall(Variable.of(fNameTokenable.value), argLtChainTokenable);
         }        
     }],  
     ['text', {
@@ -70,7 +70,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],    
     ['variable', {
         burst([varTokenable]) {
-            return new Variable(varTokenable.value);
+            return Variable.of(varTokenable.value);
         }
     }] 
 );

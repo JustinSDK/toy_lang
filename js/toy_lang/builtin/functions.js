@@ -40,7 +40,7 @@ const NoValue = func1('noValue', {
     }
 });
 
-const ARGUMENTS = new Variable('arguments');
+const ARGUMENTS = Variable.of('arguments');
 
 const List = func0('list', {
     evaluate(context) {

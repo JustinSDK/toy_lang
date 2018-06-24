@@ -82,7 +82,7 @@ FunctionClass.methods = new Map([
             const jsArray = args === Null ? [] : args.internalNode.value;
 
             return new StmtSequence(
-                new VariableAssign(new Variable('this'), targetObject),  
+                new VariableAssign(Variable.of('this'), targetObject),  
                 funcInstance.internalNode.bodyStmt(context, jsArray.map(arg => arg.evaluate(context)))
             ).evaluate(context);
         }    
