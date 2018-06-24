@@ -40,7 +40,7 @@ function parseThenEval(toy) {
     try {
         const ctx = ast.evaluate(Context.initialize(toy.env, toy.fileName));
         if(ctx.thrownNode !== null) {
-            ctx.output(`Thrown: ${ctx.thrownNode}`);
+            ctx.output(`Thrown: ${ctx.thrownNode.value}`);
             printStackTrace(toy, ctx.thrownNode.lineNumbers);
         }
     }
