@@ -4,12 +4,12 @@ import {FunCall} from './ast/function.js';
 import {Variable, Return} from './ast/statement.js';
 import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
-import {EvalExInterceptor} from './commons/interceptor.js';
+import {EvalErrInterceptor} from './commons/interceptor.js';
 
 export {EXPR_PARSER};
 
 function interceptExprAst(infixTokenables) {
-    return new EvalExInterceptor(
+    return new EvalErrInterceptor(
         exprAst(toPostfix(infixTokenables))
     );
 }

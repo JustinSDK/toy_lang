@@ -2,11 +2,11 @@ import {Func, Void, Class} from './ast/value.js';
 import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Throw, Return} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
-import {ParseExInterceptor} from './commons/interceptor.js';
+import {ParseErrInterceptor} from './commons/interceptor.js';
 
 export {LINE_PARSER};
 
-const LINE_PARSER = new ParseExInterceptor({
+const LINE_PARSER = new ParseErrInterceptor({
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
             return StmtSequence.EMPTY;

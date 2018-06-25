@@ -1,6 +1,6 @@
-export {ParseExInterceptor, EvalExInterceptor};
+export {ParseErrInterceptor, EvalErrInterceptor};
 
-class ParseExInterceptor {
+class ParseErrInterceptor {
     constructor(parser) {
         this.parser = parser;
     }
@@ -18,7 +18,7 @@ class ParseExInterceptor {
     }
 }
 
-class EvalExInterceptor {
+class EvalErrInterceptor {
     constructor(ast) {
         this.ast = ast;
     }
