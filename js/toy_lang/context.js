@@ -40,8 +40,9 @@ function eitherLeft(left, right) {
 }
 
 class Context { 
-    constructor({fileName, output, parent, variables, returnedValue, notReturn, either, thrownContext, thrownNode, notThrown}) {
+    constructor({fileName, stmtMap, output, parent, variables, returnedValue, notReturn, either, thrownContext, thrownNode, notThrown}) {
         this.fileName = fileName;
+        this.stmtMap = stmtMap;
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
@@ -53,9 +54,10 @@ class Context {
         this.notThrown = notThrown || call; 
     }
 
-    static initialize(environment, fileName) {
+    static initialize(environment, fileName, stmtMap) {
         return new Context({
             fileName : fileName,
+            stmtMap : stmtMap,
             output : environment.output,
             variables : new Map(BUILTINS)
         });
@@ -64,6 +66,7 @@ class Context {
     childContext() {
         return new Context({
             fileName : this.fileName,
+            stmtMap : this.stmtMap,
             parent : this,
             output : this.output
         });
@@ -83,6 +86,7 @@ class Context {
     returned(value) {
         return new Context({
             fileName : this.fileName,
+            stmtMap : this.stmtMap,
             parent : this.parent,
             output : this.output,
             variables : this.variables,
@@ -94,6 +98,7 @@ class Context {
     thrown(thrownNode) {
         return new Context({
             fileName : this.fileName,
+            stmtMap : this.stmtMap,
             parent : this.parent,
             output : this.output,
             variables : this.variables,

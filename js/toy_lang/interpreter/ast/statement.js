@@ -115,7 +115,8 @@ class StmtSequence {
                        context !== leftContext.thrownContext) {
                         leftContext.thrownNode.addStackTraceElement({
                             fileName : context.fileName,
-                            lineNumber : this.lineNumber
+                            lineNumber : this.lineNumber,
+                            statement : context.stmtMap.get(this.lineNumber)
                         });
                     }
                     return leftContext;
@@ -125,7 +126,8 @@ class StmtSequence {
         } catch(e) {
             addStackTrace(context, e, {
                 fileName : context.fileName,
-                lineNumber : this.lineNumber
+                lineNumber : this.lineNumber,
+                statement : context.stmtMap.get(this.lineNumber)
             });
             throw e;
         }
