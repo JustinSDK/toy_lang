@@ -41,7 +41,7 @@ function parseThenEval(toy) {
         const ctx = ast.evaluate(Context.initialize(toy.env, toy.fileName));
         if(ctx.thrownNode !== null) {
             ctx.output(`Thrown: ${ctx.thrownNode.value}`);
-            printStackTrace(toy, ctx.thrownNode.lineNumbers);
+            printStackTrace(toy, ctx.thrownNode.stackTraceElements);
         }
     }
     catch(e) {
@@ -53,9 +53,9 @@ function parseThenEval(toy) {
     }
 }
 
-function printStackTrace(toy, lineNumbers) {
+function printStackTrace(toy, stackTraceElements) {
     const tokenizableLines = toy.tokenizer.tokenizableLines();
-    lineNumbers.map(lineNumber => tokenizableLines.find(tokenizableLine => tokenizableLine.lineNumber === lineNumber))
-               .map(tokenizableLine => `at ${tokenizableLine.value} (${toy.fileName}:${tokenizableLine.lineNumber})`)
-               .forEach(line => toy.env.output(`\n\t${line}`));  
+    stackTraceElements.map(stackTraceElement => tokenizableLines.find(tokenizableLine => tokenizableLine.lineNumber === stackTraceElement.lineNumber))
+                      .map(tokenizableLine => `at ${tokenizableLine.value} (${toy.fileName}:${tokenizableLine.lineNumber})`)
+                      .forEach(line => toy.env.output(`\n\t${line}`));  
 }

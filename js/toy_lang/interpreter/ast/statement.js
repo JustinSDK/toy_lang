@@ -111,9 +111,11 @@ class StmtSequence {
             const ctx = this.firstStmt.evaluate(context);
             return ctx.either(
                 leftContext => {
-                    if(leftContext.thrownNode.lineNumbers.length === 0 || 
+                    if(leftContext.thrownNode.stackTraceElements.length === 0 || 
                        context !== leftContext.thrownContext) {
-                        leftContext.thrownNode.addLineNumber(this.lineNumber);
+                        leftContext.thrownNode.addStackTraceElement({
+                            lineNumber : this.lineNumber
+                        });
                     }
                     return leftContext;
                 },

@@ -301,14 +301,14 @@ class Instance extends Value {
 }
 
 class Thrown extends Value {
-    constructor(value, lineNumbers = []) {
+    constructor(value, stackTraceElements = []) {
         super();
         this.value = value;
-        this.lineNumbers = lineNumbers;
+        this.stackTraceElements = stackTraceElements;
     }
 
-    addLineNumber(lineNumber) {
-        this.lineNumbers.push(lineNumber);
+    addStackTraceElement(stackTraceElement) {
+        this.stackTraceElements.push(stackTraceElement);
     }
 
     toString() {
