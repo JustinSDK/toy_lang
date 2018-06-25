@@ -159,6 +159,10 @@ list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
                    .map(elem -> elem * 100)   \
                    .forEach(println)
 
+range(1, 10) \
+  .map(n -> range(2, 10).map(i -> '{0}*{1}={2}'.format(i, n, i * n)).join('\t')) \
+  .forEach(println)
+
 def foo(x, y) {
     return () -> x + y
 }
