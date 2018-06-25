@@ -46,8 +46,8 @@ function parseThenEval(toy) {
     }
     catch(e) {
         toy.env.output(`\n${e}`);
-        if(e.lineNumbers) {
-            printStackTrace(toy, e.lineNumbers);         
+        if(e.strackTraceElements) {
+            printStackTrace(toy, e.strackTraceElements);         
         }
         throw e;
     }

@@ -122,20 +122,20 @@ class StmtSequence {
                 rightContext =>  rightContext.notReturn(c => this.secondStmt.evaluate(c))
             );
         } catch(e) {
-            addStackTrace(context, e, this.lineNumber);
+            addStackTrace(context, e, {lineNumber : this.lineNumber});
             throw e;
         }
     }
 }
 
-function addStackTrace(context, e, lineNumber) {
-    if(!e.lineNumbers) {
-        e.lineNumbers = [lineNumber];
+function addStackTrace(context, e, strackTraceElement) {
+    if(!e.strackTraceElements) {
+        e.strackTraceElements = [strackTraceElement];
         e.context = context;
     }
     if(e.context !== context) {
         e.context = context;
-        e.lineNumbers.push(lineNumber);
+        e.strackTraceElements.push(strackTraceElement);
     }
 }
 
