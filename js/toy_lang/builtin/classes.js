@@ -106,7 +106,7 @@ FunctionClass.methods = new Map([
             return new StmtSequence(
                 new VariableAssign(Variable.of('this'), targetObject),  
                 bodyStmt,
-                bodystmt.lineNumber
+                bodyStmt.lineNumber
             ).evaluate(context);
         }    
     })]

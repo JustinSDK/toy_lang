@@ -268,11 +268,11 @@ class Instance extends Value {
 
     methodBodyStmt(context, name, args = []) {
         const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(context, name);
-        const bodystmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
+        const bodyStmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
         return new StmtSequence(
             new VariableAssign(Variable.of('this'), this),  
-            bodystmt,
-            bodystmt.lineNumber
+            bodyStmt,
+            bodyStmt.lineNumber
         );
     }
 
