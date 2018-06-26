@@ -90,6 +90,13 @@ acct = new Account('123', 'Justin')
 acct.deposit(100)
 
 println(acct)
+
+try {
+    acct.deposit(-100)
+}
+catch e {
+    println('shit: ' + e)
+}
 ```
 
 - Built-in Classes

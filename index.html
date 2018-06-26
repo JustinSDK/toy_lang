@@ -117,7 +117,14 @@ range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
 acct = new Account('123', 'Justin')
 acct.deposit(100)
 
-println(acct)</code></pre>
+println(acct)
+
+try {
+    acct.deposit(-100)
+}
+catch e {
+    println('shit: ' + e)
+}</code></pre>
 <ul>
     <li># Built-in Classes</li>
   </ul>
