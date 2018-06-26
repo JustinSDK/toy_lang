@@ -7,14 +7,9 @@ import {MethodCall} from '../interpreter/ast/callable.js';
 export {BUILTIN_FUNCTIONS};
 
 function print(context, v) {
-    if(v.hasProperty && v.hasProperty(context, 'toString')) {
-        const ctx = new MethodCall(v, 'toString').evaluate(context);
-        return ctx.notThrown(c => {
-            context.output(c.returnedValue);
-            return Void;
-        });
-    }
-    context.output(v.toString());
+    const desc = v.hasProperty && v.hasProperty(context, 'toString') ?
+                     new MethodCall(v, 'toString').evaluate(context) : v;
+    context.output(desc.toString());
     return Void;
 }
 

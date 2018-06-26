@@ -15,16 +15,7 @@ class FunCall {
 
     send(context, instance) {
         const methodName = this.func.name;
-        const args = this.argsList[0];
-
-        const ctx = new MethodCall(instance, methodName, args).evaluate(context);
-        return ctx.notThrown(c => {
-            const returnedValue = c.returnedValue;
-            if(this.argsList.length > 1) {
-                return callChain(context, returnedValue.internalNode, this.argsList.slice(1));
-            }
-            return returnedValue === null ? Void : returnedValue; 
-        });
+        return new MethodCall(instance, methodName, this.argsList).evaluate(context);
     }
 }
 
@@ -41,16 +32,16 @@ function callChain(context, f, argsList) {
 }
 
 class MethodCall {
-    constructor(instance, methodName, args = []) {
+    constructor(instance, methodName, argsList = []) {
         this.instance = instance;
         this.methodName = methodName;
-        this.args = args;
+        this.argsList = argsList;
     }
 
     methodBodyStmt(context) {
         const instance = this.instance;
         const f = instance.hasOwnProperty(this.methodName) ? instance.getOwnProperty(this.methodName).internalNode : instance.clzOfLang.internalNode.getMethod(context, this.methodName);
-        const bodyStmt = f.bodyStmt(context, this.args.map(arg => arg.evaluate(context)));
+        const bodyStmt = f.bodyStmt(context, this.argsList.length !== 0 ? this.argsList[0].map(arg => arg.evaluate(context)) : []);
         return new StmtSequence(
             new VariableAssign(Variable.of('this'), instance),  
             bodyStmt,
@@ -65,12 +56,18 @@ class MethodCall {
         const parentContext = clzNode.parentContext || 
                               (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
     
-        return this.methodBodyStmt(context).evaluate(
+        const ctx = this.methodBodyStmt(context).evaluate(
             parentContext ?
                 parentContext.childContext() : // closure context
                 context.childContext()
         );
 
-        return returnedValue === null ? Void : returnedValue;
+        return ctx.notThrown(c => {
+            const returnedValue = c.returnedValue;
+            if(this.argsList.length > 1) {
+                return callChain(context, returnedValue.internalNode, this.argsList.slice(1));
+            }
+            return returnedValue === null ? Void : returnedValue; 
+        });
     }
 }

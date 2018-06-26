@@ -47,8 +47,8 @@ class NewOperator {
         const maybeContext = this.instance(context);
         return maybeContext.notThrown(ctx => {
             if(ctx.clzOfLang.internalNode.hasOwnMethod('init')) {
-                const maybeCtx = new MethodCall(maybeContext, 'init', this.args).evaluate(context);
-                return maybeCtx.notThrown(c => c.variables.get('this'));
+                const maybeCtx = new MethodCall(maybeContext, 'init', [this.args]).evaluate(context);
+                return maybeCtx.notThrown(c => maybeContext);
             }
             return ctx;
         });    
