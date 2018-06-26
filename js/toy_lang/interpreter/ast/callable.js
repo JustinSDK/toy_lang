@@ -70,5 +70,7 @@ class MethodCall {
                 parentContext.childContext() : // closure context
                 context.childContext()
         );
+
+        return returnedValue === null ? Void : returnedValue;
     }
 }

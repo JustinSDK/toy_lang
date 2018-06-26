@@ -8,15 +8,19 @@ export {BUILTIN_FUNCTIONS};
 
 function print(context, v) {
     if(v.hasProperty && v.hasProperty(context, 'toString')) {
-        context.output(new MethodCall(v, 'toString').evaluate(context).toString());
+        const ctx = new MethodCall(v, 'toString').evaluate(context);
+        return ctx.notThrown(c => {
+            context.output(c.returnedValue);
+            return Void;
+        });
     }
     context.output(v.toString());
+    return Void;
 }
 
 const Print = func1('print', {
     evaluate(context) {
-        print(context, PARAM1.evaluate(context));
-        return context.returned(Void);
+        return context.returned(print(context, PARAM1.evaluate(context)));
     }
 });
  
