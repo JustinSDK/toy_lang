@@ -266,7 +266,7 @@ class Instance extends Value {
         this.properties.set(name, value);
     }
 
-    toString(context) {        
+    toString() {        
         return `[${this.clzOfLang.internalNode.name} object]`;
     }
 }
