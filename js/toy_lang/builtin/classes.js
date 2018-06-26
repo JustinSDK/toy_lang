@@ -101,10 +101,12 @@ FunctionClass.methods = new Map([
             const targetObject = PARAM1.evaluate(context); 
             const args = PARAM2.evaluate(context);         // List instance
             const jsArray = args === Null ? [] : args.internalNode.value;
+            const bodyStmt = funcInstance.internalNode.bodyStmt(context, jsArray.map(arg => arg.evaluate(context)));
 
             return new StmtSequence(
                 new VariableAssign(Variable.of('this'), targetObject),  
-                funcInstance.internalNode.bodyStmt(context, jsArray.map(arg => arg.evaluate(context)))
+                bodyStmt,
+                bodystmt.lineNumber
             ).evaluate(context);
         }    
     })]
