@@ -1,5 +1,5 @@
 import {Instance, Primitive} from './value.js';
-import {MethodCall} from './function.js';
+import {MethodCall} from './callable.js';
 
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 

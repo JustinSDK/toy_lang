@@ -2,7 +2,7 @@ import {Native, Null, Primitive, Instance, Void, newInstance} from '../interpret
 import {PARAM1, PARAM2, PARAM3, func0, func1, func3, format} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {Variable} from '../interpreter/ast/statement.js';
-import {MethodCall} from '../interpreter/ast/function.js';
+import {MethodCall} from '../interpreter/ast/callable.js';
 
 export {BUILTIN_FUNCTIONS};
 
