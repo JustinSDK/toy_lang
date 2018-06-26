@@ -266,36 +266,7 @@ class Instance extends Value {
         this.properties.set(name, value);
     }
 
-    methodBodyStmt(context, name, args = []) {
-        const f = this.hasOwnProperty(name) ? this.getOwnProperty(name).internalNode : this.clzOfLang.internalNode.getMethod(context, name);
-        const bodyStmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
-        return new StmtSequence(
-            new VariableAssign(Variable.of('this'), this),  
-            bodyStmt,
-            bodyStmt.lineNumber
-        );
-    }
-
-    evalMethod(context, methodName, args) {
-        const methodBodyStmt = this.methodBodyStmt(context, methodName, args);
-        const fClz = this.getOwnProperty(methodName);
-        const clzNode = this.clzOfLang.internalNode;
-        const parentContext = clzNode.parentContext || 
-                              (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
-    
-        return methodBodyStmt.evaluate(
-            parentContext ?
-                parentContext.childContext() : // closure context
-                context.childContext()
-        );
-    }
-
-    toString(context) {
-        if(context && this.hasProperty(context, 'toString')) {
-            const methodBodyStmt = this.methodBodyStmt(context, 'toString');
-            return methodBodyStmt.evaluate(context.childContext()).returnedValue.value;
-        }
-        
+    toString(context) {        
         return `[${this.clzOfLang.internalNode.name} object]`;
     }
 }

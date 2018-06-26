@@ -1,4 +1,5 @@
 import {Instance, Primitive} from './value.js';
+import {MethodCall} from './function.js';
 
 export {BINARY_OPERATORS, UNARY_OPERATORS};
 
@@ -46,7 +47,7 @@ class NewOperator {
         const maybeContext = this.instance(context);
         return maybeContext.notThrown(ctx => {
             if(ctx.clzOfLang.internalNode.hasOwnMethod('init')) {
-                const maybeCtx = maybeContext.evalMethod(context, 'init', this.args);
+                const maybeCtx = new MethodCall(maybeContext, 'init', this.args).evaluate(context);
                 return maybeCtx.notThrown(c => c.variables.get('this'));
             }
             return ctx;
