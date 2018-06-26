@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Throw, Return} from './ast/statement.js';
+import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Throw, Return, Try} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
 import {ParseErrInterceptor} from './commons/interceptor.js';
@@ -62,10 +62,15 @@ const STMT_PARSER = TokenablesParser.orRules(
                 case 'if':
                     return createIf(tokenableLines, argTokenable);
                 case 'while':
-                    return createWhile(tokenableLines, argTokenable);
+                    return createWhile(tokenableLines, argTokenable);              
             }
         }
     }],       
+    ['try', {
+        burst(tokenableLines, _) {
+            return createTry(tokenableLines);
+        }
+    }],      
     ['expression', {
         burst(tokenableLines, infixTokenables) {
             return new StmtSequence(
@@ -196,6 +201,29 @@ function createIf(tokenableLines, argTokenable) {
     );
 }
 
+function isCatchLine(tokenableLine) {
+    return tokenableLine.tryTokenables('catch').length !== 0;
+}
+
+function createTry(tokenableLines) {
+    const remains = tokenableLines.slice(1);     
+    const tryStmt = LINE_PARSER.parse(remains);
+
+    const i = countStmts(tryStmt) + 1;
+    const exceptionName = remains[i].tryTokenables('catch')[0].value;
+    const catchStmt = LINE_PARSER.parse(remains.slice(i + 1));
+
+    return new StmtSequence(
+            new Try(
+                tryStmt,
+                Variable.of(exceptionName),
+                catchStmt
+            ),
+            LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+            tokenableLines[0].lineNumber
+    );
+}
+
 function createWhile(tokenableLines, argTokenable) {
     const remains = tokenableLines.slice(1);     
     return new StmtSequence(
@@ -221,9 +249,9 @@ function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
     }
 
     const line = tokenableLines[0].value;
-    const n = (line.startsWith('if') || line.startsWith('while') || line.startsWith('def') || line.startsWith('class')) ? 
+    const n = (line.startsWith('if') || line.startsWith('try') || line.startsWith('while') || line.startsWith('def') || line.startsWith('class')) ? 
                 endCount + 1 : ( 
-                    line === '}' && (tokenableLines.length === 1 || !isElseLine(tokenableLines[1])) ? 
+                    line === '}' && (tokenableLines.length === 1 || !(isElseLine(tokenableLines[1]) || isCatchLine(tokenableLines[1]))) ? 
                         endCount - 1 : 
                         endCount
             );

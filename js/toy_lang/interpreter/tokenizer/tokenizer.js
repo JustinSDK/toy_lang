@@ -68,6 +68,14 @@ const TOKEN_TESTERS = new Map([
         const matched = REGEX.get('else').exec(input);
         return matched ? matched : [];
     }],
+    ['try', function(input) {
+        const matched = REGEX.get('try').exec(input);
+        return matched ? matched : [];
+    }],    
+    ['catch', function(input) {
+        const matched = REGEX.get('catch').exec(input);
+        return matched ? [matched[1]] : [];
+    }],    
     ['argLists', function(input) {
         return argLists(input);
     }],

@@ -109,6 +109,11 @@ class Context {
         });
     }
 
+    deleteVariable(name) {
+        this.variables.delete(name);
+        return this;
+    }
+
     lookUpVariable(name) {
         const value = this.variables.get(name);
         if(value !== undefined) {

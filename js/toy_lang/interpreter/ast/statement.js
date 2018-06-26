@@ -1,6 +1,6 @@
 import {Thrown} from './value.js';
 
-export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Return, Throw};
+export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Return, Throw, Try};
 
 class ExprWrapper {
     constructor(expr) {
@@ -195,4 +195,26 @@ class Throw {
             return context.thrown(new Thrown(v));
         });
     }    
+}
+
+class Try {
+    constructor(tryStmt, exceptionVar, catchStmt) {
+        this.tryStmt = tryStmt;
+        this.exceptionVar = exceptionVar;
+        this.catchStmt = catchStmt;
+    }
+
+    evaluate(context) {
+        const maybeContext = this.tryStmt.evaluate(context);
+        if(maybeContext.thrownNode) {
+            const ctx = new StmtSequence(
+                new VariableAssign(this.exceptionVar, maybeContext.thrownNode.value),
+                this.catchStmt, 
+                this.catchStmt.lineNumber
+            ).evaluate(context);
+        
+            return ctx.deleteVariable(this.exceptionVar.name);
+        }
+        return context;
+    }   
 }

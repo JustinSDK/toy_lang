@@ -73,6 +73,8 @@ const REGEX = new Map([
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
     ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
+    ['try', /^try\s+{$/],
+    ['catch', new RegExp(`^catch\\s+(${VARIABLE_REGEX.source})\\s+{$`)],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['return', /^return\s*(.*)$/],
