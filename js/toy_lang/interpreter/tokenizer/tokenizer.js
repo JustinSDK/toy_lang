@@ -133,7 +133,7 @@ function splitByComma(input, x = '', acc = []) {
     }
 }
 
-const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 'new', 'class', 'this', 'arguments', 'throw'];
+const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 'new', 'class', 'this', 'arguments', 'throw', 'try', 'catch'];
 
 class Tokenable {
     constructor(type, lineNumber, value) {
