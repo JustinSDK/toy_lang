@@ -211,7 +211,7 @@ class Try {
                 new VariableAssign(this.exceptionVar, maybeContext.thrownNode.value),
                 this.catchStmt, 
                 this.catchStmt.lineNumber
-            ).evaluate(context);
+            ).evaluate(maybeContext.emptyThrown());
         
             return ctx.deleteVariable(this.exceptionVar.name);
         }

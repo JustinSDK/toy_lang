@@ -109,6 +109,17 @@ class Context {
         });
     }
 
+    emptyThrown() {
+        return new Context({
+            fileName : this.fileName,
+            stmtMap : this.stmtMap,
+            parent : this.parent,
+            output : this.output,
+            variables : this.variables,
+            thrownContext : this
+        });
+    }
+
     deleteVariable(name) {
         this.variables.delete(name);
         return this;
