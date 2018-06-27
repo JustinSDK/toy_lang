@@ -144,9 +144,12 @@ class Class extends Func {
         this.methods = methods;
     }
 
+    methodArray() {
+        return this.methods.values();
+    }
+
     addOwnMethod(name, fInstance) {
-        const fNode = fInstance.internalNode;
-        this.methods.set(name, fNode);
+        this.methods.set(name, fInstance.internalNode);
     }
 
     deleteOwnMethod(name) {
@@ -236,6 +239,10 @@ class Instance extends Value {
 
     clzNodeOfLang() {
         return this.clzOfLang.internalNode;
+    }
+
+    nativeValue() {
+        return this.internalNode.value;
     }
 
     hasOwnProperty(name) {

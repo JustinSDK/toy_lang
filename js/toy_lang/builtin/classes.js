@@ -12,8 +12,7 @@ class ObjectClass {
     static getClass() {
         return  func0('class', {
             evaluate(context) {
-                const instance = self(context);
-                return context.returned(instance.clzOfLang);
+                return context.returned(self(context).clzOfLang);
             }    
         });
     }
@@ -50,7 +49,7 @@ ObjectClass.methods = new Map([
     ['super', func0('super', {
         evaluate(context) {
             const instance = self(context);
-            const args = context.lookUpVariable('arguments').internalNode.value;
+            const args = context.lookUpVariable('arguments').nativeValue();
             const parentClz = args[0].internalNode;
             const parentClzNames = instance.clzNodeOfLang().parentClzNames;
             if(parentClzNames.every(parentClzName => parentClzName !== parentClz.name)) {
@@ -99,7 +98,7 @@ FunctionClass.methods = new Map([
             const funcInstance = self(context);            
             const targetObject = PARAM1.evaluate(context); 
             const args = PARAM2.evaluate(context);         // List instance
-            const jsArray = args === Null ? [] : args.internalNode.value;
+            const jsArray = args === Null ? [] : args.nativeValue();
             const bodyStmt = funcInstance.internalNode.bodyStmt(context, jsArray.map(arg => arg.evaluate(context)));
 
             return new StmtSequence(
@@ -182,7 +181,7 @@ ClassClass.methods = new Map([
     })],
     ['mixin', func1('mixin', {
         evaluate(context) {
-            Array.from(PARAM1.evaluate(context).internalNode.methods.values())
+            Array.from(PARAM1.evaluate(context).internalNode.methodArray())
                  .forEach(f => selfInternalNode(context).addOwnMethod(f.name, f.evaluate(context)));
             return context.returned(self(context));
         }    
@@ -200,7 +199,7 @@ ClassClass.methods = new Map([
     })],
     ['setParents', func1('setParents', {
         evaluate(context) {
-            const parentClzNames = PARAM1.evaluate(context).internalNode.value
+            const parentClzNames = PARAM1.evaluate(context).nativeValue()
                                          .map(clzInstance => clzInstance.internalNode.name);
             selfInternalNode(context).parentClzNames = parentClzNames;
             return context.returned(self(context));

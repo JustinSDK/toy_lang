@@ -68,7 +68,7 @@ const Range = func3('range', {
 
 const Format = func3('format', {
     evaluate(context) {
-        const args = context.lookUpVariable('arguments').internalNode.value;
+        const args = context.lookUpVariable('arguments').nativeValue();
         const str = format.apply(undefined, args.map(arg => arg.value));
         return context.returned(new Primitive(str));
     }
@@ -76,7 +76,7 @@ const Format = func3('format', {
 
 const Printf = func0('printf', {
     evaluate(context) {
-        const args = context.lookUpVariable('arguments').internalNode.value;
+        const args = context.lookUpVariable('arguments').nativeValue();
         const str = format.apply(undefined, args.map(arg => arg.value));
         print(context, str);
         return context.returned(Void);

@@ -1,7 +1,7 @@
 import {Native, Primitive, Void, Null, newInstance} from '../interpreter/ast/value.js';
 import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from './func_bases.js';
 import {func0, func1, func2, format} from './func_bases.js';
-import {methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalValue} from './class_bases.js';
+import {methodPrimitive, methodVoid, methodSelf, methodNewSameType, self} from './class_bases.js';
 
 export {StringClass, ListClass};
 
@@ -52,14 +52,14 @@ StringClass.methods = new Map([
     })],
     ['length', func0('length', {
         evaluate(context) {
-            const value = selfInternalValue(context);
+            const value = self(context).nativeValue();
             return context.returned(new Primitive(value.length));
         }    
     })],
     ['format', func0('format', {
         evaluate(context) {
-            const value = selfInternalValue(context);
-            const args = context.lookUpVariable('arguments').internalNode.value;
+            const value = self(context).nativeValue();
+            const args = context.lookUpVariable('arguments').nativeValue();
             const str = format.apply(undefined, [value].concat(args.map(arg => arg.value)));
             return context.returned(new Primitive(str));
         }    
@@ -96,7 +96,7 @@ class ListClass {
     }
 
     static predictableMethod(context, fName) {
-        const arr = selfInternalValue(context);
+        const arr = self(context).nativeValue();
         const fNode = PARAM1.evaluate(context).internalNode;
         return arr[fName](elem => {
             const bool = fNode.call(context, [elem]).returnedValue;
@@ -121,33 +121,34 @@ ListClass.methods = new Map([
     ['fill', ListClass.method3Self('fill')],
     ['add', func1('add', {
         evaluate(context) {
+            const instance = self(context);
             const arg = PARAM1.evaluate(context);
-            selfInternalValue(context).push(arg);
-            return context.returned(self(context));
+            instance.nativeValue().push(arg);
+            return context.returned(instance);
         }    
     })],
     ['get', func1('get', {
         evaluate(context) {
             const idx = PARAM1.evaluate(context).value;
-            return context.returned(selfInternalValue(context)[idx]);
+            return context.returned(self(context).nativeValue()[idx]);
         }    
     })],
     ['set', func2('set', {
         evaluate(context) {
             const idx = PARAM1.evaluate(context).value;
             const elem = PARAM2.evaluate(context);
-            selfInternalValue(context)[idx] = elem;
+            self(context).nativeValue()[idx] = elem;
             return context.returned(Void);
         }    
     })],
     ['length', func0('length', {
         evaluate(context) {
-            return context.returned(new Primitive(selfInternalValue(context).length));
+            return context.returned(new Primitive(self(context).nativeValue().length));
         }    
     })],    
     ['isEmpty', func0('isEmpty', {
         evaluate(context) {
-            return context.returned(Primitive.boolNode(selfInternalValue(context).length === 0));
+            return context.returned(Primitive.boolNode(self(context).nativeValue().length === 0));
         }    
     })],
     ['filter', func1('filter', {
@@ -162,7 +163,7 @@ ListClass.methods = new Map([
     })],
     ['map', func1('map', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const fNode = PARAM1.evaluate(context).internalNode;
             const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
             return context.returned(ListClass.newInstance(context, mapped));
@@ -170,7 +171,7 @@ ListClass.methods = new Map([
     })],
     ['forEach', func1('forEach', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const fNode = PARAM1.evaluate(context).internalNode;
             arr.forEach(elem => fNode.call(context, [elem]));
             return context.returned(Void);
@@ -192,7 +193,7 @@ ListClass.methods = new Map([
     })],    
     ['find', func1('find', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const fNode = PARAM1.evaluate(context).internalNode;
             const r = arr.find(elem => {
                 const bool = fNode.call(context, [elem]).returnedValue;
@@ -203,7 +204,7 @@ ListClass.methods = new Map([
     })],  
     ['includes', func1('includes', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const target = PARAM1.evaluate(context);
             return context.returned(
                 Primitive.boolNode(arr.some(elem => elem.value === target.value))
@@ -212,7 +213,7 @@ ListClass.methods = new Map([
     })],  
     ['indexOf', func1('indexOf', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const target = PARAM1.evaluate(context);
             return context.returned(
                 new Primitive(arr.map(elem => elem.value).indexOf(target.value))
@@ -221,7 +222,7 @@ ListClass.methods = new Map([
     })],  
     ['lastIndexOf', func1('lastIndexOf', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const target = PARAM1.evaluate(context);
             return context.returned(
                 new Primitive(arr.map(elem => elem.value).lastIndexOf(target.value))
@@ -230,7 +231,7 @@ ListClass.methods = new Map([
     })],      
     ['findIndex', func1('findIndex', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             const fNode = PARAM1.evaluate(context).internalNode;
             const idx = arr.findIndex(elem => {
                 const bool = fNode.call(context, [elem]).returnedValue;
@@ -241,7 +242,8 @@ ListClass.methods = new Map([
     })],  
     ['sort', func1('sort', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const instance = self(context);
+            const arr = instance.nativeValue();
 
             if(arr.length !== 0) {                
                 const comparator = PARAM1.evaluate(context);
@@ -254,12 +256,12 @@ ListClass.methods = new Map([
                 }
             }
            
-            return context.returned(self(context));
+            return context.returned(instance);
         }    
     })],   
     ['toString', func0('toString', {
         evaluate(context) {
-            const arr = selfInternalValue(context);
+            const arr = self(context).nativeValue();
             return context.returned(
                 new Primitive(arr.map(elem => elem.toString(context)).join())
             );
