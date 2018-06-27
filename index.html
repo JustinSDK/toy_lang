@@ -108,7 +108,7 @@ class Account {
     }
 
     def deposit(amount) {
-        if amount &lt;= 0 {
+        if amount <= 0 {
             throw new AccountException('must be positive')
         }
 
@@ -220,7 +220,7 @@ println(((x, y) -> x + y)(1, 2))</code></pre>
   </ul>
   <pre class="prettyprint"><code>class Ordered {
     def lessThan(that) {
-        return this.compare(that) &lt; 0
+        return this.compare(that) < 0
     }
 
     def lessEqualsThan(that) {

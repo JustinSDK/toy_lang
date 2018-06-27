@@ -80,7 +80,7 @@ class Account {
     }
 
     def deposit(amount) {
-        if amount &lt;= 0 {
+        if amount <= 0 {
             throw new AccountException('must be positive')
         }
 
