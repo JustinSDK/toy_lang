@@ -71,9 +71,13 @@ ObjectClass.methods = new Map([
 
 class FunctionClass {
     static name(methodName = 'name') {
-        return func0(methodName, {
+        return func1(methodName, {
             evaluate(context) {
+                let name = PARAM1.evaluate(context);
                 const fNode = selfInternalNode(context);
+                if(name !== Null) {
+                    fNode.name = name.value;
+                }
                 return context.returned(new Primitive(fNode.name));
             }    
         });
