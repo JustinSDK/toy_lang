@@ -212,17 +212,17 @@ class Try {
                 const stackTraceElements = thrownValue.getOwnProperty('stackTraceElements').nativeValue();
                 maybeContext.thrownNode
                             .stackTraceElements
-                            .map(strackTraceElement => {
+                            .map(elem => {
                                 return new Instance(
                                     context.lookUpVariable('Object'),
                                     new Map([
-                                        ['fileName', new Primitive(strackTraceElement.fileName)],
-                                        ['lineNumber', new Primitive(strackTraceElement.lineNumber)],
-                                        ['statement', new Primitive(strackTraceElement.statement)]
+                                        ['fileName', new Primitive(elem.fileName)],
+                                        ['lineNumber', new Primitive(elem.lineNumber)],
+                                        ['statement', new Primitive(elem.statement)]
                                     ])
                                 );
                             })
-                            .forEach(strackTraceElement => stackTraceElements.push(strackTraceElement));
+                            .forEach(elem => stackTraceElements.push(elem));
             }
 
             const ctx = new StmtSequence(

@@ -10,12 +10,12 @@ function print(context, v) {
     const desc = v.hasProperty && v.hasProperty(context, 'toString') ?
                      new MethodCall(v, 'toString').evaluate(context) : v;
     context.output(desc.toString());
-    return Void;
 }
 
 const Print = func1('print', {
     evaluate(context) {
-        return context.returned(print(context, PARAM1.evaluate(context)));
+        print(context, PARAM1.evaluate(context));
+        return context.returned(Void);
     }
 });
  
@@ -33,13 +33,17 @@ const Println = func1('println', {
 
 const HasValue = func1('hasValue', {
     evaluate(context) {
-        return context.returned(Primitive.boolNode(PARAM1.evaluate(context) !== Null));
+        return context.returned( 
+            Primitive.boolNode(PARAM1.evaluate(context) !== Null)
+        );
     }
 });
 
 const NoValue = func1('noValue', {
     evaluate(context) {
-        return context.returned(Primitive.boolNode(PARAM1.evaluate(context) === Null));
+        return context.returned(
+            Primitive.boolNode(PARAM1.evaluate(context) === Null)
+        );
     }
 });
 

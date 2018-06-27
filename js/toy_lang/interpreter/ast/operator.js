@@ -63,7 +63,9 @@ class DotOperator {
 
     evaluate(context) {
         const maybeContext = this.receiver.evaluate(context);
-        return maybeContext.notThrown(receiver => this.message.send(context, receiver.box(context)));
+        return maybeContext.notThrown(
+            receiver => this.message.send(context, receiver.box(context))
+        );
     }
 }
 

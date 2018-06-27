@@ -50,7 +50,9 @@ class MethodCall {
 }
 
 function methodBodyStmt(context, instance, methodName, args = []) {
-    const f = instance.hasOwnProperty(methodName) ? instance.getOwnProperty(methodName).internalNode : instance.clzNodeOfLang().getMethod(context, methodName);
+    const f = instance.hasOwnProperty(methodName) ? 
+                  instance.getOwnProperty(methodName).internalNode : 
+                  instance.clzNodeOfLang().getMethod(context, methodName);
     const bodyStmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
     return new StmtSequence(
         new VariableAssign(Variable.of('this'), instance),  

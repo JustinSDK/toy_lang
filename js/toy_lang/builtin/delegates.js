@@ -143,12 +143,20 @@ ListClass.methods = new Map([
     })],
     ['length', func0('length', {
         evaluate(context) {
-            return context.returned(new Primitive(self(context).nativeValue().length));
+            return context.returned(
+                new Primitive(
+                    self(context).nativeValue().length
+                )
+            );
         }    
     })],    
     ['isEmpty', func0('isEmpty', {
         evaluate(context) {
-            return context.returned(Primitive.boolNode(self(context).nativeValue().length === 0));
+            return context.returned(
+                Primitive.boolNode(
+                    self(context).nativeValue().length === 0
+                )
+            );
         }    
     })],
     ['filter', func1('filter', {
@@ -166,7 +174,9 @@ ListClass.methods = new Map([
             const arr = self(context).nativeValue();
             const fNode = PARAM1.evaluate(context).internalNode;
             const mapped = arr.map(elem => fNode.call(context, [elem]).returnedValue);
-            return context.returned(ListClass.newInstance(context, mapped));
+            return context.returned(
+                ListClass.newInstance(context, mapped)
+            );
         }    
     })],
     ['forEach', func1('forEach', {
@@ -180,14 +190,18 @@ ListClass.methods = new Map([
     ['all', func1('all', {
         evaluate(context) {
             return context.returned(
-                Primitive.boolNode(ListClass.predictableMethod(context, 'every'))
+                Primitive.boolNode(
+                    ListClass.predictableMethod(context, 'every')
+                )
             );
         }    
     })],
     ['any', func1('any', {
         evaluate(context) {
             return context.returned(
-                Primitive.boolNode(ListClass.predictableMethod(context, 'some'))
+                Primitive.boolNode(
+                    ListClass.predictableMethod(context, 'some')
+                )
             );
         }    
     })],    
@@ -207,7 +221,9 @@ ListClass.methods = new Map([
             const arr = self(context).nativeValue();
             const target = PARAM1.evaluate(context);
             return context.returned(
-                Primitive.boolNode(arr.some(elem => elem.value === target.value))
+                Primitive.boolNode(
+                    arr.some(elem => elem.value === target.value)
+                )
             );
         }    
     })],  
@@ -216,7 +232,9 @@ ListClass.methods = new Map([
             const arr = self(context).nativeValue();
             const target = PARAM1.evaluate(context);
             return context.returned(
-                new Primitive(arr.map(elem => elem.value).indexOf(target.value))
+                new Primitive(
+                    arr.map(elem => elem.value).indexOf(target.value)
+                )
             );
         }    
     })],  
@@ -225,7 +243,9 @@ ListClass.methods = new Map([
             const arr = self(context).nativeValue();
             const target = PARAM1.evaluate(context);
             return context.returned(
-                new Primitive(arr.map(elem => elem.value).lastIndexOf(target.value))
+                new Primitive(
+                    arr.map(elem => elem.value).lastIndexOf(target.value)
+                )
             );
         }    
     })],      
@@ -248,11 +268,15 @@ ListClass.methods = new Map([
             if(arr.length !== 0) {                
                 const comparator = PARAM1.evaluate(context);
                 if(comparator === Null) {
-                    arr.sort(typeof (arr[0].value) === 'number' ? (n1, n2) => n1.value - n2.value : undefined);
+                    arr.sort(
+                        typeof (arr[0].value) === 'number' ? (n1, n2) => n1.value - n2.value : undefined
+                    );
                 }
                 else {
                     const fNode = comparator.internalNode;
-                    arr.sort((elem1, elem2) => fNode.call(context, [elem1, elem2]).returnedValue.value);
+                    arr.sort(
+                        (elem1, elem2) => fNode.call(context, [elem1, elem2]).returnedValue.value
+                    );
                 }
             }
            
@@ -263,7 +287,9 @@ ListClass.methods = new Map([
         evaluate(context) {
             const arr = self(context).nativeValue();
             return context.returned(
-                new Primitive(arr.map(elem => elem.toString(context)).join())
+                new Primitive(
+                    arr.map(elem => elem.toString(context)).join()
+                )
             );
         }    
     })]

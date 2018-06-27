@@ -52,7 +52,7 @@ ObjectClass.methods = new Map([
             const args = context.lookUpVariable('arguments').nativeValue();
             const parentClz = args[0].internalNode;
             const parentClzNames = instance.clzNodeOfLang().parentClzNames;
-            if(parentClzNames.every(parentClzName => parentClzName !== parentClz.name)) {
+            if(parentClzNames.every(name => name !== parentClz.name)) {
                 // currently a text is thrown. I'll design an exception type later.
                 return context.thrown(
                     new Thrown('obj.super(parent): the type of obj must be the direct subtype of parent')
@@ -99,7 +99,8 @@ FunctionClass.methods = new Map([
             const targetObject = PARAM1.evaluate(context); 
             const args = PARAM2.evaluate(context);         // List instance
             const jsArray = args === Null ? [] : args.nativeValue();
-            const bodyStmt = funcInstance.internalNode.bodyStmt(context, jsArray.map(arg => arg.evaluate(context)));
+            const bodyStmt = funcInstance.internalNode
+                                         .bodyStmt(context, jsArray.map(arg => arg.evaluate(context)));
 
             return new StmtSequence(
                 new VariableAssign(Variable.of('this'), targetObject),  
@@ -216,7 +217,11 @@ class TraceableClass {
         return func0(methodName, {
             evaluate(context) {
                 const instance = self(context);
-                return context.returned(new Primitive(`${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`));
+                return context.returned(
+                    new Primitive(
+                        `${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`
+                    )
+                );
             }    
         });
     }

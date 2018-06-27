@@ -57,6 +57,6 @@ function parseThenEval(toy) {
 }
 
 function printStackTrace(toy, stackTraceElements) {
-    stackTraceElements.map(stackTraceElement => `at ${stackTraceElement.statement} (${stackTraceElement.fileName}:${stackTraceElement.lineNumber})`)
+    stackTraceElements.map(elem => `at ${elem.statement} (${elem.fileName}:${elem.lineNumber})`)
                       .forEach(line => toy.env.output(`\n\t${line}`));  
 }
