@@ -6,7 +6,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 - Literals: 3.14 (number), `true`, `false`, `'Hello, World'` (string), `\r`, `'\n'`, `'\t'`, `'\\'`, `'\''`
 - Operators: `new`, `.`, `==`, `!=`, `>=`, `>`, `<=`, `<`, `and`, `or`, `not`, `+`, `-`, `*`, `/`, `%`
 - Built-in functions: `print`, `println`, `printf`, `hasValue`, `noValue`, `list`, `format`
-- Built-in classes: `Object`, `Class`, `Function`, `String`, `List`
+- Built-in classes: `Object`, `Class`, `Function`, `String`, `List`, `Traceable`
 - Comment: `#`
 
 [Play It](https://openhome.cc/Gossip/Computation/toy_lang/)
@@ -74,8 +74,8 @@ class Account {
     }
 
     def deposit(amount) {
-        if amount <= 0 {
-            throw 'must be positive'
+        if amount &lt;= 0 {
+            throw new Traceable('must be positive')
         }
 
         this.balance = this.balance + amount
@@ -95,7 +95,7 @@ try {
     acct.deposit(-100)
 }
 catch e {
-    println('shit: ' + e)
+    e.printStackTrace()
 }
 ```
 

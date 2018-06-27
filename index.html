@@ -103,7 +103,7 @@ range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
 
     def deposit(amount) {
         if amount &lt;= 0 {
-            throw 'must be positive'
+            throw new Traceable('must be positive')
         }
 
         this.balance = this.balance + amount
@@ -123,7 +123,7 @@ try {
     acct.deposit(-100)
 }
 catch e {
-    println('shit: ' + e)
+    e.printStackTrace()
 }</code></pre>
 <ul>
     <li># Built-in Classes</li>
