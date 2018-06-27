@@ -1,4 +1,4 @@
-import {Thrown} from './value.js';
+import {Thrown, Instance, newInstance, Primitive} from './value.js';
 
 export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Return, Throw, Try};
 
@@ -207,8 +207,26 @@ class Try {
     evaluate(context) {
         const maybeContext = this.tryStmt.evaluate(context);
         if(maybeContext.thrownNode) {
+            const thrownValue = maybeContext.thrownNode.value;
+            if(thrownValue.hasOwnProperty && thrownValue.hasOwnProperty('stackTraceElements')) {
+                const stackTraceElements = thrownValue.getOwnProperty('stackTraceElements').nativeValue();
+                maybeContext.thrownNode
+                            .stackTraceElements
+                            .map(strackTraceElement => {
+                                return new Instance(
+                                    context.lookUpVariable('Object'),
+                                    new Map([
+                                        ['fileName', new Primitive(strackTraceElement.fileName)],
+                                        ['lineNumber', new Primitive(strackTraceElement.lineNumber)],
+                                        ['statement', new Primitive(strackTraceElement.statement)]
+                                    ])
+                                );
+                            })
+                            .forEach(strackTraceElement => stackTraceElements.push(strackTraceElement));
+            }
+
             const ctx = new StmtSequence(
-                new VariableAssign(this.exceptionVar, maybeContext.thrownNode.value),
+                new VariableAssign(this.exceptionVar, thrownValue),
                 this.catchStmt, 
                 this.catchStmt.lineNumber
             ).evaluate(maybeContext.emptyThrown());

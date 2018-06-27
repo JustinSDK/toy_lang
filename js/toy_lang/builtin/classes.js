@@ -1,4 +1,4 @@
-import {Primitive, Instance, Null, Thrown} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Null, Thrown, Void} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2} from './func_bases.js';
@@ -211,11 +211,52 @@ const CLZ = ClassClass.classInstance(null, clzNode({name : 'Class', methods : Cl
 // 'Class' of is an instance of 'Class'
 CLZ.clzOfLang = CLZ;
 
+class TraceableClass {
+    static toString(methodName = 'toString') {
+        return func0(methodName, {
+            evaluate(context) {
+                const instance = self(context);
+                return context.returned(new Primitive(`${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`));
+            }    
+        });
+    }
+
+    static printStackTrace(output, stackTraceElements) {
+        stackTraceElements.map(elem => `at ${elem.getOwnProperty('statement')} (${elem.getOwnProperty('fileName')}:${elem.getOwnProperty('lineNumber')})`)
+                          .forEach(line => output(`\n\t${line}`));  
+    }
+}
+
+TraceableClass.methods = new Map([
+    ['init', func1('init', {
+        evaluate(context) {
+            const instance = self(context);
+            instance.setOwnProperty('name', new Primitive(instance.clzNodeOfLang().name));
+            instance.setOwnProperty('message', PARAM1.evaluate(context));
+            instance.setOwnProperty('stackTraceElements', ListClass.newInstance(context, []));
+            return context;
+        }
+    })],
+    ['printStackTrace', func0('printStackTrace', {
+        evaluate(context) {
+            const instance = self(context);
+            context.output(`${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`);
+            TraceableClass.printStackTrace(
+                context.output, 
+                instance.getOwnProperty('stackTraceElements').nativeValue()
+            );
+            return context.returned(Void);
+        }
+    })],    
+    ['toString', TraceableClass.toString()]
+]);
+
 const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Object', ObjectClass.methods),
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
-    ClassClass.classEntry(CLZ, 'List', ListClass.methods)
+    ClassClass.classEntry(CLZ, 'List', ListClass.methods),
+    ClassClass.classEntry(CLZ, 'Traceable', TraceableClass.methods)
 ]); 
 
