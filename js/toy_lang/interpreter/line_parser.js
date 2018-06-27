@@ -243,18 +243,23 @@ function countStmts(stmt, i = 1) {
     return countStmts(stmt.secondStmt, i + 1);
 }
 
+const cmds = ['if', 'try', 'while', 'def', 'class'];
+
 function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
     if(endCount === 0) {
         return tokenableLines;
     }
 
     const line = tokenableLines[0].value;
-    const n = (line.startsWith('if') || line.startsWith('try') || line.startsWith('while') || line.startsWith('def') || line.startsWith('class')) ? 
-                endCount + 1 : ( 
-                    line === '}' && (tokenableLines.length === 1 || !(isElseLine(tokenableLines[1]) || isCatchLine(tokenableLines[1]))) ? 
-                        endCount - 1 : 
-                        endCount
-            );
+    const n = cmds.some(cmd => line.startsWith(cmd)) ? endCount + 1 :
+        ( 
+            line === '}' && (tokenableLines.length === 1 || notElseOrCatch(tokenableLines[1])) ? 
+                endCount - 1 : endCount
+        );
 
     return linesAfterCurrentBlock(tokenableLines.slice(1), n);
+}
+
+function notElseOrCatch(tokenableLine) {
+    return !(isElseLine(tokenableLine) || isCatchLine(tokenableLine));
 }
