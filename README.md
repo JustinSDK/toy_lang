@@ -64,7 +64,13 @@ range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
 - Class
 
 ```java
-class Account {
+class AccountException(Traceable) {
+    def init(message) {
+        this.super(Traceable, 'init', message)
+    }
+}
+      
+    class Account {
     # it's a field
     balance = 0 
 
@@ -75,7 +81,7 @@ class Account {
 
     def deposit(amount) {
         if amount &lt;= 0 {
-            throw new Traceable('must be positive')
+            throw new AccountException('must be positive')
         }
 
         this.balance = this.balance + amount
