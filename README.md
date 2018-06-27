@@ -70,7 +70,7 @@ class AccountException(Traceable) {
     }
 }
       
-    class Account {
+class Account {
     # it's a field
     balance = 0 
 
