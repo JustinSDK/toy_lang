@@ -3,7 +3,7 @@ import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/stateme
 
 import {PARAM1, PARAM2} from './func_bases.js';
 import {func0, func1, func2} from './func_bases.js';
-import {clzNode, self} from './class_bases.js';
+import {clzNode, self, selfInternalNode} from './class_bases.js';
 import {StringClass, ListClass} from './delegates.js';
 
 export {BUILTIN_CLASSES};
@@ -74,7 +74,7 @@ class FunctionClass {
     static name(methodName = 'name') {
         return func0(methodName, {
             evaluate(context) {
-                const fNode = self(context).internalNode;
+                const fNode = selfInternalNode(context);
                 return context.returned(new Primitive(fNode.name));
             }    
         });
@@ -83,9 +83,8 @@ class FunctionClass {
     static toString(methodName = 'toString') {
         return func0(methodName, {
             evaluate(context) {
-                const instance = self(context);
-                const clzNode = instance.clzNodeOfLang();
-                const fNode = instance.internalNode;
+                const clzNode = self(context).clzNodeOfLang();
+                const fNode = selfInternalNode(context);
                 return context.returned(new Primitive(`[${clzNode.name} ${fNode.name}]`));
             }    
         });
@@ -127,24 +126,22 @@ ClassClass.methods = new Map([
     ['toString', FunctionClass.toString()],
     ['addOwnMethod', func2('addOwnMethod', {
         evaluate(context) {
-            const clzInstance = self(context);
             const name = PARAM1.evaluate(context).value;
-            clzInstance.internalNode.addOwnMethod(name, PARAM2.evaluate(context));
-            return context.returned(clzInstance);
+            selfInternalNode(context).addOwnMethod(name, PARAM2.evaluate(context));
+            return context.returned(self(context));
         }    
     })],
     ['deleteOwnMethod', func1('deleteOwnMethod', {
         evaluate(context) {
-            const clzInstance = self(context);
-            clzInstance.internalNode.deleteOwnMethod(PARAM1.evaluate(context).value);
-            return context.returned(clzInstance);
+            selfInternalNode(context).deleteOwnMethod(PARAM1.evaluate(context).value);
+            return context.returned(self(context));
         }    
     })],    
     ['hasOwnMethod', func1('hasOwnMethod', {
         evaluate(context) {
             return context.returned(
                 Primitive.boolNode(
-                    self(context).internalNode.hasOwnMethod(PARAM1.evaluate(context).value)
+                    selfInternalNode(context).hasOwnMethod(PARAM1.evaluate(context).value)
                 )
             );
         }    
@@ -153,7 +150,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             return context.returned(
                 Primitive.boolNode(
-                    self(context).internalNode.hasMethod(context, PARAM1.evaluate(context).value)
+                    selfInternalNode(context).hasMethod(context, PARAM1.evaluate(context).value)
                 )
             );
         }    
@@ -162,7 +159,7 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
-                self(context).internalNode.getOwnMethod(methodName).evaluate(context)
+                selfInternalNode(context).getOwnMethod(methodName).evaluate(context)
             );
         }    
     })],
@@ -170,13 +167,13 @@ ClassClass.methods = new Map([
         evaluate(context) {
             const methodName = PARAM1.evaluate(context).value;
             return context.returned(
-                self(context).internalNode.getMethod(context, methodName).evaluate(context)
+                selfInternalNode(context).getMethod(context, methodName).evaluate(context)
             );
         }    
     })],
     ['ownMethods', func0('ownMethods', {
         evaluate(context) {
-            const fNodes = Array.from(self(context).internalNode.methods.values());
+            const fNodes = Array.from(selfInternalNode(context).methods.values());
             return context.returned(
                 
                 ListClass.newInstance(context, fNodes.map(fNode => fNode.evaluate(context)))
@@ -185,15 +182,14 @@ ClassClass.methods = new Map([
     })],
     ['mixin', func1('mixin', {
         evaluate(context) {
-            const clzInstance = self(context);
             Array.from(PARAM1.evaluate(context).internalNode.methods.values())
-                 .forEach(f => clzInstance.internalNode.addOwnMethod(f.name, f.evaluate(context)));
-            return context.returned(clzInstance);
+                 .forEach(f => selfInternalNode(context).addOwnMethod(f.name, f.evaluate(context)));
+            return context.returned(self(context));
         }    
     })],
     ['parents', func0('parents', {
         evaluate(context) {
-            const parentClzNames = self(context).internalNode.parentClzNames;
+            const parentClzNames = selfInternalNode(context).parentClzNames;
             return context.returned(
                 ListClass.newInstance(
                     context,
@@ -204,11 +200,10 @@ ClassClass.methods = new Map([
     })],
     ['setParents', func1('setParents', {
         evaluate(context) {
-            const clzInstance = self(context);
             const parentClzNames = PARAM1.evaluate(context).internalNode.value
                                          .map(clzInstance => clzInstance.internalNode.name);
-            clzInstance.internalNode.parentClzNames = parentClzNames;
-            return context.returned(clzInstance);
+            selfInternalNode(context).parentClzNames = parentClzNames;
+            return context.returned(self(context));
         }    
     })]
 ]);
