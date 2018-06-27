@@ -21,8 +21,7 @@ class FunCall {
 
 function callChain(context, f, argsList) {
     const args = argsList[0];
-    const ctx = f.call(context, args);
-    return ctx.notThrown(c => {
+    return f.call(context, args).notThrown(c => {
         const returnedValue = c.returnedValue;
         if(argsList.length > 1) {
             return callChain(context, returnedValue.internalNode, argsList.slice(1));
@@ -38,35 +37,32 @@ class MethodCall {
         this.argsList = argsList;
     }
 
-    methodBodyStmt(context) {
-        const instance = this.instance;
-        const f = instance.hasOwnProperty(this.methodName) ? instance.getOwnProperty(this.methodName).internalNode : instance.clzNodeOfLang().getMethod(context, this.methodName);
-        const bodyStmt = f.bodyStmt(context, this.argsList.length !== 0 ? this.argsList[0].map(arg => arg.evaluate(context)) : []);
-        return new StmtSequence(
-            new VariableAssign(Variable.of('this'), instance),  
-            bodyStmt,
-            bodyStmt.lineNumber
-        );
-    }
-    
     evaluate(context) {
-        const fClz = this.instance.getOwnProperty(this.methodName);
-        const clzNode = this.instance.clzNodeOfLang();
-        const parentContext = clzNode.parentContext || 
-                              (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
-    
-        const ctx = this.methodBodyStmt(context).evaluate(
-            parentContext ?
-                parentContext.childContext() : // closure context
-                context.childContext()
-        );
-
-        return ctx.notThrown(c => {
-            const returnedValue = c.returnedValue;
-            if(this.argsList.length > 1) {
-                return callChain(context, returnedValue.internalNode, this.argsList.slice(1));
-            }
-            return returnedValue === null ? Void : returnedValue; 
-        });
+        return methodBodyStmt(context, this.instance, this.methodName, this.argsList[0])
+                        .evaluate(methodContextFrom(context, this.instance, this.methodName))
+                        .notThrown(c => {
+                            if(this.argsList.length > 1) {
+                                return callChain(context, c.returnedValue.internalNode, this.argsList.slice(1));
+                            }
+                            return c.returnedValue === null ? Void : c.returnedValue; 
+                        });
     }
+}
+
+function methodBodyStmt(context, instance, methodName, args = []) {
+    const f = instance.hasOwnProperty(methodName) ? instance.getOwnProperty(methodName).internalNode : instance.clzNodeOfLang().getMethod(context, methodName);
+    const bodyStmt = f.bodyStmt(context, args.map(arg => arg.evaluate(context)));
+    return new StmtSequence(
+        new VariableAssign(Variable.of('this'), instance),  
+        bodyStmt,
+        bodyStmt.lineNumber
+    );
+}
+
+function methodContextFrom(context, instance, methodName) {
+    const fClz = instance.getOwnProperty(methodName);
+    const parentContext = instance.clzNodeOfLang().parentContext || 
+                          (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
+    return parentContext ? parentContext.childContext() : // closure context
+                           context.childContext()
 }
