@@ -234,13 +234,17 @@ class Instance extends Value {
         this.value = this;
     }
 
+    clzNodeOfLang() {
+        return this.clzOfLang.internalNode;
+    }
+
     hasOwnProperty(name) {
         return this.properties.has(name);
     }
 
     hasProperty(context, name) {
         return this.hasOwnProperty(name) || 
-               this.clzOfLang.internalNode.hasMethod(context, name);
+               this.clzNodeOfLang().hasMethod(context, name);
     }
 
     getOwnProperty(name) {
@@ -249,7 +253,7 @@ class Instance extends Value {
 
     getProperty(context, name) {
         return this.getOwnProperty(name) || 
-               this.clzOfLang.internalNode.getMethod(context, name);
+               this.clzNodeOfLang().getMethod(context, name);
     }
 
     deleteOwnProperty(name) {
@@ -267,7 +271,7 @@ class Instance extends Value {
     }
 
     toString() {        
-        return `[${this.clzOfLang.internalNode.name} object]`;
+        return `[${this.clzNodeOfLang().name} object]`;
     }
 }
 

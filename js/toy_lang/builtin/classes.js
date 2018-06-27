@@ -42,7 +42,7 @@ ObjectClass.methods = new Map([
     })],    
     ['toString', func0('toString', {
         evaluate(context) {
-            const clzNode = self(context).clzOfLang.internalNode;
+            const clzNode = self(context).clzNodeOfLang();
             return context.returned(new Primitive(`[${clzNode.name} object]`));
         }    
     })],
@@ -52,7 +52,7 @@ ObjectClass.methods = new Map([
             const instance = self(context);
             const args = context.lookUpVariable('arguments').internalNode.value;
             const parentClz = args[0].internalNode;
-            const parentClzNames = instance.clzOfLang.internalNode.parentClzNames;
+            const parentClzNames = instance.clzNodeOfLang().parentClzNames;
             if(parentClzNames.every(parentClzName => parentClzName !== parentClz.name)) {
                 // currently a text is thrown. I'll design an exception type later.
                 return context.thrown(
@@ -84,7 +84,7 @@ class FunctionClass {
         return func0(methodName, {
             evaluate(context) {
                 const instance = self(context);
-                const clzNode = instance.clzOfLang.internalNode;
+                const clzNode = instance.clzNodeOfLang();
                 const fNode = instance.internalNode;
                 return context.returned(new Primitive(`[${clzNode.name} ${fNode.name}]`));
             }    

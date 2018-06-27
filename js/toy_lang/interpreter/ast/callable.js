@@ -40,7 +40,7 @@ class MethodCall {
 
     methodBodyStmt(context) {
         const instance = this.instance;
-        const f = instance.hasOwnProperty(this.methodName) ? instance.getOwnProperty(this.methodName).internalNode : instance.clzOfLang.internalNode.getMethod(context, this.methodName);
+        const f = instance.hasOwnProperty(this.methodName) ? instance.getOwnProperty(this.methodName).internalNode : instance.clzNodeOfLang().getMethod(context, this.methodName);
         const bodyStmt = f.bodyStmt(context, this.argsList.length !== 0 ? this.argsList[0].map(arg => arg.evaluate(context)) : []);
         return new StmtSequence(
             new VariableAssign(Variable.of('this'), instance),  
@@ -50,9 +50,8 @@ class MethodCall {
     }
     
     evaluate(context) {
-        const instance = this.instance;
-        const fClz = instance.getOwnProperty(this.methodName);
-        const clzNode = instance.clzOfLang.internalNode;
+        const fClz = this.instance.getOwnProperty(this.methodName);
+        const clzNode = this.instance.clzNodeOfLang();
         const parentContext = clzNode.parentContext || 
                               (fClz && fClz.internalNode.parentContext); // In this case, instance is just a namespace.
     
