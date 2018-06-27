@@ -71,7 +71,7 @@ const REGEX = new Map([
     ['iife', new RegExp(`^${IIFE_REGEX.source}$`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
-    ['block', /^(def|class|if|while)\s+([^{]*)\s+{$/],
+    ['cmd-arg', /^(def|class|if|while)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
     ['try', /^try\s+{$/],
     ['catch', new RegExp(`^catch\\s+(${VARIABLE_REGEX.source})\\s+{$`)],

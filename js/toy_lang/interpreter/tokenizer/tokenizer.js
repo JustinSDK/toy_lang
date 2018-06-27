@@ -52,8 +52,8 @@ const TOKEN_TESTERS = new Map([
         }
         return [];
     }],    
-    ['block', function(input) {
-        const matched = REGEX.get('block').exec(input);
+    ['cmd-arg', function(input) {
+        const matched = REGEX.get('cmd-arg').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }],
     ['return', function(input) {

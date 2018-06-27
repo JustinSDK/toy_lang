@@ -52,7 +52,7 @@ const STMT_PARSER = TokenablesParser.orRules(
             );
         }
     }],             
-    ['block', {
+    ['cmd-arg', {
         burst(tokenableLines, [cmdTokenable, argTokenable]) {
             switch(cmdTokenable.value) {
                 case 'def':
