@@ -191,26 +191,33 @@ ClassClass.methods = new Map([
             return context.returned(self(context));
         }    
     })],
-    ['parents', func0('parents', {
+    ['parents', func1('parents', {
         evaluate(context) {
-            const parentClzNames = selfInternalNode(context).parentClzNames;
-            return context.returned(
-                ListClass.newInstance(
-                    context,
-                    parentClzNames.map(parentClzName => context.lookUpVariable(parentClzName))
-                )
-            );
-        }    
-    })],
-    ['setParents', func1('setParents', {
-        evaluate(context) {
-            const parentClzNames = PARAM1.evaluate(context).nativeValue()
-                                         .map(clzInstance => clzInstance.internalNode.name);
-            selfInternalNode(context).parentClzNames = parentClzNames;
-            return context.returned(self(context));
+            let parents = PARAM1.evaluate(context);
+            if(parents === Null) {
+                return getParents(context);
+            }
+            return setParents(context, parents);
         }    
     })]
 ]);
+
+function getParents(context) {
+    const parentClzNames = selfInternalNode(context).parentClzNames;
+    return context.returned(
+        ListClass.newInstance(
+            context,
+            parentClzNames.map(parentClzName => context.lookUpVariable(parentClzName))
+        )
+    );
+}
+
+function setParents(context, parents) {
+    const parentClzNames = parents.nativeValue()
+                                  .map(clzInstance => clzInstance.internalNode.name);
+    selfInternalNode(context).parentClzNames = parentClzNames;
+    return context.returned(self(context));
+}
 
 const CLZ = ClassClass.classInstance(null, clzNode({name : 'Class', methods : ClassClass.methods}));
 // 'Class' of is an instance of 'Class'
