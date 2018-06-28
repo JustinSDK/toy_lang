@@ -72,7 +72,15 @@ const OPERAND_PARSER = TokenableParser.orRules(
         burst([varTokenable]) {
             return Variable.of(varTokenable.value);
         }
-    }] 
+    }],
+    ['list', {
+        burst(elemTokenables) {
+            return new FunCall(
+                Variable.of('list'), 
+                [elemTokenables.map(elem => EXPR_PARSER.parse(elem))]
+            );
+        }        
+    }]
 );
 
 function createFuncall(func, argLtChainTokenable) {

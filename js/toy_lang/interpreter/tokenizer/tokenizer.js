@@ -79,6 +79,9 @@ const TOKEN_TESTERS = new Map([
     ['argLists', function(input) {
         return argLists(input);
     }],
+    ['list', function(input) {
+        return listElems(input).map(elem => elem.trim());
+    }],
     ['args', function(input) {
         return funcArguments(input);
     }]   
@@ -106,6 +109,15 @@ function expr_tokens(input) {
 
 function funcArguments(input) {
     const matched = REGEX.get('argList').exec(input);
+    if(matched[1]) {
+        return splitByComma(matched[1]);
+    }
+
+    return [];
+}
+
+function listElems(input) {
+    const matched = REGEX.get('elemList').exec(input);
     if(matched[1]) {
         return splitByComma(matched[1]);
     }

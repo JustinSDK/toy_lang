@@ -1,6 +1,7 @@
 export {REGEX};
 
 const NESTED_PARENTHESES_LEVEL = 3; 
+const NESTED_BRACKETS_LEVEL = 3; 
 
 const BOOLEAN_REGEX = /true|false/;
 const NUMBER_REGEX = /[0-9]+\.?[0-9]*/;
@@ -37,7 +38,17 @@ const LAMBDA_EXPR_REGEX = new RegExp(`((${PARAM_LT_REGEX.source})|(${VARIABLE_RE
 
 const IIFE_REGEX = new RegExp(`(\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_LT_REGEX.source})+))`);
 
+function nestingBrackets(level) {
+    if (level === 0) {
+        return '[^\\[\\]]*';
+    }
+    return `([^\\(\\)]|\\[${nestingBrackets(level - 1)}\\])*`;  
+}
+
+const NESTED_BRACKETS_REGEX = new RegExp(`\\[(${nestingBrackets(NESTED_BRACKETS_LEVEL)})\\]`);
+
 const EXPR_REGEX = orRegexs(
+    NESTED_BRACKETS_REGEX,
     IIFE_REGEX,
     LAMBDA_EXPR_REGEX,
     NEW_REGEX,
@@ -78,5 +89,6 @@ const REGEX = new Map([
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['return', /^return\s*(.*)$/],
-    ['throw', /^throw\s*(.*)$/]
+    ['throw', /^throw\s*(.*)$/],
+    ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)]
 ]);
