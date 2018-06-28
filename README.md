@@ -65,8 +65,8 @@ range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
 
 ```java
 class AccountException(Traceable) {
-    def init(message) {
-        this.super(Traceable, 'init', message)
+    def init() {
+        this.super(Traceable, 'init', arguments)
     }
 }
       
@@ -272,7 +272,7 @@ class C(PA, PB) {
     }
 
     def ma(x, y) {
-        this.super(PA, 'ma', x + 1, y + 1)
+        this.super(PA, 'ma', arguments)
         println('c.ma()')
     }
 }
