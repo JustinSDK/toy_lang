@@ -1,5 +1,5 @@
 import {ClassError} from '../interpreter/commons/errors.js';
-import {Primitive, Instance, Null, Thrown, Void, Func, Class} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Null, Void, Func, Class} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2, PARAM3} from './func_bases.js';

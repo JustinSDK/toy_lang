@@ -4,7 +4,7 @@ import {StmtSequence} from '../interpreter/ast/statement.js';
 import {PARAM_LT0} from './func_bases.js';
 import {func} from './func_bases.js';
 
-export {clzNode, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalNode};
+export {clzNode, methodPrimitive, methodVoid, methodSelf, methodNewSameType, self, selfInternalNode, delegate};
 
 function clzNode({name, methods, parents}) {
     return new Class({
