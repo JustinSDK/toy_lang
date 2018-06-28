@@ -292,6 +292,8 @@ TraceableClass.methods = new Map([
                     .nativeValue()
                     .map(elem => `at ${elem.getOwnProperty('statement')} (${elem.getOwnProperty('fileName')}:${elem.getOwnProperty('lineNumber')})`)
                     .forEach(line => context.output(`\n\t${line}`));  
+            
+            context.output('\n');
 
             return context.returned(Void);
         }
