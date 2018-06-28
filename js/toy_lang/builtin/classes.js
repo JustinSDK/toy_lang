@@ -12,6 +12,19 @@ export {BUILTIN_CLASSES};
 class ObjectClass {}
 
 ObjectClass.methods = new Map([ 
+    ['init', func1('init', {
+        evaluate(context) {
+            const list = PARAM1.evaluate(context);
+            if(list !== Null) {
+                const instance = self(context);
+                list.nativeValue().forEach(prop => {
+                    const plt = prop.nativeValue();
+                    instance.setOwnProperty(plt[0].value, plt[1]);
+                });
+            }
+            return context;
+        }    
+    })], 
     ['ownProperties', func0('ownProperties', {
         evaluate(context) {
             const entries = Array.from(self(context).properties.entries())
