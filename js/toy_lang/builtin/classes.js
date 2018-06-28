@@ -95,8 +95,8 @@ class FunctionClass {
         });
     }
 
-    static toString(methodName = 'toString') {
-        return func0(methodName, {
+    static toString() {
+        return func0('toString', {
             evaluate(context) {
                 const clzNode = self(context).clzNodeOfLang();
                 const fNode = selfInternalNode(context);
