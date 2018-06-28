@@ -28,36 +28,38 @@ const STMT_PARSER = TokenablesParser.orRules(
         }
     }],       
     ['variableAssign', {
-        burst(tokenableLines, [varTokenable, valueTokenable]) {
+        burst(tokenableLines, [varTokenable, operatorTokenable, valueTokenable]) {
             varTokenable.errIfKeyword();
 
             return createAssign(
                 tokenableLines, 
                 VariableAssign, 
                 Variable.of(varTokenable.value), 
+                operatorTokenable,
                 valueTokenable
             );
         }
     }],   
     ['nonlocalAssign', {
-        burst(tokenableLines, [varTokenable, valueTokenable]) {
+        burst(tokenableLines, [varTokenable, operatorTokenable, valueTokenable]) {
             varTokenable.errIfKeyword();
             return createAssign(
                 tokenableLines, 
                 NonlocalAssign, 
                 Variable.of(varTokenable.value), 
+                operatorTokenable,
                 valueTokenable
             );
         }
     }],   
     ['propertyAssign', {
-        burst(tokenableLines, [targetTokenable, propTokenable, valueTokenable]) {
+        burst(tokenableLines, [targetTokenable, propTokenable, operatorTokenable, valueTokenable]) {
             propTokenable.errIfKeyword();
             const target = EXPR_PARSER.parse(targetTokenable);
             const value = EXPR_PARSER.parse(valueTokenable);
 
             return new StmtSequence(
-                new PropertyAssign(target, propTokenable.value, value),
+                new PropertyAssign(target, propTokenable.value, value, operatorTokenable.value),
                 LINE_PARSER.parse(tokenableLines.slice(1)),
                 tokenableLines[0].lineNumber
             );
@@ -95,11 +97,12 @@ const STMT_PARSER = TokenablesParser.orRules(
     }]
 );
 
-function createAssign(tokenableLines, clzNode, target, assignedTokenable) {
+function createAssign(tokenableLines, clzNode, target, operatorTokenable, assignedTokenable) {
     return new StmtSequence(
         new clzNode(
             target, 
-            EXPR_PARSER.parse(assignedTokenable)
+            EXPR_PARSER.parse(assignedTokenable),
+            operatorTokenable.value
         ),
         LINE_PARSER.parse(tokenableLines.slice(1)),
         tokenableLines[0].lineNumber

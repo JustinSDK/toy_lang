@@ -38,16 +38,37 @@ class Variable {
     }
 }
 
+function p(v) {
+    return new Primitive(v);
+}
+
+const ARITHMETIC_OPERATORS = new Map([
+    ['+', (a, b) => p(a.value + b.value)],
+    ['-', (a, b) => p(a.value - b.value)],
+    ['*', (a, b) => p(a.value * b.value)],
+    ['/', (a, b) => p(a.value / b.value)],
+    ['%', (a, b) => p(a.value % b.value)]
+]);
+
 class VariableAssign {
-    constructor(variable, value) {
+    constructor(variable, value, operator) {
         this.variable = variable;
         this.value = value;
+        this.operator = operator;
     }
 
     evaluate(context) {
         const maybeContext = this.value.evaluate(context);
         return maybeContext.notThrown(value => {
-             return context.assign(this.variable.name, value);
+             if(this.operator) {
+                return context.assign(
+                    this.variable.name, 
+                    ARITHMETIC_OPERATORS.get(this.operator)(this.variable.evaluate(context), value)
+                );
+             }
+             return context.assign(
+                 this.variable.name, value
+             );
         });
     }
 
@@ -63,14 +84,22 @@ class VariableAssign {
 }
 
 class NonlocalAssign {
-    constructor(variable, value) {
+    constructor(variable, value, operator) {
         this.variable = variable;
         this.value = value;
+        this.operator = operator;
     }
 
     evaluate(context) {
         const maybeContext = this.value.evaluate(context);
         return maybeContext.notThrown(value => {
+            if(this.operator) {
+                return setParentVariable(
+                    context, 
+                    this.variable.name, 
+                    ARITHMETIC_OPERATORS.get(this.operator)(this.variable.evaluate(context), value)
+                );
+             }
              return setParentVariable(context, this.variable.name, value);
         });
     }
@@ -182,10 +211,11 @@ StmtSequence.EMPTY = {
 };
 
 class PropertyAssign {
-    constructor(target, propName, value) {
+    constructor(target, propName, value, operator) {
         this.target = target;
         this.propName = propName;
         this.value = value;
+        this.operator = operator;
     }
 
     evaluate(context) {
@@ -193,7 +223,12 @@ class PropertyAssign {
         return maybeContextInstance.notThrown(instance => { 
             const maybeContextValue  = this.value.evaluate(context);
             return maybeContextValue.notThrown(value => {
-                instance.setOwnProperty(this.propName, value);
+                instance.setOwnProperty(
+                    this.propName, 
+                    this.operator ? 
+                        ARITHMETIC_OPERATORS.get(this.operator)(instance.getOwnProperty(this.propName), value) : 
+                        value 
+                );
                 return context;
             });
         });
