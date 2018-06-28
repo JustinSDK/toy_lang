@@ -1,4 +1,4 @@
-import {Primitive, Instance, Null, Thrown, Void} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Null, Thrown, Void, Func} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
 import {PARAM1, PARAM2} from './func_bases.js';
@@ -83,6 +83,18 @@ class FunctionClass {
         });
     }
 
+    static init() {
+        return func1('init', {
+            evaluate(context) {
+                let name = PARAM1.evaluate(context);
+                self(context).internalNode = new Func( // nope function
+                    [], StmtSequence.EMPTY, name === Null ? "''" : name.value, context
+                );
+                return context;
+            }    
+        });
+    }
+
     static toString(methodName = 'toString') {
         return func0(methodName, {
             evaluate(context) {
@@ -95,6 +107,7 @@ class FunctionClass {
 }
 
 FunctionClass.methods = new Map([
+    ['init', FunctionClass.init()], 
     ['name', FunctionClass.name()],    
     ['toString', FunctionClass.toString()],
     ['apply', func2('apply', {
