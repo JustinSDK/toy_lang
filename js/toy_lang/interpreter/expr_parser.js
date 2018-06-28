@@ -118,10 +118,10 @@ function priority(operator) {
            operator === '.' ? 7 :
            operator === '$neg' ? 6 :
            operator === 'not' ? 5 :
-           ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 4 : 
-           ['and', 'or'].indexOf(operator) !== -1 ? 3 :
-           ['*', '/', '%'].indexOf(operator) !== -1 ? 2 :
-           ['+', '-'].indexOf(operator) !== -1 ? 1 : 0;
+           ['*', '/', '%'].indexOf(operator) !== -1 ? 4 :
+           ['+', '-'].indexOf(operator) !== -1 ? 3 : 
+           ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 2 : 
+           ['and', 'or'].indexOf(operator) !== -1 ? 1 : 0
 }
 
 function popHighPriority(tokenable, stack, output) {
