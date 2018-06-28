@@ -20,7 +20,7 @@ def print_row(n) {
     i = 2
     while i < 10 {
         printf('{0}*{1}={2}\t', i, n, i * n)
-        i = i + 1 
+        i += 1 
     }
     println()
 }
@@ -84,7 +84,7 @@ class Account {
             throw new AccountException('must be positive')
         }
 
-        this.balance = this.balance + amount
+        this.balance += amount
     }
 
     def toString() {
