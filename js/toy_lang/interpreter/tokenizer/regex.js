@@ -87,6 +87,7 @@ const REGEX = new Map([
     ['try', /^try\s+{$/],
     ['catch', new RegExp(`^catch\\s+(${VARIABLE_REGEX.source})\\s+{$`)],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
+    ['nonlocalAssign', new RegExp(`^nonlocal\\s+(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*=\\s*(.*)$`)],
     ['return', /^return\s*(.*)$/],
     ['throw', /^throw\s*(.*)$/],

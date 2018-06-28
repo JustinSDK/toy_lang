@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Throw, Return, Try} from './ast/statement.js';
+import {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, StmtSequence, Throw, Return, Try} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
 import {ParseErrInterceptor} from './commons/interceptor.js';
@@ -34,6 +34,17 @@ const STMT_PARSER = TokenablesParser.orRules(
             return createAssign(
                 tokenableLines, 
                 VariableAssign, 
+                Variable.of(varTokenable.value), 
+                valueTokenable
+            );
+        }
+    }],   
+    ['nonlocalAssign', {
+        burst(tokenableLines, [varTokenable, valueTokenable]) {
+            varTokenable.errIfKeyword();
+            return createAssign(
+                tokenableLines, 
+                NonlocalAssign, 
                 Variable.of(varTokenable.value), 
                 valueTokenable
             );

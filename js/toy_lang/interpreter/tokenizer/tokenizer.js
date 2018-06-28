@@ -45,6 +45,10 @@ const TOKEN_TESTERS = new Map([
         const matched = REGEX.get('variableAssign').exec(input);
         return matched ? [matched[1], matched[2]] : [];
     }],
+    ['nonlocalAssign', function(input) {
+        const matched = REGEX.get('nonlocalAssign').exec(input);
+        return matched ? [matched[1], matched[2]] : [];
+    }],
     ['propertyAssign', function(input) {
         const matched = REGEX.get('propertyAssign').exec(input);
         if(matched) {

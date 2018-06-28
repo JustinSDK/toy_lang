@@ -1,6 +1,6 @@
 import {Thrown, Instance, newInstance, Primitive} from './value.js';
 
-export {ExprWrapper, Variable, VariableAssign, PropertyAssign, While, If, StmtSequence, Return, Throw, Try};
+export {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, StmtSequence, Return, Throw, Try};
 
 class ExprWrapper {
     constructor(expr) {
@@ -61,6 +61,32 @@ class VariableAssign {
                 );
     }    
 }
+
+class NonlocalAssign {
+    constructor(variable, value) {
+        this.variable = variable;
+        this.value = value;
+    }
+
+    evaluate(context) {
+        const maybeContext = this.value.evaluate(context);
+        return maybeContext.notThrown(value => {
+             return setParentVariable(context, this.variable.name, value);
+        });
+    }
+}
+
+function setParentVariable(context, name, value) {
+    const parent = context.parent;
+    const v = parent.variables.get(name);
+    if(v !== undefined) {
+        parent.assign(name, value);
+        return context;
+    }
+    
+    RUNTIME_CHECKER.refErrIfNoValue(parent.parent, name);
+    return setParentVariable(parent, name, value);
+}   
 
 class While {
     constructor(boolean, stmt) {
