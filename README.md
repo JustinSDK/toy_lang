@@ -168,9 +168,9 @@ println('obj.z is ' + obj.z)
 - Lambda expression
 
 ```java    
-list(1, 2, 3, 4, 5).filter(elem -> elem >= 2) \
-                   .map(elem -> elem * 100)   \
-                   .forEach(println)
+[1, 2, 3, 4, 5].filter(elem -> elem >= 2) \
+               .map(elem -> elem * 100)   \
+               .forEach(println)
 
 range(1, 10) \
   .map(n -> range(2, 10).map(i -> '{0}*{1}={2}'.format(i, n, i * n)).join('\t')) \
@@ -352,7 +352,7 @@ def foo(p) {
 }
 
 # The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o, list(40)))
+println(foo.apply(o, [40]))
 ```
 
 - meta programming 2
@@ -377,7 +377,7 @@ class C {
 }
 
 println(C.parents())
-C.parents(list(PA, PB))
+C.parents([PA, PB])
 println(C.parents())
 
 new C().pa()
@@ -388,7 +388,7 @@ def toString() {
     return this.class().name()
 }
 
-Orz = new Class('Orz', list(PA, PB), list(toString))
+Orz = new Class('Orz', [PA, PB], [toString])
 orz = new Orz()
 orz.pa()
 orz.pb()
