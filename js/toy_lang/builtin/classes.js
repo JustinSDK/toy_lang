@@ -9,15 +9,7 @@ import {StringClass, ListClass} from './delegates.js';
 
 export {BUILTIN_CLASSES};
 
-class ObjectClass {
-    static getClass() {
-        return  func0('class', {
-            evaluate(context) {
-                return context.returned(self(context).clzOfLang);
-            }    
-        });
-    }
-}
+class ObjectClass {}
 
 ObjectClass.methods = new Map([ 
     ['ownProperties', func0('ownProperties', {
@@ -46,7 +38,11 @@ ObjectClass.methods = new Map([
             return context.returned(new Primitive(`[${clzNode.name} object]`));
         }    
     })],
-    ['class', ObjectClass.getClass()],
+    ['class', func0('class', {
+        evaluate(context) {
+            return context.returned(self(context).clzOfLang);
+        }    
+    })],
     ['super', func3('super', {
         evaluate(context) {
             const parentClz = PARAM1.evaluate(context).internalNode;
@@ -69,8 +65,8 @@ ObjectClass.methods = new Map([
 ]);
 
 class FunctionClass {
-    static name(methodName = 'name') {
-        return func1(methodName, {
+    static name() {
+        return func1('name', {
             evaluate(context) {
                 let name = PARAM1.evaluate(context);
                 const fNode = selfInternalNode(context);
@@ -78,18 +74,6 @@ class FunctionClass {
                     fNode.name = name.value;
                 }
                 return context.returned(new Primitive(fNode.name));
-            }    
-        });
-    }
-
-    static init() {
-        return func1('init', {
-            evaluate(context) {
-                let name = PARAM1.evaluate(context);
-                self(context).internalNode = new Func( // nope function
-                    [], StmtSequence.EMPTY, name === Null ? "''" : name.value, context
-                );
-                return context;
             }    
         });
     }
@@ -106,7 +90,15 @@ class FunctionClass {
 }
 
 FunctionClass.methods = new Map([
-    ['init', FunctionClass.init()], 
+    ['init', func1('init', {
+        evaluate(context) {
+            let name = PARAM1.evaluate(context);
+            self(context).internalNode = new Func( // nope function
+                [], StmtSequence.EMPTY, name === Null ? "''" : name.value, context
+            );
+            return context;
+        }    
+    })], 
     ['name', FunctionClass.name()],    
     ['toString', FunctionClass.toString()],
     ['apply', func2('apply', {
@@ -135,29 +127,25 @@ class ClassClass {
     static classEntry(clzOfLang, name, methods) {
         return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods}))];
     }
-
-    static init() {
-        return func3('init', {
-            evaluate(context) {  
-                const name = PARAM1.evaluate(context);
-                const parents = PARAM2.evaluate(context);
-                const methods = PARAM3.evaluate(context); 
-
-                self(context).internalNode = new Class({
-                    notMethodStmt : StmtSequence.EMPTY,
-                    methods : new Map(methods === Null ? [] : methods.nativeValue().map(method => [method.internalNode.name, method.internalNode])),
-                    name : name === Null ? "''" : name.value,
-                    parentClzNames : parents === Null ? ['Object'] : parents.nativeValue().map(parent => parent.internalNode.name), 
-                    parentContext : context
-                });
-                return context;
-            }    
-        });
-    }    
 }
 
 ClassClass.methods = new Map([
-    ['init', ClassClass.init()], 
+    ['init', func3('init', {
+        evaluate(context) {  
+            const name = PARAM1.evaluate(context);
+            const parents = PARAM2.evaluate(context);
+            const methods = PARAM3.evaluate(context); 
+
+            self(context).internalNode = new Class({
+                notMethodStmt : StmtSequence.EMPTY,
+                methods : new Map(methods === Null ? [] : methods.nativeValue().map(method => [method.internalNode.name, method.internalNode])),
+                name : name === Null ? "''" : name.value,
+                parentClzNames : parents === Null ? ['Object'] : parents.nativeValue().map(parent => parent.internalNode.name), 
+                parentContext : context
+            });
+            return context;
+        }    
+    })], 
     ['name', FunctionClass.name()], 
     ['toString', FunctionClass.toString()],
     ['addOwnMethod', func2('addOwnMethod', {
@@ -256,23 +244,6 @@ const CLZ = ClassClass.classInstance(null, clzNode({name : 'Class', methods : Cl
 CLZ.clzOfLang = CLZ;
 
 class TraceableClass {
-    static toString(methodName = 'toString') {
-        return func0(methodName, {
-            evaluate(context) {
-                const instance = self(context);
-                return context.returned(
-                    new Primitive(
-                        `${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`
-                    )
-                );
-            }    
-        });
-    }
-
-    static printStackTrace(output, stackTraceElements) {
-        stackTraceElements.map(elem => `at ${elem.getOwnProperty('statement')} (${elem.getOwnProperty('fileName')}:${elem.getOwnProperty('lineNumber')})`)
-                          .forEach(line => output(`\n\t${line}`));  
-    }
 }
 
 TraceableClass.methods = new Map([
@@ -289,14 +260,25 @@ TraceableClass.methods = new Map([
         evaluate(context) {
             const instance = self(context);
             context.output(`${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`);
-            TraceableClass.printStackTrace(
-                context.output, 
-                instance.getOwnProperty('stackTraceElements').nativeValue()
-            );
+
+            instance.getOwnProperty('stackTraceElements')
+                    .nativeValue()
+                    .map(elem => `at ${elem.getOwnProperty('statement')} (${elem.getOwnProperty('fileName')}:${elem.getOwnProperty('lineNumber')})`)
+                    .forEach(line => context.output(`\n\t${line}`));  
+
             return context.returned(Void);
         }
     })],    
-    ['toString', TraceableClass.toString()]
+    ['toString', func0('toString', {
+        evaluate(context) {
+            const instance = self(context);
+            return context.returned(
+                new Primitive(
+                    `${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`
+                )
+            );
+        }    
+    })]
 ]);
 
 const BUILTIN_CLASSES = new Map([
