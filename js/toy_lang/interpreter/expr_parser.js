@@ -158,6 +158,7 @@ function digest(tokenables, stack = new Stack(), output = [], prevTokenable = nu
         case 'not':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
+        case '&': case '|': case '^': case '<<': case '>>':
         case '+': case '*': case '/': case '%':
             const [s1, o1] = popHighPriority(tokenables[0], stack, output);
             return digest(tokenables.slice(1), s1.push(tokenables[0]), o1, tokenables[0]);
@@ -203,7 +204,8 @@ function isBinaryOperator(value) {
     return ['.', 
             '==', '!=', '>=', '>', '<=', '<',
             'and', 'or', 
-            '+', '-', '*', '/', '%'].indexOf(value) !== -1;
+            '+', '-', '*', '/', '%',
+            '&', '|', '^', '<<', '>>'].indexOf(value) !== -1;
 }
 
 function reduceUnary(stack, tokenable) {
