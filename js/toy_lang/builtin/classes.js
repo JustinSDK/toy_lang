@@ -39,6 +39,20 @@ ObjectClass.methods = new Map([
             );
         }    
     })],    
+    ['getOwnProperty', func1('geteOwnProperty', {
+        evaluate(context) {
+            return context.returned(
+                self(context).getOwnProperty(PARAM1.evaluate(context).value)
+            );
+        }    
+    })],    
+    ['setOwnProperty', func2('geteOwnProperty', {
+        evaluate(context) {
+            const instance = self(context);
+            instance.setOwnProperty(PARAM1.evaluate(context).value, PARAM2.evaluate(context))
+            return context.returned(instance);
+        }    
+    })],    
     ['deleteOwnProperty', func1('deleteOwnProperty', {
         evaluate(context) {
             self(context).deleteOwnProperty(PARAM1.evaluate(context).value);           
