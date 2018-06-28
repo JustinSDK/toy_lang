@@ -384,6 +384,10 @@ new C().pa()
 new C().pb()
 new C().c()
 
+def toString() {
+    return this.class().name()
+}
+
 Orz = new Class('Orz', list(PA, PB), list(toString))
 orz = new Orz()
 orz.pa()
