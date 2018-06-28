@@ -47,21 +47,22 @@ ObjectClass.methods = new Map([
         }    
     })],
     ['class', ObjectClass.getClass()],
-    ['super', func0('super', {
+    ['super', func3('super', {
         evaluate(context) {
+            const parentClz = PARAM1.evaluate(context).internalNode;
+            const name = PARAM2.evaluate(context).value;
+            const args = PARAM3.evaluate(context);
+            
             const instance = self(context);
-            const args = context.lookUpVariable('arguments').nativeValue();
-            const parentClz = args[0].internalNode;
             const parentClzNames = instance.clzNodeOfLang().parentClzNames;
             if(parentClzNames.every(name => name !== parentClz.name)) {
                 throw new ClassError('obj.super(parent): the type of obj must be the direct subtype of parent');
             }
  
-            const name = args[1].value;
             const func = parentClz.getOwnMethod(name);           
             return new StmtSequence(
                 new VariableAssign(Variable.of('this'), instance),  
-                func.bodyStmt(context, args.slice(2))
+                func.bodyStmt(context, args === Null ? [] : args.nativeValue())
             ).evaluate(context);
         }    
     })]
