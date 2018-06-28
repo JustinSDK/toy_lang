@@ -340,11 +340,7 @@ def toString() {
     return  props.map(prop -> prop.join()).join('\n')
 }
 
-o = new Object()
-o.x = 10
-o.y = 20
-o.z = 30
-
+o = new Object([['x', 10], ['y', 20], ['z', 30]])
 println(toString.apply(o))
 
 def foo(p) {
