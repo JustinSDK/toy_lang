@@ -186,7 +186,27 @@ obj = new clz(20)
 
 println('obj.x() is ' + obj.x())
 println('obj.y is ' + obj.y)
-println('obj.z is ' + obj.z)</code></pre>
+println('obj.z is ' + obj.z)
+
+def foo2(x) {
+    def getX() {
+        return x
+    }
+
+    def setX(v) {
+        nonlocal x = v
+    }
+
+    return [getX, setX]
+}
+
+accessor = foo2(10)
+getX = accessor.get(0)
+setX = accessor.get(1)
+
+println(getX()) 
+setX(100)
+println(getX())</code></pre>
 <ul>
     <li># Lambda expression</li>
   </ul>
@@ -198,11 +218,11 @@ range(1, 10) \
   .map(n -> range(2, 10).map(i -> '{0}*{1}={2}'.format(i, n, i * n)).join('\t')) \
   .forEach(println) 
                     
-def foo(x, y) {
+def foo3(x, y) {
     return () -> x + y
 }
 
-println(foo(10, 20)())
+println(foo3(10, 20)())
 
 def orz() {
     x = 10
@@ -363,12 +383,12 @@ println(toString.apply(o1))
 o2 = new Object([['x', 10], ['y', 20]])
 println(toString.apply(o2))
 
-def foo(p) {
+def foo4(p) {
     return this.x + this.y + this.z + p
 }
 
 # The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o1, [40]))</code></pre>
+println(foo4.apply(o1, [40]))</code></pre>
 <ul>
     <li># meta programming 2</li>
   </ul>
