@@ -124,11 +124,13 @@ class StmtSequence {
                 rightContext =>  rightContext.notReturn(c => this.secondStmt.evaluate(c))
             );
         } catch(e) {
-            addStackTrace(context, e, {
-                fileName : context.fileName,
-                lineNumber : this.lineNumber,
-                statement : context.stmtMap.get(this.lineNumber)
-            });
+            if(this.lineNumber) {
+                addStackTrace(context, e, {
+                    fileName : context.fileName,
+                    lineNumber : this.lineNumber,
+                    statement : context.stmtMap.get(this.lineNumber)
+                });
+            }
             throw e;
         }
     }

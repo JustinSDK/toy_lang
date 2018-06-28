@@ -1,3 +1,4 @@
+import {ClassError} from '../interpreter/commons/errors.js';
 import {Primitive, Instance, Null, Thrown, Void, Func, Class} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
@@ -53,10 +54,7 @@ ObjectClass.methods = new Map([
             const parentClz = args[0].internalNode;
             const parentClzNames = instance.clzNodeOfLang().parentClzNames;
             if(parentClzNames.every(name => name !== parentClz.name)) {
-                // currently a text is thrown. I'll design an exception type later.
-                return context.thrown(
-                    new Thrown('obj.super(parent): the type of obj must be the direct subtype of parent')
-                );
+                throw new ClassError('obj.super(parent): the type of obj must be the direct subtype of parent');
             }
  
             const name = args[1].value;
