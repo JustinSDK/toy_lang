@@ -1,7 +1,6 @@
 import {Native, Null, Primitive, Instance, Void, newInstance} from '../interpreter/ast/value.js';
 import {PARAM1, PARAM2, PARAM3, func0, func1, func3, format} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
-import {Variable} from '../interpreter/ast/statement.js';
 import {MethodCall} from '../interpreter/ast/callable.js';
 
 export {BUILTIN_FUNCTIONS};
@@ -44,14 +43,6 @@ const NoValue = func1('noValue', {
         return context.returned(
             Primitive.boolNode(PARAM1.evaluate(context) === Null)
         );
-    }
-});
-
-const ARGUMENTS = Variable.of('arguments');
-
-const List = func0('list', {
-    evaluate(context) {
-        return context.returned(ARGUMENTS.evaluate(context));
     }
 });
 
@@ -98,7 +89,6 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'println', Println),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue),
-    funcEntry(FUNC_CLZ, 'list', List),
     funcEntry(FUNC_CLZ, 'range', Range),
     funcEntry(FUNC_CLZ, 'format', Format),
     funcEntry(FUNC_CLZ, 'printf', Printf)

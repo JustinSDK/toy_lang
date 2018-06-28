@@ -75,9 +75,12 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],
     ['list', {
         burst(elemTokenables) {
-            return new FunCall(
-                Variable.of('list'), 
-                [elemTokenables.map(elem => EXPR_PARSER.parse(elem))]
+            const NewOperator = UNARY_OPERATORS.get('new');
+            return new NewOperator(
+                new FunCall(
+                    Variable.of('List'), 
+                    [elemTokenables.map(elem => EXPR_PARSER.parse(elem))]
+                )
             );
         }        
     }]

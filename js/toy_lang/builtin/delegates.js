@@ -106,10 +106,9 @@ class ListClass {
 }
 
 ListClass.methods = new Map([
-    ['init', func1('init', {
+    ['init', func0('init', {
         evaluate(context) {
-            const value = PARAM1.evaluate(context).value;
-            const nativeObj = new Native(new Array(value ? value : 0));
+            const nativeObj = context.lookUpVariable('arguments').internalNode;
             self(context).internalNode = nativeObj;
             return context;
         }
