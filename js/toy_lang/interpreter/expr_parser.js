@@ -114,14 +114,20 @@ function exprAst(tokenables) {
 }
 
 function priority(operator) {
-    return operator === 'new' ? 8 :
-           operator === '.' ? 7 :
-           operator === '$neg' ? 6 :
-           operator === 'not' ? 5 :
-           ['*', '/', '%'].indexOf(operator) !== -1 ? 4 :
-           ['+', '-'].indexOf(operator) !== -1 ? 3 : 
-           ['==', '!=', '>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 2 : 
-           ['and', 'or'].indexOf(operator) !== -1 ? 1 : 0
+    return operator === 'new' ? 14 :
+           operator === '.' ? 13 :
+           operator === '$neg' ? 12 :
+           operator === 'not' ? 11 :
+           ['*', '/', '%'].indexOf(operator) !== -1 ? 10 :
+           ['+', '-'].indexOf(operator) !== -1 ? 9 : 
+           ['<<', '>>'].indexOf(operator) !== -1 ? 8 : 
+           ['>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 7 :
+           ['==', '!='].indexOf(operator) !== -1 ? 6 : 
+           operator === '&' ? 5 :
+           operator === '^' ? 4 : 
+           operator === '|' ? 3 :
+           operator === 'and' ? 2 : 
+           operator === 'or' ? 1 : 0;
 }
 
 function popHighPriority(tokenable, stack, output) {

@@ -10,6 +10,7 @@ const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
 const ARITHMETIC_REGEX = /\+|\-|\*|\/|\%/;
+const BITWISE_REGEX = /\&|\||\^|<<|>>/;
 const NEW_REGEX = /new$/;
 const DOT_REGEX = /\./;
 const NOT_REGEX = /not/;
@@ -62,6 +63,7 @@ const EXPR_REGEX = orRegexs(
     RELATION_REGEX,
     LOGIC_REGEX,
     ARITHMETIC_REGEX,
+    BITWISE_REGEX,
     PARENTHESE_REGEX
 );
 
