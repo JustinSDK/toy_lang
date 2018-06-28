@@ -383,6 +383,12 @@ println(C.parents())
 new C().pa()
 new C().pb()
 new C().c()
+
+Orz = new Class('Orz', list(PA, PB), list(toString))
+orz = new Orz()
+orz.pa()
+orz.pb()
+println(orz)
 ```
 
 ----------
