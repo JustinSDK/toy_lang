@@ -1,8 +1,8 @@
-import {Primitive, Instance, Null, Thrown, Void, Func} from '../interpreter/ast/value.js';
+import {Primitive, Instance, Null, Thrown, Void, Func, Class} from '../interpreter/ast/value.js';
 import {Variable, StmtSequence, VariableAssign} from '../interpreter/ast/statement.js';
 
-import {PARAM1, PARAM2} from './func_bases.js';
-import {func0, func1, func2} from './func_bases.js';
+import {PARAM1, PARAM2, PARAM3} from './func_bases.js';
+import {func0, func1, func2, func3} from './func_bases.js';
 import {clzNode, self, selfInternalNode} from './class_bases.js';
 import {StringClass, ListClass} from './delegates.js';
 
@@ -136,9 +136,29 @@ class ClassClass {
     static classEntry(clzOfLang, name, methods) {
         return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods}))];
     }
+
+    static init() {
+        return func3('init', {
+            evaluate(context) {  
+                const name = PARAM1.evaluate(context);
+                const parents = PARAM2.evaluate(context);
+                const methods = PARAM3.evaluate(context); 
+
+                self(context).internalNode = new Class({
+                    notMethodStmt : StmtSequence.EMPTY,
+                    methods : new Map(methods === Null ? [] : methods.nativeValue().map(method => [method.internalNode.name, method.internalNode])),
+                    name : name === Null ? "''" : name.value,
+                    parentClzNames : parents === Null ? ['Object'] : parents.nativeValue().map(parent => parent.internalNode.name), 
+                    parentContext : context
+                });
+                return context;
+            }    
+        });
+    }    
 }
 
 ClassClass.methods = new Map([
+    ['init', ClassClass.init()], 
     ['name', FunctionClass.name()], 
     ['toString', FunctionClass.toString()],
     ['addOwnMethod', func2('addOwnMethod', {
