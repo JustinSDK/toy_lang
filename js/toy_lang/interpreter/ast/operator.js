@@ -36,6 +36,7 @@ class NewOperator {
         // run class body
         const ctx = clzOfLang.internalNode.call(context, this.args);
         return ctx.notThrown(c => {
+            c.variables.delete('arguments');
             return new Instance(
                 clzOfLang,
                 c.variables
