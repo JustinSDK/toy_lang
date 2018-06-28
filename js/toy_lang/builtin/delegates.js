@@ -24,7 +24,7 @@ StringClass.EMPTY_STRING = new Primitive('');
 StringClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
-            let text = PARAM1.evaluate(context);
+            const text = PARAM1.evaluate(context);
             self(context).internalNode = text === Null ? StringClass.EMPTY_STRING : text;
             return context;
         }

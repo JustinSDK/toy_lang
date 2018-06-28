@@ -95,7 +95,7 @@ class FunctionClass {
     static name() {
         return func1('name', {
             evaluate(context) {
-                let name = PARAM1.evaluate(context);
+                const name = PARAM1.evaluate(context);
                 const fNode = selfInternalNode(context);
                 if(name !== Null) {
                     fNode.name = name.value;
@@ -119,7 +119,7 @@ class FunctionClass {
 FunctionClass.methods = new Map([
     ['init', func1('init', {
         evaluate(context) {
-            let name = PARAM1.evaluate(context);
+            const name = PARAM1.evaluate(context);
             self(context).internalNode = new Func( // nope function
                 [], StmtSequence.EMPTY, name === Null ? "''" : name.value, context
             );
@@ -240,7 +240,7 @@ ClassClass.methods = new Map([
     })],
     ['parents', func1('parents', {
         evaluate(context) {
-            let parents = PARAM1.evaluate(context);
+            const parents = PARAM1.evaluate(context);
             if(parents === Null) {
                 return getParents(context);
             }
