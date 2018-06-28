@@ -140,6 +140,18 @@ ListClass.methods = new Map([
             return context.returned(Void);
         }    
     })],
+    ['swap', func2('swap', {
+        evaluate(context) {
+            const idx1 = PARAM1.evaluate(context).value;
+            const idx2 = PARAM2.evaluate(context).value;
+            const instance = self(context);
+            const arr = instance.nativeValue();
+            const tmp = arr[idx1];
+            arr[idx1] = arr[idx2];
+            arr[idx2] = tmp;
+            return context.returned(instance);
+        }    
+    })],    
     ['length', func0('length', {
         evaluate(context) {
             return context.returned(
