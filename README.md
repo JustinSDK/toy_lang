@@ -340,15 +340,21 @@ def toString() {
     return  props.map(prop -> prop.join()).join('\n')
 }
 
-o = new Object([['x', 10], ['y', 20], ['z', 30]])
-println(toString.apply(o))
+o1 = new Object()
+o1.x = 1
+o1.y = 2
+o1.z = 3
+println(toString.apply(o1))
+
+o2 = new Object([['x', 10], ['y', 20]])
+println(toString.apply(o2))
 
 def foo(p) {
     return this.x + this.y + this.z + p
 }
 
 # The 2nd parameter of the apply method accepts a List instance. 
-println(foo.apply(o, [40]))
+println(foo.apply(o1, [40]))
 ```
 
 - meta programming 2
