@@ -72,6 +72,13 @@ const TOKEN_TESTERS = new Map([
         const matched = REGEX.get('else').exec(input);
         return matched ? matched : [];
     }],
+    ['case', function(input) {
+        const matched = REGEX.get('case').exec(input);
+        if(matched[1]) {
+            return splitByComma(matched[1]).map(elem => elem.trim());
+        }
+        return [];
+    }],    
     ['try', function(input) {
         const matched = REGEX.get('try').exec(input);
         return matched ? matched : [];

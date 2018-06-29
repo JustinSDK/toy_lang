@@ -67,6 +67,13 @@ const EXPR_REGEX = orRegexs(
     PARENTHESE_REGEX
 );
 
+const CASE_REGEX = orRegexs(
+    TEXT_REGEX,
+    NUMBER_REGEX,
+    BOOLEAN_REGEX,
+    VARIABLE_REGEX
+);
+
 function orRegexs(...regexs) {
     const regexSources = regexs.map(regex => regex.source).join('|');
     return new RegExp(`(${regexSources})`);
@@ -84,8 +91,10 @@ const REGEX = new Map([
     ['iife', new RegExp(`^${IIFE_REGEX.source}$`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
     ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
-    ['cmd-arg', /^(def|class|if|while)\s+([^{]*)\s+{$/],
+    ['cmd-arg', /^(def|class|if|while|switch)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
+    ['case', new RegExp(`^case\\s+(${CASE_REGEX.source}|((${CASE_REGEX.source},\\s*)+${CASE_REGEX.source}))$`)],
+    ['default', /^default$/],
     ['try', /^try\s+{$/],
     ['catch', new RegExp(`^catch\\s+(${VARIABLE_REGEX.source})\\s+{$`)],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*(${ARITHMETIC_REGEX.source}|${BITWISE_REGEX.source})?=\\s*(.*)$`)],

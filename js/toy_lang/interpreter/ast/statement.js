@@ -1,6 +1,6 @@
 import {Thrown, Instance, newInstance, Primitive} from './value.js';
 
-export {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, StmtSequence, Return, Throw, Try};
+export {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, Switch, StmtSequence, Return, Throw, Try};
 
 class ExprWrapper {
     constructor(expr) {
@@ -157,6 +157,46 @@ class If {
             return this.falseStmt.evaluate(context);
         });
     }   
+}
+
+class Switch {
+    constructor(switchValue, cases, defaultStmt) {
+        this.switchValue = switchValue;
+        this.cases = cases;
+        this.defaultStmt = defaultStmt;
+    }
+
+    evaluate(context) {
+        const maybeContext = this.switchValue.evaluate(context);
+        return maybeContext.notThrown(v => {
+            const maybeCtx = compareCases(context, v, this.cases);
+            if(maybeCtx) {
+                return maybeCtx;
+            }
+            return this.defaultStmt.evaluate(context);
+        });
+    }   
+}
+
+function compareCases(context, switchValue, cases) {
+    if(cases.length === 0) {
+        return false;  // no matched case
+    }
+    const cazeValues = cases[0][0];
+    const cazeStmt = cases[0][1];
+    const maybeContext = compareCaseValues(context, switchValue, cazeValues, cazeStmt);
+    return maybeContext ? maybeContext : compareCases(context, switchValue, cases.slice(1));
+}
+
+function compareCaseValues(context, switchValue, cazeValues, cazeStmt) {
+    if(cazeValues.length === 0) {
+        return false; // no matched value
+    }
+    const v = cazeValues[0].evaluate(context);
+    if(v.value === switchValue.value) {
+        return cazeStmt.evaluate(context);
+    }
+    return compareCaseValues(context, switchValue, cazeValues.slice(1), cazeStmt);
 }
 
 class StmtSequence {

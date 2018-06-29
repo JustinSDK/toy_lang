@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, StmtSequence, Throw, Return, Try} from './ast/statement.js';
+import {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, Switch, StmtSequence, Throw, Return, Try} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
 import {ParseErrInterceptor} from './commons/interceptor.js';
@@ -8,7 +8,8 @@ export {LINE_PARSER};
 
 const LINE_PARSER = new ParseErrInterceptor({
     parse(tokenableLines) {
-        if(tokenableLines.length === 0 || tokenableLines[0].value === '}') {
+        if(tokenableLines.length === 0 || tokenableLines[0].value === '}' || 
+           tokenableLines[0].value.startsWith('case') || tokenableLines[0].value.startsWith('default')) {
             return StmtSequence.EMPTY;
         }
 
@@ -75,7 +76,9 @@ const STMT_PARSER = TokenablesParser.orRules(
                 case 'if':
                     return createIf(tokenableLines, argTokenable);
                 case 'while':
-                    return createWhile(tokenableLines, argTokenable);              
+                    return createWhile(tokenableLines, argTokenable);          
+                case 'switch':
+                    return createSwitch(tokenableLines, argTokenable);                             
             }
         }
     }],       
@@ -215,6 +218,39 @@ function createIf(tokenableLines, argTokenable) {
     );
 }
 
+function collectCase(tokenableLines) {
+    if(tokenableLines[0].value === '}' || tokenableLines[0].value === 'default') {
+        return [];
+    }
+    const caseTokenables = tokenableLines[0].tryTokenables('case')
+                                            .map(tokenable => EXPR_PARSER.parse(tokenable)); 
+    const caseStmt = LINE_PARSER.parse(tokenableLines.slice(1));    
+    const stmtCount = countStmts(caseStmt);
+    return [[[caseTokenables, caseStmt], stmtCount]].concat(
+        collectCase(tokenableLines.slice(stmtCount + 1))
+    );
+}
+
+function createSwitch(tokenableLines, argTokenable) {
+    const remains = tokenableLines.slice(1);
+    const cases = collectCase(remains);
+
+    const i = cases.map(caze => caze[1] + 1).reduce((acc, n) => acc + n);
+    const defaultStmt = remains[i].value === 'default' ? 
+            LINE_PARSER.parse(remains.slice(i + 1)) : 
+            StmtSequence.EMPTY;
+
+    return new StmtSequence(
+            new Switch(
+                EXPR_PARSER.parse(argTokenable), 
+                cases.map(caze => caze[0]),
+                defaultStmt
+            ),
+            LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+            tokenableLines[0].lineNumber
+    );
+}
+
 function isCatchLine(tokenableLine) {
     return tokenableLine.tryTokenables('catch').length !== 0;
 }
@@ -257,7 +293,7 @@ function countStmts(stmt, i = 1) {
     return countStmts(stmt.secondStmt, i + 1);
 }
 
-const cmds = ['if', 'try', 'while', 'def', 'class'];
+const cmds = ['if ', 'try ', 'while ', 'def ', 'class ', 'switch '];
 
 function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
     if(endCount === 0) {
