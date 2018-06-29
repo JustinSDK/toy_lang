@@ -1,5 +1,6 @@
 import {Void} from './value.js';
-import {VariableAssign, Variable, StmtSequence} from './statement.js';
+import {VariableAssign, Variable} from './assignment.js';
+import {StmtSequence} from './statement.js';
 
 export {FunCall, MethodCall};
 

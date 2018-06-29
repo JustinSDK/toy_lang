@@ -1,4 +1,6 @@
-import {Variable, VariableAssign, StmtSequence} from './statement.js'
+import {Variable} from './assignment.js';
+import {StmtSequence} from './statement.js';
+
 export {Value, Native, Null, Primitive, Func, Void, Instance, Class, Thrown, newInstance};
 
 class Value {
@@ -94,7 +96,7 @@ class Func extends Value {
 
     assignToParams(context, args) {
         const argumentsListInstance = newInstance(context, 'List', Native, args); 
-        return VariableAssign.assigns(
+        return StmtSequence.assigns(
             this.params.concat([Variable.of('arguments')]), 
             this.params.map((_, idx) => args[idx] ? args[idx] : Null).concat([argumentsListInstance])
         );
