@@ -62,6 +62,39 @@ range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
            .forEach(println)
 ```
 
+- Tricolour 
+
+```java
+def adjust(flags) {
+    b = 0
+    w = 0
+    r = flags.length() - 1
+    while flags.get(w) == 'B' and w < flags.length() {
+        w += 1
+    }
+    while flags.get(r) == 'R' and r > 0 {
+        r -= 1
+    }
+    while w <= r {
+        switch flags.get(w) {
+            case 'W'
+                w += 1
+            case 'B'
+                flags.swap(b, w)
+                w += 1
+                b += 1
+            case 'R'
+                flags.swap(r, w)
+                r -= 1
+        }
+    }
+    return flags
+}
+
+flags = 'RWBBWRWR'.split('')
+println(adjust(flags))
+```
+
 - Class
 
 ```java
