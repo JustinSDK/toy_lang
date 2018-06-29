@@ -1,7 +1,7 @@
 import {Thrown, Instance, Primitive} from './value.js';
 import {VariableAssign} from './assignment.js';
 
-export {ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try};
+export {ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try, Break};
 
 class ExprWrapper {
     constructor(expr) {
@@ -230,3 +230,9 @@ function runCatch(tryContext, tryNode, thrownValue) {
         tryNode.catchStmt.lineNumber
     ).evaluate(tryContext.emptyThrown());
 }
+
+const Break = {
+    evaluate(context) { 
+        return context;
+    }
+};

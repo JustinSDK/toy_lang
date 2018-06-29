@@ -95,6 +95,10 @@ const TOKEN_TESTERS = new Map([
     }],
     ['args', function(input) {
         return funcArguments(input);
+    }],
+    ['break', function(input) {
+        const matched = REGEX.get('break').exec(input);
+        return matched ? matched : [];
     }]   
 ]);
 
@@ -158,7 +162,7 @@ function splitByComma(input, x = '', acc = []) {
 
 const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 
                   'new', 'class', 'this', 'arguments', 'throw', 'try', 'catch', 
-                  'nonlocal', 'switch', 'case', 'default'];
+                  'nonlocal', 'switch', 'case', 'default', 'break'];
 
 class Tokenable {
     constructor(type, lineNumber, value) {

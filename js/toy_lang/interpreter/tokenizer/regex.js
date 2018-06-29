@@ -102,5 +102,6 @@ const REGEX = new Map([
     ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*(${ARITHMETIC_REGEX.source}}|${BITWISE_REGEX.source})?=\\s*(.*)$`)],
     ['return', /^return\s*(.*)$/],
     ['throw', /^throw\s*(.*)$/],
-    ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)]
+    ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)],
+    ['break', /break/]
 ]);
