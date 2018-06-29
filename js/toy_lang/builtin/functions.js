@@ -89,7 +89,10 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'println', Println),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue),
-    funcEntry(FUNC_CLZ, 'range', Range),
-    funcEntry(FUNC_CLZ, 'format', Format),
-    funcEntry(FUNC_CLZ, 'printf', Printf)
+    funcEntry(FUNC_CLZ, 'range', Range)
 ]); 
+
+// static methods
+
+const STRING_CLZ = BUILTIN_CLASSES.get('String');
+STRING_CLZ.setOwnProperty('format', new Instance(FUNC_CLZ, new Map(), Format));
