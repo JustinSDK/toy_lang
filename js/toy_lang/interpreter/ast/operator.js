@@ -119,11 +119,11 @@ const BINARY_OPERATORS = new Map([
     ['>', createPrimitiveBinaryOperatorNode((a, b) => bool(a > b))],
     ['<=', createPrimitiveBinaryOperatorNode((a, b) => bool(a <= b))],
     ['<', createPrimitiveBinaryOperatorNode((a, b) => bool(a < b))],
-    ['and', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a && b))],
-    ['or', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a || b))],
-    ['&', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a & b))],
-    ['|', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a | b))],
-    ['^', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a ^ b))],
-    ['<<', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a << b))],
-    ['>>', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a >> b))]
+    ['and', createPrimitiveBinaryOperatorNode((a, b) => Primitive.of(a && b))],
+    ['or', createPrimitiveBinaryOperatorNode((a, b) => Primitive.of(a || b))],
+    ['&', createPrimitiveBinaryOperatorNode((a, b) => p(a & b))],
+    ['|', createPrimitiveBinaryOperatorNode((a, b) => p(a | b))],
+    ['^', createPrimitiveBinaryOperatorNode((a, b) => p(a ^ b))],
+    ['<<', createPrimitiveBinaryOperatorNode((a, b) => p(a << b))],
+    ['>>', createPrimitiveBinaryOperatorNode((a, b) => p(a >> b))]
 ]);

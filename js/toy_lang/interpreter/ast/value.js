@@ -64,7 +64,7 @@ class Primitive extends Value {
         return value ? BOOL_TRUE : BOOL_FALSE;
     }
 
-    static from(v) {
+    static of(v) {
         return (typeof v) === 'boolean' ? Primitive.boolNode(v) : new Primitive(v);
     }    
 }
