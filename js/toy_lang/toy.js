@@ -42,9 +42,17 @@ function parseThenEval(toy) {
                                  .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
 
         const ctx = ast.evaluate(Context.initialize(toy.env, toy.fileName, stmtMap));
-        if(ctx.thrownNode !== null) {
-            ctx.output(`Thrown: ${ctx.thrownNode.value}`);
-            printStackTrace(toy, ctx.thrownNode.stackTraceElements);
+        const thrown = ctx.thrownNode;
+        if(thrown !== null) {
+            const clzOfLang = thrown.value.clzOfLang;
+            if(clzOfLang && thrown.value.hasOwnProperty('name') && clzOfLang.internalNode.hasMethod(ctx, 'printStackTrace')) {
+                ctx.output(`${thrown.value.getOwnProperty('name')}:`);
+                printStackTrace(toy, thrown.stackTraceElements);
+            }
+            else {
+                ctx.output(`Thrown: ${thrown.value}`);
+                printStackTrace(toy, thrown.stackTraceElements);
+            }
         }
     }
     catch(e) {
