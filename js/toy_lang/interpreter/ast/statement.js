@@ -280,7 +280,6 @@ class PropertyAssign {
     }
 }
 
-
 class Return {
     constructor(value) {
         this.value = value;
@@ -313,34 +312,38 @@ class Try {
     }
 
     evaluate(context) {
-        const maybeContext = this.tryStmt.evaluate(context);
-        if(maybeContext.thrownNode) {
-            const thrownValue = maybeContext.thrownNode.value;
+        const tryContext = this.tryStmt.evaluate(context);
+        if(tryContext.thrownNode) {
+            const thrownValue = tryContext.thrownNode.value;
             if(thrownValue.hasOwnProperty && thrownValue.hasOwnProperty('stackTraceElements')) {
-                const stackTraceElements = thrownValue.getOwnProperty('stackTraceElements').nativeValue();
-                maybeContext.thrownNode
-                            .stackTraceElements
-                            .map(elem => {
-                                return new Instance(
-                                    context.lookUpVariable('Object'),
-                                    new Map([
-                                        ['fileName', new Primitive(elem.fileName)],
-                                        ['lineNumber', new Primitive(elem.lineNumber)],
-                                        ['statement', new Primitive(elem.statement)]
-                                    ])
-                                );
-                            })
-                            .forEach(elem => stackTraceElements.push(elem));
+                pushStackTraceElements(context, tryContext, thrownValue);
             }
 
             const ctx = new StmtSequence(
                 new VariableAssign(this.exceptionVar, thrownValue),
                 this.catchStmt, 
                 this.catchStmt.lineNumber
-            ).evaluate(maybeContext.emptyThrown());
+            ).evaluate(tryContext.emptyThrown());
         
             return ctx.deleteVariable(this.exceptionVar.name);
         }
         return context;
     }   
+}
+
+function pushStackTraceElements(context, tryContext, thrownValue) {
+    const stackTraceElements = thrownValue.getOwnProperty('stackTraceElements').nativeValue();
+    tryContext.thrownNode
+              .stackTraceElements
+              .map(elem => {
+                  return new Instance(
+                      context.lookUpVariable('Object'),
+                      new Map([
+                          ['fileName', new Primitive(elem.fileName)],
+                          ['lineNumber', new Primitive(elem.lineNumber)],
+                          ['statement', new Primitive(elem.statement)]
+                      ])
+                  );
+              })
+              .forEach(elem => stackTraceElements.push(elem));
 }
