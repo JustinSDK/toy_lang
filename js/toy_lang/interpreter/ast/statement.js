@@ -100,21 +100,8 @@ class StmtSequence {
 
     evaluate(context) {
         try {
-            const ctx = this.firstStmt.evaluate(context);
-            return ctx.either(
-                leftContext => {
-                    if(leftContext.thrownNode.stackTraceElements.length === 0 || 
-                       context !== leftContext.thrownContext) {
-                        leftContext.thrownNode.addStackTraceElement({
-                            fileName : context.fileName,
-                            lineNumber : this.lineNumber,
-                            statement : context.stmtMap.get(this.lineNumber)
-                        });
-                    }
-                    return leftContext;
-                },
-                rightContext =>  rightContext.notReturn(c => this.secondStmt.evaluate(c))
-            );
+            const fstStmtContext = this.firstStmt.evaluate(context);
+            return addTraceOrSecondStmt(context, fstStmtContext, this.lineNumber, this.secondStmt);
         } catch(e) {
             if(this.lineNumber) {
                 addStackTrace(context, e, {
@@ -136,6 +123,23 @@ class StmtSequence {
                       StmtSequence.assigns(variables.slice(1), values.slice(1))
                 );
     }        
+}
+
+function addTraceOrSecondStmt(context, fstStmtContext, lineNumber, secondStmt) {
+    return fstStmtContext.either(
+        leftContext => {
+            if(leftContext.thrownNode.stackTraceElements.length === 0 || 
+               context !== leftContext.thrownContext) {
+                leftContext.thrownNode.addStackTraceElement({
+                    fileName : context.fileName,
+                    lineNumber : lineNumber,
+                    statement : context.stmtMap.get(lineNumber)
+                });
+            }
+            return leftContext;
+        },
+        rightContext =>  rightContext.notReturn(c => secondStmt.evaluate(c))
+    );
 }
 
 function addStackTrace(context, e, strackTraceElement) {
@@ -195,14 +199,8 @@ class Try {
             if(thrownValue.hasOwnProperty && thrownValue.hasOwnProperty('stackTraceElements')) {
                 pushStackTraceElements(context, tryContext, thrownValue);
             }
-
-            const ctx = new StmtSequence(
-                new VariableAssign(this.exceptionVar, thrownValue),
-                this.catchStmt, 
-                this.catchStmt.lineNumber
-            ).evaluate(tryContext.emptyThrown());
         
-            return ctx.deleteVariable(this.exceptionVar.name);
+            return runCatch(tryContext, this, thrownValue).deleteVariable(this.exceptionVar.name);
         }
         return context;
     }   
@@ -223,4 +221,12 @@ function pushStackTraceElements(context, tryContext, thrownValue) {
                   );
               })
               .forEach(elem => stackTraceElements.push(elem));
+}
+
+function runCatch(tryContext, tryNode, thrownValue) {
+    return new StmtSequence(
+        new VariableAssign(tryNode.exceptionVar, thrownValue),
+        tryNode.catchStmt, 
+        tryNode.catchStmt.lineNumber
+    ).evaluate(tryContext.emptyThrown());
 }

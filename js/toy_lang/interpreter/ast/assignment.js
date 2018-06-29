@@ -60,9 +60,7 @@ class VariableAssign {
                     ARITHMETIC_OPERATORS.get(this.operator)(this.variable.evaluate(context), value)
                 );
              }
-             return context.assign(
-                 this.variable.name, value
-             );
+             return context.assign(this.variable.name, value);
         });
     }
 }
