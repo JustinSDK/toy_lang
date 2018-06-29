@@ -1,4 +1,4 @@
-import {Thrown, Instance, newInstance, Primitive} from './value.js';
+import {Thrown, Instance, Primitive} from './value.js';
 
 export {ExprWrapper, Variable, VariableAssign, NonlocalAssign, PropertyAssign, While, If, Switch, StmtSequence, Return, Throw, Try};
 
