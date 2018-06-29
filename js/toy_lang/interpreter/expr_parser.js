@@ -113,7 +113,7 @@ function exprAst(tokenables) {
     }, new Stack()).top;
 }
 
-function priority(operator) {
+function precedence(operator) {
     return operator === 'new' ? 14 :
            operator === '.' ? 13 :
            operator === '$neg' ? 12 :
@@ -130,9 +130,9 @@ function priority(operator) {
            operator === 'or' ? 1 : 0;
 }
 
-function popHighPriority(tokenable, stack, output) {
-    if(!stack.isEmpty() && priority(stack.top.value) >= priority(tokenable.value)) {
-        return popHighPriority(tokenable, stack.pop(), output.concat([stack.top]));
+function popHighPrecedence(tokenable, stack, output) {
+    if(!stack.isEmpty() && precedence(stack.top.value) >= precedence(tokenable.value)) {
+        return popHighPrecedence(tokenable, stack.pop(), output.concat([stack.top]));
     }
     return [stack, output];
 }
@@ -160,11 +160,11 @@ function digest(tokenables, stack = new Stack(), output = [], prevTokenable = nu
         case 'and': case 'or':
         case '&': case '|': case '^': case '<<': case '>>':
         case '+': case '*': case '/': case '%':
-            const [s1, o1] = popHighPriority(tokenables[0], stack, output);
+            const [s1, o1] = popHighPrecedence(tokenables[0], stack, output);
             return digest(tokenables.slice(1), s1.push(tokenables[0]), o1, tokenables[0]);
         case '-':
             const tokenable = notOperand(prevTokenable) ? tokenables[0].replaceValue('$neg') : tokenables[0];
-            const [s2, o2] = popHighPriority(tokenable, stack, output);
+            const [s2, o2] = popHighPrecedence(tokenable, stack, output);
             return digest(tokenables.slice(1), s2.push(tokenable), o2, tokenables[0]);
         case ')':
             const [s3, o3] = popAllBeforeLP(stack, output);
