@@ -7,7 +7,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 - Operators: `new`, `.`, `==`, `!=`, `>=`, `>`, `<=`, `<`, `and`, `or`, `not`, `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `<<`, `>>`
 - Assigns: `=`, `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`, `<<=`, `>>=`
 - Built-in functions: `print`, `println`, `hasValue`, `noValue`, `range`
-- Built-in classes: `Object`, `Class`, `Function`, `String`, `List`, `Traceable`
+- Built-in classes: `Object`, `Class`, `Function`, `Number`, `String`, `List`, `Traceable`
 - Comment: `#`
 
 [Play It](https://openhome.cc/Gossip/Computation/toy_lang/)

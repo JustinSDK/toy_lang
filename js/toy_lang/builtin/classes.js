@@ -148,12 +148,12 @@ FunctionClass.methods = new Map([
 ]);
 
 class ClassClass {
-    static classInstance(clzOfLang, internalNode) {
-        return new Instance(clzOfLang, new Map(), internalNode);
+    static classInstance(clzOfLang, internalNode, constants = new Map()) {
+        return new Instance(clzOfLang, constants, internalNode);
     }
 
-    static classEntry(clzOfLang, name, methods) {
-        return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods}))];
+    static classEntry(clzOfLang, name, methods, constants) {
+        return [name, ClassClass.classInstance(clzOfLang, clzNode({name, methods}), constants)];
     }
 }
 
@@ -317,7 +317,7 @@ const BUILTIN_CLASSES = new Map([
     ['Class', CLZ],
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
     ClassClass.classEntry(CLZ, 'List', ListClass.methods),
-    ClassClass.classEntry(CLZ, 'Number', NumberClass.methods),
+    ClassClass.classEntry(CLZ, 'Number', NumberClass.methods, NumberClass.constants),
     ClassClass.classEntry(CLZ, 'Traceable', TraceableClass.methods)
 ]); 
 
