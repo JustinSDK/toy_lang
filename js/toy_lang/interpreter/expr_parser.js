@@ -46,7 +46,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],  
     ['text', {
         burst([textTokenable]) {
-            return new Primitive(textTokenable.value
+            return Primitive.of(textTokenable.value
                 .replace(/^\\r/, '\r')
                 .replace(/^\\n/, '\n')
                 .replace(/([^\\])\\r/g, '$1\r')
@@ -60,7 +60,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],
     ['number', {
         burst([numTokenable]) {
-            return new Primitive(parseFloat(numTokenable.value));
+            return Primitive.of(parseFloat(numTokenable.value));
         }        
     }],
     ['boolean', {

@@ -64,13 +64,24 @@ class Primitive extends Value {
         return value ? BOOL_TRUE : BOOL_FALSE;
     }
 
-    static of(v) {
-        return (typeof v) === 'boolean' ? Primitive.boolNode(v) : new Primitive(v);
-    }    
+    static of(value) {
+        if(primitives.has(value)) {
+            return primitives.get(value);
+        }
+        const primitive = new Primitive(value);
+        primitives.set(value, primitive);
+        return primitive;
+    }
+
+    static from(value) {
+        return primitives.has(value) ? primitives.get(value) : new Primitive(value);
+    }
 }
 
 const BOOL_TRUE = new Primitive(true);
 const BOOL_FALSE = new Primitive(false);
+
+const primitives = new Map([[true, BOOL_TRUE], [false, BOOL_FALSE]]);
 
 class Func extends Value {
     constructor(params, stmt, name = '', parentContext = null) {
