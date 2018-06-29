@@ -38,8 +38,7 @@
           <textarea id="code"># Is a language easier if 'Hello World' is easier?
 println('Hello World')
 println('Hello {0}'.format('World'))
-printf('Hello {0}\n', 'World')
-println(format('Hello {0}', 'World'))</textarea> <br>
+println(String.format('Hello {0}', 'World'))</textarea> <br>
           <br>
           <button id="run">Run It</button> <br>
           <br>
@@ -52,7 +51,7 @@ println(format('Hello {0}', 'World'))</textarea> <br>
     <pre class="prettyprint"><code>def print_row(n) {
     i = 2
     while i < 10 {
-        printf('{0}*{1}={2}\t', i, n, i * n)
+        print('{0}*{1}={2}\t'.format(i, n, i * n))
         i += 1 
     }
     println()
@@ -64,7 +63,7 @@ range(1, 10).forEach(print_row)</code></pre>
   </ul>
   <pre class="prettyprint"><code>def hanoi(n, a, b, c) {
     if n == 1 {
-        printf('Move sheet from {0} to {1}\n', a , c)
+        println('Move sheet from {0} to {1}'.format(a , c))
     } 
     else {
         hanoi(n - 1, a, c, b)
@@ -147,7 +146,7 @@ class Account {
     }
 
     def toString() {
-        return format('{0}, {1}, {2}', this.number, this.name, this.balance)
+        return '{0}, {1}, {2}'.format(this.number, this.name, this.balance)
     }
 }
 
@@ -174,7 +173,7 @@ catch e {
 }
  
 lt = range(1, 11)
-printf('{0}={1}\n', lt.join('+'), sum(lt))
+println('{0}={1}'.format(lt.join('+'), sum(lt)))
 
 println(new String('aBc').toUpperCase())
 println(new String('aBc').toLowerCase())</code></pre>

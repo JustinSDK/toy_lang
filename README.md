@@ -20,7 +20,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 def print_row(n) {
     i = 2
     while i < 10 {
-        printf('{0}*{1}={2}\t', i, n, i * n)
+        print('{0}*{1}={2}\t'.format(i, n, i * n))
         i += 1 
     }
     println()
@@ -34,7 +34,7 @@ range(1, 10).forEach(print_row)
 ```python
 def hanoi(n, a, b, c) {
     if n == 1 {
-        printf('Move sheet from {0} to {1}\n', a , c)
+        println('Move sheet from {0} to {1}'.format(a , c))
     } 
     else {
         hanoi(n - 1, a, c, b)
@@ -122,7 +122,7 @@ class Account {
     }
 
     def toString() {
-        return format('{0}, {1}, {2}', this.number, this.name, this.balance)
+        return '{0}, {1}, {2}'.format(this.number, this.name, this.balance)
     }
 }
 
@@ -151,7 +151,7 @@ def sum(lt) {
 }
     
 lt = range(1, 11)
-printf('{0}={1}\n', lt.join('+'), sum(lt))
+println('{0}={1}'.format(lt.join('+'), sum(lt)))
 
 println(new String('aBc').toUpperCase())
 println(new String('aBc').toLowerCase())
