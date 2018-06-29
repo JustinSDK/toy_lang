@@ -6,7 +6,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 - Literals: 3.14 (number), `true`, `false`, `'Hello, World'` (string), `\r`, `'\n'`, `'\t'`, `'\\'`, `'\''`
 - Operators: `new`, `.`, `==`, `!=`, `>=`, `>`, `<=`, `<`, `and`, `or`, `not`, `+`, `-`, `*`, `/`, `%`, `&`, `|`, `^`, `<<`, `>>`
 - Assigns: `=`, `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`, `<<=`, `>>=`
-- Built-in functions: `print`, `println`, `printf`, `hasValue`, `noValue`, `format`
+- Built-in functions: `print`, `println`, `hasValue`, `noValue`, `range`
 - Built-in classes: `Object`, `Class`, `Function`, `String`, `List`, `Traceable`
 - Comment: `#`
 
