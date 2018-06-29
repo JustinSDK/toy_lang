@@ -1,5 +1,5 @@
 import {Native, Null, Primitive, Instance, Void, newInstance} from '../interpreter/ast/value.js';
-import {PARAM1, PARAM2, PARAM3, func0, func1, func3, format} from './func_bases.js';
+import {PARAM1, PARAM2, PARAM3, func1, func2, func3, format} from './func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {MethodCall} from '../interpreter/ast/callable.js';
 
@@ -61,23 +61,6 @@ const Range = func3('range', {
     }
 });
 
-const Format = func3('format', {
-    evaluate(context) {
-        const args = context.lookUpVariable('arguments').nativeValue();
-        const str = format.apply(undefined, args.map(arg => arg.value));
-        return context.returned(new Primitive(str));
-    }
-});
-
-const Printf = func0('printf', {
-    evaluate(context) {
-        const args = context.lookUpVariable('arguments').nativeValue();
-        const str = format.apply(undefined, args.map(arg => arg.value));
-        print(context, str);
-        return context.returned(Void);
-    }
-});
-
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -94,5 +77,36 @@ const BUILTIN_FUNCTIONS = new Map([
 
 // static methods
 
-const STRING_CLZ = BUILTIN_CLASSES.get('String');
-STRING_CLZ.setOwnProperty('format', new Instance(FUNC_CLZ, new Map(), Format));
+// String
+
+const Format = func3('format', {
+    evaluate(context) {
+        const args = context.lookUpVariable('arguments').nativeValue();
+        const str = format.apply(undefined, args.map(arg => arg.value));
+        return context.returned(new Primitive(str));
+    }
+});
+
+const StringClz = BUILTIN_CLASSES.get('String');
+StringClz.setOwnProperty('format', new Instance(FUNC_CLZ, new Map(), Format));
+
+// Number
+
+const ParseFloat = func1('parseFloat', {
+    evaluate(context) {
+        const text = PARAM1.evaluate(context).value;
+        return context.returned(new Primitive(Number.parseFloat(text)));
+    }
+});
+
+const ParseInt = func2('parseInt', {
+    evaluate(context) {
+        const text = PARAM1.evaluate(context).value;
+        const radixNode = PARAM2.evaluate(context);
+        return context.returned(new Primitive(Number.parseInt(text, radixNode === Null ? undefined : radixNode.value)));
+    }
+});
+
+const NumberClz = BUILTIN_CLASSES.get('Number');
+NumberClz.setOwnProperty('parseFloat', new Instance(FUNC_CLZ, new Map(), ParseFloat));
+NumberClz.setOwnProperty('parseInt', new Instance(FUNC_CLZ, new Map(), ParseInt));
