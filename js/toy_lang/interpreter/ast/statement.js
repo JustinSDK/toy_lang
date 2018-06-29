@@ -47,7 +47,12 @@ const ARITHMETIC_OPERATORS = new Map([
     ['-', (a, b) => p(a.value - b.value)],
     ['*', (a, b) => p(a.value * b.value)],
     ['/', (a, b) => p(a.value / b.value)],
-    ['%', (a, b) => p(a.value % b.value)]
+    ['%', (a, b) => p(a.value % b.value)],
+    ['&', (a, b) => p(a.value & b.value)],
+    ['|', (a, b) => p(a.value | b.value)],
+    ['^', (a, b) => p(a.value ^ b.value)],
+    ['<<', (a, b) => p(a.value << b.value)],
+    ['>>', (a, b) => p(a.value >> b.value)]
 ]);
 
 class VariableAssign {
