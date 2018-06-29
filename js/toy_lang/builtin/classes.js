@@ -6,7 +6,7 @@ import {StmtSequence} from '../interpreter/ast/statement.js';
 import {PARAM1, PARAM2, PARAM3} from './func_bases.js';
 import {func0, func1, func2, func3} from './func_bases.js';
 import {clzNode, self, selfInternalNode} from './class_bases.js';
-import {StringClass, ListClass} from './delegates.js';
+import {StringClass, ListClass, NumberClass} from './delegates.js';
 
 export {BUILTIN_CLASSES};
 
@@ -317,6 +317,7 @@ const BUILTIN_CLASSES = new Map([
     ['Class', CLZ],
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
     ClassClass.classEntry(CLZ, 'List', ListClass.methods),
+    ClassClass.classEntry(CLZ, 'Number', NumberClass.methods),
     ClassClass.classEntry(CLZ, 'Traceable', TraceableClass.methods)
 ]); 
 
