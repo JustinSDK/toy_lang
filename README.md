@@ -83,7 +83,7 @@ def adjust(flags) {
                 flags.swap(b, w)
                 w += 1
                 b += 1
-            case 'R'
+            default
                 flags.swap(r, w)
                 r -= 1
         }
