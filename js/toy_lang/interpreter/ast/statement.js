@@ -44,14 +44,14 @@ class While {
             To avoid 'Maximum call stack size exceeded', the above code is the only place which uses 'while'.
             The corresponding code with the functional style is shown below.
          */
-        
+
         // const maybeContext = this.boolean.evaluate(context);
         // return maybeContext.notThrown(v => {
         //     if(v.value) {
         //         const ctx = this.stmt.evaluate(context);
         //         return ctx.either(leftContext => leftContext, rightContext => {
-        //             return rightContext.notReturn(ctx => {
-        //                 return ctx.isBroken() ? ctx.fixBroken() : this.evaluate(ctx);
+        //             return rightContext.notReturn(c => {
+        //                 return c.isBroken() ? c.fixBroken() : this.evaluate(c);
         //             });
         //         });
         //     }    
