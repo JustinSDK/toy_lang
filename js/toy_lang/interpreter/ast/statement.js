@@ -25,9 +25,8 @@ class While {
         return maybeContext.notThrown(v => {
             if(v.value) {
                 const ctx = this.stmt.evaluate(context);
-                return this.evaluate(ctx);
-            }
-    
+                return ctx.isBroken() ? ctx.fixBroken() : this.evaluate(ctx);
+            }    
             return context;
         });
     }   
@@ -138,7 +137,9 @@ function addTraceOrSecondStmt(context, fstStmtContext, lineNumber, secondStmt) {
             }
             return leftContext;
         },
-        rightContext =>  rightContext.notReturn(c => secondStmt.evaluate(c))
+        rightContext => rightContext.notReturn(ctx => {
+            return ctx.notBroken(c => secondStmt.evaluate(c));  
+        })
     );
 }
 
@@ -232,7 +233,7 @@ function runCatch(tryContext, tryNode, thrownValue) {
 }
 
 const Break = {
-    evaluate(context) { 
-        return context;
+    evaluate(context) {
+        return context.broken();
     }
 };

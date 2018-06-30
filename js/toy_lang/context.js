@@ -45,17 +45,19 @@ const defaultFlowConrtoller = {
     notReturn : call,
     thrownContext : null,
     thrownNode : null,
-    notThrown : call
+    notThrown : call,
+    notBroken : call
 };
 
-function createFlowController({either, returnedValue, notReturn, thrownContext, thrownNode, notThrown}) {
+function createFlowController({either, returnedValue, notReturn, thrownContext, thrownNode, notThrown, notBroken}) {
     return {
         either : either || defaultFlowConrtoller.either,
         returnedValue : returnedValue || defaultFlowConrtoller.either,
         notReturn : notReturn || defaultFlowConrtoller.notReturn,
         thrownContext : thrownContext || defaultFlowConrtoller.thrownContext,
         thrownNode : thrownNode || defaultFlowConrtoller.thrownNode,
-        notThrown : notThrown || defaultFlowConrtoller.notThrown
+        notThrown : notThrown || defaultFlowConrtoller.notThrown,
+        notBroken : notBroken || defaultFlowConrtoller.notBroken
     };
 }
 
@@ -141,6 +143,28 @@ class Context {
         return this;
     }
 
+    broken() {
+        return new Context({
+            fileName : this.fileName,
+            stmtMap : this.stmtMap,
+            parent : this.parent,
+            output : this.output,
+            variables : this.variables,
+            flowController : createFlowController({notBroken : self})
+        });
+    }
+
+    fixBroken() {
+        return new Context({
+            fileName : this.fileName,
+            stmtMap : this.stmtMap,
+            parent : this.parent,
+            output : this.output,
+            variables : this.variables,
+            flowController : createFlowController({notBroken : call})
+        });        
+    }
+
     lookUpVariable(name) {
         const value = this.variables.get(name);
         if(value !== undefined) {
@@ -173,6 +197,14 @@ class Context {
 
     get thrownNode() {
         return this.flowController.thrownNode;
+    }
+
+    get notBroken() {
+        return this.flowController.notBroken;
+    }
+
+    isBroken() {
+        return this.flowController.notBroken === self;
     }
 
     get notThrown() {
