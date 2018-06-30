@@ -21,14 +21,42 @@ class While {
     }
 
     evaluate(context) {
-        const maybeContext = this.boolean.evaluate(context);
-        return maybeContext.notThrown(v => {
-            if(v.value) {
-                const ctx = this.stmt.evaluate(context);
-                return ctx.isBroken() ? ctx.fixBroken() : this.evaluate(ctx);
-            }    
-            return context;
-        });
+        let ctx = context;
+        while(true) {
+            const maybeContext = this.boolean.evaluate(ctx);
+            if(maybeContext.thrownNode) {
+                return maybeContext;
+            }
+
+            if(maybeContext.value) {
+                ctx = this.stmt.evaluate(ctx);
+                if(ctx.thrownNode || ctx.returnedValue) {
+                    return ctx;
+                }
+                if(ctx.isBroken()) {
+                    return ctx.fixBroken();
+                }
+            } else { break; }
+        }
+        return ctx;
+
+        /*
+            To avoid 'Maximum call stack size exceeded', the above code is the only place which uses 'while'.
+            The corresponding code with the functional style is shown below.
+         */
+        
+        // const maybeContext = this.boolean.evaluate(context);
+        // return maybeContext.notThrown(v => {
+        //     if(v.value) {
+        //         const ctx = this.stmt.evaluate(context);
+        //         return ctx.either(leftContext => leftContext, rightContext => {
+        //             return rightContext.notReturn(ctx => {
+        //                 return ctx.isBroken() ? ctx.fixBroken() : this.evaluate(ctx);
+        //             });
+        //         });
+        //     }    
+        //     return context;
+        // });
     }   
 }
 
@@ -100,7 +128,7 @@ class StmtSequence {
     evaluate(context) {
         try {
             const fstStmtContext = this.firstStmt.evaluate(context);
-            return addTraceOrSecondStmt(context, fstStmtContext, this.lineNumber, this.secondStmt);
+            return addTraceOrStmt(context, fstStmtContext, this.lineNumber, this.secondStmt);
         } catch(e) {
             if(this.lineNumber) {
                 addStackTrace(context, e, {
@@ -124,8 +152,8 @@ class StmtSequence {
     }        
 }
 
-function addTraceOrSecondStmt(context, fstStmtContext, lineNumber, secondStmt) {
-    return fstStmtContext.either(
+function addTraceOrStmt(context, preStmtContext, lineNumber, stmt) {
+    return preStmtContext.either(
         leftContext => {
             if(leftContext.thrownNode.stackTraceElements.length === 0 || 
                context !== leftContext.thrownContext) {
@@ -138,7 +166,7 @@ function addTraceOrSecondStmt(context, fstStmtContext, lineNumber, secondStmt) {
             return leftContext;
         },
         rightContext => rightContext.notReturn(ctx => {
-            return ctx.notBroken(c => secondStmt.evaluate(c));  
+            return ctx.notBroken(c => stmt.evaluate(c));  
         })
     );
 }
