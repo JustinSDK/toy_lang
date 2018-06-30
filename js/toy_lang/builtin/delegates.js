@@ -277,29 +277,8 @@ ListClass.methods = new Map([
             const arr = instance.nativeValue();
 
             if(arr.length !== 0) {                
-                const comparator = PARAM1.evaluate(context);
-                if(comparator === Null) {
-                    arr.sort(
-                        typeof (arr[0].value) === 'number' ? (n1, n2) => n1.value - n2.value : undefined
-                    );
-                }
-                else {
-                    const fNode = comparator.internalNode;
-                    try {
-                        arr.sort((elem1, elem2) => {
-                            fNode.call(context, [elem1, elem2]).either(
-                                leftContext => {
-                                    throw leftContext;
-                                }, 
-                                rightContext => rightContext.returnedValue.value
-                            );
-                        });
-                    } catch(leftContext) {
-                        return leftContext;
-                    }
-                }
+                return sort(context, arr, instance);
             }
-
             return context.returned(instance);
         }    
     })],   
@@ -314,6 +293,33 @@ ListClass.methods = new Map([
         }    
     })]
 ]);
+
+function sort(context, arr, instance) {
+    const comparator = PARAM1.evaluate(context);
+    if(comparator === Null) {
+        arr.sort(typeof (arr[0].value) === 'number' ? (n1, n2) => n1.value - n2.value : undefined);
+    }
+    else {
+        try {
+            sortBy(context, arr, comparator);
+        } catch(leftContext) {
+            return leftContext;
+        }
+    }
+    return context.returned(instance);
+}
+
+function sortBy(context, arr, comparator) {
+    const fNode = comparator.internalNode;
+    arr.sort((elem1, elem2) => {
+        return fNode.call(context, [elem1, elem2]).either(
+            leftContext => {
+                throw leftContext;
+            }, 
+            rightContext => rightContext.returnedValue.value
+        );
+    });
+}
 
 class NumberClass {}
 
