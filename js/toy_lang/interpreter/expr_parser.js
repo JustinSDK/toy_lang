@@ -114,16 +114,22 @@ function exprAst(tokenables) {
     }, new Stack()).top;
 }
 
+const MULTIPLICATIVE = new Set(['*', '/', '%']);
+const ADDITIVE = new Set(['+', '-']);
+const SHIFT = new Set(['<<', '>>']);
+const RELATIONAL = new Set(['>=', '>', '<=', '<']);
+const EQUALITY = new Set(['==', '!=']);
+
 function precedence(operator) {
     return operator === 'new' ? 14 :
            operator === '.' ? 13 :
            operator === '$neg' ? 12 :
            operator === 'not' ? 11 :
-           ['*', '/', '%'].indexOf(operator) !== -1 ? 10 :
-           ['+', '-'].indexOf(operator) !== -1 ? 9 : 
-           ['<<', '>>'].indexOf(operator) !== -1 ? 8 : 
-           ['>=', '>', '<=', '<'].indexOf(operator) !== -1 ? 7 :
-           ['==', '!='].indexOf(operator) !== -1 ? 6 : 
+           MULTIPLICATIVE.has(operator) ? 10 :
+           ADDITIVE.has(operator) ? 9 : 
+           SHIFT.has(operator) ? 8 : 
+           RELATIONAL.has(operator) ? 7 :
+           EQUALITY.has(operator) ? 6 : 
            operator === '&' ? 5 :
            operator === '^' ? 4 : 
            operator === '|' ? 3 :
@@ -197,16 +203,20 @@ function toPostfix(tokenables) {
     return popAll(stack, output);
 }
 
+const UNARY_OPERATOR_KEYWORDS = new Set(['new', 'not', '$neg']);
+
 function isUnaryOperator(value) {
-    return ['new', 'not', '$neg'].indexOf(value) !== -1;
+    return UNARY_OPERATOR_KEYWORDS.has(value);
 }
 
+const BINARY_OPERATOR_KEYWORDS = new Set(['.', 
+    '==', '!=', '>=', '>', '<=', '<',
+    'and', 'or', 
+    '+', '-', '*', '/', '%',
+    '&', '|', '^', '<<', '>>']);
+
 function isBinaryOperator(value) {        
-    return ['.', 
-            '==', '!=', '>=', '>', '<=', '<',
-            'and', 'or', 
-            '+', '-', '*', '/', '%',
-            '&', '|', '^', '<<', '>>'].indexOf(value) !== -1;
+    return BINARY_OPERATOR_KEYWORDS.has(value);
 }
 
 function reduceUnary(stack, tokenable) {

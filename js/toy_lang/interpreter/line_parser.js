@@ -303,7 +303,7 @@ function countStmts(stmt, i = 1) {
     return countStmts(stmt.secondStmt, i + 1);
 }
 
-const cmds = ['if ', 'try ', 'while ', 'def ', 'class ', 'switch '];
+const cmds = ['if ', 'while ', 'switch ', 'def ', 'class ', 'try '];
 
 function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
     if(endCount === 0) {

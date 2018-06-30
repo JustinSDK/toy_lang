@@ -160,9 +160,9 @@ function splitByComma(input, x = '', acc = []) {
     }
 }
 
-const KEYWORDS = ['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 
+const KEYWORDS = new Set(['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 
                   'new', 'class', 'this', 'arguments', 'throw', 'try', 'catch', 
-                  'nonlocal', 'switch', 'case', 'default', 'break'];
+                  'nonlocal', 'switch', 'case', 'default', 'break']);
 
 class Tokenable {
     constructor(type, lineNumber, value) {
@@ -187,7 +187,7 @@ class Tokenable {
     }
 
     errIfKeyword() {
-        if(KEYWORDS.includes(this.value)) {
+        if(KEYWORDS.has(this.value)) {
             this.syntaxErr(`'${this.value}' is a keyword`);
         }
     }
