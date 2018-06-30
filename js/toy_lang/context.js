@@ -61,6 +61,17 @@ function createFlowController({either, returnedValue, notReturn, thrownContext, 
     };
 }
 
+function changeFlowController(ctx, option) {
+    return new Context({
+        fileName : ctx.fileName,
+        stmtMap : ctx.stmtMap,
+        parent : ctx.parent,
+        output : ctx.output,
+        variables : ctx.variables,
+        flowController : createFlowController(option)
+    });
+}
+
 class Context { 
     constructor({fileName, stmtMap, output, parent, variables, flowController}) {
         this.fileName = fileName;
@@ -101,41 +112,20 @@ class Context {
     }
 
     returned(value) {
-        return new Context({
-            fileName : this.fileName,
-            stmtMap : this.stmtMap,
-            parent : this.parent,
-            output : this.output,
-            variables : this.variables,
-            flowController : createFlowController({returnedValue : value, notReturn : self})
-        });
+        return changeFlowController(this, {returnedValue : value, notReturn : self});
     }
 
     thrown(thrownNode) {
-        return new Context({
-            fileName : this.fileName,
-            stmtMap : this.stmtMap,
-            parent : this.parent,
-            output : this.output,
-            variables : this.variables,
-            flowController : createFlowController({
-                either : eitherLeft,
-                thrownContext : this,
-                thrownNode : thrownNode,
-                notThrown : self
-            })
+        return changeFlowController(this, {
+            either : eitherLeft,
+            thrownContext : this,
+            thrownNode : thrownNode,
+            notThrown : self
         });
     }
 
     emptyThrown() {
-        return new Context({
-            fileName : this.fileName,
-            stmtMap : this.stmtMap,
-            parent : this.parent,
-            output : this.output,
-            variables : this.variables,
-            flowController : createFlowController({thrownContext : this})
-        });
+        return changeFlowController(this, {thrownContext : this});
     }
 
     deleteVariable(name) {
@@ -144,25 +134,11 @@ class Context {
     }
 
     broken() {
-        return new Context({
-            fileName : this.fileName,
-            stmtMap : this.stmtMap,
-            parent : this.parent,
-            output : this.output,
-            variables : this.variables,
-            flowController : createFlowController({notBroken : self})
-        });
+        return changeFlowController(this, {notBroken : self});
     }
 
     fixBroken() {
-        return new Context({
-            fileName : this.fileName,
-            stmtMap : this.stmtMap,
-            parent : this.parent,
-            output : this.output,
-            variables : this.variables,
-            flowController : createFlowController({notBroken : call})
-        });        
+        return changeFlowController(this, {notBroken : call});
     }
 
     lookUpVariable(name) {
