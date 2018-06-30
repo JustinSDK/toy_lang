@@ -34,7 +34,6 @@ function newInstance(context, clzName, node, value) {
     );
 }
 
-
 class Native extends Value {
     constructor(value) {
         super();

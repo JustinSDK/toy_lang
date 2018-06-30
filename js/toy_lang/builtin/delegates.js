@@ -95,20 +95,21 @@ class ListClass {
         return newInstance(context, 'List', Native, jsArray);
     }
 
-    static arrayCall(context, methodName, rightCallback, returnedCallback) {
+    static arrayCall(context, methodName, rightCallback, wrap) {
         const arr = self(context).nativeValue();
         const fNode = PARAM1.evaluate(context).internalNode;
         try {
-            const r = Array.prototype[methodName].call(arr, elem => {
-                return fNode.call(context, [elem]).either(
-                    leftContext => {
-                        throw leftContext;
-                    }, 
-                    rightContext => rightCallback(rightContext)
-                );
-            });
             return context.returned(
-                returnedCallback(r)
+                wrap(
+                    Array.prototype[methodName].call(arr, 
+                        elem => fNode.call(context, [elem]).either(
+                            leftContext => {
+                                throw leftContext;
+                            }, 
+                            rightContext => rightCallback(rightContext)
+                        )
+                    )
+                )
             );
         }
         catch(leftContext) {
@@ -186,7 +187,7 @@ ListClass.methods = new Map([
         evaluate(context) {           
             return ListClass.arrayCall(context, 'filter', 
                 rightContext => rightContext.returnedValue.value, 
-                r => ListClass.newInstance(context, r)
+                arr => ListClass.newInstance(context, arr)
             );
         }    
     })],
@@ -194,7 +195,7 @@ ListClass.methods = new Map([
         evaluate(context) {
             return ListClass.arrayCall(context, 'map', 
                 rightContext => rightContext.returnedValue, 
-                r => ListClass.newInstance(context, r)
+                arr => ListClass.newInstance(context, arr)
             );
         }    
     })],
@@ -210,7 +211,7 @@ ListClass.methods = new Map([
         evaluate(context) {
             return ListClass.arrayCall(context, 'every', 
                 rightContext => rightContext.returnedValue.value, 
-                r => Primitive.boolNode(r)
+                bool => Primitive.boolNode(bool)
             );
         }    
     })],
@@ -218,7 +219,7 @@ ListClass.methods = new Map([
         evaluate(context) {
             return ListClass.arrayCall(context, 'some', 
                 rightContext => rightContext.returnedValue.value, 
-                r => Primitive.boolNode(r)
+                bool => Primitive.boolNode(bool)
             );            
         }    
     })],    
@@ -226,7 +227,7 @@ ListClass.methods = new Map([
         evaluate(context) {
             return ListClass.arrayCall(context, 'find', 
                 rightContext => rightContext.returnedValue.value, 
-                r => r || Null
+                elem => elem || Null
             );     
         }    
     })],  
@@ -267,7 +268,7 @@ ListClass.methods = new Map([
         evaluate(context) {
             return ListClass.arrayCall(context, 'findIndex', 
                 rightContext => rightContext.returnedValue.value, 
-                r => new Primitive(r)
+                idx => new Primitive(idx)
             );   
         }    
     })],  

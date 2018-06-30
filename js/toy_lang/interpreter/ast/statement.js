@@ -49,11 +49,12 @@ class While {
         // return maybeContext.notThrown(v => {
         //     if(v.value) {
         //         const ctx = this.stmt.evaluate(context);
-        //         return ctx.either(leftContext => leftContext, rightContext => {
-        //             return rightContext.notReturn(c => {
-        //                 return c.isBroken() ? c.fixBroken() : this.evaluate(c);
-        //             });
-        //         });
+        //         return ctx.either(
+        //             leftContext => leftContext, 
+        //             rightContext => rightContext.notReturn(
+        //                 c => c.isBroken() ? c.fixBroken() : this.evaluate(c)        
+        //             )
+        //         );
         //     }    
         //     return context;
         // });
@@ -69,12 +70,9 @@ class If {
 
     evaluate(context) {
         const maybeContext = this.boolean.evaluate(context);
-        return maybeContext.notThrown(v => {
-            if(v.value) {
-                return this.trueStmt.evaluate(context);
-            }
-            return this.falseStmt.evaluate(context);
-        });
+        return maybeContext.notThrown(
+            v => v.value ? this.trueStmt.evaluate(context) : this.falseStmt.evaluate(context)
+        );
     }   
 }
 
@@ -87,13 +85,9 @@ class Switch {
 
     evaluate(context) {
         const maybeContext = this.switchValue.evaluate(context);
-        return maybeContext.notThrown(v => {
-            const maybeCtx = compareCases(context, v, this.cases);
-            if(maybeCtx) {
-                return maybeCtx;
-            }
-            return this.defaultStmt.evaluate(context);
-        });
+        return maybeContext.notThrown(
+            v => compareCases(context, v, this.cases) || this.defaultStmt.evaluate(context)
+        );
     }   
 }
 
@@ -165,9 +159,9 @@ function addTraceOrStmt(context, preStmtContext, lineNumber, stmt) {
             }
             return leftContext;
         },
-        rightContext => rightContext.notReturn(ctx => {
-            return ctx.notBroken(c => stmt.evaluate(c));  
-        })
+        rightContext => rightContext.notReturn(
+            ctx => ctx.notBroken(c => stmt.evaluate(c))  
+        )
     );
 }
 
@@ -208,9 +202,7 @@ class Throw {
 
     evaluate(context) {
         const maybeCtx = this.value.evaluate(context);
-        return maybeCtx.notThrown(v => {
-            return context.thrown(new Thrown(v));
-        });
+        return maybeCtx.notThrown(v => context.thrown(new Thrown(v)));
     }    
 }
 

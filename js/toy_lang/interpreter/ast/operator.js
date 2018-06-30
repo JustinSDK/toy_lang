@@ -12,15 +12,14 @@ function createPrimitiveBinaryOperatorNode(operator) {
     
         evaluate(context) {
             const maybeCtxLeft = this.left.evaluate(context);
-            return maybeCtxLeft.notThrown(left => {
-                const maybeCtxRight = this.right.evaluate(context);
-                return maybeCtxRight.notThrown(right => {
-                    return operator(
+            return maybeCtxLeft.notThrown(
+                left => this.right.evaluate(context).notThrown(
+                    right => operator(
                         left.value === undefined ? left.toString(context) : left.value, 
                         right.value === undefined ? right.toString(context) : right.value
-                    );
-                });
-            });
+                    )
+                )
+            );
         }
     }
 }
