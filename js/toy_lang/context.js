@@ -39,19 +39,34 @@ function eitherLeft(left, right) {
     return left(this);
 }
 
+const defaultFlowConrtoller = {
+    either : eitherRight,
+    returnedValue : null,
+    notReturn : call,
+    thrownContext : null,
+    thrownNode : null,
+    notThrown : call
+};
+
+function createFlowController({either, returnedValue, notReturn, thrownContext, thrownNode, notThrown}) {
+    return {
+        either : either || defaultFlowConrtoller.either,
+        returnedValue : returnedValue || defaultFlowConrtoller.either,
+        notReturn : notReturn || defaultFlowConrtoller.notReturn,
+        thrownContext : thrownContext || defaultFlowConrtoller.thrownContext,
+        thrownNode : thrownNode || defaultFlowConrtoller.thrownNode,
+        notThrown : notThrown || defaultFlowConrtoller.notThrown
+    };
+}
+
 class Context { 
-    constructor({fileName, stmtMap, output, parent, variables, returnedValue, notReturn, either, thrownContext, thrownNode, notThrown}) {
+    constructor({fileName, stmtMap, output, parent, variables, flowController}) {
         this.fileName = fileName;
         this.stmtMap = stmtMap;
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
-        this.returnedValue = returnedValue || null;
-        this.notReturn = notReturn || call;
-        this.either = either || eitherRight;
-        this.thrownContext = thrownContext || null;
-        this.thrownNode = thrownNode || null;
-        this.notThrown = notThrown || call; 
+        this.flowController = flowController || defaultFlowConrtoller;
     }
 
     static initialize(environment, fileName, stmtMap) {
@@ -90,8 +105,7 @@ class Context {
             parent : this.parent,
             output : this.output,
             variables : this.variables,
-            returnedValue : value,
-            notReturn : self
+            flowController : createFlowController({returnedValue : value, notReturn : self})
         });
     }
 
@@ -102,10 +116,12 @@ class Context {
             parent : this.parent,
             output : this.output,
             variables : this.variables,
-            either : eitherLeft,
-            thrownContext : this,
-            thrownNode : thrownNode,
-            notThrown : self
+            flowController : createFlowController({
+                either : eitherLeft,
+                thrownContext : this,
+                thrownNode : thrownNode,
+                notThrown : self
+            })
         });
     }
 
@@ -116,7 +132,7 @@ class Context {
             parent : this.parent,
             output : this.output,
             variables : this.variables,
-            thrownContext : this
+            flowController : createFlowController({thrownContext : this})
         });
     }
 
@@ -137,5 +153,29 @@ class Context {
     
     get RUNTIME_CHECKER() {
         return RUNTIME_CHECKER;
+    }
+
+    get either() {
+        return this.flowController.either;
+    }
+
+    get returnedValue() {
+        return this.flowController.returnedValue;
+    }
+
+    get notReturn() {
+        return this.flowController.notReturn;
+    }
+
+    get thrownContext() {
+        return this.flowController.thrownContext;
+    }
+
+    get thrownNode() {
+        return this.flowController.thrownNode;
+    }
+
+    get notThrown() {
+        return this.flowController.notThrown;
     }
 }
