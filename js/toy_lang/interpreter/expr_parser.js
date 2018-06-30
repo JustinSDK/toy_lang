@@ -61,7 +61,7 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],
     ['number', {
         burst([numTokenable]) {
-            return Primitive.of(parseFloat(numTokenable.value));
+            return Primitive.of(Number.parseFloat(numTokenable.value));
         }        
     }],
     ['boolean', {
