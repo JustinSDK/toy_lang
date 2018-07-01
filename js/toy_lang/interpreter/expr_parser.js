@@ -114,27 +114,29 @@ function exprAst(tokenables) {
     }, new Stack()).top;
 }
 
-const MULTIPLICATIVE = new Set(['*', '/', '%']);
-const ADDITIVE = new Set(['+', '-']);
-const SHIFT = new Set(['<<', '>>']);
-const RELATIONAL = new Set(['>=', '>', '<=', '<']);
-const EQUALITY = new Set(['==', '!=']);
-
 function precedence(operator) {
-    return operator === 'new' ? 14 :
-           operator === '.' ? 13 :
-           operator === '$neg' ? 12 :
-           operator === 'not' ? 11 :
-           MULTIPLICATIVE.has(operator) ? 10 :
-           ADDITIVE.has(operator) ? 9 : 
-           SHIFT.has(operator) ? 8 : 
-           RELATIONAL.has(operator) ? 7 :
-           EQUALITY.has(operator) ? 6 : 
-           operator === '&' ? 5 :
-           operator === '^' ? 4 : 
-           operator === '|' ? 3 :
-           operator === 'and' ? 2 : 
-           operator === 'or' ? 1 : 0;
+    switch(operator) {
+        case 'new':  return 14;
+        case '.':    return 13;
+        case '$neg': return 12;
+        case 'not':  return 11;
+        case '*': case '/': case '%':
+                     return 10;
+        case '+': case '-':
+                     return 9;
+        case '<<': case '>>':
+                     return 8;
+        case '>=': case '>': case '<=': case '<':
+                     return 7;
+        case '==': case '!=':
+                     return 6;
+        case '&':    return 5;
+        case '^':    return 4; 
+        case '|':    return 3;
+        case 'and':  return 2;
+        case 'or':   return 1;
+        default:     return 0; 
+    }
 }
 
 function popHigherPrecedence(tokenable, stack, output) {
