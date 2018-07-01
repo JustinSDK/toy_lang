@@ -31,8 +31,6 @@ const NESTING_PARENTHESES = nestingParentheses(NESTED_PARENTHESES_LEVEL);
 
 const ARGUMENT_LT_REGEX = new RegExp(`\\((${NESTING_PARENTHESES})\\)`);
 
-const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source})((${ARGUMENT_LT_REGEX.source})+))`);
-
 const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
 const LAMBDA_EXPR_REGEX = new RegExp(`((${PARAM_LT_REGEX.source})|(${VARIABLE_REGEX.source}))\\s*->\\s*(${NESTING_PARENTHESES})`);
@@ -42,6 +40,8 @@ const IIFE_REGEX = new RegExp(`(\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_
 const TERNARY_REGEX0 = new RegExp(`(${NESTING_PARENTHESES})\\s+if\\s+(${NESTING_PARENTHESES})\\s+else\\s+(${NESTING_PARENTHESES})`);
 
 const TERNARY_REGEX = new RegExp(`(^${TERNARY_REGEX0.source}$)|(\\(${TERNARY_REGEX0.source}\\))`);
+
+const FUNCALL_REGEX = new RegExp(`(((${VARIABLE_REGEX.source})|(${TERNARY_REGEX.source}))((${ARGUMENT_LT_REGEX.source})+))`);
 
 function nestingBrackets(level) {
     if (level === 0) {
@@ -53,6 +53,7 @@ function nestingBrackets(level) {
 const NESTED_BRACKETS_REGEX = new RegExp(`\\[(${nestingBrackets(NESTED_BRACKETS_LEVEL)})\\]`);
 
 const EXPR_REGEX = orRegexs(
+    TERNARY_REGEX,    
     NESTED_BRACKETS_REGEX,
     IIFE_REGEX,
     LAMBDA_EXPR_REGEX,
@@ -61,7 +62,6 @@ const EXPR_REGEX = orRegexs(
     TEXT_REGEX,
     NUMBER_REGEX,
     BOOLEAN_REGEX,
-    TERNARY_REGEX,    
     VARIABLE_REGEX,
     DOT_REGEX,
     NOT_REGEX,

@@ -41,8 +41,13 @@ const OPERAND_PARSER = TokenableParser.orRules(
         }        
     }],  
     ['fcall', {
-        burst([fNameTokenable, argLtChainTokenable]) {
-            return createFuncall(Variable.of(fNameTokenable.value), argLtChainTokenable);
+        burst([funcTokenable, argLtChainTokenable]) {
+            return createFuncall(
+                funcTokenable.value.includes('if') ? 
+                    OPERAND_PARSER.parse(funcTokenable) :
+                    Variable.of(funcTokenable.value), 
+                argLtChainTokenable
+            );
         }        
     }],  
     ['text', {
