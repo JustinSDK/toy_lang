@@ -274,8 +274,10 @@ function lineIdxParentheses(lines) {
         }
         
         const chars = lines[i].value.split('');
-        const leftPCount = chars.filter(c => c === '(').length + lc;
-        const rightPCount = chars.filter(c => c === ')').length + rc;
+        const parentheses = chars.filter(c => c === '(' || c === ')')
+                                 .reduce((acc, c) => c === '(' ? [acc[0] + c, acc[1]] : [acc[0], acc[1] + c], ['', '']);
+        const leftPCount = parentheses[0].length + lc;
+        const rightPCount = parentheses[1].length + rc;
         if((leftPCount - rightPCount) === 0) {
             return [line + lines[i].value, i];
         }
