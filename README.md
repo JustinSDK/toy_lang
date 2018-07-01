@@ -57,7 +57,7 @@ def factorial(n) {
     return n * factorial(n - 1)
 }
 
-# use \ for cross-line expression
+# use \ to wrap long lines
 range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
            .forEach(println)
 ```
@@ -221,13 +221,14 @@ println(getX())
 max = (n1, n2) -> n1 if n1 > n2 else n2
 println(max(10, 20))
 
-[1, 2, 3, 4, 5].filter(elem -> elem >= 2) \
-               .map(elem -> elem * 100)   \
-               .forEach(println)
+# you may also use parentheses to wrap wrapping long lines
+([1, 2, 3, 4, 5].filter(elem -> elem >= 2) 
+                .map(elem -> elem * 100)   
+                .forEach(println))
 
-range(1, 10) \
-  .map(n -> range(2, 10).map(i -> '{0}*{1}={2}'.format(i, n, i * n)).join('\t')) \
-  .forEach(println)
+(range(1, 10)
+  .map(n -> range(2, 10).map(i -> '{0}*{1}={2}'.format(i, n, i * n)).join('\t'))
+  .forEach(println))
 
 def foo3(x, y) {
     return () -> x + y
@@ -399,7 +400,10 @@ o1.y = 2
 o1.z = 3
 println(toString.apply(o1))
 
-o2 = new Object([['x', 10], ['y', 20]])
+(o2 = new Object([
+    ['x', 10], 
+    ['y', 20]
+]))
 println(toString.apply(o2))
 
 def foo4(p) {
