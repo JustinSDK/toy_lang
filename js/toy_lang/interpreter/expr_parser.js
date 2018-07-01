@@ -3,7 +3,7 @@ import {Primitive, Func} from './ast/value.js';
 import {FunCall} from './ast/callable.js';
 import {Variable} from './ast/assignment.js';
 import {Return} from './ast/statement.js';
-import {BINARY_OPERATORS, UNARY_OPERATORS} from './ast/operator.js';
+import {BINARY_OPERATORS, UNARY_OPERATORS, IfElse} from './ast/operator.js';
 import {TokenableParser} from './commons/parser.js';
 import {EvalErrInterceptor} from './commons/interceptor.js';
 
@@ -69,6 +69,15 @@ const OPERAND_PARSER = TokenableParser.orRules(
             return Primitive.boolNode(boolTokenable.value === 'true');
         }        
     }],    
+    ['ternary', {
+        burst([trueTokenable, condTokenable, falseTokenable]) {
+            return new IfElse(
+                EXPR_PARSER.parse(condTokenable),
+                EXPR_PARSER.parse(trueTokenable),
+                EXPR_PARSER.parse(falseTokenable)
+            );
+        }        
+    }],      
     ['variable', {
         burst([varTokenable]) {
             return Variable.of(varTokenable.value);

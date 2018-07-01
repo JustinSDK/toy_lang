@@ -1,7 +1,7 @@
 import {Instance, Primitive} from './value.js';
 import {MethodCall} from './callable.js';
 
-export {BINARY_OPERATORS, UNARY_OPERATORS};
+export {BINARY_OPERATORS, UNARY_OPERATORS, IfElse};
 
 function createPrimitiveBinaryOperatorNode(operator) {
     return class PrimitiveBinaryOperator {
@@ -126,3 +126,18 @@ const BINARY_OPERATORS = new Map([
     ['<<', createPrimitiveBinaryOperatorNode((a, b) => p(a << b))],
     ['>>', createPrimitiveBinaryOperatorNode((a, b) => p(a >> b))]
 ]);
+
+class IfElse {
+    constructor(boolOperand, trueOperand, falseOperand) {
+        this.boolOperand = boolOperand;
+        this.trueOperand = trueOperand;
+        this.falseOperand = falseOperand;
+    }
+
+    evaluate(context) {
+        const maybeContext = this.boolOperand.evaluate(context);
+        return maybeContext.notThrown(
+            v => v.value ? this.trueOperand.evaluate(context) : this.falseOperand.evaluate(context)
+        );
+    }   
+}

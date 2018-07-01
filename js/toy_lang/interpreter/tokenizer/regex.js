@@ -39,6 +39,10 @@ const LAMBDA_EXPR_REGEX = new RegExp(`((${PARAM_LT_REGEX.source})|(${VARIABLE_RE
 
 const IIFE_REGEX = new RegExp(`(\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_LT_REGEX.source})+))`);
 
+const TERNARY_REGEX0 = new RegExp(`(${NESTING_PARENTHESES})\\s+if\\s+(${NESTING_PARENTHESES})\\s+else\\s+(${NESTING_PARENTHESES})`);
+
+const TERNARY_REGEX = new RegExp(`(^${TERNARY_REGEX0.source}$)|(\\(${TERNARY_REGEX0.source}\\))`);
+
 function nestingBrackets(level) {
     if (level === 0) {
         return '[^\\[\\]]*';
@@ -57,6 +61,7 @@ const EXPR_REGEX = orRegexs(
     TEXT_REGEX,
     NUMBER_REGEX,
     BOOLEAN_REGEX,
+    TERNARY_REGEX,    
     VARIABLE_REGEX,
     DOT_REGEX,
     NOT_REGEX,
@@ -103,5 +108,6 @@ const REGEX = new Map([
     ['return', /^return\s*(.*)$/],
     ['throw', /^throw\s*(.*)$/],
     ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)],
-    ['break', /break/]
+    ['break', /break/],
+    ['ternary', TERNARY_REGEX]
 ]);

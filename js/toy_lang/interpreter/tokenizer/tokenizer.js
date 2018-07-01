@@ -99,7 +99,17 @@ const TOKEN_TESTERS = new Map([
     ['break', function(input) {
         const matched = REGEX.get('break').exec(input);
         return matched ? matched : [];
-    }]   
+    }],
+    ['ternary', function(input) {
+        const matched = REGEX.get('ternary').exec(input);
+        if(matched) {
+            if(input[0] === '(') {
+                return [matched[15], matched[19], matched[23]];
+            }
+            return [matched[2], matched[6], matched[10]]
+        }
+        return [];
+    }]
 ]);
 
 function argLists(input) {
