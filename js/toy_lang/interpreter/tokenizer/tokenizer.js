@@ -236,14 +236,22 @@ function concatExpr(lines) {
     }
     
     if(lines[0].value.endsWith('\\')) {
-        let [line, i] = lineIdx(lines);
+        const [line, i] = lineIdxBackSlash(lines);
         return [new Tokenable('line', lines[0].lineNumber, line)].concat(concatExpr(lines.slice(i + 1)));
     }
-    
+
+    if(lines[0].value.startsWith('(')) {
+        const [line, i] = lineIdxParentheses(lines);
+        const tokenable = new Tokenable('line', 
+            lines[0].lineNumber, line.includes('->') ? line : line.slice(1, -1)
+        );
+        return [tokenable].concat(concatExpr(lines.slice(i + 1)));
+    }
+
     return [lines[0]].concat(concatExpr(lines.slice(1)));
 }
 
-function lineIdx(lines) {
+function lineIdxBackSlash(lines) {
     function __lineIdx(line, i = 1) {
         if(!lines[i].value.endsWith('\\')) {
             return [line + lines[i].value, i];
@@ -257,4 +265,21 @@ function lineIdx(lines) {
     }
     
     return __lineIdx(lines[0].value.slice(0, -1).trim());
+}
+
+function lineIdxParentheses(lines) {
+    function __lineIdx(line = '', lc = 0, rc = 0, i = 0) {
+        if(lines.length === i) {
+            lines[0].syntaxErr('unable to match parentheses');
+        }
+        
+        const chars = lines[i].value.split('');
+        const leftPCount = chars.filter(c => c === '(').length + lc;
+        const rightPCount = chars.filter(c => c === ')').length + rc;
+        if((leftPCount - rightPCount) === 0) {
+            return [line + lines[i].value, i];
+        }
+        return __lineIdx(line + lines[i].value, leftPCount, rightPCount, i + 1);
+    }
+    return __lineIdx();
 }
