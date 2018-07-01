@@ -218,7 +218,7 @@ println(getX())
 - Lambda expression
 
 ```java    
-max = (n1, n2) -> n1 if n1 > n2  else n2
+max = (n1, n2) -> n1 if n1 > n2 else n2
 println(max(10, 20))
 
 [1, 2, 3, 4, 5].filter(elem -> elem >= 2) \
