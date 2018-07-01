@@ -161,13 +161,11 @@ function digest(tokenables, stack = new Stack(), output = [], prevTokenable = nu
     switch(tokenables[0].value) {
         case '(':
             return digest(tokenables.slice(1), stack.push(tokenables[0]), output, tokenables[0]);
-        case 'new':
-        case '.':
-        case '$neg':
-        case 'not':
+        case 'new': case '.': case '$neg': case 'not':
         case '==': case '!=': case '>=': case '>': case '<=': case '<':
         case 'and': case 'or':
-        case '&': case '|': case '^': case '<<': case '>>':
+        case '&': case '|': case '^': 
+        case '<<': case '>>':
         case '+': case '*': case '/': case '%':
             const [s1, o1] = popHigherPrecedence(tokenables[0], stack, output);
             return digest(tokenables.slice(1), s1.push(tokenables[0]), o1, tokenables[0]);
