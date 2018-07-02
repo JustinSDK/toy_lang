@@ -24,6 +24,44 @@ function createPrimitiveBinaryOperatorNode(operator) {
     }
 }
 
+class AndOperator {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        const maybeCtxLeft = this.left.evaluate(context);
+        return maybeCtxLeft.notThrown(
+            left => {
+                if(left.value === undefined ? left.toString(context) : left.value) {
+                    return this.right.evaluate(context).notThrown(right => right);
+                }
+                return left;
+            }
+        );
+    }
+}
+
+class OrOperator {
+    constructor(left, right) {
+        this.left = left;
+        this.right = right;
+    }
+
+    evaluate(context) {
+        const maybeCtxLeft = this.left.evaluate(context);
+        return maybeCtxLeft.notThrown(
+            left => {
+                if(left.value === undefined ? left.toString(context) : left.value) {
+                    return left;
+                }
+                return this.right.evaluate(context).notThrown(right => right);
+            }
+        );
+    }
+}
+
 function clzInstanceFrom(context, operand) {
     if(operand.receiver) {
         const receiver = operand.receiver.evaluate(context);
@@ -133,8 +171,8 @@ const BINARY_OPERATORS = new Map([
     ['>', createPrimitiveBinaryOperatorNode((a, b) => bool(a > b))],
     ['<=', createPrimitiveBinaryOperatorNode((a, b) => bool(a <= b))],
     ['<', createPrimitiveBinaryOperatorNode((a, b) => bool(a < b))],
-    ['and', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a && b))],
-    ['or', createPrimitiveBinaryOperatorNode((a, b) => Primitive.from(a || b))],
+    ['and', AndOperator],
+    ['or', OrOperator],
     ['&', createPrimitiveBinaryOperatorNode((a, b) => p(a & b))],
     ['|', createPrimitiveBinaryOperatorNode((a, b) => p(a | b))],
     ['^', createPrimitiveBinaryOperatorNode((a, b) => p(a ^ b))],
