@@ -41,7 +41,15 @@ function parseThenEval(toy) {
         const stmtMap = new Map(toy.tokenizer.tokenizableLines()
                                  .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
 
-        const ctx = ast.evaluate(Context.initialize(toy.env, toy.fileName, stmtMap));
+        const ctx = ast.evaluate(
+            Context.initialize({
+                env :toy.env, 
+                fileName : toy.fileName, 
+                stmtMap, 
+                global : true
+            })
+        );
+        
         const thrown = ctx.thrownNode;
         if(thrown !== null) {
             const clzOfLang = thrown.value.clzOfLang;

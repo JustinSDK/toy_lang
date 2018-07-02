@@ -1,5 +1,6 @@
 import {BUILTIN_FUNCTIONS} from './builtin/functions.js';
 import {BUILTIN_CLASSES} from './builtin/classes.js';
+import { Instance } from './interpreter/ast/value.js';
 
 export {Context};
 
@@ -82,13 +83,22 @@ class Context {
         this.flowController = flowController || defaultFlowConrtoller;
     }
 
-    static initialize(environment, fileName, stmtMap) {
-        return new Context({
+    static initialize({env, fileName, stmtMap, global}) {
+        const context = new Context({
             fileName : fileName,
             stmtMap : stmtMap,
-            output : environment.output,
+            output : env.output,
             variables : new Map(BUILTINS)
         });
+
+        const moduleInstance = new Instance(BUILTINS.get('Module'), context.variables, context);
+        context.variables.set(fileName.replace('.toy', ''), moduleInstance);
+        
+        if(global) {
+            context.variables.set('global', moduleInstance);
+        }
+
+        return context;
     }
 
     childContext() {

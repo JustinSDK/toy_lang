@@ -3,6 +3,7 @@ import {clzNode} from './bases/class_bases.js';
 import {ObjectClass} from './classes/object.js';
 import {FunctionClass} from './classes/func.js';
 import {ClassClass} from './classes/clz.js';
+import {ModuleClass} from './classes/module.js';
 
 import {StringClass} from './classes/string.js';
 import {ListClass} from './classes/list.js';
@@ -20,6 +21,7 @@ const BUILTIN_CLASSES = new Map([
     ClassClass.classEntry(CLZ, 'Object', ObjectClass.methods),
     ClassClass.classEntry(CLZ, 'Function', FunctionClass.methods),
     ['Class', CLZ],
+    ClassClass.classEntry(CLZ, 'Module', ModuleClass.methods),
     ClassClass.classEntry(CLZ, 'String', StringClass.methods),
     ClassClass.classEntry(CLZ, 'List', ListClass.methods),
     ClassClass.classEntry(CLZ, 'Number', NumberClass.methods, NumberClass.constants),
