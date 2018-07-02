@@ -24,29 +24,45 @@ function createPrimitiveBinaryOperatorNode(operator) {
     }
 }
 
+function clzInstanceFrom(context, operand) {
+    if(operand.receiver) {
+        const receiver = operand.receiver.evaluate(context);
+        return receiver.getOwnProperty(operand.message.func.name);
+    }
+    return operand.func.evaluate(context);
+}
+
+function argsFrom(operand) {
+    if(operand.receiver) {
+        return operand.message.argsList[0];
+    }
+    return operand.argsList[0];
+}
+
 class NewOperator {
     constructor(operand) {
         this.operand = operand;
     }
 
-    instance(context) {
-        const clzOfLang = this.operand.func.evaluate(context);
+    instance(context, args) {
+        const clzInstance = clzInstanceFrom(context, this.operand);
         // run class body
-        const ctx = clzOfLang.internalNode.call(context, this.operand.argsList[0]);
+        const ctx = clzInstance.internalNode.call(context, args);
         return ctx.notThrown(c => {
             c.variables.delete('arguments');
             return new Instance(
-                clzOfLang,
+                clzInstance,
                 c.variables
             );
         });
     }
 
     evaluate(context) {
-        const maybeContext = this.instance(context);
+        const args = argsFrom(this.operand);
+        const maybeContext = this.instance(context, args);
         return maybeContext.notThrown(ctx => {
             if(ctx.clzNodeOfLang().hasOwnMethod('init')) {
-                const maybeCtx = new MethodCall(maybeContext, 'init', [this.operand.argsList[0]]).evaluate(context);
+                const maybeCtx = new MethodCall(maybeContext, 'init', [args]).evaluate(context);
                 return maybeCtx.notThrown(c => maybeContext);
             }
             return ctx;
