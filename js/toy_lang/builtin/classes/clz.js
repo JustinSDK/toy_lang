@@ -6,6 +6,7 @@ import {func0, func1, func2, func3} from '../bases/func_bases.js';
 import {clzNode, self, selfInternalNode} from '../bases/class_bases.js';
 
 import {FunctionClass} from './func.js';
+import {ListClass} from './list.js';
 
 export {ClassClass};
 
