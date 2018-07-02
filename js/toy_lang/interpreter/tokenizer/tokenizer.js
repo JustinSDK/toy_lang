@@ -172,7 +172,7 @@ function splitByComma(input, x = '', acc = []) {
 
 const KEYWORDS = new Set(['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 
                   'new', 'class', 'this', 'arguments', 'throw', 'try', 'catch', 
-                  'nonlocal', 'switch', 'case', 'default', 'break']);
+                  'nonlocal', 'switch', 'case', 'default', 'break', 'global']);
 
 class Tokenable {
     constructor(type, lineNumber, value) {
