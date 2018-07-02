@@ -264,10 +264,10 @@ function lineIdxBackSlash(lines) {
             lines[i].syntaxErr('illegal cross-line backslash');
         }
 
-        return __lineIdx(line + lines[i].value.slice(0, -1).trim(), i + 1);
+        return __lineIdx(line + lines[i].value.slice(0, -1), i + 1);
     }
     
-    return __lineIdx(lines[0].value.slice(0, -1).trim());
+    return __lineIdx(lines[0].value.slice(0, -1));
 }
 
 function lineIdxParentheses(lines) {
