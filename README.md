@@ -149,8 +149,8 @@ def sum(lt) {
 lt = range(1, 11)
 println('{0}={1}'.format(lt.join('+'), sum(lt)))
 
-println(new String('aBc').toUpperCase())
-println(new String('aBc').toLowerCase())
+println((new String('aBc')).toUpperCase())
+println((new String('aBc')).toLowerCase())
 ```
 
 - Closure
@@ -439,9 +439,9 @@ println(C.parents())
 C.parents([PA, PB])
 println(C.parents())
 
-new C().pa()
-new C().pb()
-new C().c()
+(new C()).pa()
+(new C()).pb()
+(new C()).c()
 
 def toString() {
     return this.class().name()
