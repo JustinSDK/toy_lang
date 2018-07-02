@@ -1,4 +1,4 @@
-import {Primitive} from './ast_export.js';
+import {Primitive} from '../ast_export.js';
 
 export {NumberClass};
 

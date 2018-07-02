@@ -1,5 +1,5 @@
 
-import {Primitive, Null} from './ast_export.js';
+import {Primitive, Null} from '../ast_export.js';
 import {PARAM1, PARAM_LT1, PARAM_LT2} from '../bases/func_bases.js';
 import {func0, func1, func2, format} from '../bases/func_bases.js';
 import {methodPrimitive, self, delegate} from '../bases/class_bases.js';

@@ -1,4 +1,4 @@
-import {Func, Variable} from './ast_export.js';
+import {Func, Variable} from '../ast_export.js';
 
 export {PARAM1, PARAM2, PARAM3, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3};
 export {func, func0, func1, func2, func3};
