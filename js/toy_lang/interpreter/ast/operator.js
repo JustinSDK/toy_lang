@@ -26,14 +26,13 @@ function createPrimitiveBinaryOperatorNode(operator) {
 
 class NewOperator {
     constructor(operand) {
-        this.clz = operand.func;
-        this.args = operand.argsList[0];
+        this.operand = operand;
     }
 
     instance(context) {
-        const clzOfLang = this.clz.evaluate(context);
+        const clzOfLang = this.operand.func.evaluate(context);
         // run class body
-        const ctx = clzOfLang.internalNode.call(context, this.args);
+        const ctx = clzOfLang.internalNode.call(context, this.operand.argsList[0]);
         return ctx.notThrown(c => {
             c.variables.delete('arguments');
             return new Instance(
@@ -47,7 +46,7 @@ class NewOperator {
         const maybeContext = this.instance(context);
         return maybeContext.notThrown(ctx => {
             if(ctx.clzNodeOfLang().hasOwnMethod('init')) {
-                const maybeCtx = new MethodCall(maybeContext, 'init', [this.args]).evaluate(context);
+                const maybeCtx = new MethodCall(maybeContext, 'init', [this.operand.argsList[0]]).evaluate(context);
                 return maybeCtx.notThrown(c => maybeContext);
             }
             return ctx;
