@@ -142,24 +142,23 @@ function isDef(stmt) {
     return stmt.firstStmt instanceof VariableAssign && stmt.firstStmt.value instanceof Func;
 }
 
-function funcs(stmt) {
+function splitFuncStmt(stmt) {
     if(stmt === StmtSequence.EMPTY) {
-        return [];
+        return [[], StmtSequence.EMPTY];
     }
 
-    return isDef(stmt) ? 
-             [[stmt.firstStmt.variable.name, stmt.firstStmt.value]].concat(funcs(stmt.secondStmt)) :
-             funcs(stmt.secondStmt);
-}
-
-function notDefStmt(stmt) {
-    if(stmt === StmtSequence.EMPTY) {
-        return StmtSequence.EMPTY;
+    const [funcs, notDefStmt] = splitFuncStmt(stmt.secondStmt);
+    if(isDef(stmt)) {
+        return [
+            [[stmt.firstStmt.variable.name, stmt.firstStmt.value]].concat(funcs),
+            notDefStmt
+        ];
     }
 
-    return !isDef(stmt) ? 
-            new StmtSequence(stmt.firstStmt, notDefStmt(stmt.secondStmt), stmt.lineNumber) : 
-            notDefStmt(stmt.secondStmt);
+    return [
+        funcs, 
+        new StmtSequence(stmt.firstStmt, notDefStmt, stmt.lineNumber)
+    ];
 }
 
 function createAssignFunc(tokenableLines, argTokenable) {
@@ -189,12 +188,13 @@ function createAssignClass(tokenableLines, argTokenable) {
     const stmt = LINE_PARSER.parse(remains);
 
     const parentClzNames = paramTokenables.map(paramTokenable => paramTokenable.value);
+    const [fs, notDefStmt] = splitFuncStmt(stmt);
     return new StmtSequence(
         new VariableAssign(
             Variable.of(fNameTokenable.value), 
             new Class({
-                notMethodStmt : notDefStmt(stmt), 
-                methods : new Map(funcs(stmt)), 
+                notMethodStmt : notDefStmt, 
+                methods : new Map(fs), 
                 name : fNameTokenable.value, 
                 parentClzNames : parentClzNames.length === 0 ? ['Object'] : parentClzNames
             })
