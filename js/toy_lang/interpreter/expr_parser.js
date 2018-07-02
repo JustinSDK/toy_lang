@@ -130,8 +130,8 @@ function exprAst(tokenables) {
 
 function precedence(operator) {
     switch(operator) {
-        case 'new':  return 14;
-        case '.':    return 13;
+        case '.':    return 14;
+        case 'new':  return 13;
         case '$neg': return 12;
         case 'not':  return 11;
         case '*': case '/': case '%':
