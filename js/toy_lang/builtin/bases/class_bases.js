@@ -1,5 +1,4 @@
-import {Native, Primitive, Class, Instance, Void} from '../interpreter/ast/value.js';
-import {StmtSequence} from '../interpreter/ast/statement.js';
+import {Native, Primitive, Class, Instance, Void, StmtSequence} from './ast_export.js';
 
 import {PARAM_LT0} from './func_bases.js';
 import {func} from './func_bases.js';
