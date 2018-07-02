@@ -144,7 +144,7 @@ function funcArguments(input) {
 function listElems(input) {
     const matched = REGEX.get('elemList').exec(input);
     if(matched[1]) {
-        return splitByComma(matched[1]);
+        return splitByComma(matched[1].trim());
     }
 
     return [];
@@ -245,7 +245,7 @@ function concatExpr(lines) {
         if(lc !== rc) {
             const [line, i] = lineIdxParentheses(lines);
             const tokenable = new Tokenable('line', 
-                lines[0].lineNumber, line.slice(1, -1)
+                lines[0].lineNumber, line.trim().slice(1, -1)
             );
             return [tokenable].concat(concatExpr(lines.slice(i + 1)));
         }
@@ -257,17 +257,17 @@ function concatExpr(lines) {
 function lineIdxBackSlash(lines) {
     function __lineIdx(line, i = 1) {
         if(!lines[i].value.endsWith('\\')) {
-            return [line + lines[i].value, i];
+            return [line + ' ' + lines[i].value, i];
         }
 
         if(lines.length === i + 1) {
             lines[i].syntaxErr('illegal cross-line backslash');
         }
 
-        return __lineIdx(line + lines[i].value.slice(0, -1), i + 1);
+        return __lineIdx(line + ' ' + lines[i].value.slice(0, -1).trim(), i + 1);
     }
     
-    return __lineIdx(lines[0].value.slice(0, -1));
+    return __lineIdx(lines[0].value.slice(0, -1).trim());
 }
 
 function lineIdxParentheses(lines) {
@@ -280,9 +280,9 @@ function lineIdxParentheses(lines) {
         const leftPCount = parentheses[0] + lc;
         const rightPCount = parentheses[1] + rc;
         if(leftPCount === rightPCount) {
-            return [line + lines[i].value, i];
+            return [line +  lines[i].value + ' ', i];
         }
-        return __lineIdx(line + lines[i].value, leftPCount, rightPCount, i + 1);
+        return __lineIdx(line + lines[i].value + ' ', leftPCount, rightPCount, i + 1);
     }
     return __lineIdx();
 }
