@@ -104,7 +104,7 @@ const REGEX = new Map([
     ['catch', new RegExp(`^catch\\s+(${VARIABLE_REGEX.source})\\s+{$`)],
     ['variableAssign', new RegExp(`^(${VARIABLE_REGEX.source})\\s*(${ARITHMETIC_REGEX.source}|${BITWISE_REGEX.source})?=\\s*(.*)$`)],
     ['nonlocalAssign', new RegExp(`^nonlocal\\s+(${VARIABLE_REGEX.source})\\s*(${ARITHMETIC_REGEX.source}|${BITWISE_REGEX.source}})?=\\s*(.*)$`)],
-    ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*(${ARITHMETIC_REGEX.source}}|${BITWISE_REGEX.source})?=\\s*(.*)$`)],
+    ['propertyAssign', new RegExp(`^(.*)\\.(${VARIABLE_REGEX.source})\\s*(${ARITHMETIC_REGEX.source}}|${BITWISE_REGEX.source})?=[^=](.*)$`)],
     ['return', /^return\s*(.*)$/],
     ['throw', /^throw\s*(.*)$/],
     ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)],
