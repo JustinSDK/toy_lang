@@ -83,7 +83,7 @@ class If extends Stmt {
     get lineCount() {
         const trueLineCount = this.trueStmt.lineCount;
         const falseLineCount = this.falseStmt.lineCount;
-        return 2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : falseLineCount)
+        return 2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : 0)
     }    
 
     evaluate(context) {
@@ -106,7 +106,7 @@ class Switch extends Stmt {
         const casesLineCount = this.cases.map(casz => casz[1])
                                          .map(stmt => stmt.lineCount)
                                          .reduce((acc, n) => n + 1 + acc, 0);
-        const defaultLineCount = this.defaultStmt.lineCount + 1;
+        const defaultLineCount = this.defaultStmt.lineCount ? this.defaultStmt.lineCount + 1 : 0;
         return casesLineCount + defaultLineCount + 2;
     }
 

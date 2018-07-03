@@ -225,7 +225,7 @@ function createIf(tokenableLines, argTokenable) {
     const falseLineCount = falseStmt.lineCount;
     
     const linesAfterIfElse = tokenableLines.slice(
-        2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : falseLineCount)
+        2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : 0)
     );
 
     return new StmtSequence(
@@ -265,7 +265,7 @@ function createSwitch(tokenableLines, argTokenable) {
     const defaultStmt = remains[i].value === 'default' ? 
             LINE_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
-    const defaultLineCount = defaultStmt.lineCount + 1;
+    const defaultLineCount = defaultStmt.lineCount ? defaultStmt.lineCount + 1 : 0;
 
     const linesAfterSwitch = tokenableLines.slice(casesLineCount + defaultLineCount + 2);
     return new StmtSequence(
