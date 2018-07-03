@@ -229,13 +229,13 @@ function createIf(tokenableLines, argTokenable) {
     );
 
     return new StmtSequence(
-            new If(
-                EXPR_PARSER.parse(argTokenable), 
-                trueStmt,
-                falseStmt
-            ),
-            LINE_PARSER.parse(linesAfterIfElse),
-            tokenableLines[0].lineNumber
+        new If(
+            EXPR_PARSER.parse(argTokenable), 
+            trueStmt,
+            falseStmt
+        ),
+        LINE_PARSER.parse(linesAfterIfElse),
+        tokenableLines[0].lineNumber
     );
 }
 
@@ -269,13 +269,13 @@ function createSwitch(tokenableLines, argTokenable) {
 
     const linesAfterSwitch = tokenableLines.slice(casesLineCount + defaultLineCount + 2);
     return new StmtSequence(
-            new Switch(
-                EXPR_PARSER.parse(argTokenable), 
-                cases.map(caze => caze[0]),
-                defaultStmt
-            ),
-            LINE_PARSER.parse(linesAfterSwitch),
-            tokenableLines[0].lineNumber
+        new Switch(
+            EXPR_PARSER.parse(argTokenable), 
+            cases.map(caze => caze[0]),
+            defaultStmt
+        ),
+        LINE_PARSER.parse(linesAfterSwitch),
+        tokenableLines[0].lineNumber
     );
 }
 
@@ -292,13 +292,13 @@ function createTry(tokenableLines) {
 
     const linesAfterTryCatch = tokenableLines.slice(tryLineCount + catchLineCount + 4);
     return new StmtSequence(
-            new Try(
-                tryStmt,
-                Variable.of(exceptionName),
-                catchStmt
-            ),
-            LINE_PARSER.parse(linesAfterTryCatch),
-            tokenableLines[0].lineNumber
+        new Try(
+            tryStmt,
+            Variable.of(exceptionName),
+            catchStmt
+        ),
+        LINE_PARSER.parse(linesAfterTryCatch),
+        tokenableLines[0].lineNumber
     );
 }
 
