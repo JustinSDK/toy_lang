@@ -3,14 +3,14 @@ import {Thrown, Instance, Primitive} from './value.js';
 export {Stmt, ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try, Break};
 
 class Stmt {
-    get lineCount() {
-        return 1;
+    constructor(lineCount) {
+        this.lineCount = lineCount;
     }
 }
 
 class ExprWrapper extends Stmt {
     constructor(expr) {
-        super();
+        super(1);
         this.expr = expr;
     }
 
@@ -22,13 +22,9 @@ class ExprWrapper extends Stmt {
 
 class While extends Stmt {
     constructor(boolean, stmt) {
-        super();
+        super(stmt.lineCount + 2);
         this.boolean = boolean;
         this.stmt = stmt;
-    }
-
-    get lineCount() {
-        return this.stmt.lineCount + 2;
     }
 
     evaluate(context) {
@@ -72,19 +68,18 @@ class While extends Stmt {
     }   
 }
 
+function ifLineCount(trueStmt, falseStmt) {
+    const trueLineCount = trueStmt.lineCount;
+    const falseLineCount = falseStmt.lineCount;
+    return 2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : 0)
+}
 class If extends Stmt {
     constructor(boolean, trueStmt, falseStmt) {
-        super();
+        super(ifLineCount(trueStmt, falseStmt));
         this.boolean = boolean;
         this.trueStmt = trueStmt;
         this.falseStmt = falseStmt;
     }
-
-    get lineCount() {
-        const trueLineCount = this.trueStmt.lineCount;
-        const falseLineCount = this.falseStmt.lineCount;
-        return 2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : 0)
-    }    
 
     evaluate(context) {
         const maybeContext = this.boolean.evaluate(context);
@@ -94,20 +89,19 @@ class If extends Stmt {
     }   
 }
 
+function switchLineCount(cases, defaultStmt) {
+    const casesLineCount = cases.map(casz => casz[1])
+                                .map(stmt => stmt.lineCount)
+                                .reduce((acc, n) => n + 1 + acc, 0);
+    const defaultLineCount = defaultStmt.lineCount ? defaultStmt.lineCount + 1 : 0;
+    return casesLineCount + defaultLineCount + 2;
+}
 class Switch extends Stmt {
     constructor(switchValue, cases, defaultStmt) {
-        super();
+        super(switchLineCount(cases, defaultStmt));
         this.switchValue = switchValue;
         this.cases = cases;
         this.defaultStmt = defaultStmt;
-    }
-
-    get lineCount() {
-        const casesLineCount = this.cases.map(casz => casz[1])
-                                         .map(stmt => stmt.lineCount)
-                                         .reduce((acc, n) => n + 1 + acc, 0);
-        const defaultLineCount = this.defaultStmt.lineCount ? this.defaultStmt.lineCount + 1 : 0;
-        return casesLineCount + defaultLineCount + 2;
     }
 
     evaluate(context) {
@@ -141,14 +135,10 @@ function compareCaseValues(context, switchValue, cazeValues, cazeStmt) {
 
 class StmtSequence extends Stmt {
     constructor(firstStmt, secondStmt, lineNumber) {
-        super();
+        super(firstStmt.lineCount + secondStmt.lineCount);
         this.firstStmt = firstStmt;
         this.secondStmt = secondStmt;
         this.lineNumber = lineNumber;
-    }
-
-    get lineCount() {
-        return this.firstStmt.lineCount + this.secondStmt.lineCount;
     }
     
     evaluate(context) {
@@ -209,7 +199,7 @@ StmtSequence.EMPTY = {
 
 class Return extends Stmt {
     constructor(value) {
-        super();
+        super(1);
         this.value = value;
     }
 
@@ -221,7 +211,7 @@ class Return extends Stmt {
 
 class Throw extends Stmt {
     constructor(value) {
-        super();
+        super(1);
         this.value = value;
     }
 
@@ -233,14 +223,10 @@ class Throw extends Stmt {
 
 class Try extends Stmt {
     constructor(tryStmt, exceptionVar, catchStmt) {
-        super();
+        super(tryStmt.lineCount + catchStmt.lineCount + 4);
         this.tryStmt = tryStmt;
         this.exceptionVar = exceptionVar;
         this.catchStmt = catchStmt;
-    }
-
-    get lineCount() {
-        return this.tryStmt.lineCount + this.catchStmt.lineCount + 4;
     }
 
     evaluate(context) {

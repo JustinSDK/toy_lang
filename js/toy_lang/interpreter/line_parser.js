@@ -139,7 +139,7 @@ function createThrow(tokenableLines, argTokenable) {
 }
 
 function isDef(stmt) {
-    return stmt.firstStmt instanceof VariableAssign && stmt.firstStmt.value instanceof Func;
+    return stmt.firstStmt instanceof DefStmt;
 }
 
 function splitFuncStmt(stmt) {
@@ -150,7 +150,7 @@ function splitFuncStmt(stmt) {
     const [funcs, notDefStmt] = splitFuncStmt(stmt.secondStmt);
     if(isDef(stmt)) {
         return [
-            [[stmt.firstStmt.variable.name, stmt.firstStmt.value]].concat(funcs),
+            [[stmt.firstStmt.variableAssign.variable.name, stmt.firstStmt.variableAssign.value]].concat(funcs),
             notDefStmt
         ];
     }

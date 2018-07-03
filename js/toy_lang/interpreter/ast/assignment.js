@@ -47,7 +47,7 @@ const ARITHMETIC_OPERATORS = new Map([
 
 class VariableAssign extends Stmt {
     constructor(variable, value, operator) {
-        super();
+        super(1);
         this.variable = variable;
         this.value = value;
         this.operator = operator;
@@ -67,34 +67,38 @@ class VariableAssign extends Stmt {
     }
 }
 
-class DefStmt extends VariableAssign {
+class DefStmt extends Stmt {
     constructor(variable, value) {
-        super(variable, value);
+        super(value.stmt.lineCount + 2);
+        this.variableAssign = new VariableAssign(variable, value);
     }
 
-    get lineCount() {
-        const bodyLineCount = this.value.stmt.lineCount;
-        return bodyLineCount + 2;
+    evaluate(context) {
+        return this.variableAssign.evaluate(context);
     }
 }
 
-class ClassStmt extends VariableAssign {
+function classLineCount(value) {
+    const notDefStmtLineCount = value.stmt.lineCount;
+    const defLineCount = Array.from(value.methods.values())
+                              .map(func => func.stmt.lineCount + 2)
+                              .reduce((acc, n) => n + acc, 0);        
+    return notDefStmtLineCount + defLineCount + 2;    
+}
+class ClassStmt extends Stmt {
     constructor(variable, value) {
-        super(variable, value);
+        super(classLineCount(value));
+        this.variableAssign = new VariableAssign(variable, value);
     }
 
-    get lineCount() {
-        const notDefStmtLineCount = this.value.stmt.lineCount;
-        const defLineCount = Array.from(this.value.methods.values())
-                                  .map(func => func.stmt.lineCount + 2)
-                                  .reduce((acc, n) => n + acc, 0);        
-        return notDefStmtLineCount + defLineCount + 2;
+    evaluate(context) {
+        return this.variableAssign.evaluate(context);
     }
 }
 
 class NonlocalAssign extends Stmt {
     constructor(variable, value, operator) {
-        super();
+        super(1);
         this.variable = variable;
         this.value = value;
         this.operator = operator;
@@ -129,7 +133,7 @@ function setParentVariable(context, name, value) {
 
 class PropertyAssign extends Stmt {
     constructor(target, propName, value, operator) {
-        super();
+        super(1);
         this.target = target;
         this.propName = propName;
         this.value = value;
