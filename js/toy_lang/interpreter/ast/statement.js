@@ -1,5 +1,4 @@
 import {Thrown, Instance, Primitive} from './value.js';
-import {VariableAssign} from './assignment.js';
 
 export {ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try, Break};
 
@@ -133,17 +132,7 @@ class StmtSequence {
             }
             throw e;
         }
-    }
-
-    static assigns(variables, values) {
-        if(variables.length === 0) {
-            return StmtSequence.EMPTY;
-        }
-        return new StmtSequence(
-                      new VariableAssign(variables[0], values[0]), 
-                      StmtSequence.assigns(variables.slice(1), values.slice(1))
-                );
-    }        
+    }      
 }
 
 function addTraceOrStmt(context, preStmtContext, lineNumber, stmt) {
@@ -245,11 +234,9 @@ function pushStackTraceElements(context, tryContext, thrownValue) {
 }
 
 function runCatch(tryContext, tryNode, thrownValue) {
-    return new StmtSequence(
-        new VariableAssign(tryNode.exceptionVar, thrownValue),
-        tryNode.catchStmt, 
-        tryNode.catchStmt.lineNumber
-    ).evaluate(tryContext.emptyThrown());
+    return tryNode.catchStmt.evaluate(
+        tryContext.emptyThrown().assign(tryNode.exceptionVar.name, thrownValue)
+    );
 }
 
 const Break = {

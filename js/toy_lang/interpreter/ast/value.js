@@ -1,4 +1,4 @@
-import {Variable} from './assignment.js';
+import {Variable, VariableAssign} from './assignment.js';
 import {StmtSequence} from './statement.js';
 
 export {Value, Native, Null, Primitive, Func, Void, Instance, Class, Thrown, newInstance};
@@ -84,6 +84,16 @@ const BOOL_FALSE = new Primitive(false);
 
 const primitives = new Map([[true, BOOL_TRUE], [false, BOOL_FALSE]]);
 
+function assigns(variables, values) {
+    if(variables.length === 0) {
+        return StmtSequence.EMPTY;
+    }
+    return new StmtSequence(
+        new VariableAssign(variables[0], values[0]), 
+        assigns(variables.slice(1), values.slice(1))
+    );
+}  
+
 class Func extends Value {
     constructor(params, stmt, name = '', parentContext = null) {
         super();
@@ -95,7 +105,7 @@ class Func extends Value {
 
     assignToParams(context, args) {
         const argumentsListInstance = newInstance(context, 'List', Native, args); 
-        return StmtSequence.assigns(
+        return assigns(
             this.params.concat([Variable.of('arguments')]), 
             this.params.map((_, idx) => args[idx] ? args[idx] : Null).concat([argumentsListInstance])
         );

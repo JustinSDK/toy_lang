@@ -1,4 +1,4 @@
-import {Primitive, Null, Variable, VariableAssign, StmtSequence} from '../export.js';
+import {Primitive, Null} from '../export.js';
 
 import {PARAM1, PARAM2, PARAM3} from '../bases/func_bases.js';
 import {func0, func1, func2, func3} from '../bases/func_bases.js';
@@ -81,10 +81,9 @@ ObjectClass.methods = new Map([
             }
  
             const func = parentClz.getOwnMethod(name);           
-            return new StmtSequence(
-                new VariableAssign(Variable.of('this'), instance),  
-                func.bodyStmt(context, args === Null ? [] : args.nativeValue())
-            ).evaluate(context);
+
+            return func.bodyStmt(context, args === Null ? [] : args.nativeValue())
+                       .evaluate(context.assign('this', instance));
         }    
     })]
 ]);

@@ -1,4 +1,4 @@
-import {Primitive, Null, Func, StmtSequence, VariableAssign, Variable} from '../export.js';
+import {Primitive, Null, Func, StmtSequence} from '../export.js';
 
 import {PARAM1, PARAM2} from '../bases/func_bases.js';
 import {func0, func1, func2} from '../bases/func_bases.js';
@@ -52,11 +52,7 @@ FunctionClass.methods = new Map([
             const bodyStmt = funcInstance.internalNode
                                          .bodyStmt(context, jsArray.map(arg => arg.evaluate(context)));
 
-            return new StmtSequence(
-                new VariableAssign(Variable.of('this'), targetObject),  
-                bodyStmt,
-                bodyStmt.lineNumber
-            ).evaluate(context);
+            return bodyStmt.evaluate(context.assign('this', targetObject));
         }    
     })]
 ]);
