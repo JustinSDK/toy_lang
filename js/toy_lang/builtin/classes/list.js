@@ -1,4 +1,4 @@
-import {Native, Primitive, Void, Null, newInstance} from '../ast_export.js';
+import {Native, Primitive, Void, Null, newInstance} from '../export.js';
 
 import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from '../bases/func_bases.js';
 import {func0, func1, func2} from '../bases/func_bases.js';

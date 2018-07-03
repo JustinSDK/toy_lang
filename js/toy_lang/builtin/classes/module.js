@@ -1,4 +1,4 @@
-import {Primitive} from '../ast_export.js';
+import {Primitive} from '../export.js';
 
 import {func0} from '../bases/func_bases.js';
 import {self, selfInternalNode} from '../bases/class_bases.js';
