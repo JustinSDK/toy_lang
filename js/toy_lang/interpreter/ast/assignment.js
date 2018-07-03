@@ -1,6 +1,7 @@
 import {Primitive} from './value.js';
+import {Stmt} from './statement.js';
 
-export {Variable, VariableAssign, NonlocalAssign, PropertyAssign};
+export {Variable, VariableAssign, DefStmt, ClassStmt, NonlocalAssign, PropertyAssign};
 
 const variables = new Map();
 
@@ -44,8 +45,9 @@ const ARITHMETIC_OPERATORS = new Map([
     ['>>', (a, b) => p(a.value >> b.value)]
 ]);
 
-class VariableAssign {
+class VariableAssign extends Stmt {
     constructor(variable, value, operator) {
+        super();
         this.variable = variable;
         this.value = value;
         this.operator = operator;
@@ -65,8 +67,34 @@ class VariableAssign {
     }
 }
 
-class NonlocalAssign {
+class DefStmt extends VariableAssign {
+    constructor(variable, value) {
+        super(variable, value);
+    }
+
+    get lineCount() {
+        const bodyLineCount = this.value.stmt.lineCount;
+        return bodyLineCount + 2;
+    }
+}
+
+class ClassStmt extends VariableAssign {
+    constructor(variable, value) {
+        super(variable, value);
+    }
+
+    get lineCount() {
+        const notDefStmtLineCount = this.value.stmt.lineCount;
+        const defLineCount = Array.from(this.value.methods.values())
+                                  .map(func => func.stmt.lineCount + 2)
+                                  .reduce((acc, n) => n + acc, 0);        
+        return notDefStmtLineCount + defLineCount + 2;
+    }
+}
+
+class NonlocalAssign extends Stmt {
     constructor(variable, value, operator) {
+        super();
         this.variable = variable;
         this.value = value;
         this.operator = operator;
@@ -99,8 +127,9 @@ function setParentVariable(context, name, value) {
     return setParentVariable(parent, name, value);
 }   
 
-class PropertyAssign {
+class PropertyAssign extends Stmt {
     constructor(target, propName, value, operator) {
+        super();
         this.target = target;
         this.propName = propName;
         this.value = value;

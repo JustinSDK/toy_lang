@@ -1,5 +1,5 @@
 import {Func, Void, Class} from './ast/value.js';
-import {Variable, VariableAssign, NonlocalAssign, PropertyAssign} from './ast/assignment.js';
+import {Variable, VariableAssign, DefStmt, ClassStmt, NonlocalAssign, PropertyAssign} from './ast/assignment.js';
 import {ExprWrapper, While, If, Switch, StmtSequence, Throw, Return, Try, Break} from './ast/statement.js';
 import {EXPR_PARSER} from './expr_parser.js';
 import {TokenablesParser} from './commons/parser.js';
@@ -166,16 +166,19 @@ function createAssignFunc(tokenableLines, argTokenable) {
     fNameTokenable.errIfKeyword();
 
     const remains = tokenableLines.slice(1);
+    const bodyStmt = LINE_PARSER.parse(remains);
+    const bodyLineCount = bodyStmt.lineCount;
+
     return new StmtSequence(
-        new VariableAssign(
+        new DefStmt(
             Variable.of(fNameTokenable.value), 
             new Func(
                 paramTokenables.map(paramTokenable => Variable.of(paramTokenable.value)), 
-                LINE_PARSER.parse(remains),
+                bodyStmt,
                 fNameTokenable.value
             )
         ),
-        LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+        LINE_PARSER.parse(tokenableLines.slice(bodyLineCount + 2)),
         tokenableLines[0].lineNumber
     );    
 }
@@ -186,11 +189,13 @@ function createAssignClass(tokenableLines, argTokenable) {
 
     const remains = tokenableLines.slice(1);     
     const stmt = LINE_PARSER.parse(remains);
+    const clzLineCount = stmt.lineCount + 2;
 
     const parentClzNames = paramTokenables.map(paramTokenable => paramTokenable.value);
     const [fs, notDefStmt] = splitFuncStmt(stmt);
+
     return new StmtSequence(
-        new VariableAssign(
+        new ClassStmt(
             Variable.of(fNameTokenable.value), 
             new Class({
                 notMethodStmt : notDefStmt, 
@@ -199,7 +204,7 @@ function createAssignClass(tokenableLines, argTokenable) {
                 parentClzNames : parentClzNames.length === 0 ? ['Object'] : parentClzNames
             })
         ),
-        LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+        LINE_PARSER.parse(tokenableLines.slice(clzLineCount)),
         tokenableLines[0].lineNumber
     );   
 }
@@ -211,11 +216,17 @@ function isElseLine(tokenableLine) {
 function createIf(tokenableLines, argTokenable) {
     const remains = tokenableLines.slice(1);     
     const trueStmt = LINE_PARSER.parse(remains);
+    const trueLineCount = trueStmt.lineCount;
 
-    const i = countStmts(trueStmt) + 1;
+    const i = trueLineCount + 1;
     const falseStmt = isElseLine(remains[i]) ? 
             LINE_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
+    const falseLineCount = falseStmt.lineCount;
+    
+    const linesAfterIfElse = tokenableLines.slice(
+        2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : falseLineCount)
+    );
 
     return new StmtSequence(
             new If(
@@ -223,7 +234,7 @@ function createIf(tokenableLines, argTokenable) {
                 trueStmt,
                 falseStmt
             ),
-            LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+            LINE_PARSER.parse(linesAfterIfElse),
             tokenableLines[0].lineNumber
     );
 }
@@ -235,7 +246,8 @@ function collectCase(tokenableLines) {
     const caseTokenables = tokenableLines[0].tryTokenables('case')
                                             .map(tokenable => EXPR_PARSER.parse(tokenable)); 
     const caseStmt = LINE_PARSER.parse(tokenableLines.slice(1));    
-    const stmtCount = countStmts(caseStmt);
+    const stmtCount = caseStmt.lineCount;
+
     return [[[caseTokenables, caseStmt], stmtCount]].concat(
         collectCase(tokenableLines.slice(stmtCount + 1))
     );
@@ -245,81 +257,62 @@ function createSwitch(tokenableLines, argTokenable) {
     const remains = tokenableLines.slice(1);
     const cases = collectCase(remains);
 
-    const i = cases.map(caze => caze[1] + 1).reduce((acc, n) => acc + n);
+    const casesLineCount = cases.map(casz => casz[0][1])
+                                .map(stmt => stmt.lineCount)
+                                .reduce((acc, n) => n + 1 + acc, 0);
+
+    const i = casesLineCount;
     const defaultStmt = remains[i].value === 'default' ? 
             LINE_PARSER.parse(remains.slice(i + 1)) : 
             StmtSequence.EMPTY;
+    const defaultLineCount = defaultStmt.lineCount + 1;
 
+    const linesAfterSwitch = tokenableLines.slice(casesLineCount + defaultLineCount + 2);
     return new StmtSequence(
             new Switch(
                 EXPR_PARSER.parse(argTokenable), 
                 cases.map(caze => caze[0]),
                 defaultStmt
             ),
-            LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+            LINE_PARSER.parse(linesAfterSwitch),
             tokenableLines[0].lineNumber
     );
-}
-
-function isCatchLine(tokenableLine) {
-    return tokenableLine.tryTokenables('catch').length !== 0;
 }
 
 function createTry(tokenableLines) {
     const remains = tokenableLines.slice(1);     
     const tryStmt = LINE_PARSER.parse(remains);
+    const tryLineCount = tryStmt.lineCount;
 
-    const i = countStmts(tryStmt) + 1;
+    const i = tryLineCount + 1;
     const exceptionName = remains[i].tryTokenables('catch')[0].value;
-    const catchStmt = LINE_PARSER.parse(remains.slice(i + 1));
 
+    const catchStmt = LINE_PARSER.parse(remains.slice(i + 1));
+    const catchLineCount = catchStmt.lineCount;
+
+    const linesAfterTryCatch = tokenableLines.slice(tryLineCount + catchLineCount + 4);
     return new StmtSequence(
             new Try(
                 tryStmt,
                 Variable.of(exceptionName),
                 catchStmt
             ),
-            LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+            LINE_PARSER.parse(linesAfterTryCatch),
             tokenableLines[0].lineNumber
     );
 }
 
 function createWhile(tokenableLines, argTokenable) {
-    const remains = tokenableLines.slice(1);     
+    const remains = tokenableLines.slice(1);  
+    const stmt = LINE_PARSER.parse(remains);
+    const linesAfterWhile = tokenableLines.slice(stmt.lineCount + 2);
+
     return new StmtSequence(
          new While(
             EXPR_PARSER.parse(argTokenable), 
             LINE_PARSER.parse(remains)
          ),
-         LINE_PARSER.parse(linesAfterCurrentBlock(remains)),
+         LINE_PARSER.parse(linesAfterWhile),
          tokenableLines[0].lineNumber
     ); 
-}
-
-function countStmts(stmt, i = 1) {
-    if(stmt.secondStmt === StmtSequence.EMPTY) {
-        return i;
-    }
-    return countStmts(stmt.secondStmt, i + 1);
-}
-
-const cmds = ['if ', 'while ', 'switch ', 'def ', 'class ', 'try '];
-
-function linesAfterCurrentBlock(tokenableLines, endCount = 1) {
-    if(endCount === 0) {
-        return tokenableLines;
-    }
-
-    const line = tokenableLines[0].value;
-    const n = cmds.some(cmd => line.startsWith(cmd)) ? endCount + 1 :
-        ( 
-            line === '}' && (tokenableLines.length === 1 || notElseOrCatch(tokenableLines[1])) ? 
-                endCount - 1 : endCount
-        );
-
-    return linesAfterCurrentBlock(tokenableLines.slice(1), n);
-}
-
-function notElseOrCatch(tokenableLine) {
-    return !(isElseLine(tokenableLine) || isCatchLine(tokenableLine));
 }

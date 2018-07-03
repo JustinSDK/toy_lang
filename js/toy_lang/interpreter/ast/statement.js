@@ -1,9 +1,16 @@
 import {Thrown, Instance, Primitive} from './value.js';
 
-export {ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try, Break};
+export {Stmt, ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try, Break};
 
-class ExprWrapper {
+class Stmt {
+    get lineCount() {
+        return 1;
+    }
+}
+
+class ExprWrapper extends Stmt {
     constructor(expr) {
+        super();
         this.expr = expr;
     }
 
@@ -13,10 +20,15 @@ class ExprWrapper {
     }    
 }
 
-class While {
+class While extends Stmt {
     constructor(boolean, stmt) {
+        super();
         this.boolean = boolean;
         this.stmt = stmt;
+    }
+
+    get lineCount() {
+        return this.stmt.lineCount + 2;
     }
 
     evaluate(context) {
@@ -60,12 +72,19 @@ class While {
     }   
 }
 
-class If {
+class If extends Stmt {
     constructor(boolean, trueStmt, falseStmt) {
+        super();
         this.boolean = boolean;
         this.trueStmt = trueStmt;
         this.falseStmt = falseStmt;
     }
+
+    get lineCount() {
+        const trueLineCount = this.trueStmt.lineCount;
+        const falseLineCount = this.falseStmt.lineCount;
+        return 2 + trueLineCount + (falseLineCount ? falseLineCount + 2 : falseLineCount)
+    }    
 
     evaluate(context) {
         const maybeContext = this.boolean.evaluate(context);
@@ -75,11 +94,20 @@ class If {
     }   
 }
 
-class Switch {
+class Switch extends Stmt {
     constructor(switchValue, cases, defaultStmt) {
+        super();
         this.switchValue = switchValue;
         this.cases = cases;
         this.defaultStmt = defaultStmt;
+    }
+
+    get lineCount() {
+        const casesLineCount = this.cases.map(casz => casz[1])
+                                         .map(stmt => stmt.lineCount)
+                                         .reduce((acc, n) => n + 1 + acc, 0);
+        const defaultLineCount = this.defaultStmt.lineCount + 1;
+        return casesLineCount + defaultLineCount + 2;
     }
 
     evaluate(context) {
@@ -111,13 +139,18 @@ function compareCaseValues(context, switchValue, cazeValues, cazeStmt) {
     return compareCaseValues(context, switchValue, cazeValues.slice(1), cazeStmt);
 }
 
-class StmtSequence {
+class StmtSequence extends Stmt {
     constructor(firstStmt, secondStmt, lineNumber) {
+        super();
         this.firstStmt = firstStmt;
         this.secondStmt = secondStmt;
         this.lineNumber = lineNumber;
     }
 
+    get lineCount() {
+        return this.firstStmt.lineCount + this.secondStmt.lineCount;
+    }
+    
     evaluate(context) {
         try {
             const fstStmtContext = this.firstStmt.evaluate(context);
@@ -166,6 +199,7 @@ function addStackTrace(context, e, strackTraceElement) {
 }
 
 StmtSequence.EMPTY = {
+    lineCount : 0,
     // We don't care about emtpy statements so the lineNumber 0 is enough.
     lineNumber : 0, 
     evaluate(context) {
@@ -173,8 +207,9 @@ StmtSequence.EMPTY = {
     }
 };
 
-class Return {
+class Return extends Stmt {
     constructor(value) {
+        super();
         this.value = value;
     }
 
@@ -184,8 +219,9 @@ class Return {
     }    
 }
 
-class Throw {
+class Throw extends Stmt {
     constructor(value) {
+        super();
         this.value = value;
     }
 
@@ -195,11 +231,16 @@ class Throw {
     }    
 }
 
-class Try {
+class Try extends Stmt {
     constructor(tryStmt, exceptionVar, catchStmt) {
+        super();
         this.tryStmt = tryStmt;
         this.exceptionVar = exceptionVar;
         this.catchStmt = catchStmt;
+    }
+
+    get lineCount() {
+        return this.tryStmt.lineCount + this.catchStmt.lineCount + 4;
     }
 
     evaluate(context) {
@@ -240,6 +281,7 @@ function runCatch(tryContext, tryNode, thrownValue) {
 }
 
 const Break = {
+    lineCount : 1,
     evaluate(context) {
         return context.broken();
     }
