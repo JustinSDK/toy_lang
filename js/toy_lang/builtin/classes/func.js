@@ -1,5 +1,4 @@
-import {Primitive, Null, Func} from '../ast_export.js';
-import {StmtSequence, VariableAssign, Variable} from '../ast_export.js';
+import {Primitive, Null, Func, StmtSequence, VariableAssign, Variable} from '../ast_export.js';
 
 import {PARAM1, PARAM2} from '../bases/func_bases.js';
 import {func0, func1, func2} from '../bases/func_bases.js';

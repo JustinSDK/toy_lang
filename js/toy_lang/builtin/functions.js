@@ -1,7 +1,7 @@
-import {Native, Null, Primitive, Instance, Void, newInstance} from '../interpreter/ast/value.js';
+import {Native, Null, Primitive, Instance, Void, newInstance, MethodCall} from './ast_export.js';
+
 import {PARAM1, PARAM2, PARAM3, func1, func2, func3, format} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
-import {MethodCall} from '../interpreter/ast/callable.js';
 
 export {BUILTIN_FUNCTIONS};
 
