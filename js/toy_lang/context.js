@@ -53,7 +53,7 @@ const defaultFlowConrtoller = {
 function createFlowController({either, returnedValue, notReturn, thrownContext, thrownNode, notThrown, notBroken}) {
     return {
         either : either || defaultFlowConrtoller.either,
-        returnedValue : returnedValue || defaultFlowConrtoller.either,
+        returnedValue : returnedValue || defaultFlowConrtoller.returnedValue,
         notReturn : notReturn || defaultFlowConrtoller.notReturn,
         thrownContext : thrownContext || defaultFlowConrtoller.thrownContext,
         thrownNode : thrownNode || defaultFlowConrtoller.thrownNode,
