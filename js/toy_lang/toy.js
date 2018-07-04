@@ -45,8 +45,7 @@ function parseThenEval(toy) {
             Context.initialize({
                 env :toy.env, 
                 fileName : toy.fileName, 
-                stmtMap, 
-                global : true
+                stmtMap
             })
         );
         
