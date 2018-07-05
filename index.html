@@ -122,7 +122,13 @@ println(adjust(flags))</code></pre>
 <ul>
     <li># Class</li>
   </ul>
-  <pre class="prettyprint"><code>class Account {
+  <pre class="prettyprint"><code>class AccountException(Exception) {
+    def init() {
+        this.super(Exception, 'init', arguments)
+    }
+}
+
+class Account {
     # it's a field
     balance = 0 
 
@@ -133,7 +139,7 @@ println(adjust(flags))</code></pre>
 
     def deposit(amount) {
         if amount <= 0 {
-            throw new Exception('must be positive')
+            throw new AccountException('must be positive')
         }
 
         this.balance += amount
