@@ -143,8 +143,8 @@ function funcArguments(input) {
 
 function listElems(input) {
     const matched = REGEX.get('elemList').exec(input);
-    if(matched[1]) {
-        return splitByComma(matched[1].trim());
+    if(matched) {
+        return matched[1] === '' ? [''] : splitByComma(matched[1].trim());
     }
 
     return [];
