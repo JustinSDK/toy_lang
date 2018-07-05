@@ -1,19 +1,122 @@
 import {Tokenizer} from './interpreter/tokenizer/tokenizer.js';        
 import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
+import { StmtSequence, Func } from './builtin/export.js';
+import { Return } from './interpreter/ast/statement.js';
+import { Instance } from './interpreter/ast/value.js';
+import { FunCall } from './interpreter/ast/callable.js';
 
-export {Toy};
+export {Toy, ModuleLoader};
+
+class ModuleLoader {
+    constructor(toy, builtin = false) {
+        this.toy = toy;
+        this.builtin = builtin;
+    }
+
+    loadTo(context) {
+        const ast = this.toy.parse();
+
+        const initContext = Context.initialize({
+            env : this.toy.env, 
+            fileName : this.toy.fileName, 
+            moduleName : this.toy.moduleName,
+            stmtMap : this.toy.stmtMap()
+        });
+
+        const funcInstance = new Func(
+            [], 
+            new StmtSequence(
+                ast,
+                new Return(
+                    new Func([], StmtSequence.EMPTY, '', context)
+                )
+            ),
+            ''
+        ).evaluate(initContext);
+
+        const moduleContext = new FunCall(funcInstance, [[]])
+                                      .evaluate(initContext)
+                                      .internalNode
+                                      .parentContext
+                                      .deleteVariable('arguments');
+                                    
+        context.variables.set(
+            this.toy.moduleName, 
+            new Instance(initContext.lookUpVariable('Module'), moduleContext.variables, moduleContext)
+        );
+
+        if(this.builtin) {
+            Array.from(moduleContext.variables.entries())
+                 .forEach(entry => context.variables.set(entry[0], entry[1]));
+        }
+    }
+}
 
 class Toy {
     constructor(env, fileName, code) {
         this.env = env;
         this.fileName = fileName;
+        this.moduleName = fileName.replace('.toy', '');
         this.code = code;
         this.tokenizer = tokenizer(this);
     }
 
+    parse() {
+        try {
+            return new ToyParser(this.env).parse(this.tokenizer);
+        } catch(e) {
+            this.env.output(`${e}\n\tat ${e.code} (${this.fileName}:${e.lineNumber})`);
+            throw e;
+        }
+    }
+
+    stmtMap() {
+        return new Map(this.tokenizer.tokenizableLines()
+                                     .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
+    }
+
+    eval(ast, moduleLoaders = []) {
+        try {
+            const initContext = Context.initialize({
+                env : this.env, 
+                fileName : this.fileName, 
+                moduleName : this.moduleName,
+                stmtMap : this.stmtMap()
+            });
+            moduleLoaders.forEach(loader => loader.loadTo(initContext));
+            
+            const ctx = ast.evaluate(initContext);
+            
+            const thrown = ctx.thrownNode;
+            if(thrown !== null) {
+                const clzOfLang = thrown.value.clzOfLang;
+                if(clzOfLang && thrown.value.hasOwnProperty('name') && clzOfLang.internalNode.hasMethod(ctx, 'printStackTrace')) {
+                    ctx.output(`${thrown.value.getOwnProperty('name')}:`);
+                    printStackTrace(this, thrown.stackTraceElements);
+                }
+                else {
+                    ctx.output(`Thrown: ${thrown.value}`);
+                    printStackTrace(this, thrown.stackTraceElements);
+                }
+            }
+        }
+        catch(e) {
+            this.env.output(`\n${e}`);
+            if(e.strackTraceElements) {
+                printStackTrace(this, e.strackTraceElements);         
+            }
+            throw e;
+        }
+    }
+
+    playWith(moduleLoaders) {
+        const ast = this.parse();
+        this.eval(ast, moduleLoaders);
+    }
+
     play() {
-        parseThenEval(this);
+        this.playWith([]);
     }
 }
 
@@ -22,51 +125,6 @@ function tokenizer(toy) {
         return new Tokenizer(toy.code);
     } catch(e) {
         toy.env.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
-        throw e;
-    }
-}
-
-function parse(toy) {
-    try {
-        return new ToyParser(toy.env).parse(toy.tokenizer);
-    } catch(e) {
-        toy.env.output(`${e}\n\tat ${e.code} (${toy.fileName}:${e.lineNumber})`);
-        throw e;
-    }
-}
-
-function parseThenEval(toy) {
-    const ast = parse(toy);
-    try {
-        const stmtMap = new Map(toy.tokenizer.tokenizableLines()
-                                 .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
-
-        const ctx = ast.evaluate(
-            Context.initialize({
-                env :toy.env, 
-                fileName : toy.fileName, 
-                stmtMap
-            })
-        );
-        
-        const thrown = ctx.thrownNode;
-        if(thrown !== null) {
-            const clzOfLang = thrown.value.clzOfLang;
-            if(clzOfLang && thrown.value.hasOwnProperty('name') && clzOfLang.internalNode.hasMethod(ctx, 'printStackTrace')) {
-                ctx.output(`${thrown.value.getOwnProperty('name')}:`);
-                printStackTrace(toy, thrown.stackTraceElements);
-            }
-            else {
-                ctx.output(`Thrown: ${thrown.value}`);
-                printStackTrace(toy, thrown.stackTraceElements);
-            }
-        }
-    }
-    catch(e) {
-        toy.env.output(`\n${e}`);
-        if(e.strackTraceElements) {
-            printStackTrace(toy, e.strackTraceElements);         
-        }
         throw e;
     }
 }

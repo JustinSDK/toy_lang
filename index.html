@@ -463,7 +463,7 @@ println(orz)</code></pre>
 <hr>
 <center><a href="https://openhome.cc">openhome.cc</a></center>
     <script type="module">
-    import {Toy} from './js/toy_lang/toy.js';
+    import {Toy, ModuleLoader} from './js/toy_lang/toy.js';
 
     const ENVIRONMENT = {
         output(value) {
@@ -471,11 +471,20 @@ println(orz)</code></pre>
         }
     };
 
+    const STD_MODUEL_PATH = '/js/toy_lang/lib';
+
+    const moduleLoaders = [];
+    fetch(`${STD_MODUEL_PATH}/exception.toy`)
+        .then(resp => resp.text())
+        .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'exception.toy', code), true))
+        .then(moduleLoader => moduleLoaders.push(moduleLoader));
+        
     document.getElementById('run').addEventListener('click', _ => {
         let code = document.getElementById('code').value;
         let tty = document.getElementById('tty');
         tty.textContent = '';
-        new Toy(ENVIRONMENT, 'main.toy', code).play();
+
+        new Toy(ENVIRONMENT, 'main.toy', code).playWith(moduleLoaders);
     });
 </script>
 </body>

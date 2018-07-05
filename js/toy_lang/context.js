@@ -83,7 +83,7 @@ class Context {
         this.flowController = flowController || defaultFlowConrtoller;
     }
 
-    static initialize({env, fileName, stmtMap}) {
+    static initialize({env, fileName, moduleName, stmtMap}) {
         const context = new Context({
             fileName : fileName,
             stmtMap : stmtMap,
@@ -92,7 +92,7 @@ class Context {
         });
 
         const moduleInstance = new Instance(BUILTINS.get('Module'), context.variables, context);
-        context.variables.set(fileName.replace('.toy', ''), moduleInstance);
+        context.variables.set(moduleName, moduleInstance);
 
         return context;
     }

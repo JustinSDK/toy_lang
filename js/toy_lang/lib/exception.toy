@@ -1,0 +1,5 @@
+class Exception(Traceable) {
+    def init() {
+        this.super(Traceable, 'init', arguments)
+    }
+}
