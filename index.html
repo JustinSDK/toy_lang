@@ -474,7 +474,7 @@ println(orz)</code></pre>
     const STD_MODULE_PATH = './js/toy_lang/lib';
 
     const moduleLoaders = [];
-    fetch(`${STD_MODULE_PATH}/exception.toy`)
+    fetch(`${STD_MODULE_PATH}/builtin.toy`)
         .then(resp => resp.text())
         .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'exception.toy', code), true))
         .then(moduleLoader => moduleLoaders.push(moduleLoader));
