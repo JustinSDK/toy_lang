@@ -39,9 +39,11 @@ TraceableClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
             const instance = self(context);
+            const clzName = instance.clzNodeOfLang().name;
+            const message = instance.getOwnProperty('message');
             return context.returned(
                 new Primitive(
-                    `${instance.getOwnProperty('name')}: ${instance.getOwnProperty('message')}`
+                    message ? `${clzName}: ${message}`: clzName
                 )
             );
         }    
