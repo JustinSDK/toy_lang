@@ -18,18 +18,6 @@ const Print = func1('print', {
     }
 });
  
-const Println = func1('println', {
-    evaluate(context) {
-        const argument = PARAM1.evaluate(context);
-        if(argument !== Null) {
-            print(context, argument);
-        }
-
-        context.output('\n');
-        return context.returned(Void);
-    }
-});
-
 const HasValue = func1('hasValue', {
     evaluate(context) {
         return context.returned( 
@@ -54,7 +42,6 @@ function funcEntry(clzOfLang, name, internalNode) {
 
 const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'print', Print),
-    funcEntry(FUNC_CLZ, 'println', Println),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue)
 ]); 

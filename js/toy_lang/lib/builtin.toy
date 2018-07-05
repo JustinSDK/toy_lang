@@ -4,6 +4,13 @@ class Exception(Traceable) {
     }
 }
 
+def println(message) {
+    if hasValue(message) {
+        print(message)
+    }
+    print('\n')
+}
+
 def range(start, stop, step) {
     s = step if hasValue(step) else 1
     len = Number.parseInt((stop - start) / s)
