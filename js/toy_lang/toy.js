@@ -9,9 +9,9 @@ import { FunCall } from './interpreter/ast/callable.js';
 export {Toy, ModuleLoader};
 
 class ModuleLoader {
-    constructor(toy, builtin = false) {
+    constructor(toy, importAll = false) {
         this.toy = toy;
-        this.builtin = builtin;
+        this.importAll = importAll;
     }
 
     loadTo(context) {
@@ -46,9 +46,10 @@ class ModuleLoader {
             new Instance(initContext.lookUpVariable('Module'), moduleContext.variables, moduleContext)
         );
 
-        if(this.builtin) {
+        if(this.importAll) {
             Array.from(moduleContext.variables.entries())
                  .forEach(entry => context.variables.set(entry[0], entry[1]));
+            context.deleteVariable(this.toy.moduleName);
         }
     }
 }
