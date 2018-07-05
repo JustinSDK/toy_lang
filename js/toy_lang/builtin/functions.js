@@ -46,21 +46,6 @@ const NoValue = func1('noValue', {
     }
 });
 
-const Range = func3('range', {
-    evaluate(context) {
-        const stepArg = PARAM3.evaluate(context);
-
-        const start = PARAM1.evaluate(context).value;
-        const stop = PARAM2.evaluate(context).value;
-        const step = stepArg === Null ? 1 : stepArg.value;
-        const jsArray = new Array(parseInt((stop - start) / step))
-                              .fill(undefined)
-                              .map((_, i) => new Primitive(i * step + start));
-                             
-        return context.returned(newInstance(context, 'List', Native, jsArray));
-    }
-});
-
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -71,8 +56,7 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'print', Print),
     funcEntry(FUNC_CLZ, 'println', Println),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
-    funcEntry(FUNC_CLZ, 'noValue', NoValue),
-    funcEntry(FUNC_CLZ, 'range', Range)
+    funcEntry(FUNC_CLZ, 'noValue', NoValue)
 ]); 
 
 // static methods

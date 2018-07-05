@@ -4,6 +4,19 @@ class Exception(Traceable) {
     }
 }
 
+def range(start, stop, step) {
+    s = step if hasValue(step) else 1
+    len = Number.parseInt((stop - start) / s)
+
+    lt = []
+    i = 0
+    while i < len {
+        lt.add(i * s + start)
+        i += 1
+    }
+    return lt
+}
+
 def isInstance(obj, type) {
     def isSubType(clz, parentClz) {
         if clz == Object {
