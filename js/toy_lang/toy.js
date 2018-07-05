@@ -1,10 +1,10 @@
 import {Tokenizer} from './interpreter/tokenizer/tokenizer.js';        
 import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
-import { StmtSequence, Func } from './builtin/export.js';
-import { Return } from './interpreter/ast/statement.js';
-import { Instance } from './interpreter/ast/value.js';
-import { FunCall } from './interpreter/ast/callable.js';
+import {StmtSequence, Func} from './builtin/export.js';
+import {Return} from './interpreter/ast/statement.js';
+import {Instance} from './interpreter/ast/value.js';
+import {FunCall} from './interpreter/ast/callable.js';
 
 export {Toy, ModuleLoader};
 
