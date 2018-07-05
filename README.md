@@ -98,12 +98,6 @@ println(adjust(flags))
 - Class
 
 ```java
-class AccountException(Traceable) {
-    def init() {
-        this.super(Traceable, 'init', arguments)
-    }
-}
-      
 class Account {
     # it's a field
     balance = 0 
@@ -115,7 +109,7 @@ class Account {
 
     def deposit(amount) {
         if amount <= 0 {
-            throw new AccountException('must be positive')
+            throw new Exception('must be positive')
         }
 
         this.balance += amount
