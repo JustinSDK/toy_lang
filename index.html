@@ -476,7 +476,7 @@ println(orz)</code></pre>
     const moduleLoaders = [];
     fetch(`${STD_MODULE_PATH}/builtin.toy`)
         .then(resp => resp.text())
-        .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'exception.toy', code), true))
+        .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'builtin.toy`', code), true))
         .then(moduleLoader => moduleLoaders.push(moduleLoader));
         
     document.getElementById('run').addEventListener('click', _ => {
