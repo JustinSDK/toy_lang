@@ -1,4 +1,4 @@
-import {Primitive, Null} from '../export.js';
+import {Primitive, Null, ClassError} from '../export.js';
 
 import {PARAM1, PARAM2, PARAM3} from '../bases/func_bases.js';
 import {func0, func1, func2, func3} from '../bases/func_bases.js';
