@@ -70,20 +70,33 @@ ObjectClass.methods = new Map([
     })],
     ['super', func3('super', {
         evaluate(context) {
-            const parentClz = PARAM1.evaluate(context).internalNode;
+            const parentClzNode = PARAM1.evaluate(context).internalNode;
             const name = PARAM2.evaluate(context).value;
             const args = PARAM3.evaluate(context);
             
             const instance = self(context);
-            const parentClzNames = instance.clzNodeOfLang().parentClzNames;
-            if(parentClzNames.every(name => name !== parentClz.name)) {
-                throw new ClassError('obj.super(parent): the type of obj must be the direct subtype of parent');
-            }
- 
-            const func = parentClz.getOwnMethod(name);           
+            const clzNode = instance.clzNodeOfLang();
 
-            return func.bodyStmt(context, args === Null ? [] : args.nativeValue())
-                       .evaluate(context.assign('this', instance));
+            if(isSubType(context, clzNode, parentClzNode)) {
+                const func = parentClzNode.getOwnMethod(name);           
+                return func.bodyStmt(context, args === Null ? [] : args.nativeValue())
+                           .evaluate(context.assign('this', instance));
+            }
+
+            throw new ClassError('obj.super(parent): the type of obj must be a subtype of parent');
         }    
     })]
 ]);
+
+function isSubType(context, clzNode, parentClzNode) {
+    if(clzNode.name === 'Object') {
+        return false;
+    }
+
+    const parentClzNames = clzNode.parentClzNames;
+    if(parentClzNames.some(name => name === parentClzNode.name)) {
+        return true;
+    }
+    const parentClzNodes = parentClzNames.map(name => context.lookUpVariable(name).internalNode);
+    return parentClzNodes.some(clzNode => isSubType(context, clzNode, parentClzNode));
+}

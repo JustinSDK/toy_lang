@@ -236,7 +236,14 @@ function lookupParentClzes(context, clz, name) {
     );
 
     context.RUNTIME_CHECKER.refErrIfNoValue(grandParentClzName, name);
-    return clzNode(context, grandParentClzName).getOwnMethod(name);
+ 
+    const grandParentClzNode = clzNode(context, grandParentClzName);
+    const method = grandParentClzNode.getOwnMethod(name);
+    if(method) {
+        return method;
+    }
+    return lookupParentClzes(context, grandParentClzNode, name);
+    //return clzNode(context, grandParentClzName).getOwnMethod(name);
 }
 
 function clzNode(context, clzName) {
