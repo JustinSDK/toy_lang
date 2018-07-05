@@ -3,3 +3,21 @@ class Exception(Traceable) {
         this.super(Traceable, 'init', arguments)
     }
 }
+
+def isInstance(obj, type) {
+    def isSubType(clz, parentClz) {
+        if clz == Object {
+            return false
+        }
+
+        parentClzs = clz.parents()
+        if parentClzs.any(c -> c == parentClz) {
+            return true
+        }
+
+        return parentClzs.any(c -> isSubType(c, parentClz))
+    }
+
+    clz = obj.class()
+    return (clz == type) or isSubType(clz, type)
+}
