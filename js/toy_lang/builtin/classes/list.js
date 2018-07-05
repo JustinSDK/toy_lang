@@ -1,7 +1,7 @@
 import {Native, Primitive, Void, Null, newInstance} from '../export.js';
 
-import {PARAM1, PARAM2, PARAM_LT1, PARAM_LT2, PARAM_LT3} from '../bases/func_bases.js';
-import {func0, func1, func2} from '../bases/func_bases.js';
+import {PARAM1, PARAM2, PARAM3, PARAM_LT1, PARAM_LT2, PARAM_LT3} from '../bases/func_bases.js';
+import {func0, func1, func2, func3} from '../bases/func_bases.js';
 import {methodPrimitive, methodVoid, methodSelf, methodNewSameType, self} from '../bases/class_bases.js';
 
 export {ListClass};
@@ -70,7 +70,24 @@ ListClass.methods = new Map([
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
     ['reverse', ListClass.method0Self('reverse')],       
-    ['fill', ListClass.method3Self('fill')],
+    ['fill', func3('fill', {
+        evaluate(context) {
+            const instance = self(context);
+            const jsArray = instance.nativeValue();
+
+            const v = PARAM1.evaluate(context).value;
+            
+            const start = PARAM2.evaluate(context);
+            const st = start === Null ? 0 : start.value;
+            
+            const end = PARAM3.evaluate(context);
+            const ed = end === Null ? jsArray.length : end.value;
+            
+            jsArray.fill(new Primitive(v), st, ed);
+
+            return context.returned(instance);
+        }    
+    })],
     ['add', func1('add', {
         evaluate(context) {
             const instance = self(context);
