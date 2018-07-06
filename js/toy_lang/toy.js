@@ -15,43 +15,54 @@ class ModuleLoader {
     }
 
     loadTo(context) {
-        const ast = this.toy.parse();
-
         const initContext = Context.initialize({
             env : this.toy.env, 
             fileName : this.toy.fileName, 
             moduleName : this.toy.moduleName,
             stmtMap : this.toy.stmtMap()
         });
+        const moduleContext = moduleContextFrom(initContext, this.toy);
 
-        const funcInstance = new Func(
-            [], 
-            new StmtSequence(
-                ast,
-                new Return(
-                    new Func([], StmtSequence.EMPTY, '', context)
-                )
-            ),
-            ''
-        ).evaluate(initContext);
+        const exportVariables = exportVariablesFrom(moduleContext);
 
-        const moduleContext = new FunCall(funcInstance, [[]])
-                                      .evaluate(initContext)
-                                      .internalNode
-                                      .parentContext
-                                      .deleteVariable('arguments');
-                                    
         context.variables.set(
             this.toy.moduleName, 
-            new Instance(initContext.lookUpVariable('Module'), moduleContext.variables, moduleContext)
+            new Instance(initContext.lookUpVariable('Module'), exportVariables, moduleContext)
         );
 
         if(this.importAll) {
-            Array.from(moduleContext.variables.entries())
+            Array.from(exportVariables.entries())
                  .forEach(entry => context.variables.set(entry[0], entry[1]));
             context.deleteVariable(this.toy.moduleName);
         }
     }
+}
+
+function moduleContextFrom(context, toy) {
+    const ast = toy.parse();
+
+    const funcBodyStmt = new StmtSequence(
+        ast,
+        new Return(new Func([], StmtSequence.EMPTY, '')) // return closure
+    );
+    const funcInstance = new Func([], funcBodyStmt, '').evaluate(context);
+
+    const moduleContext = new FunCall(funcInstance, [[]])
+                                  .evaluate(context)
+                                  .internalNode
+                                  .parentContext
+                                  .deleteVariable('arguments');
+    return moduleContext;
+}
+
+function exportVariablesFrom(context) {
+    const exportsValue = context.variables.get('exports');
+    const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
+
+    return new Map(Array.from(context.variables.keys())
+                        .filter(key => exports.has(key))
+                        .map(key => [key, context.variables.get(key)]));
+
 }
 
 class Toy {
