@@ -1,0 +1,25 @@
+def combi(r, n) {
+    if n == 0 {
+        return 1
+    }
+    return combi(r, n - 1) * (r - n + 1) / n
+}
+
+def space(n) {
+    return range(0, n).fill('').join(' ')
+}
+
+HEIGHT = 12
+
+def printRow(row) {
+    def printNumber(n) {
+        c = combi(row, n) + ''
+        print(c + space(6 - c.length()))
+    }
+
+    print(space((HEIGHT- row) * 3)) # indentation
+    range(0, row + 1).forEach(printNumber)
+    println()
+}
+
+range(0, HEIGHT).forEach(printRow)

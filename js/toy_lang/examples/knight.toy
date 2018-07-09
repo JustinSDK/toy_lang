@@ -1,0 +1,59 @@
+def step(x, y) {
+    (return new Object([
+        ['x', x],
+        ['y', y]
+    ]))
+}
+
+def isVisitable(board, st) {
+    (return st.x > -1 and st.x < 8 and 
+            st.y > -1 and st.y < 8 and 
+            board.get(st.x).get(st.y) == 0)
+}
+
+def possible(board, st) {
+    (dirs = [
+        [-2, 1], [-1, 2], [1, 2], [2, 1], 
+        [2, -1], [1, -2], [-1, -2], [-2, -1]
+    ])
+
+    return dirs.map(dir -> step(st.x + dir.get(0), st.y + dir.get(1))) \
+               .filter(s -> isVisitable(board, s))
+}
+
+def hard(board, steps) {
+    (minIdx = range(0, steps.length())
+                .map(i -> [i, possible(board, steps.get(i)).length()])
+                .sort((idxL1, idxL2) -> idxL1.get(1) - idxL2.get(1))
+                .get(0)
+                .get(0))
+    return steps.get(minIdx)
+}
+
+def travel(start) {
+    board = range(0, 8).map(_ -> range(0, 8).map(_ -> 0))
+    board.get(start.x).set(start.y, 1) 
+    
+    current = start
+    s = 2 
+    while s < 65 {
+        possibleSteps = possible(board, current)
+        if possibleSteps.isEmpty() {
+            break
+        }
+
+        current = possibleSteps.get(0) if possibleSteps.length() == 1 \ 
+                                       else hard(board, possibleSteps)
+        board.get(current.x).set(current.y, s)
+        s += 1
+    }
+
+    return board
+}
+
+def printRow(row) {
+    row.forEach(n -> print((n if n > 9 else ' ' + n) + ' '))
+    println()
+}
+
+travel(step(5, 6)).forEach(printRow)

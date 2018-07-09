@@ -1,0 +1,72 @@
+def pt(x, y) {
+    return new Object([['x', x], ['y', y]])
+}
+
+class Maze {
+    def init(raw) {
+        this.raw = raw
+    }
+ 
+    def get(x, y) {
+        return this.raw.get(x).get(y)
+    }
+
+    def set(x, y, v) {
+        this.raw.get(x).set(y, v)
+    }
+
+    def goalOrTry(st, ed) {
+        if this.get(ed.x, ed.y) {
+            this.print()
+        }
+        else {
+            this.visit(pt(st.x, st.y + 1), ed)
+            this.visit(pt(st.x + 1, st.y), ed) 
+            this.visit(pt(st.x, st.y - 1), ed) 
+            this.visit(pt(st.x - 1, st.y), ed)
+        }
+    }
+
+    def visit(st, ed) {
+        if not this.get(st.x, st.y) {
+            this.set(st.x, st.y, 1)
+            this.goalOrTry(st, ed)
+            this.set(st.x, st.y, 0)
+        }
+    }
+
+    def printSymbol(i, j) {
+        switch this.get(i, j) {
+            case 0 
+                print('  ')
+            case 1
+                print('++')
+            case 2
+                print('██') 
+        }
+    }
+
+    def printRow(i) {
+        (range(0, this.raw.get(i).length())
+              .forEach(j -> this.printSymbol(i, j)))
+        println()
+    }
+
+    def print() {
+        range(0, this.raw.length()).forEach(this.printRow)
+    }
+}
+
+(maze = new Maze([
+           [2, 2, 2, 2, 2, 2, 2, 2, 2],
+           [2, 0, 0, 0, 0, 0, 0, 0, 2],
+           [2, 0, 2, 2, 0, 2, 2, 0, 2],
+           [2, 0, 2, 0, 0, 2, 0, 0, 2],
+           [2, 0, 2, 0, 2, 0, 2, 0, 2],
+           [2, 0, 0, 0, 0, 0, 2, 0, 2],
+           [2, 2, 0, 2, 2, 0, 2, 2, 2],
+           [2, 0, 0, 0, 0, 0, 0, 0, 2],
+           [2, 2, 2, 2, 2, 2, 2, 2, 2]
+         ]))
+
+maze.visit(pt(1, 1), pt(7, 7))
