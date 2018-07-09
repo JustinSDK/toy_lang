@@ -485,7 +485,7 @@ println(orz)</code></pre>
         new ImportReader(`${STD_MODULE_PATH}/builtin.toy`)
                 .read()
                 .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
-                .then(tmodule => new ModuleImporter(tmodule, 'all'))
+                .then(module => new ModuleImporter(module, 'all'))
                 .then(playToy)
                 .catch(err => tty.textContent = err.message);
 
