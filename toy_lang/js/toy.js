@@ -3,49 +3,42 @@ import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
-export {Toy, TModule, Importer};
+export {Toy, BuiltinModule, Importer};
 
-class TModule {
+class BuiltinModule {
     constructor(toy) {
         this.toy = toy;
     }
 
-    evaluate(context) {
-        this.toy.parse().evaluate(context);
+    moduleInstance() {
+        const moduleContext = this.toy.play();
 
-        const exportsValue = context.variables.get('exports');
+        const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
     
-        const exportVariables = new Map(Array.from(context.variables.keys())
+        const exportVariables = new Map(Array.from(moduleContext.variables.keys())
                                              .filter(key => exports.has(key))
-                                             .map(key => [key, context.variables.get(key)]));
+                                             .map(key => [key, moduleContext.variables.get(key)]));
 
-        return new Instance(context.lookUpVariable('Module'), exportVariables, context);
+        return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
     }    
 }
 
 class Importer {
-    constructor(tmodule, type = 'default') {
-        this.tmodule = tmodule;
+    constructor(sourceModule, type = 'default') {
+        this.sourceModule = sourceModule;
         this.type = type;
     }
 
     importTo(context) {
-        const moduleContext = Context.initialize({
-            env : this.tmodule.toy.env, 
-            fileName : this.tmodule.toy.fileName, 
-            moduleName : this.tmodule.toy.moduleName,
-            stmtMap : this.tmodule.toy.stmtMap()
-        });
-        const moduleInstance = this.tmodule.evaluate(moduleContext);
-
+        const moduleInstance = this.sourceModule.moduleInstance();
         switch(this.type) {
             case 'all': // from '...' import *
                 Array.from(moduleInstance.properties.entries())
                      .forEach(entry => context.variables.set(entry[0], entry[1]));
                 break;
             default:   // import '....'
-                context.variables.set(this.tmodule.toy.moduleName, moduleInstance);
+                context.variables.set(this.sourceModule.toy.moduleName, moduleInstance);
                 break;
         }
     }
@@ -74,18 +67,17 @@ class Toy {
                                      .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
     }
 
-    eval(ast, importer = []) {
+    eval(ast, importers = []) {
+        const initContext = Context.initialize({
+            env : this.env, 
+            fileName : this.fileName, 
+            moduleName : this.moduleName,
+            stmtMap : this.stmtMap()
+        });
+        importers.forEach(importer => importer.importTo(initContext));
+
         try {
-            const initContext = Context.initialize({
-                env : this.env, 
-                fileName : this.fileName, 
-                moduleName : this.moduleName,
-                stmtMap : this.stmtMap()
-            });
-            importer.forEach(importer => importer.importTo(initContext));
-            
             const ctx = ast.evaluate(initContext);
-            
             const thrown = ctx.thrownNode;
             if(thrown !== null) {
                 const clzOfLang = thrown.value.clzOfLang;
@@ -98,6 +90,7 @@ class Toy {
                     printStackTrace(this, thrown.stackTraceElements);
                 }
             }
+            return ctx;
         }
         catch(e) {
             this.env.output(`\n${e}`);
@@ -110,14 +103,13 @@ class Toy {
 
     playWith(importers) {
         const ast = this.parse();
-        this.eval(ast, importers);
+        return this.eval(ast, importers);
     }
 
     play() {
-        this.playWith([]);
+        return this.playWith([]);
     }
 }
-
 
 function tokenizer(toy) {
     try {
