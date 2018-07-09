@@ -11,8 +11,8 @@ class ModuleImporter {
         this.type = type;
     }
 
-    importTo(context) {
-        const moduleInstance = this.sourceModule.moduleInstance();
+    importTo(context, importers) {
+        const moduleInstance = this.sourceModule.moduleInstance(importers);
         switch(this.type) {
             case 'all': // from '...' import *
                 Array.from(moduleInstance.properties.entries())
@@ -48,8 +48,8 @@ class Toy {
                                      .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
     }
 
-    moduleInstance() {
-        const moduleContext = this.play();
+    moduleInstance(importers) {
+        const moduleContext = this.playWith(importers);
 
         const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
@@ -61,7 +61,7 @@ class Toy {
         return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
     }     
 
-    eval(ast, importers = []) {
+    eval(ast, importers) {
         const initContext = Context.initialize({
             env : this.env, 
             fileName : this.fileName, 
@@ -95,13 +95,9 @@ class Toy {
         }
     }
 
-    playWith(importers) {
+    playWith(importers = []) {
         const ast = this.parse();
         return this.eval(ast, importers);
-    }
-
-    play() {
-        return this.playWith([]);
     }
 }
 
