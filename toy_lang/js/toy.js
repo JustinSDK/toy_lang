@@ -3,28 +3,9 @@ import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
-export {Toy, BuiltinModule, Importer};
+export {Toy, ModuleImporter};
 
-class BuiltinModule {
-    constructor(toy) {
-        this.toy = toy;
-    }
-
-    moduleInstance() {
-        const moduleContext = this.toy.play();
-
-        const exportsValue = moduleContext.variables.get('exports');
-        const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
-    
-        const exportVariables = new Map(Array.from(moduleContext.variables.keys())
-                                             .filter(key => exports.has(key))
-                                             .map(key => [key, moduleContext.variables.get(key)]));
-
-        return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
-    }    
-}
-
-class Importer {
+class ModuleImporter {
     constructor(sourceModule, type = 'default') {
         this.sourceModule = sourceModule;
         this.type = type;
@@ -66,6 +47,19 @@ class Toy {
         return new Map(this.tokenizer.tokenizableLines()
                                      .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
     }
+
+    moduleInstance() {
+        const moduleContext = this.play();
+
+        const exportsValue = moduleContext.variables.get('exports');
+        const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
+    
+        const exportVariables = new Map(Array.from(moduleContext.variables.keys())
+                                             .filter(key => exports.has(key))
+                                             .map(key => [key, moduleContext.variables.get(key)]));
+
+        return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
+    }     
 
     eval(ast, importers = []) {
         const initContext = Context.initialize({
