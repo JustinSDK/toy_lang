@@ -84,12 +84,11 @@ class TModule {
                 const clzOfLang = thrown.value.clzOfLang;
                 if(clzOfLang && thrown.value.hasOwnProperty('name') && clzOfLang.internalNode.hasMethod(ctx, 'printStackTrace')) {
                     ctx.output(`${thrown.value.getOwnProperty('name')}:`);
-                    printStackTrace(this, thrown.stackTraceElements);
                 }
                 else {
                     ctx.output(`Thrown: ${thrown.value}`);
-                    printStackTrace(this, thrown.stackTraceElements);
                 }
+                printStackTrace(this, thrown.stackTraceElements);
             }
             return ctx;
         }
