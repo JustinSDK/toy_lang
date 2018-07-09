@@ -472,7 +472,7 @@ println(orz)</code></pre>
         <a href="https://openhome.cc">openhome.cc</a>
     </center>
     <script type="module">
-        import {TModule, ModuleImporter} from './toy_lang/js/module.js';
+        import {TModule} from './toy_lang/js/module.js';
         import {BUILTINS} from './toy_lang/js/context.js';
 
         class ImportReader {
@@ -490,7 +490,7 @@ println(orz)</code></pre>
                             });
             }
         }
-
+        
         const ENVIRONMENT = {
             output(value) {
                 tty.textContent += value;
