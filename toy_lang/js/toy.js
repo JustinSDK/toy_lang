@@ -45,10 +45,10 @@ class ModuleLoader {
 }
 
 class Toy {
-    constructor(env, fileName, code) {
+    constructor(env, moduleName, code) {
         this.env = env;
-        this.fileName = fileName;
-        this.moduleName = fileName.replace('.toy', '');
+        this.fileName = moduleName + '.toy';
+        this.moduleName = moduleName;
         this.code = code;
         this.tokenizer = tokenizer(this);
     }

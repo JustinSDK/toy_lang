@@ -475,7 +475,7 @@ println(orz)</code></pre>
 
     fetch(`${STD_MODULE_PATH}/builtin.toy`)
         .then(resp => resp.text())
-        .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'builtin.toy`', code), true))
+        .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'builtin`', code), true))
         .then(playToy);
         
     function playToy(moduleLoader) {
@@ -484,7 +484,7 @@ println(orz)</code></pre>
             let tty = document.getElementById('tty');
             tty.textContent = '';
 
-            new Toy(ENVIRONMENT, 'main.toy', code).playWith([moduleLoader]);
+            new Toy(ENVIRONMENT, 'main', code).playWith([moduleLoader]);
         });
     }
         
