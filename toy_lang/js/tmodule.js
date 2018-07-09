@@ -61,17 +61,9 @@ class TModule {
         return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
     }     
 
-    eval(ast, importers) {
-        const initContext = Context.initialize({
-            env : this.env, 
-            fileName : this.fileName, 
-            moduleName : this.moduleName,
-            stmtMap : this.stmtMap()
-        });
-        importers.forEach(importer => importer.importTo(initContext));
-
+    eval(context, ast) {
         try {
-            const ctx = ast.evaluate(initContext);
+            const ctx = ast.evaluate(context);
             const thrown = ctx.thrownNode;
             if(thrown !== null) {
                 const clzOfLang = thrown.value.clzOfLang;
@@ -97,7 +89,16 @@ class TModule {
 
     playWith(importers = []) {
         const ast = this.parse();
-        return this.eval(ast, importers);
+
+        const context = Context.initialize({
+            env : this.env, 
+            fileName : this.fileName, 
+            moduleName : this.moduleName,
+            stmtMap : this.stmtMap()
+        });
+        importers.forEach(importer => importer.importTo(context));
+
+        return this.eval(context, ast);
     }
 }
 
