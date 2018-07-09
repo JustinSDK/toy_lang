@@ -59,7 +59,7 @@ class TModule {
                                              .filter(key => exports.has(key))
                                              .map(key => [key, moduleContext.variables.get(key)]));
 
-        return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
+        return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
     }     
 
     play() {
