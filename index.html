@@ -463,7 +463,7 @@ println(orz)</code></pre>
 <hr>
 <center><a href="https://openhome.cc">openhome.cc</a></center>
     <script type="module">
-    import {Toy, ModuleLoader} from './js/toy_lang/toy.js';
+    import {Toy, ModuleLoader} from './toy_lang/js/toy.js';
 
     const ENVIRONMENT = {
         output(value) {
@@ -471,7 +471,7 @@ println(orz)</code></pre>
         }
     };
 
-    const STD_MODULE_PATH = './js/toy_lang/lib';
+    const STD_MODULE_PATH = './toy_lang/lib';
 
     const moduleLoaders = [];
     fetch(`${STD_MODULE_PATH}/builtin.toy`)
