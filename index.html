@@ -473,19 +473,22 @@ println(orz)</code></pre>
 
     const STD_MODULE_PATH = './toy_lang/lib';
 
-    const moduleLoaders = [];
     fetch(`${STD_MODULE_PATH}/builtin.toy`)
         .then(resp => resp.text())
         .then(code => new ModuleLoader(new Toy(ENVIRONMENT, 'builtin.toy`', code), true))
-        .then(moduleLoader => moduleLoaders.push(moduleLoader));
+        .then(playToy);
         
-    document.getElementById('run').addEventListener('click', _ => {
-        let code = document.getElementById('code').value;
-        let tty = document.getElementById('tty');
-        tty.textContent = '';
+    function playToy(moduleLoader) {
+        document.getElementById('run').addEventListener('click', _ => {
+            let code = document.getElementById('code').value;
+            let tty = document.getElementById('tty');
+            tty.textContent = '';
 
-        new Toy(ENVIRONMENT, 'main.toy', code).playWith(moduleLoaders);
-    });
+            new Toy(ENVIRONMENT, 'main.toy', code).playWith([moduleLoader]);
+        });
+    }
+        
+
 </script>
 </body>
 </html>
