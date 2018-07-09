@@ -40,19 +40,7 @@ class ModuleLoader {
 
 function moduleContextFrom(context, toy) {
     const ast = toy.parse();
-
-    const funcBodyStmt = new StmtSequence(
-        ast,
-        new Return(new Func([], StmtSequence.EMPTY, '')) // return closure
-    );
-    const funcInstance = new Func([], funcBodyStmt, '').evaluate(context);
-
-    const moduleContext = new FunCall(funcInstance, [[]])
-                                  .evaluate(context)
-                                  .internalNode
-                                  .parentContext
-                                  .deleteVariable('arguments');
-    return moduleContext;
+    return ast.evaluate(context);
 }
 
 function exportVariablesFrom(context) {
