@@ -11,20 +11,29 @@ class ModuleLoader {
         this.importAll = importAll;
     }
 
+    exportVariables(context) {
+        this.toy.parse().evaluate(context);
+
+        const exportsValue = context.variables.get('exports');
+        const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
+    
+        return new Map(Array.from(context.variables.keys())
+                            .filter(key => exports.has(key))
+                            .map(key => [key, context.variables.get(key)]));
+    }    
+
     loadTo(context) {
-        const initContext = Context.initialize({
+        const moduleContext = Context.initialize({
             env : this.toy.env, 
             fileName : this.toy.fileName, 
             moduleName : this.toy.moduleName,
             stmtMap : this.toy.stmtMap()
         });
-        const moduleContext = moduleContextFrom(initContext, this.toy);
-
-        const exportVariables = exportVariablesFrom(moduleContext);
+        const exportVariables = this.exportVariables(moduleContext);
 
         context.variables.set(
             this.toy.moduleName, 
-            new Instance(initContext.lookUpVariable('Module'), exportVariables, moduleContext)
+            new Instance(context.lookUpVariable('Module'), exportVariables, moduleContext)
         );
 
         if(this.importAll) {
@@ -33,21 +42,6 @@ class ModuleLoader {
             context.deleteVariable(this.toy.moduleName);
         }
     }
-}
-
-function moduleContextFrom(context, toy) {
-    const ast = toy.parse();
-    return ast.evaluate(context);
-}
-
-function exportVariablesFrom(context) {
-    const exportsValue = context.variables.get('exports');
-    const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
-
-    return new Map(Array.from(context.variables.keys())
-                        .filter(key => exports.has(key))
-                        .map(key => [key, context.variables.get(key)]));
-
 }
 
 class Toy {
