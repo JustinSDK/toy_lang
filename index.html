@@ -463,7 +463,7 @@ println(orz)</code></pre>
 <hr>
 <center><a href="https://openhome.cc">openhome.cc</a></center>
     <script type="module">
-    import {Toy, ModuleImporter} from './toy_lang/js/toy.js';
+    import {TModule, ModuleImporter} from './toy_lang/js/toy.js';
 
     const ENVIRONMENT = {
         output(value) {
@@ -475,7 +475,7 @@ println(orz)</code></pre>
 
     fetch(`${STD_MODULE_PATH}/builtin.toy`)
         .then(resp => resp.text())
-        .then(code => new Toy(ENVIRONMENT, 'builtin`', code))
+        .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
         .then(tmodule => new ModuleImporter(tmodule, 'all'))
         .then(playToy);
         
@@ -485,7 +485,7 @@ println(orz)</code></pre>
             let tty = document.getElementById('tty');
             tty.textContent = '';
 
-            new Toy(ENVIRONMENT, 'main', code).playWith([importer]);
+            new TModule(ENVIRONMENT, 'main', code).playWith([importer]);
         });
     }
         

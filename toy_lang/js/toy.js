@@ -3,7 +3,7 @@ import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
-export {Toy, ModuleImporter};
+export {TModule, ModuleImporter};
 
 class ModuleImporter {
     constructor(sourceModule, type = 'default') {
@@ -19,13 +19,13 @@ class ModuleImporter {
                      .forEach(entry => context.variables.set(entry[0], entry[1]));
                 break;
             default:   // import '....'
-                context.variables.set(this.sourceModule.toy.moduleName, moduleInstance);
+                context.variables.set(this.sourceModule.moduleName, moduleInstance);
                 break;
         }
     }
 }
 
-class Toy {
+class TModule {
     constructor(env, moduleName, code) {
         this.env = env;
         this.fileName = moduleName + '.toy';
@@ -101,16 +101,16 @@ class Toy {
     }
 }
 
-function tokenizer(toy) {
+function tokenizer(tmodule) {
     try {
-        return new Tokenizer(toy.code);
+        return new Tokenizer(tmodule.code);
     } catch(e) {
-        toy.env.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
+        tmodule.env.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
         throw e;
     }
 }
 
-function printStackTrace(toy, stackTraceElements) {
+function printStackTrace(tmodule, stackTraceElements) {
     stackTraceElements.map(elem => `at ${elem.statement} (${elem.fileName}:${elem.lineNumber})`)
-                      .forEach(line => toy.env.output(`\n\t${line}`));  
+                      .forEach(line => tmodule.env.output(`\n\t${line}`));  
 }

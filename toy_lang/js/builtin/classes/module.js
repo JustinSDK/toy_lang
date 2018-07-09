@@ -11,14 +11,14 @@ ModuleClass.methods = new Map([
     ['name', func0('name', {
         evaluate(context) {
             const ctxNode = selfInternalNode(context);
-            return context.returned(new Primitive(ctxNode.fileName.replace('.toy', '')));
+            return context.returned(new Primitive(ctxNode.moduleName));
         }    
     })],
     ['toString', func0('toString', {
         evaluate(context) {
             const clzNode = self(context).clzNodeOfLang();
             const ctxNode = selfInternalNode(context);
-            return context.returned(new Primitive(`[${clzNode.name} ${ctxNode.fileName.replace('.toy', '')}]`));
+            return context.returned(new Primitive(`[${clzNode.name} ${ctxNode.moduleName}]`));
         }    
     })]
 ]);
