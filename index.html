@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The first language I made.">
@@ -14,39 +15,45 @@
     <title>Toy Lang</title>
     <style type="text/css">
         textarea {
-           width:100%;
-           height:300px;
-           resize:none;
-           overflow:auto;
-           background: #000;
-           color:whitesmoke;
-        }   
+            width: 100%;
+            height: 300px;
+            resize: none;
+            overflow: auto;
+            background: #000;
+            color: whitesmoke;
+        }
 
         li {
-            color:brown;
+            color: brown;
             font-family: Arial, Helvetica, sans-serif;
         }
     </style>
     <link rel="stylesheet" href="https://openhome.cc/Gossip/css/caterpillar.css">
     <script async src="https://openhome.cc/Gossip/google-code-prettify/run_prettify.js"></script>
-  </head>
-  <body> <a href="https://openhome.cc"><img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg"></a>
-    <p>View it on <a href="https://github.com/JustinSDK/toy_lang">Github</a>. 
-        Toy lang is the first language I made. ES6 modules support is required. </p>
-        <hr>
-        <h1>Playground</h1>
-          <textarea id="code"># Is a language easier if 'Hello World' is easier?
+</head>
+
+<body>
+    <a href="https://openhome.cc">
+        <img src="https://openhome.cc/Gossip/images/caterpillar_small_front.jpg">
+    </a>
+    <p>View it on
+        <a href="https://github.com/JustinSDK/toy_lang">Github</a>. Toy lang is the first language I made. ES6 modules support is required. </p>
+    <hr>
+    <h1>Playground</h1>
+    <textarea id="code"># Is a language easier if 'Hello World' is easier?
 println('Hello World')
 println('Hello {0}'.format('World'))
-println(String.format('Hello {0}', 'World'))</textarea> <br>
-          <br>
-          <button id="run">Run It</button> <br>
-          <br>
-          <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
-          <hr>
-<h1>Examples</h1>
+println(String.format('Hello {0}', 'World'))</textarea>
+    <br>
+    <br>
+    <button id="run">Run It</button>
+    <br>
+    <br>
+    <textarea readonly="readonly" id="tty" style="background: #000;color:#fff;"></textarea>
+    <hr>
+    <h1>Examples</h1>
     <ul>
-      <li># Multiplication Table</li>
+        <li># Multiplication Table</li>
     </ul>
     <pre class="prettyprint"><code>def print_row(n) {
     i = 2
@@ -58,10 +65,10 @@ println(String.format('Hello {0}', 'World'))</textarea> <br>
 }
 
 range(1, 10).forEach(print_row)</code></pre>
-<ul>
-    <li># Tower of Hanoi</li>
-  </ul>
-  <pre class="prettyprint"><code>def hanoi(n, a, b, c) {
+    <ul>
+        <li># Tower of Hanoi</li>
+    </ul>
+    <pre class="prettyprint"><code>def hanoi(n, a, b, c) {
     if n == 1 {
         println('Move sheet from {0} to {1}'.format(a , c))
     } 
@@ -73,10 +80,10 @@ range(1, 10).forEach(print_row)</code></pre>
 }
 
 hanoi(3, 'A', 'B', 'C')</code></pre>
-<ul>
-    <li># Factorial</li>
-  </ul>
-  <pre class="prettyprint"><code>def factorial(n) {
+    <ul>
+        <li># Factorial</li>
+    </ul>
+    <pre class="prettyprint"><code>def factorial(n) {
     if n == 0 {
         return 1
     }
@@ -88,10 +95,10 @@ hanoi(3, 'A', 'B', 'C')</code></pre>
 range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
            .forEach(println)
 </code></pre>
-<ul>
-    <li># Tricolour</li>
-  </ul>
-  <pre class="prettyprint"><code>def adjust(flags) {
+    <ul>
+        <li># Tricolour</li>
+    </ul>
+    <pre class="prettyprint"><code>def adjust(flags) {
     b = 0
     w = 0
     r = flags.length() - 1
@@ -119,10 +126,10 @@ range(1, 6).map(n -> '{0}! = {1}'.format(n, factorial(n))) \
 
 flags = 'RWBBWRWR'.split('')
 println(adjust(flags))</code></pre>
-<ul>
-    <li># Class</li>
-  </ul>
-  <pre class="prettyprint"><code>class AccountException(Exception) {
+    <ul>
+        <li># Class</li>
+    </ul>
+    <pre class="prettyprint"><code>class AccountException(Exception) {
     def init() {
         this.super(Exception, 'init', arguments)
     }
@@ -161,10 +168,10 @@ try {
 catch e {
     e.printStackTrace()
 }</code></pre>
-<ul>
-    <li># Built-in Classes</li>
-  </ul>
-  <pre class="prettyprint"><code>def sum(lt) {
+    <ul>
+        <li># Built-in Classes</li>
+    </ul>
+    <pre class="prettyprint"><code>def sum(lt) {
     return 0 if lt.isEmpty() else (lt.get(0) + sum(lt.slice(1)))
 }
  
@@ -173,10 +180,10 @@ println('{0}={1}'.format(lt.join('+'), sum(lt)))
 
 println((new String('aBc')).toUpperCase())
 println((new String('aBc')).toLowerCase())</code></pre>
-<ul>
-    <li># Closure</li>
-  </ul>
-  <pre class="prettyprint"><code>def foo() {
+    <ul>
+        <li># Closure</li>
+    </ul>
+    <pre class="prettyprint"><code>def foo() {
     x = 10
     def inner(y) {
         # closure closes the variable x, not its value
@@ -233,10 +240,10 @@ setX = accessor.get(1)
 println(getX()) 
 setX(100)
 println(getX())</code></pre>
-<ul>
-    <li># Lambda expression</li>
-  </ul>
-  <pre class="prettyprint"><code>max = (n1, n2) -> n1 if n1 > n2 else n2
+    <ul>
+        <li># Lambda expression</li>
+    </ul>
+    <pre class="prettyprint"><code>max = (n1, n2) -> n1 if n1 > n2 else n2
 println(max(10, 20))
 
 # you may also use parentheses to wrap wrapping long lines
@@ -265,10 +272,10 @@ println(orz()(100, 200))
 (() -> println('XD'))()
 (x -> println(x))('XD')
 println(((x, y) -> x + y)(1, 2))</code></pre>
-<ul>
-    <li># Mixin</li>
-  </ul>
-  <pre class="prettyprint"><code>class Ordered {
+    <ul>
+        <li># Mixin</li>
+    </ul>
+    <pre class="prettyprint"><code>class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
     }
@@ -309,10 +316,10 @@ println(c1.lessThan(c2))
 println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
 println(c1.greaterEqualsThan(c2))</code></pre>
-<ul>
-    <li># Inheritance 1</li>
-  </ul>
-  <pre class="prettyprint"><code>class PA {
+    <ul>
+        <li># Inheritance 1</li>
+    </ul>
+    <pre class="prettyprint"><code>class PA {
     def init() {
         println('PA init')
     }
@@ -349,10 +356,10 @@ c = new C()
 c.ma(10, 20)
 c.mb()
 c.mc()</code></pre>
-<ul>
-    <li># Inheritance 2</li>
-  </ul>
-  <pre class="prettyprint"><code>class Ordered {
+    <ul>
+        <li># Inheritance 2</li>
+    </ul>
+    <pre class="prettyprint"><code>class Ordered {
     def lessThan(that) {
         return this.compare(that) < 0
     }
@@ -391,10 +398,10 @@ println(c1.lessThan(c2))
 println(c1.lessEqualsThan(c2))
 println(c1.greaterThan(c2))
 println(c1.greaterEqualsThan(c2))</code></pre>
-<ul>
-    <li># meta programming 1</li>
-  </ul>
-  <pre class="prettyprint"><code>println(Object.ownMethods())
+    <ul>
+        <li># meta programming 1</li>
+    </ul>
+    <pre class="prettyprint"><code>println(Object.ownMethods())
 Object.deleteOwnMethod('toString')    
 println(Object.ownMethods())
 
@@ -422,10 +429,10 @@ def foo4(p) {
 
 # The 2nd parameter of the apply method accepts a List instance. 
 println(foo4.apply(o1, [40]))</code></pre>
-<ul>
-    <li># meta programming 2</li>
-  </ul>
-  <pre class="prettyprint"><code>class PA {
+    <ul>
+        <li># meta programming 2</li>
+    </ul>
+    <pre class="prettyprint"><code>class PA {
     def pa() {
         println('pa')
     }
@@ -460,36 +467,39 @@ orz = new Orz()
 orz.pa()
 orz.pb()
 println(orz)</code></pre>
-<hr>
-<center><a href="https://openhome.cc">openhome.cc</a></center>
+    <hr>
+    <center>
+        <a href="https://openhome.cc">openhome.cc</a>
+    </center>
     <script type="module">
-    import {TModule, ModuleImporter} from './toy_lang/js/tmodule.js';
+        import { TModule, ModuleImporter } from './toy_lang/js/tmodule.js';
 
-    const ENVIRONMENT = {
-        output(value) {
-            tty.textContent += value;
+        const ENVIRONMENT = {
+            output(value) {
+                tty.textContent += value;
+            }
+        };
+
+        const STD_MODULE_PATH = './toy_lang/lib';
+
+        fetch(`${STD_MODULE_PATH}/builtin.toy`)
+            .then(resp => resp.text())
+            .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
+            .then(tmodule => new ModuleImporter(tmodule, 'all'))
+            .then(playToy);
+
+        function playToy(builtinImporter) {
+            document.getElementById('run').addEventListener('click', _ => {
+                let code = document.getElementById('code').value;
+                let tty = document.getElementById('tty');
+                tty.textContent = '';
+
+                new TModule(ENVIRONMENT, 'main', code, [builtinImporter]).play();
+            });
         }
-    };
 
-    const STD_MODULE_PATH = './toy_lang/lib';
 
-    fetch(`${STD_MODULE_PATH}/builtin.toy`)
-        .then(resp => resp.text())
-        .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
-        .then(tmodule => new ModuleImporter(tmodule, 'all'))
-        .then(playToy);
-        
-    function playToy(importer) {
-        document.getElementById('run').addEventListener('click', _ => {
-            let code = document.getElementById('code').value;
-            let tty = document.getElementById('tty');
-            tty.textContent = '';
-
-            new TModule(ENVIRONMENT, 'main', code).playWith([importer]);
-        });
-    }
-        
-
-</script>
+    </script>
 </body>
+
 </html>

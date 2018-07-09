@@ -11,8 +11,8 @@ class ModuleImporter {
         this.type = type;
     }
 
-    importTo(context, importers) {
-        const moduleInstance = this.sourceModule.moduleInstance(importers);
+    importTo(context) {
+        const moduleInstance = this.sourceModule.moduleInstance();
         switch(this.type) {
             case 'all': // from '...' import *
                 Array.from(moduleInstance.properties.entries())
@@ -26,11 +26,12 @@ class ModuleImporter {
 }
 
 class TModule {
-    constructor(env, moduleName, code) {
+    constructor(env, moduleName, code, importers = []) {
         this.env = env;
         this.fileName = moduleName + '.toy';
         this.moduleName = moduleName;
         this.code = code;
+        this.importers = importers;
         this.tokenizer = tokenizer(this);
     }
 
@@ -48,8 +49,8 @@ class TModule {
                                      .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
     }
 
-    moduleInstance(importers) {
-        const moduleContext = this.playWith(importers);
+    moduleInstance() {
+        const moduleContext = this.play();
 
         const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
@@ -60,6 +61,20 @@ class TModule {
 
         return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, moduleContext);
     }     
+
+    play() {
+        const ast = this.parse();
+
+        const context = Context.initialize({
+            env : this.env, 
+            fileName : this.fileName, 
+            moduleName : this.moduleName,
+            stmtMap : this.stmtMap()
+        });
+        this.importers.forEach(importer => importer.importTo(context));
+
+        return this.eval(context, ast);
+    }
 
     eval(context, ast) {
         try {
@@ -87,19 +102,6 @@ class TModule {
         }
     }
 
-    playWith(importers = []) {
-        const ast = this.parse();
-
-        const context = Context.initialize({
-            env : this.env, 
-            fileName : this.fileName, 
-            moduleName : this.moduleName,
-            stmtMap : this.stmtMap()
-        });
-        importers.forEach(importer => importer.importTo(context));
-
-        return this.eval(context, ast);
-    }
 }
 
 function tokenizer(tmodule) {
