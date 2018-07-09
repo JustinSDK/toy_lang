@@ -472,7 +472,7 @@ println(orz)</code></pre>
         <a href="https://openhome.cc">openhome.cc</a>
     </center>
     <script type="module">
-        import { TModule, ModuleImporter } from './toy_lang/js/module.js';
+        import {ImportReader, TModule, ModuleImporter} from './toy_lang/js/module.js';
 
         const ENVIRONMENT = {
             output(value) {
@@ -480,13 +480,14 @@ println(orz)</code></pre>
             }
         };
 
-        const STD_MODULE_PATH = './toy_lang/lib';
+        const STD_MODULE_PATH = 'toy_lang/lib';
 
-        fetch(`${STD_MODULE_PATH}/builtin.toy`)
-            .then(resp => resp.text())
-            .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
-            .then(tmodule => new ModuleImporter(tmodule, 'all'))
-            .then(playToy);
+        new ImportReader(`${STD_MODULE_PATH}/builtin.toy`)
+                .read()
+                .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
+                .then(tmodule => new ModuleImporter(tmodule, 'all'))
+                .then(playToy)
+                .catch(err => tty.textContent = err.message);
 
         function playToy(builtinImporter) {
             document.getElementById('run').addEventListener('click', _ => {

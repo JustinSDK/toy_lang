@@ -3,7 +3,23 @@ import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
-export {TModule, ModuleImporter};
+export {ImportReader, TModule, ModuleImporter};
+
+class ImportReader {
+    constructor(modulepath) {
+        this.modulepath = modulepath;
+    }
+
+    read() {
+        return fetch(this.modulepath)
+                    .then(resp => {
+                        if(resp.ok) {
+                            return resp.text();
+                        }
+                        throw new Error(`loading failed for ${this.modulepath}: ${resp.status} ${resp.statusText}`);
+                    });
+    }
+}
 
 class ModuleImporter {
     constructor(sourceModule, type = 'default') {
