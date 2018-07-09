@@ -2,7 +2,7 @@ import {BUILTIN_FUNCTIONS} from './builtin/functions.js';
 import {BUILTIN_CLASSES} from './builtin/classes.js';
 import { Instance } from './interpreter/ast/value.js';
 
-export {Context};
+export {BUILTINS, Context};
 
 const BUILTINS = new Map(
     Array.from(BUILTIN_FUNCTIONS.entries()).concat(

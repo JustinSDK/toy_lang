@@ -472,12 +472,30 @@ println(orz)</code></pre>
         <a href="https://openhome.cc">openhome.cc</a>
     </center>
     <script type="module">
-        import {ImportReader, TModule, ModuleImporter} from './toy_lang/js/module.js';
+        import {TModule, ModuleImporter} from './toy_lang/js/module.js';
+        import {BUILTINS} from './toy_lang/js/context.js';
+
+        class ImportReader {
+            constructor(modulepath) {
+                this.modulepath = modulepath;
+            }
+
+            read() {
+                return fetch(this.modulepath)
+                            .then(resp => {
+                                if(resp.ok) {
+                                    return resp.text();
+                                }
+                                throw new Error(`loading failed for ${this.modulepath}: ${resp.status} ${resp.statusText}`);
+                            });
+            }
+        }
 
         const ENVIRONMENT = {
             output(value) {
                 tty.textContent += value;
-            }
+            },
+            ImportReader : ImportReader
         };
 
         const STD_MODULE_PATH = 'toy_lang/lib';
@@ -485,17 +503,21 @@ println(orz)</code></pre>
         new ImportReader(`${STD_MODULE_PATH}/builtin.toy`)
                 .read()
                 .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
-                .then(module => new ModuleImporter(module, 'all'))
-                .then(playToy)
-                .catch(err => tty.textContent = err.message);
+                .then(module => module.moduleInstance())
+                .then(moduleInstance => {
+                    Array.from(moduleInstance.properties.entries())
+                         .forEach(entry => BUILTINS.set(entry[0], entry[1]));
 
-        function playToy(builtinImporter) {
+                    playToy();
+                });
+
+        function playToy() {
             document.getElementById('run').addEventListener('click', _ => {
                 let code = document.getElementById('code').value;
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
 
-                new TModule(ENVIRONMENT, 'main', code, [builtinImporter]).play();
+                new TModule(ENVIRONMENT, 'main', code).play();
             });
         }
 
