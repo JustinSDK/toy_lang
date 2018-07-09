@@ -3,43 +3,50 @@ import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
-export {Toy, ModuleLoader};
+export {Toy, TModule, Importer};
 
-class ModuleLoader {
-    constructor(toy, importAll = false) {
+class TModule {
+    constructor(toy) {
         this.toy = toy;
-        this.importAll = importAll;
     }
 
-    exportVariables(context) {
+    evaluate(context) {
         this.toy.parse().evaluate(context);
 
         const exportsValue = context.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
     
-        return new Map(Array.from(context.variables.keys())
-                            .filter(key => exports.has(key))
-                            .map(key => [key, context.variables.get(key)]));
+        const exportVariables = new Map(Array.from(context.variables.keys())
+                                             .filter(key => exports.has(key))
+                                             .map(key => [key, context.variables.get(key)]));
+
+        return new Instance(context.lookUpVariable('Module'), exportVariables, context);
     }    
+}
 
-    loadTo(context) {
+class Importer {
+    constructor(tmodule, type = 'default') {
+        this.tmodule = tmodule;
+        this.type = type;
+    }
+
+    importTo(context) {
         const moduleContext = Context.initialize({
-            env : this.toy.env, 
-            fileName : this.toy.fileName, 
-            moduleName : this.toy.moduleName,
-            stmtMap : this.toy.stmtMap()
+            env : this.tmodule.toy.env, 
+            fileName : this.tmodule.toy.fileName, 
+            moduleName : this.tmodule.toy.moduleName,
+            stmtMap : this.tmodule.toy.stmtMap()
         });
-        const exportVariables = this.exportVariables(moduleContext);
+        const moduleInstance = this.tmodule.evaluate(moduleContext);
 
-        context.variables.set(
-            this.toy.moduleName, 
-            new Instance(context.lookUpVariable('Module'), exportVariables, moduleContext)
-        );
-
-        if(this.importAll) {
-            Array.from(exportVariables.entries())
-                 .forEach(entry => context.variables.set(entry[0], entry[1]));
-            context.deleteVariable(this.toy.moduleName);
+        switch(this.type) {
+            case 'all': // from '...' import *
+                Array.from(moduleInstance.properties.entries())
+                     .forEach(entry => context.variables.set(entry[0], entry[1]));
+                break;
+            default:   // import '....'
+                context.variables.set(this.tmodule.toy.moduleName, moduleInstance);
+                break;
         }
     }
 }
@@ -67,7 +74,7 @@ class Toy {
                                      .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
     }
 
-    eval(ast, moduleLoaders = []) {
+    eval(ast, importer = []) {
         try {
             const initContext = Context.initialize({
                 env : this.env, 
@@ -75,7 +82,7 @@ class Toy {
                 moduleName : this.moduleName,
                 stmtMap : this.stmtMap()
             });
-            moduleLoaders.forEach(loader => loader.loadTo(initContext));
+            importer.forEach(importer => importer.importTo(initContext));
             
             const ctx = ast.evaluate(initContext);
             
@@ -101,15 +108,16 @@ class Toy {
         }
     }
 
-    playWith(moduleLoaders) {
+    playWith(importers) {
         const ast = this.parse();
-        this.eval(ast, moduleLoaders);
+        this.eval(ast, importers);
     }
 
     play() {
         this.playWith([]);
     }
 }
+
 
 function tokenizer(toy) {
     try {
