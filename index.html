@@ -499,10 +499,10 @@ println(orz)</code></pre>
         };
 
         const STD_MODULE_PATH = 'toy_lang/lib';
-
-        new ImportReader(`${STD_MODULE_PATH}/builtin.toy`)
+        const builtinToy = `${STD_MODULE_PATH}/builtin.toy`;
+        new ImportReader(builtinToy)
                 .read()
-                .then(code => new Module(ENVIRONMENT, 'builtin`', code))
+                .then(code => new Module(ENVIRONMENT, builtinToy, 'builtin`', code))
                 .then(module => module.moduleInstance())
                 .then(moduleInstance => {
                     Array.from(moduleInstance.properties.entries())
@@ -520,7 +520,7 @@ println(orz)</code></pre>
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
 
-                new Module(ENVIRONMENT, 'main', code).play();
+                new Module(ENVIRONMENT, `main.toy`, 'main', code).play();
             });
         }
 

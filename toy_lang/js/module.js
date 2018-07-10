@@ -37,9 +37,9 @@ class ModuleImporter {
 }
 
 class Module {
-    constructor(env, moduleName, code, importers = []) {
+    constructor(env, fileName, moduleName, code, importers = []) {
         this.env = env;
-        this.fileName = moduleName + '.toy';
+        this.fileName = fileName;
         this.moduleName = moduleName;
         this.code = code;
         this.importers = importers;
