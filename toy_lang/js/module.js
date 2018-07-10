@@ -40,7 +40,7 @@ class Module {
     static initialize(env) {
         environment = env;
         const builtinToy = 'toy_lang/lib/builtin.toy';
-        return env.readModule(builtinToy)
+        return env.read(builtinToy)
                   .then(pathCode => new Module(pathCode[0], 'builtin', tokenizer(pathCode[1]).tokenizableLines()))
                   .then(module => module.moduleInstance())
                   .then(moduleInstance => {
@@ -58,7 +58,7 @@ class Module {
 
         if(imports.length !== 0) {
             const importPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
-                                          .map(tokenables => readModule(`${tokenables[0].value}.toy`));
+                                          .map(tokenables => readModuleFile(`${tokenables[0].value}.toy`));
         
             Promise.all(importPromises)
                    .then(pathCodes => {
@@ -71,14 +71,14 @@ class Module {
                             );
                         });
 
-                        new Module(`main.toy`, 'main', notImports, importers).play();
+                        new Module('main.toy', 'main', notImports, importers).play();
                    })
                    .catch(err => {
                         environment.output(`${err.message}\n`);
                    });
         }
         else {
-            new Module(`main.toy`, 'main', notImports).play();
+            new Module('main.toy', 'main', notImports).play();
         }        
     }
 
@@ -100,10 +100,8 @@ class Module {
 
     moduleInstance() {
         const moduleContext = this.play();
-
         const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
-    
         const exportVariables = new Map(
             Array.from(moduleContext.variables.keys())
                  .filter(key => exports.has(key))
@@ -151,8 +149,8 @@ class Module {
     }
 }
 
-function readModule(fileName) {
-    return environment.readModule(
+function readModuleFile(fileName) {
+    return environment.read(
         fileName.startsWith('/') ? 
             `${environment.TOY_MODUEL_PATH}${fileName}` : fileName
     );
