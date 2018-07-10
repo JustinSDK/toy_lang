@@ -6,16 +6,6 @@ import {Instance} from './interpreter/ast/value.js';
 
 export {Module, ModuleImporter};
 
-class ModuleParser {
-    constructor(environment) {  
-        this.environment = environment;  
-    }
-
-    parse(tokenizer) {
-        return LINE_PARSER.parse(tokenizer.tokenizableLines());
-    }
-}
-
 class ModuleImporter {
     constructor(sourceModule, type = 'default') {
         this.sourceModule = sourceModule;
@@ -36,21 +26,36 @@ class ModuleImporter {
     }
 }
 
+
+let environment;
+
 class Module {
-    constructor(env, fileName, moduleName, code, importers = []) {
-        this.env = env;
+    constructor(fileName, moduleName, code, importers = []) {
         this.fileName = fileName;
         this.moduleName = moduleName;
         this.code = code;
         this.importers = importers;
         this.tokenizer = tokenizer(this);
     }
+    
+    static initialize(env) {
+        environment = env;
+        const builtinToy = `${env.STD_MODULE_PATH}/builtin.toy`;
+        return env.readModule(builtinToy)
+                    .then(code => new Module(builtinToy, 'builtin`', code))
+                    .then(module => module.moduleInstance())
+                    .then(moduleInstance => {
+                        Array.from(moduleInstance.properties.entries())
+                             .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
+                        return moduleInstance;
+                    }); 
+    }
 
     parse() {
         try {
-            return new ModuleParser(this.env).parse(this.tokenizer);
+            return LINE_PARSER.parse(this.tokenizer.tokenizableLines());
         } catch(e) {
-            this.env.output(`${e}\n\tat ${e.code} (${this.fileName}:${e.lineNumber})`);
+            environment.output(`${e}\n\tat ${e.code} (${this.fileName}:${e.lineNumber})`);
             throw e;
         }
     }
@@ -77,7 +82,7 @@ class Module {
         const ast = this.parse();
 
         const context = Context.initialize({
-            env : this.env, 
+            env : environment, 
             fileName : this.fileName, 
             moduleName : this.moduleName,
             stmtMap : this.stmtMap()
@@ -104,7 +109,7 @@ class Module {
             return ctx;
         }
         catch(e) {
-            this.env.output(`\n${e}`);
+            environment.output(`\n${e}`);
             if(e.strackTraceElements) {
                 printStackTrace(this, e.strackTraceElements);         
             }
@@ -112,18 +117,8 @@ class Module {
         }
     }
 
-    static initialize(env) {
-        const builtinToy = `${env.STD_MODULE_PATH}/builtin.toy`;
-        return env.readModule(builtinToy)
-                    .then(code => new Module(env, builtinToy, 'builtin`', code))
-                    .then(module => module.moduleInstance())
-                    .then(moduleInstance => {
-                        Array.from(moduleInstance.properties.entries())
-                            .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
-                        return moduleInstance;
-                    }); 
-    }
 }
+
 
 function tokenizer(tmodule) {
     try {

@@ -506,7 +506,7 @@ println(orz)</code></pre>
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
 
-                new Module(ENVIRONMENT, `main.toy`, 'main', code).play();
+                new Module(`main.toy`, 'main', code).play();
             });
         }
 
