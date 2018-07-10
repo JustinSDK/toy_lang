@@ -1,0 +1,9 @@
+exports = ['min', 'max']
+
+def min() {
+    return arguments.sort().get(0)
+}
+
+def max() {
+    return arguments.sort((n1, n2) -> n2 - n1).get(0)
+}
