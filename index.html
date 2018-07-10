@@ -506,28 +506,29 @@ println(orz)</code></pre>
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
 
-                const tokenizableLines = Module.tokenizableLines(code);
-                const notImportTokenizableLines = Module.notImports(tokenizableLines);
-                const importTokenizableLines = Module.imports(tokenizableLines);
-                const importPromises = importTokenizableLines.map(line => line.tryTokenables('import'))
-                                                             .map(tokenables => Module.readModule(`${tokenables[0].value}.toy`));
+                const lines = Module.tokenizableLines(code);
+                const notImports = Module.notImports(lines);
+                const imports = Module.imports(lines);
+                const importPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
+                                              .map(tokenables => Module.readModule(`${tokenables[0].value}.toy`));
                 
-                if(importPromises !== 0) {
+                if(importPromises.length !== 0) {
                     Promise.all(importPromises)
                            .then(pathCodes => {
                                 const importers = pathCodes.map(pathCode => {
                                     const path = pathCode[0];
                                     const code = pathCode[1];
+                                    const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
                                     return new ModuleImporter(
-                                        new Module(path, path.replace('.toy', '').split('/').slice(-1)[0], Module.tokenizableLines(code))
+                                        new Module(path, moduleName, Module.tokenizableLines(code))
                                     );
                                 });
 
-                                new Module(`main.toy`, 'main', notImportTokenizableLines, importers).play();
+                                new Module(`main.toy`, 'main', notImports, importers).play();
                            });
                 }
                 else {
-                    new Module(`main.toy`, 'main', notImportTokenizableLines).play();
+                    new Module(`main.toy`, 'main', notImports).play();
                 }
             });
         }
