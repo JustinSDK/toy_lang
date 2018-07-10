@@ -6,7 +6,7 @@ import {Instance} from './interpreter/ast/value.js';
 
 export {Module, ModuleImporter};
 
-class ToyParser {
+class ModuleParser {
     constructor(environment) {  
         this.environment = environment;  
     }
@@ -48,7 +48,7 @@ class Module {
 
     parse() {
         try {
-            return new ToyParser(this.env).parse(this.tokenizer);
+            return new ModuleParser(this.env).parse(this.tokenizer);
         } catch(e) {
             this.env.output(`${e}\n\tat ${e.code} (${this.fileName}:${e.lineNumber})`);
             throw e;
