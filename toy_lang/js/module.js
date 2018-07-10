@@ -52,7 +52,10 @@ class Module {
     }
 
     static readModule(fileName) {
-        return environment.readModule(fileName);
+        return environment.readModule(
+                    fileName.startsWith('/') ? 
+                        `${environment.TOY_MODUEL_PATH}/${fileName}` : fileName
+        );
     }
 
     parse() {
