@@ -2,8 +2,8 @@ import {REGEX} from './regex.js'
 export {Tokenizer};
 
 const TOKEN_TESTERS = new Map([
-    ['import', function(input) {
-        const matched = REGEX.get('import').exec(input);
+    ['importAs', function(input) {
+        const matched = REGEX.get('importAs').exec(input);
         return matched ? [matched[1], matched[4]] : [];
     }],
     ['text', function(input) {

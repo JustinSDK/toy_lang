@@ -136,7 +136,7 @@ class Module {
 }
 
 function mainWith(fileName, notImports, imports) {
-    const importerPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
+    const importerPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('importAs'))
                                     .map(tokenables => {
                                         return readModuleFile(fileName, `${tokenables[0].value}.toy`).then(pathCode => {
                                             const path = pathCode[0];
