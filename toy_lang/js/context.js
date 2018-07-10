@@ -65,7 +65,7 @@ function createFlowController({either, returnedValue, notReturn, thrownContext, 
 function changeFlowController(ctx, option) {
     return new Context({
         fileName : ctx.fileName,
-        stmtMap : ctx.stmtMap,
+        lines : ctx.lines,
         parent : ctx.parent,
         output : ctx.output,
         variables : ctx.variables,
@@ -74,19 +74,19 @@ function changeFlowController(ctx, option) {
 }
 
 class Context { 
-    constructor({fileName, stmtMap, output, parent, variables, flowController}) {
+    constructor({fileName, lines, output, parent, variables, flowController}) {
         this.fileName = fileName;
-        this.stmtMap = stmtMap;
+        this.lines = lines;
         this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.flowController = flowController || defaultFlowConrtoller;
     }
 
-    static initialize({env, fileName, moduleName, stmtMap}) {
+    static initialize({env, fileName, moduleName, lines}) {
         const context = new Context({
             fileName : fileName,
-            stmtMap : stmtMap,
+            lines : lines,
             output : env.output,
             variables : new Map(BUILTINS)
         });
@@ -100,7 +100,7 @@ class Context {
     childContext() {
         return new Context({
             fileName : this.fileName,
-            stmtMap : this.stmtMap,
+            lines : this.lines,
             parent : this,
             output : this.output
         });

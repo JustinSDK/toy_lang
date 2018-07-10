@@ -150,7 +150,7 @@ class StmtSequence extends Stmt {
                 addStackTrace(context, e, {
                     fileName : context.fileName,
                     lineNumber : this.lineNumber,
-                    statement : context.stmtMap.get(this.lineNumber)
+                    statement : context.lines.get(this.lineNumber)
                 });
             }
             throw e;
@@ -166,7 +166,7 @@ function addTraceOrStmt(context, preStmtContext, lineNumber, stmt) {
                 leftContext.thrownNode.addStackTraceElement({
                     fileName : context.fileName,
                     lineNumber : lineNumber,
-                    statement : context.stmtMap.get(lineNumber)
+                    statement : context.lines.get(lineNumber)
                 });
             }
             return leftContext;

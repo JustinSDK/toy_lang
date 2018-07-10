@@ -91,7 +91,7 @@ class Module {
         }
     }
 
-    stmtMap() {
+    lines() {
         return new Map(
             this.notImports
                 .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value])
@@ -118,7 +118,7 @@ class Module {
             env : environment, 
             fileName : this.fileName, 
             moduleName : this.moduleName,
-            stmtMap : this.stmtMap()
+            lines : this.lines()
         });
         this.importers.forEach(importer => importer.importTo(context));
 
