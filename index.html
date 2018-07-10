@@ -484,12 +484,12 @@ println(orz)</code></pre>
                         });
         }
         
-        const TOY_MODUEL_PATH = 'toy_lang/examples';
-
+        const TOY_MODUEL_PATH = 'toy_lang';
         const ENVIRONMENT = {
             output(value) {
                 tty.textContent += value;
             },
+            TOY_MODUEL_PATH,
             readModule
         };
 
