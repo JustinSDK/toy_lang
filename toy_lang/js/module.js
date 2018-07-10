@@ -30,19 +30,30 @@ class ModuleImporter {
 let environment;
 
 class Module {
-    constructor(fileName, moduleName, code, importers = []) {
+    constructor(fileName, moduleName, notImportTokenizableLines, importers = []) {
         this.fileName = fileName;
         this.moduleName = moduleName;
-        this.code = code;
+        this.notImportTokenizableLines = notImportTokenizableLines;
         this.importers = importers;
-        this.tokenizer = tokenizer(this);
+    }
+
+    static tokenizableLines(code) {
+        return tokenizer(code).tokenizableLines();
+    }
+
+    static notImports(tokenizableLines) {
+        return notImportTokenizableLines(tokenizableLines);
+    }
+
+    static imports(tokenizableLines) {
+        return importTokenizableLines(tokenizableLines);
     }
     
     static initialize(env) {
         environment = env;
         const builtinToy = 'toy_lang/lib/builtin.toy';
         return env.readModule(builtinToy)
-                    .then(code => new Module(builtinToy, 'builtin`', code))
+                    .then(pathCode => new Module(pathCode[0], 'builtin', tokenizer(pathCode[1]).tokenizableLines()))
                     .then(module => module.moduleInstance())
                     .then(moduleInstance => {
                         Array.from(moduleInstance.properties.entries())
@@ -60,7 +71,7 @@ class Module {
 
     parse() {
         try {
-            return LINE_PARSER.parse(this.tokenizer.tokenizableLines());
+            return LINE_PARSER.parse(this.notImportTokenizableLines);
         } catch(e) {
             environment.output(`${e}\n\tat ${e.code} (${this.fileName}:${e.lineNumber})`);
             throw e;
@@ -68,8 +79,8 @@ class Module {
     }
 
     stmtMap() {
-        return new Map(this.tokenizer.tokenizableLines()
-                                     .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
+        return new Map(this.notImportTokenizableLines
+                           .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
     }
 
     moduleInstance() {
@@ -124,13 +135,30 @@ class Module {
     }
 }
 
-function tokenizer(module) {
+function tokenizer(code) {
     try {
-        return new Tokenizer(module.code);
+        return new Tokenizer(code);
     } catch(e) {
         environment.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
         throw e;
     }
+}
+
+function notImportTokenizableLines(tokenizableLines) {
+    if(tokenizableLines.length === 0) {
+        return [];
+    }
+    if(tokenizableLines[0].value.startsWith('import')) {
+        return notImportTokenizableLines(tokenizableLines.slice(1));
+    }
+    return tokenizableLines;
+}
+
+function importTokenizableLines(tokenizableLines) {
+    if(tokenizableLines.length === 0 || !tokenizableLines[0].value.startsWith('import')) {
+        return [];
+    }
+    return [tokenizableLines[0]].concat(importTokenizableLines(tokenizableLines.slice(1)));
 }
 
 function printStackTrace(stackTraceElements) {

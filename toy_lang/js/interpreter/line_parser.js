@@ -19,6 +19,22 @@ const LINE_PARSER = new ParseErrInterceptor({
 });
 
 const STMT_PARSER = TokenablesParser.orRules(
+    // ['import', {
+    //     burst(tokenableLines, [srcModTokenable]) {
+    //         const srcModName = srcModTokenable.value;
+    //         const fileName = `${srcModName}.toy`;
+    //         const moduleName = srcModName.split('/').slice(-1)[0];
+    //         const importPromise = Module.readModule(fileName)
+    //                                     .then(code => new Module(fileName, moduleName, code))
+    //                                     .then(module => new ModuleImporter(module));
+
+    //         return new StmtSequence(
+    //             new Import(importPromise),
+    //             LINE_PARSER.parse(tokenableLines.slice(1)),
+    //             tokenableLines[0].lineNumber
+    //         );
+    //     }
+    // }],
     ['return', {
         burst(tokenableLines, [argTokenable]) {
             return createReturn(tokenableLines, argTokenable); 

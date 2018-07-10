@@ -472,7 +472,7 @@ println(orz)</code></pre>
         <a href="https://openhome.cc">openhome.cc</a>
     </center>
     <script type="module">
-        import {Module} from './toy_lang/js/module.js';
+        import {Module, ModuleImporter} from './toy_lang/js/module.js';
 
         function readModule(modulepath) {
             return fetch(modulepath)
@@ -481,7 +481,8 @@ println(orz)</code></pre>
                                 return resp.text();
                             }
                             throw new Error(`GET ${this.modulepath}.toy ${resp.status} (${resp.statusText})`);
-                        });
+                        })
+                        .then(code => [modulepath, code]);
         }
         
         const TOY_MODUEL_PATH = 'toy_lang';
@@ -505,10 +506,31 @@ println(orz)</code></pre>
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
 
-                new Module(`main.toy`, 'main', code).play();
+                const tokenizableLines = Module.tokenizableLines(code);
+                const notImportTokenizableLines = Module.notImports(tokenizableLines);
+                const importTokenizableLines = Module.imports(tokenizableLines);
+                const importPromises = importTokenizableLines.map(line => line.tryTokenables('import'))
+                                                             .map(tokenables => Module.readModule(`${tokenables[0].value}.toy`));
+                
+                if(importPromises !== 0) {
+                    Promise.all(importPromises)
+                           .then(pathCodes => {
+                                const importers = pathCodes.map(pathCode => {
+                                    const path = pathCode[0];
+                                    const code = pathCode[1];
+                                    return new ModuleImporter(
+                                        new Module(path, path.replace('.toy', '').split('/').slice(-1)[0], Module.tokenizableLines(code))
+                                    );
+                                });
+
+                                new Module(`main.toy`, 'main', notImportTokenizableLines, importers).play();
+                           });
+                }
+                else {
+                    new Module(`main.toy`, 'main', notImportTokenizableLines).play();
+                }
             });
         }
-
 
     </script>
 </body>
