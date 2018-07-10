@@ -55,16 +55,16 @@ class Module {
                   .catch(err => environment.output(`${err.message}\n`)); 
     }
 
-    static main(code) {
+    static main(fileName, code) {
         const lines = tokenizer(code).tokenizableLines();
         const notImports = notImportTokenizableLines(lines);
         const imports = importTokenizableLines(lines);
 
         if(imports.length !== 0) {
-            mainWith(notImports, imports);
+            mainWith(fileName, notImports, imports);
         }
         else {
-            new Module('main.toy', 'main', notImports).play();
+            new Module(fileName, 'main', notImports).play();
         }        
     }
 
@@ -135,10 +135,10 @@ class Module {
     }
 }
 
-function mainWith(notImports, imports) {
+function mainWith(fileName, notImports, imports) {
     const importerPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
                                     .map(tokenables => {
-                                        return readModuleFile(`${tokenables[0].value}.toy`).then(pathCode => {
+                                        return readModuleFile(fileName, `${tokenables[0].value}.toy`).then(pathCode => {
                                             const path = pathCode[0];
                                             const code = pathCode[1];
                                             const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
@@ -151,15 +151,19 @@ function mainWith(notImports, imports) {
                                     });
         
     Promise.all(importerPromises)
-           .then(importers => new Module('main.toy', 'main', notImports, importers).play())
+           .then(importers => new Module(fileName, 'main', notImports, importers).play())
            .catch(err => environment.output(`${err.message}\n`));
 }
 
-function readModuleFile(fileName) {
+function readModuleFile(src, target) {
     return environment.read(
-        fileName.startsWith('/') ? 
-            `${environment.TOY_MODUEL_PATH}${fileName}` : fileName
+        target.startsWith('/') ? 
+            `${environment.TOY_MODUEL_PATH}${target}` : `${dir(src)}${target}`
     );
+}
+
+function dir(fileName) {
+    return fileName.slice(0, fileName.lastIndexOf('/') + 1);
 }
 
 function tokenizer(code) {

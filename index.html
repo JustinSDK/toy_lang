@@ -502,7 +502,7 @@ println(orz)</code></pre>
                 let code = document.getElementById('code').value;
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
-                Module.main(code);
+                Module.main('/main.toy', code);
             });
         }
 
