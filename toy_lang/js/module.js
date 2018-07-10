@@ -86,8 +86,6 @@ class Module {
     }     
 
     play() {
-        const ast = this.parse();
-
         const context = Context.initialize({
             env : environment, 
             fileName : this.fileName, 
@@ -96,6 +94,7 @@ class Module {
         });
         this.importers.forEach(importer => importer.importTo(context));
 
+        const ast = this.parse();
         return this.eval(context, ast);
     }
 
@@ -111,31 +110,30 @@ class Module {
                 else {
                     ctx.output(`Thrown: ${thrown.value}`);
                 }
-                printStackTrace(this, thrown.stackTraceElements);
+                printStackTrace(thrown.stackTraceElements);
             }
             return ctx;
         }
         catch(e) {
             environment.output(`\n${e}`);
             if(e.strackTraceElements) {
-                printStackTrace(this, e.strackTraceElements);         
+                printStackTrace(e.strackTraceElements);         
             }
             throw e;
         }
     }
-
 }
 
-function tokenizer(tmodule) {
+function tokenizer(module) {
     try {
-        return new Tokenizer(tmodule.code);
+        return new Tokenizer(module.code);
     } catch(e) {
-        tmodule.env.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
+        environment.output(`${e}\n\tat ${e.code} (line:${e.lineNumber})`);
         throw e;
     }
 }
 
-function printStackTrace(tmodule, stackTraceElements) {
+function printStackTrace(stackTraceElements) {
     stackTraceElements.map(elem => `at ${elem.statement} (${elem.fileName}:${elem.lineNumber})`)
-                      .forEach(line => tmodule.env.output(`\n\t${line}`));  
+                      .forEach(line => environment.output(`\n\t${line}`));  
 }
