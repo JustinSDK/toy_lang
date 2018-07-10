@@ -474,15 +474,15 @@ println(orz)</code></pre>
     <script type="module">
         import {Module, ModuleImporter} from './toy_lang/js/module.js';
 
-        function readModule(modulepath) {
-            return fetch(modulepath)
+        function readModule(fileName) {
+            return fetch(fileName)
                         .then(resp => {
                             if(resp.ok) {
                                 return resp.text();
                             }
-                            throw new Error(`GET ${this.modulepath}.toy ${resp.status} (${resp.statusText})`);
+                            throw new Error(`GET ${fileName} ${resp.status} (${resp.statusText})`);
                         })
-                        .then(code => [modulepath, code]);
+                        .then(code => [fileName, code]);
         }
         
         const TOY_MODUEL_PATH = 'toy_lang';
@@ -525,6 +525,9 @@ println(orz)</code></pre>
                                 });
 
                                 new Module(`main.toy`, 'main', notImports, importers).play();
+                           })
+                           .catch(err => {
+                                tty.textContent = err.message;
                            });
                 }
                 else {

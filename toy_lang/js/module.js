@@ -30,10 +30,10 @@ class ModuleImporter {
 let environment;
 
 class Module {
-    constructor(fileName, moduleName, notImportTokenizableLines, importers = []) {
+    constructor(fileName, moduleName, notImports, importers = []) {
         this.fileName = fileName;
         this.moduleName = moduleName;
-        this.notImportTokenizableLines = notImportTokenizableLines;
+        this.notImports = notImports;
         this.importers = importers;
     }
 
@@ -64,14 +64,14 @@ class Module {
 
     static readModule(fileName) {
         return environment.readModule(
-                    fileName.startsWith('/') ? 
-                        `${environment.TOY_MODUEL_PATH}/${fileName}` : fileName
+            fileName.startsWith('/') ? 
+                `${environment.TOY_MODUEL_PATH}${fileName}` : fileName
         );
     }
 
     parse() {
         try {
-            return LINE_PARSER.parse(this.notImportTokenizableLines);
+            return LINE_PARSER.parse(this.notImports);
         } catch(e) {
             environment.output(`${e}\n\tat ${e.code} (${this.fileName}:${e.lineNumber})`);
             throw e;
@@ -79,8 +79,10 @@ class Module {
     }
 
     stmtMap() {
-        return new Map(this.notImportTokenizableLines
-                           .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value]));
+        return new Map(
+            this.notImports
+                .map(tokenizableLine => [tokenizableLine.lineNumber, tokenizableLine.value])
+        );
     }
 
     moduleInstance() {
@@ -89,9 +91,11 @@ class Module {
         const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
     
-        const exportVariables = new Map(Array.from(moduleContext.variables.keys())
-                                             .filter(key => exports.has(key))
-                                             .map(key => [key, moduleContext.variables.get(key)]));
+        const exportVariables = new Map(
+            Array.from(moduleContext.variables.keys())
+                 .filter(key => exports.has(key))
+                 .map(key => [key, moduleContext.variables.get(key)])
+        );
 
         return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
     }     
@@ -105,8 +109,7 @@ class Module {
         });
         this.importers.forEach(importer => importer.importTo(context));
 
-        const ast = this.parse();
-        return this.eval(context, ast);
+        return this.eval(context, this.parse());
     }
 
     eval(context, ast) {
