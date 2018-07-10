@@ -63,15 +63,15 @@ class Module {
         if(imports.length !== 0) {
             const importerPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
                                             .map(tokenables => {
-                                                return readModuleFile(`${tokenables[0].value}.toy`)
-                                                        .then(pathCode => {
-                                                            const path = pathCode[0];
-                                                            const code = pathCode[1];
-                                                            const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
-                                                            return new ModuleImporter(
-                                                                new Module(path, moduleName, tokenizer(code).tokenizableLines())
-                                                            );
-                                                        });
+                                                return readModuleFile(`${tokenables[0].value}.toy`).then(pathCode => {
+                                                    const path = pathCode[0];
+                                                    const code = pathCode[1];
+                                                    const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
+                                                    const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
+                                                    return tokenables.length === 1 ? 
+                                                               new ModuleImporter(module) : 
+                                                               new ModuleImporter(module, 'moduleName', tokenables[1].value);                                                       
+                                                });
                                             });
         
             Promise.all(importerPromises)

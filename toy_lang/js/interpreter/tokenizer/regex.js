@@ -52,7 +52,7 @@ function nestingBrackets(level) {
 
 const NESTED_BRACKETS_REGEX = new RegExp(`\\[(${nestingBrackets(NESTED_BRACKETS_LEVEL)})\\]`);
 
-const IMPORT_REGEX = new RegExp(`^import\\s+${TEXT_REGEX.source}$`);
+const IMPORT_REGEX = new RegExp(`^import\\s+${TEXT_REGEX.source}\\s+as\\s+(${VARIABLE_REGEX.source})$`);
 
 const EXPR_REGEX = orRegexs(
     TERNARY_REGEX,    
