@@ -40,7 +40,7 @@ class Module {
     
     static initialize(env) {
         environment = env;
-        const builtinToy = `${env.STD_MODULE_PATH}/builtin.toy`;
+        const builtinToy = 'toy_lang/lib/builtin.toy';
         return env.readModule(builtinToy)
                     .then(code => new Module(builtinToy, 'builtin`', code))
                     .then(module => module.moduleInstance())
@@ -49,6 +49,10 @@ class Module {
                              .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
                         return moduleInstance;
                     }); 
+    }
+
+    static readModule(fileName) {
+        return environment.readModule(fileName);
     }
 
     parse() {
@@ -118,7 +122,6 @@ class Module {
     }
 
 }
-
 
 function tokenizer(tmodule) {
     try {
