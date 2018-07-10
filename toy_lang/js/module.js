@@ -186,7 +186,7 @@ function notImportTokenizableLines(tokenizableLines) {
 }
 
 function importTokenizableLines(tokenizableLines) {
-    if(tokenizableLines.length === 0 || !tokenizableLines[0].value.startsWith('import')) {
+    if(tokenizableLines.length === 0 || !tokenizableLines[0].value.includes('import')) {
         return [];
     }
     return [tokenizableLines[0]].concat(importTokenizableLines(tokenizableLines.slice(1)));
