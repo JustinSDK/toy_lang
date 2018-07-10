@@ -2,6 +2,10 @@ import {REGEX} from './regex.js'
 export {Tokenizer};
 
 const TOKEN_TESTERS = new Map([
+    ['import', function(input) {
+        const matched = REGEX.get('import').exec(input);
+        return matched ? [matched[1]] : [];
+    }],
     ['text', function(input) {
         const matched = REGEX.get('text').exec(input);
         return matched ? [matched[1]] : [];

@@ -52,6 +52,8 @@ function nestingBrackets(level) {
 
 const NESTED_BRACKETS_REGEX = new RegExp(`\\[(${nestingBrackets(NESTED_BRACKETS_LEVEL)})\\]`);
 
+const IMPORT_REGEX = new RegExp(`^import\\s+${TEXT_REGEX.source}$`);
+
 const EXPR_REGEX = orRegexs(
     TERNARY_REGEX,    
     NESTED_BRACKETS_REGEX,
@@ -109,5 +111,6 @@ const REGEX = new Map([
     ['throw', /^throw\s*(.*)$/],
     ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)],
     ['break', /break/],
-    ['ternary', TERNARY_REGEX]
+    ['ternary', TERNARY_REGEX],
+    ['import', IMPORT_REGEX]
 ]);
