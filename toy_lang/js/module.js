@@ -36,38 +36,50 @@ class Module {
         this.notImports = notImports;
         this.importers = importers;
     }
-
-    static tokenizableLines(code) {
-        return tokenizer(code).tokenizableLines();
-    }
-
-    static notImports(tokenizableLines) {
-        return notImportTokenizableLines(tokenizableLines);
-    }
-
-    static imports(tokenizableLines) {
-        return importTokenizableLines(tokenizableLines);
-    }
     
     static initialize(env) {
         environment = env;
         const builtinToy = 'toy_lang/lib/builtin.toy';
         return env.readModule(builtinToy)
-                    .then(pathCode => new Module(pathCode[0], 'builtin', tokenizer(pathCode[1]).tokenizableLines()))
-                    .then(module => module.moduleInstance())
-                    .then(moduleInstance => {
-                        Array.from(moduleInstance.properties.entries())
-                             .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
-                        return moduleInstance;
-                    })
-                    .catch(err => environment.output(`${err.message}\n`)); 
+                  .then(pathCode => new Module(pathCode[0], 'builtin', tokenizer(pathCode[1]).tokenizableLines()))
+                  .then(module => module.moduleInstance())
+                  .then(moduleInstance => {
+                      Array.from(moduleInstance.properties.entries())
+                           .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
+                      return moduleInstance;
+                  })
+                  .catch(err => environment.output(`${err.message}\n`)); 
     }
 
-    static readModule(fileName) {
-        return environment.readModule(
-            fileName.startsWith('/') ? 
-                `${environment.TOY_MODUEL_PATH}${fileName}` : fileName
-        );
+    static main(code) {
+        const lines = tokenizer(code).tokenizableLines();
+        const notImports = notImportTokenizableLines(lines);
+        const imports = importTokenizableLines(lines);
+
+        if(imports.length !== 0) {
+            const importPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
+                                          .map(tokenables => readModule(`${tokenables[0].value}.toy`));
+        
+            Promise.all(importPromises)
+                   .then(pathCodes => {
+                        const importers = pathCodes.map(pathCode => {
+                            const path = pathCode[0];
+                            const code = pathCode[1];
+                            const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
+                            return new ModuleImporter(
+                                new Module(path, moduleName, tokenizer(code).tokenizableLines())
+                            );
+                        });
+
+                        new Module(`main.toy`, 'main', notImports, importers).play();
+                   })
+                   .catch(err => {
+                        environment.output(`${err.message}\n`);
+                   });
+        }
+        else {
+            new Module(`main.toy`, 'main', notImports).play();
+        }        
     }
 
     parse() {
@@ -137,6 +149,13 @@ class Module {
             throw e;
         }
     }
+}
+
+function readModule(fileName) {
+    return environment.readModule(
+        fileName.startsWith('/') ? 
+            `${environment.TOY_MODUEL_PATH}${fileName}` : fileName
+    );
 }
 
 function tokenizer(code) {

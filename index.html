@@ -472,7 +472,7 @@ println(orz)</code></pre>
         <a href="https://openhome.cc">openhome.cc</a>
     </center>
     <script type="module">
-        import {Module, ModuleImporter} from './toy_lang/js/module.js';
+        import {Module} from './toy_lang/js/module.js';
 
         function readModule(fileName) {
             return fetch(fileName)
@@ -502,34 +502,7 @@ println(orz)</code></pre>
                 let code = document.getElementById('code').value;
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
-
-                const lines = Module.tokenizableLines(code);
-                const notImports = Module.notImports(lines);
-                const imports = Module.imports(lines);
-                const importPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
-                                              .map(tokenables => Module.readModule(`${tokenables[0].value}.toy`));
-                
-                if(importPromises.length !== 0) {
-                    Promise.all(importPromises)
-                           .then(pathCodes => {
-                                const importers = pathCodes.map(pathCode => {
-                                    const path = pathCode[0];
-                                    const code = pathCode[1];
-                                    const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
-                                    return new ModuleImporter(
-                                        new Module(path, moduleName, Module.tokenizableLines(code))
-                                    );
-                                });
-
-                                new Module(`main.toy`, 'main', notImports, importers).play();
-                           })
-                           .catch(err => {
-                                tty.textContent = err.message;
-                           });
-                }
-                else {
-                    new Module(`main.toy`, 'main', notImports).play();
-                }
+                Module.main(code);
             });
         }
 
