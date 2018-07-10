@@ -486,7 +486,7 @@ println(orz)</code></pre>
                                 if(resp.ok) {
                                     return resp.text();
                                 }
-                                throw new Error(`loading failed for ${this.modulepath}: ${resp.status} ${resp.statusText}`);
+                                throw new Error(`GET ${this.modulepath}.toy ${resp.status} (${resp.statusText})`);
                             });
             }
         }
@@ -509,6 +509,9 @@ println(orz)</code></pre>
                          .forEach(entry => BUILTINS.set(entry[0], entry[1]));
 
                     playToy();
+                })
+                .catch(err => {
+                    tty.textContent = err.message;
                 });
 
         function playToy() {

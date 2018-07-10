@@ -1,9 +1,20 @@
+
+import {LINE_PARSER} from './interpreter/line_parser.js';
 import {Tokenizer} from './interpreter/tokenizer/tokenizer.js';        
 import {Context} from './context.js';
-import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
 export {Module, ModuleImporter};
+
+class ToyParser {
+    constructor(environment) {  
+        this.environment = environment;  
+    }
+
+    parse(tokenizer) {
+        return LINE_PARSER.parse(tokenizer.tokenizableLines());
+    }
+}
 
 class ModuleImporter {
     constructor(sourceModule, type = 'default') {
