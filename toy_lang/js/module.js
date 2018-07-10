@@ -112,6 +112,17 @@ class Module {
         }
     }
 
+    static initialize(env) {
+        const builtinToy = `${env.STD_MODULE_PATH}/builtin.toy`;
+        return env.readModule(builtinToy)
+                    .then(code => new Module(env, builtinToy, 'builtin`', code))
+                    .then(module => module.moduleInstance())
+                    .then(moduleInstance => {
+                        Array.from(moduleInstance.properties.entries())
+                            .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
+                        return moduleInstance;
+                    }); 
+    }
 }
 
 function tokenizer(tmodule) {

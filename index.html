@@ -473,46 +473,32 @@ println(orz)</code></pre>
     </center>
     <script type="module">
         import {Module} from './toy_lang/js/module.js';
-        import {BUILTINS} from './toy_lang/js/context.js';
 
-        class ImportReader {
-            constructor(modulepath) {
-                this.modulepath = modulepath;
-            }
-
-            read() {
-                return fetch(this.modulepath)
-                            .then(resp => {
-                                if(resp.ok) {
-                                    return resp.text();
-                                }
-                                throw new Error(`GET ${this.modulepath}.toy ${resp.status} (${resp.statusText})`);
-                            });
-            }
+        function readModule(modulepath) {
+            return fetch(modulepath)
+                        .then(resp => {
+                            if(resp.ok) {
+                                return resp.text();
+                            }
+                            throw new Error(`GET ${this.modulepath}.toy ${resp.status} (${resp.statusText})`);
+                        });
         }
         
+        const STD_MODULE_PATH = 'toy_lang/lib';
+
         const ENVIRONMENT = {
             output(value) {
                 tty.textContent += value;
             },
-            ImportReader : ImportReader
+            STD_MODULE_PATH,
+            readModule
         };
 
-        const STD_MODULE_PATH = 'toy_lang/lib';
-        const builtinToy = `${STD_MODULE_PATH}/builtin.toy`;
-        new ImportReader(builtinToy)
-                .read()
-                .then(code => new Module(ENVIRONMENT, builtinToy, 'builtin`', code))
-                .then(module => module.moduleInstance())
-                .then(moduleInstance => {
-                    Array.from(moduleInstance.properties.entries())
-                         .forEach(entry => BUILTINS.set(entry[0], entry[1]));
-
-                    playToy();
-                })
-                .catch(err => {
+        Module.initialize(ENVIRONMENT)
+              .then(_ => playToy())
+              .catch(err => {
                     tty.textContent = err.message;
-                });
+               });
 
         function playToy() {
             document.getElementById('run').addEventListener('click', _ => {

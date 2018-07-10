@@ -1,8 +1,8 @@
 import {BUILTIN_FUNCTIONS} from './builtin/functions.js';
 import {BUILTIN_CLASSES} from './builtin/classes.js';
-import { Instance } from './interpreter/ast/value.js';
+import {Instance} from './interpreter/ast/value.js';
 
-export {BUILTINS, Context};
+export {Context};
 
 const BUILTINS = new Map(
     Array.from(BUILTIN_FUNCTIONS.entries()).concat(
@@ -191,5 +191,9 @@ class Context {
 
     get notThrown() {
         return this.flowController.notThrown;
+    }
+
+    static addToBuiltins(name, value) {
+        BUILTINS.set(name, value);
     }
 }
