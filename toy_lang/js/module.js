@@ -179,7 +179,7 @@ function notImportTokenizableLines(tokenizableLines) {
     if(tokenizableLines.length === 0) {
         return [];
     }
-    if(tokenizableLines[0].value.startsWith('import')) {
+    if(tokenizableLines[0].value.includes('import')) {
         return notImportTokenizableLines(tokenizableLines.slice(1));
     }
     return tokenizableLines;
