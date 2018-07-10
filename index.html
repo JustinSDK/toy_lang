@@ -472,7 +472,7 @@ println(orz)</code></pre>
         <a href="https://openhome.cc">openhome.cc</a>
     </center>
     <script type="module">
-        import {TModule} from './toy_lang/js/module.js';
+        import {Module} from './toy_lang/js/module.js';
         import {BUILTINS} from './toy_lang/js/context.js';
 
         class ImportReader {
@@ -502,7 +502,7 @@ println(orz)</code></pre>
 
         new ImportReader(`${STD_MODULE_PATH}/builtin.toy`)
                 .read()
-                .then(code => new TModule(ENVIRONMENT, 'builtin`', code))
+                .then(code => new Module(ENVIRONMENT, 'builtin`', code))
                 .then(module => module.moduleInstance())
                 .then(moduleInstance => {
                     Array.from(moduleInstance.properties.entries())
@@ -517,7 +517,7 @@ println(orz)</code></pre>
                 let tty = document.getElementById('tty');
                 tty.textContent = '';
 
-                new TModule(ENVIRONMENT, 'main', code).play();
+                new Module(ENVIRONMENT, 'main', code).play();
             });
         }
 

@@ -3,7 +3,7 @@ import {Context} from './context.js';
 import {ToyParser} from './interpreter/toy_parser.js';
 import {Instance} from './interpreter/ast/value.js';
 
-export {TModule, ModuleImporter};
+export {Module, ModuleImporter};
 
 class ModuleImporter {
     constructor(sourceModule, type = 'default') {
@@ -25,7 +25,7 @@ class ModuleImporter {
     }
 }
 
-class TModule {
+class Module {
     constructor(env, moduleName, code, importers = []) {
         this.env = env;
         this.fileName = moduleName + '.toy';
