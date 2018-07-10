@@ -59,7 +59,8 @@ class Module {
                         Array.from(moduleInstance.properties.entries())
                              .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
                         return moduleInstance;
-                    }); 
+                    })
+                    .catch(err => environment.output(`${err.message}\n`)); 
     }
 
     static readModule(fileName) {

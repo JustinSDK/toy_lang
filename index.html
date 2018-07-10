@@ -495,10 +495,7 @@ println(orz)</code></pre>
         };
 
         Module.initialize(ENVIRONMENT)
-              .then(_ => playToy())
-              .catch(err => {
-                    tty.textContent = err.message;
-               });
+              .then(_ => playToy());
 
         function playToy() {
             document.getElementById('run').addEventListener('click', _ => {
