@@ -7,9 +7,10 @@ import {Instance} from './interpreter/ast/value.js';
 export {Module, ModuleImporter};
 
 class ModuleImporter {
-    constructor(sourceModule, type = 'default') {
+    constructor(sourceModule, type = 'default', nameOrNames) {
         this.sourceModule = sourceModule;
         this.type = type;
+        this.nameOrNames = nameOrNames;
     }
 
     importTo(context) {
@@ -18,6 +19,9 @@ class ModuleImporter {
             case 'all': // from '...' import *
                 Array.from(moduleInstance.properties.entries())
                      .forEach(entry => context.variables.set(entry[0], entry[1]));
+                break;
+            case 'moduleName': // import '...' as name
+                context.variables.set(this.nameOrNames, moduleInstance);
                 break;
             default:   // import '....'
                 context.variables.set(this.sourceModule.moduleName, moduleInstance);
@@ -57,20 +61,21 @@ class Module {
         const imports = importTokenizableLines(lines);
 
         if(imports.length !== 0) {
-            const importPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
-                                          .map(tokenables => readModuleFile(`${tokenables[0].value}.toy`));
+            const importerPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('import'))
+                                            .map(tokenables => {
+                                                return readModuleFile(`${tokenables[0].value}.toy`)
+                                                        .then(pathCode => {
+                                                            const path = pathCode[0];
+                                                            const code = pathCode[1];
+                                                            const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
+                                                            return new ModuleImporter(
+                                                                new Module(path, moduleName, tokenizer(code).tokenizableLines())
+                                                            );
+                                                        });
+                                            });
         
-            Promise.all(importPromises)
-                   .then(pathCodes => {
-                        const importers = pathCodes.map(pathCode => {
-                            const path = pathCode[0];
-                            const code = pathCode[1];
-                            const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
-                            return new ModuleImporter(
-                                new Module(path, moduleName, tokenizer(code).tokenizableLines())
-                            );
-                        });
-
+            Promise.all(importerPromises)
+                   .then(importers => {
                         new Module('main.toy', 'main', notImports, importers).play();
                    })
                    .catch(err => {
