@@ -143,9 +143,10 @@ function mainWith(notImports, imports) {
                                             const code = pathCode[1];
                                             const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
                                             const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-                                            return tokenables.length === 1 ? 
-                                                        new ModuleImporter(module) : 
-                                                        new ModuleImporter(module, 'moduleName', tokenables[1].value);                                                       
+                                            return tokenables[1].value ? 
+                                                        new ModuleImporter(module, 'moduleName', tokenables[1].value) :
+                                                        new ModuleImporter(module);
+                                                                                                               
                                         });
                                     });
         

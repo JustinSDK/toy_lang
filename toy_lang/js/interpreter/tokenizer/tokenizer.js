@@ -4,7 +4,7 @@ export {Tokenizer};
 const TOKEN_TESTERS = new Map([
     ['import', function(input) {
         const matched = REGEX.get('import').exec(input);
-        return matched ? [matched[1], matched[3]] : [];
+        return matched ? [matched[1], matched[4]] : [];
     }],
     ['text', function(input) {
         const matched = REGEX.get('text').exec(input);
