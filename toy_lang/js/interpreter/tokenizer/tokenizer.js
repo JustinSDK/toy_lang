@@ -1,5 +1,10 @@
 import {REGEX} from './regex.js'
+
 export {Tokenizer};
+
+const KEYWORDS = new Set(['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 
+                  'new', 'class', 'this', 'arguments', 'throw', 'try', 'catch', 
+                  'nonlocal', 'switch', 'case', 'default', 'break', 'import', 'as', 'from']);
 
 const TOKEN_TESTERS = new Map([
     ['importAs', function(input) {
@@ -177,10 +182,6 @@ function splitByComma(input, x = '', acc = []) {
         return [];
     }
 }
-
-const KEYWORDS = new Set(['if', 'else', 'while', 'def', 'return', 'and', 'or', 'not', 
-                  'new', 'class', 'this', 'arguments', 'throw', 'try', 'catch', 
-                  'nonlocal', 'switch', 'case', 'default', 'break', 'import', 'as']);
 
 class Tokenable {
     constructor(type, lineNumber, value) {
