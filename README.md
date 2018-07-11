@@ -14,6 +14,19 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 
 # Examples
 
+- Hello World
+
+```python
+# Is a language easier if 'Hello World' is easier?
+
+import '/lib/toy'
+
+println('Hello World')
+println('Hello {0}'.format('World'))
+println(String.format('Hello {0}', 'World'))
+toy.hello()
+```
+
 - Multiplication Table
 
 ```python
