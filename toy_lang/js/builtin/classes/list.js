@@ -88,6 +88,14 @@ ListClass.methods = new Map([
             return context.returned(instance);
         }    
     })],
+    ['concat', func1('concat', {
+        evaluate(context) {
+            const instance = self(context);
+            const arg = PARAM1.evaluate(context);
+            const jsArray = instance.nativeValue().concat(arg.nativeValue());
+            return context.returned(ListClass.newInstance(context, jsArray));
+        }    
+    })],    
     ['add', func1('add', {
         evaluate(context) {
             const instance = self(context);
