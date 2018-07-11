@@ -237,7 +237,7 @@ class Try extends Stmt {
                 pushStackTraceElements(context, tryContext, thrownValue);
             }
         
-            return runCatch(tryContext, this, thrownValue).deleteVariable(this.exceptionVar.name);
+            return runCatch(context, this, thrownValue).deleteVariable(this.exceptionVar.name);
         }
         return context;
     }   
@@ -260,9 +260,9 @@ function pushStackTraceElements(context, tryContext, thrownValue) {
               .forEach(elem => stackTraceElements.push(elem));
 }
 
-function runCatch(tryContext, tryNode, thrownValue) {
+function runCatch(context, tryNode, thrownValue) {
     return tryNode.catchStmt.evaluate(
-        tryContext.emptyThrown().assign(tryNode.exceptionVar.name, thrownValue)
+        context.assign(tryNode.exceptionVar.name, thrownValue)
     );
 }
 
