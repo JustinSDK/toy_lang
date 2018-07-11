@@ -49,7 +49,7 @@ class Module {
         environment = env;
         const builtinToy = 'toy_lang/lib/builtin.toy';
         return env.read(builtinToy)
-                  .then(pathCode => new Module(pathCode[0], 'builtin', tokenizer(pathCode[1]).tokenizableLines()))
+                  .then(([path, code]) => new Module(path, 'builtin', tokenizer(code).tokenizableLines()))
                   .then(module => module.moduleInstance())
                   .then(moduleInstance => {
                       Array.from(moduleInstance.properties.entries())
