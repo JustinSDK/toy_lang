@@ -1,4 +1,4 @@
-exports = ['min', 'max']
+exports = ['min', 'max', 'abs']
 
 def min() {
     return arguments.sort().get(0)
@@ -6,4 +6,8 @@ def min() {
 
 def max() {
     return arguments.sort((n1, n2) -> n2 - n1).get(0)
+}
+
+def abs(n) {
+    return -n if n < 0 else n
 }
