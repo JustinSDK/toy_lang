@@ -52,8 +52,8 @@ function nestingBrackets(level) {
 
 const NESTED_BRACKETS_REGEX = new RegExp(`\\[(${nestingBrackets(NESTED_BRACKETS_LEVEL)})\\]`);
 
-const IMPORT_AS_REGEX = new RegExp(`^import\\s+${TEXT_REGEX.source}(\\s+as\\s+(${VARIABLE_REGEX.source}))?$`);
-const FROM_IMPORT_REGEX = new RegExp(`^from\\s+${TEXT_REGEX.source}(\\s+import\\s+([,\\s*a-zA-Z_0-9]+))?$`);
+const IMPORT_AS_REGEX = new RegExp(`^(import)\\s+${TEXT_REGEX.source}(\\s+as\\s+(${VARIABLE_REGEX.source}))?$`);
+const FROM_IMPORT_REGEX = new RegExp(`^(from)\\s+${TEXT_REGEX.source}(\\s+import\\s+([*a-zA-Z_0-9]+))?$`);
 
 const EXPR_REGEX = orRegexs(
     TERNARY_REGEX,    
@@ -113,5 +113,6 @@ const REGEX = new Map([
     ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)],
     ['break', /break/],
     ['ternary', TERNARY_REGEX],
-    ['importAs', IMPORT_AS_REGEX]
+    ['importAs', IMPORT_AS_REGEX],
+    ['fromImport', FROM_IMPORT_REGEX]
 ]);

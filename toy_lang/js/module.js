@@ -136,17 +136,36 @@ class Module {
 }
 
 function mainWith(fileName, notImports, imports) {
-    const importerPromises = imports.map(tokenizableLine => tokenizableLine.tryTokenables('importAs'))
+    const importerPromises = imports.map(tokenizableLine => {
+                                        const importAs = tokenizableLine.tryTokenables('importAs');
+                                        if(importAs.length !== 0) {
+                                            return importAs;
+                                        }
+                                        return tokenizableLine.tryTokenables('fromImport');
+                                    })
                                     .map(tokenables => {
-                                        return readModuleFile(fileName, `${tokenables[0].value}.toy`).then(pathCode => {
+                                        const start = tokenables[0].value;
+                                        if(start === 'import') {
+                                            return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(pathCode => {
+                                                const path = pathCode[0];
+                                                const code = pathCode[1];
+                                                const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
+                                                const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
+                                                return tokenables[2].value ? 
+                                                            new ModuleImporter(module, 'moduleName', tokenables[2].value) :
+                                                            new ModuleImporter(module);
+                                                                                                                   
+                                            });
+                                        }
+                                        return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(pathCode => {
                                             const path = pathCode[0];
                                             const code = pathCode[1];
                                             const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
                                             const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-                                            return tokenables[1].value ? 
-                                                        new ModuleImporter(module, 'moduleName', tokenables[1].value) :
-                                                        new ModuleImporter(module);
-                                                                                                               
+                                            
+                                            return tokenables[2].value === '*' ? 
+                                                new ModuleImporter(module, 'all', tokenables[2].value) :
+                                                new ModuleImporter(module, 'variableName', tokenables[2].value);
                                         });
                                     });
         
