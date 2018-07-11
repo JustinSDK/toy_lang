@@ -92,11 +92,7 @@ class Module {
     }
 
     moduleInstance() {
-        if(this.instance) {
-            return this.instance;
-        }
-
-        return this.play();
+        return this.instance ? this.instance : this.play();
     }     
 
     play() {
