@@ -62,10 +62,7 @@ class Module {
     static run(fileName, code) {
         const lines = tokenizer(code).tokenizableLines();
         const notImports = notImportTokenizableLines(lines);
-        const imports = importTokenizableLines(lines)
-                           .reduce((acc, line) => 
-                               acc.some(ln => ln.value === line.value) ? acc : acc.concat([line]), []
-                            );
+        const imports = importTokenizableLines(lines);
 
         if(imports.length !== 0) {
             runWith(fileName, notImports, imports);
@@ -159,15 +156,23 @@ function runWith(fileName, notImports, imports) {
 
                     if(modules.has(importedModuleFile)) {
                         const module = modules.get(importedModuleFile);
-                        return new Promise(
-                            resolve => resolve(createModuleImporter(start, module, tokenables[2].value))
-                        );  
+                        return new Promise(resolve => {
+                            setTimeout(function check() {
+                                if(module.notImports !== null) {
+                                    resolve(resolve(createModuleImporter(start, module, tokenables[2].value)));
+                                } else {
+                                    setTimeout(check, 50);
+                                }
+                            }, 50);
+                        });  
                     }
 
+                    const moduleName = moduleNameFrom(importedModuleFile);
+                    modules.set(importedModuleFile, new Module(importedModuleFile, moduleName, null));
+
                     return environment.read(importedModuleFile).then(([path, code]) => {
-                        const moduleName = moduleNameFrom(path);
-                        const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-                        modules.set(path, module);
+                        const module = modules.get(path);
+                        module.notImports = tokenizer(code).tokenizableLines();
                         return createModuleImporter(start, module, tokenables[2].value);                                                                                         
                     });
                 });
