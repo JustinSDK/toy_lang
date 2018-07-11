@@ -66,8 +66,8 @@ class Module {
 
         if(imports.length !== 0) {
             Promise.all(importPromises(fileName, imports))
-                .then(importers => new Module(fileName, moduleNameFrom(fileName), notImports, importers).play())
-                .catch(err => environment.output(`${err.message}\n`));
+                   .then(importers => new Module(fileName, moduleNameFrom(fileName), notImports, importers).play())
+                   .catch(err => environment.output(`${err.message}\n`));
         }
         else {
             new Module(fileName, moduleNameFrom(fileName), notImports).play();
