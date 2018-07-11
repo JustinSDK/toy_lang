@@ -144,54 +144,59 @@ class Module {
 }
 
 function importPromises(fileName, imports) {
-    return imports
-                .map(tokenizableLine => {
-                    const tokenables = tokenizableLine.tryTokenables('importAs');
-                    if(tokenables.length !== 0) {
-                        return tokenables;
-                    }
-                    return tokenizableLine.tryTokenables('fromImport');
-                })
-                .map(tokenables => {
-                    const start = tokenables[0].value;
-                    const importedModuleFile = moduleFilePath(fileName, `${tokenables[1].value}.toy`);
+    return imports.map(tokenizableLine => {
+                      const tokenables = tokenizableLine.tryTokenables('importAs');
+                      return tokenables.length !== 0 ? tokenables :  tokenizableLine.tryTokenables('fromImport');
+                  })
+                  .map(tokenables => {
+                      const start = tokenables[0].value;
+                      const modulePath = tokenables[1].value;
+                      const maybeName = tokenables[2].value;
+                      const importedModuleFile = moduleFilePath(fileName, `${modulePath}.toy`);
 
-                    if(modules.has(importedModuleFile)) {
-                        const module = modules.get(importedModuleFile);
-                        return new Promise(resolve => {
-                            setTimeout(function check() {
-                                if(module.notImports !== null) {
-                                    resolve(resolve(createModuleImporter(start, module, tokenables[2].value)));
-                                } else {
-                                    setTimeout(check, 50);
-                                }
-                            }, 50);
-                        });  
-                    }
+                      if(modules.has(importedModuleFile)) {
+                          return checkModule(modules, importedModuleFile, start, maybeName);
+                      }
+                      return loadModule(modules, importedModuleFile, start, maybeName);
+                  });
+}
 
-                    const moduleName = moduleNameFrom(importedModuleFile);
-                    modules.set(importedModuleFile, new Module(importedModuleFile, moduleName, null));
+function checkModule(modules, importedModuleFile, start, maybeName) {
+    const module = modules.get(importedModuleFile);
+    return new Promise(resolve => {
+        setTimeout(function check() {
+            if(module.notImports !== null) { // module loaded
+                resolve(resolve(createModuleImporter(start, module, maybeName)));
+            } else {
+                setTimeout(check, 50);
+            }
+        }, 50);
+    });  
+}
 
-                    return environment.read(importedModuleFile).then(([path, code]) => {
-                        const lines = tokenizer(code).tokenizableLines();
-                        const notImports = notImportTokenizableLines(lines);
-                        const imports = importTokenizableLines(lines);
-                
-                        const module = modules.get(path);
-                        module.notImports = notImports;
+function loadModule(modules, importedModuleFile, start, maybeName) {
+    const moduleName = moduleNameFrom(importedModuleFile);
+    modules.set(importedModuleFile, new Module(importedModuleFile, moduleName, null));
 
-                        if(imports.length !== 0) {
-                            return Promise.all(importPromises(path, imports))
-                                          .then(importers => {
-                                               module.importers = importers;
-                                               return createModuleImporter(start, module, tokenables[2].value);   
-                                          })
-                                          .catch(err => environment.output(`${err.message}\n`));
-                        }                      
-                        
-                        return createModuleImporter(start, module, tokenables[2].value);                                                                                         
-                    });
-                });
+    return environment.read(importedModuleFile).then(([path, code]) => {
+        const lines = tokenizer(code).tokenizableLines();
+        const notImports = notImportTokenizableLines(lines);
+        const imports = importTokenizableLines(lines);
+        const module = modules.get(path);
+
+        if(imports.length !== 0) {
+            return Promise.all(importPromises(path, imports))
+                          .then(importers => {
+                               module.notImports = notImports;
+                               module.importers = importers;
+                               return createModuleImporter(start, module, maybeName);   
+                          })
+                          .catch(err => environment.output(`${err.message}\n`));
+        }                      
+        
+        module.notImports = notImports;
+        return createModuleImporter(start, module, maybeName);                                                                                         
+    });    
 }
 
 function moduleNameFrom(path) {
