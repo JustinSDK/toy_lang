@@ -148,9 +148,7 @@ function mainWith(fileName, notImports, imports) {
                                     })
                                     .map(tokenables => {
                                         const start = tokenables[0].value;
-                                        return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(pathCode => {
-                                            const path = pathCode[0];
-                                            const code = pathCode[1];
+                                        return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(([path, code]) => {
                                             const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
                                             const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
 
