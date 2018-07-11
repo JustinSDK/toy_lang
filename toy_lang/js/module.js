@@ -174,9 +174,20 @@ function importPromises(fileName, imports) {
 
                     return environment.read(importedModuleFile).then(([path, code]) => {
                         const lines = tokenizer(code).tokenizableLines();
-
+                        const notImports = notImportTokenizableLines(lines);
+                        const imports = importTokenizableLines(lines);
+                
                         const module = modules.get(path);
-                        module.notImports = lines;
+                        module.notImports = notImports;
+
+                        if(imports.length !== 0) {
+                            return Promise.all(importPromises(path, imports))
+                                          .then(importers => {
+                                               module.importers = importers;
+                                               return createModuleImporter(start, module, tokenables[2].value);   
+                                          })
+                                          .catch(err => environment.output(`${err.message}\n`));
+                        }                      
                         
                         return createModuleImporter(start, module, tokenables[2].value);                                                                                         
                     });
