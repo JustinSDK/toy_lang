@@ -164,6 +164,29 @@ ListClass.methods = new Map([
             );
         }    
     })],
+    ['reduce', func2('reduce', {
+        evaluate(context) {
+            const arr = self(context).nativeValue();
+            const fNode = PARAM1.evaluate(context).internalNode;
+            const init = PARAM2.evaluate(context);
+            try {
+                return context.returned(
+                    Array.prototype['reduce'].call(arr, 
+                        (acc, elem) => fNode.call(context, [acc, elem]).either(
+                            leftContext => {
+                                throw leftContext;
+                            }, 
+                            rightContext => rightContext.returnedValue
+                        ),
+                        init
+                    )
+                );
+            }
+            catch(leftContext) {
+                return leftContext;
+            }
+        }    
+    })],
     ['forEach', func1('forEach', {
         evaluate(context) {
             return ListClass.arrayCall(context, 'forEach', 
