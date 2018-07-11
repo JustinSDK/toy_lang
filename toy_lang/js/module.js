@@ -33,6 +33,7 @@ class ModuleImporter {
     }
 }
 
+const modules = new Map();
 
 let environment;
 
@@ -61,7 +62,10 @@ class Module {
     static main(fileName, code) {
         const lines = tokenizer(code).tokenizableLines();
         const notImports = notImportTokenizableLines(lines);
-        const imports = importTokenizableLines(lines);
+        const imports = importTokenizableLines(lines)
+                           .reduce((acc, line) => 
+                               acc.some(ln => ln.value === line.value) ? acc : acc.concat([line]), []
+                            );
 
         if(imports.length !== 0) {
             mainWith(fileName, notImports, imports);
@@ -88,6 +92,10 @@ class Module {
     }
 
     moduleInstance() {
+        if(this.instance) {
+            return this.instance;
+        }
+
         const moduleContext = this.play();
         const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
@@ -97,7 +105,8 @@ class Module {
                  .map(key => [key, moduleContext.variables.get(key)])
         );
 
-        return new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
+        this.instance = new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
+        return this.instance;
     }     
 
     play() {
@@ -148,18 +157,20 @@ function mainWith(fileName, notImports, imports) {
                                     })
                                     .map(tokenables => {
                                         const start = tokenables[0].value;
-                                        return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(([path, code]) => {
+                                        const importedModuleFile = moduleFilePath(fileName, `${tokenables[1].value}.toy`);
+
+                                        if(modules.has(importedModuleFile)) {
+                                            const module = modules.get(importedModuleFile);
+                                            return new Promise(
+                                                resolve => resolve(createModuleImporter(start, module, tokenables[2].value))
+                                            );  
+                                        }
+
+                                        return environment.read(importedModuleFile).then(([path, code]) => {
                                             const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
                                             const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-
-                                            if(start === 'import') {
-                                                return tokenables[2].value ? 
-                                                            new ModuleImporter(module, 'moduleName', tokenables[2].value) :
-                                                            new ModuleImporter(module);
-                                            }
-                                            return tokenables[2].value === '*' ? 
-                                                        new ModuleImporter(module, 'all') :
-                                                        new ModuleImporter(module, 'variableName', tokenables[2].value);                                                                                           
+                                            modules.set(path, module);
+                                            return createModuleImporter(start, module, tokenables[2].value);                                                                                         
                                         });
                                     });
         
@@ -168,11 +179,18 @@ function mainWith(fileName, notImports, imports) {
            .catch(err => environment.output(`${err.message}\n`));
 }
 
-function readModuleFile(src, target) {
-    return environment.read(
-        target.startsWith('/') ? 
-            `${environment.TOY_MODUEL_PATH}${target}` : `${dir(src)}${target}`
-    );
+function createModuleImporter(start, module, name) {
+    if(start === 'import') {
+        return name ? new ModuleImporter(module, 'moduleName', name) :
+                      new ModuleImporter(module);
+    }
+    return name === '*' ? new ModuleImporter(module, 'all') :
+                          new ModuleImporter(module, 'variableName', name);      
+}
+
+function moduleFilePath(src, target) {
+    return target.startsWith('/') ? 
+               `${environment.TOY_MODUEL_PATH}${target}` : `${dir(src)}${target}`;
 }
 
 function dir(fileName) {
