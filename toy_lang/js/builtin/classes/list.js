@@ -253,7 +253,7 @@ ListClass.methods = new Map([
             const arr = self(context).nativeValue();
             return context.returned(
                 new Primitive(
-                    arr.map(elem => elem.toString(context)).join()
+                    '[' + arr.map(elem => elem.toString(context)).join() + ']'
                 )
             );
         }    
