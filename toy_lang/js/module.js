@@ -7,23 +7,26 @@ import {Instance} from './interpreter/ast/value.js';
 export {Module, ModuleImporter};
 
 class ModuleImporter {
-    constructor(sourceModule, type = 'default', nameOrNames) {
+    constructor(sourceModule, type = 'default', name) {
         this.sourceModule = sourceModule;
         this.type = type;
-        this.nameOrNames = nameOrNames;
+        this.name = name;
     }
 
     importTo(context) {
         const moduleInstance = this.sourceModule.moduleInstance();
         switch(this.type) {
-            case 'all': // from '...' import *
+            case 'variableName':   // from '...' import foo
+                context.variables.set(this.name, moduleInstance.properties.get(this.name));
+                break;
+            case 'all':            // from '...' import *
                 Array.from(moduleInstance.properties.entries())
                      .forEach(entry => context.variables.set(entry[0], entry[1]));
                 break;
-            case 'moduleName': // import '...' as name
-                context.variables.set(this.nameOrNames, moduleInstance);
+            case 'moduleName':     // import '...' as name
+                context.variables.set(this.name, moduleInstance);
                 break;
-            default:   // import '....'
+            default:               // import '....'
                 context.variables.set(this.sourceModule.moduleName, moduleInstance);
                 break;
         }
@@ -137,35 +140,28 @@ class Module {
 
 function mainWith(fileName, notImports, imports) {
     const importerPromises = imports.map(tokenizableLine => {
-                                        const importAs = tokenizableLine.tryTokenables('importAs');
-                                        if(importAs.length !== 0) {
-                                            return importAs;
+                                        const tokenables = tokenizableLine.tryTokenables('importAs');
+                                        if(tokenables.length !== 0) {
+                                            return tokenables;
                                         }
                                         return tokenizableLine.tryTokenables('fromImport');
                                     })
                                     .map(tokenables => {
                                         const start = tokenables[0].value;
-                                        if(start === 'import') {
-                                            return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(pathCode => {
-                                                const path = pathCode[0];
-                                                const code = pathCode[1];
-                                                const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
-                                                const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-                                                return tokenables[2].value ? 
-                                                            new ModuleImporter(module, 'moduleName', tokenables[2].value) :
-                                                            new ModuleImporter(module);
-                                                                                                                   
-                                            });
-                                        }
                                         return readModuleFile(fileName, `${tokenables[1].value}.toy`).then(pathCode => {
                                             const path = pathCode[0];
                                             const code = pathCode[1];
                                             const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
                                             const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-                                            
+
+                                            if(start === 'import') {
+                                                return tokenables[2].value ? 
+                                                            new ModuleImporter(module, 'moduleName', tokenables[2].value) :
+                                                            new ModuleImporter(module);
+                                            }
                                             return tokenables[2].value === '*' ? 
-                                                new ModuleImporter(module, 'all', tokenables[2].value) :
-                                                new ModuleImporter(module, 'variableName', tokenables[2].value);
+                                                        new ModuleImporter(module, 'all') :
+                                                        new ModuleImporter(module, 'variableName', tokenables[2].value);                                                                                           
                                         });
                                     });
         
