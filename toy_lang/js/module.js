@@ -68,10 +68,10 @@ class Module {
                             );
 
         if(imports.length !== 0) {
-            mainWith(fileName, notImports, imports);
+            runWith(fileName, notImports, imports);
         }
         else {
-            new Module(fileName, 'main', notImports).play();
+            new Module(fileName, moduleNameFrom(fileName), notImports).play();
         }        
     }
 
@@ -96,17 +96,7 @@ class Module {
             return this.instance;
         }
 
-        const moduleContext = this.play();
-        const exportsValue = moduleContext.variables.get('exports');
-        const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
-        const exportVariables = new Map(
-            Array.from(moduleContext.variables.keys())
-                 .filter(key => exports.has(key))
-                 .map(key => [key, moduleContext.variables.get(key)])
-        );
-
-        this.instance = new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
-        return this.instance;
+        return this.play();
     }     
 
     play() {
@@ -118,7 +108,17 @@ class Module {
         });
         this.importers.forEach(importer => importer.importTo(context));
 
-        return this.eval(context, this.parse());
+        const moduleContext = this.eval(context, this.parse());
+        const exportsValue = moduleContext.variables.get('exports');
+        const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
+        const exportVariables = new Map(
+            Array.from(moduleContext.variables.keys())
+                 .filter(key => exports.has(key))
+                 .map(key => [key, moduleContext.variables.get(key)])
+        );
+
+        this.instance = new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
+        return this.instance;
     }
 
     eval(context, ast) {
@@ -147,7 +147,7 @@ class Module {
     }
 }
 
-function mainWith(fileName, notImports, imports) {
+function runWith(fileName, notImports, imports) {
     const importerPromises = 
          imports.map(tokenizableLine => {
                     const tokenables = tokenizableLine.tryTokenables('importAs');
@@ -168,7 +168,7 @@ function mainWith(fileName, notImports, imports) {
                     }
 
                     return environment.read(importedModuleFile).then(([path, code]) => {
-                        const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
+                        const moduleName = moduleNameFrom(path);
                         const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
                         modules.set(path, module);
                         return createModuleImporter(start, module, tokenables[2].value);                                                                                         
@@ -176,8 +176,12 @@ function mainWith(fileName, notImports, imports) {
                 });
         
     Promise.all(importerPromises)
-           .then(importers => new Module(fileName, 'main', notImports, importers).play())
+           .then(importers => new Module(fileName, moduleNameFrom(fileName), notImports, importers).play())
            .catch(err => environment.output(`${err.message}\n`));
+}
+
+function moduleNameFrom(path) {
+    return path.replace('.toy', '').split('/').slice(-1)[0];
 }
 
 function createModuleImporter(start, module, name) {
