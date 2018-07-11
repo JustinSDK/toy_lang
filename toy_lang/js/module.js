@@ -59,7 +59,7 @@ class Module {
                   .catch(err => environment.output(`${err.message}\n`)); 
     }
 
-    static main(fileName, code) {
+    static run(fileName, code) {
         const lines = tokenizer(code).tokenizableLines();
         const notImports = notImportTokenizableLines(lines);
         const imports = importTokenizableLines(lines)
@@ -100,14 +100,10 @@ class Module {
     }     
 
     play() {
-        const context = Context.initialize({
-            env : environment, 
-            fileName : this.fileName, 
-            moduleName : this.moduleName,
-            lines : this.lines()
-        });
+        const context = Context.initialize(environment, this);
         this.importers.forEach(importer => importer.importTo(context));
 
+        // run module itself
         const moduleContext = this.eval(context, this.parse());
         const exportsValue = moduleContext.variables.get('exports');
         const exports = new Set(exportsValue ? exportsValue.nativeValue().map(p => p.value) : []);
@@ -117,7 +113,11 @@ class Module {
                  .map(key => [key, moduleContext.variables.get(key)])
         );
 
-        this.instance = new Instance(moduleContext.lookUpVariable('Module'), exportVariables, this);
+        // exports
+        const instance = moduleContext.variables.get(this.moduleName);
+        instance.properties = exportVariables;
+
+        this.instance = instance;
         return this.instance;
     }
 
@@ -134,6 +134,7 @@ class Module {
                     ctx.output(`Thrown: ${thrown.value}`);
                 }
                 printStackTrace(thrown.stackTraceElements);
+                return context;
             }
             return ctx;
         }

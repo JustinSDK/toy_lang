@@ -83,16 +83,16 @@ class Context {
         this.flowController = flowController || defaultFlowConrtoller;
     }
 
-    static initialize({env, fileName, moduleName, lines}) {
+    static initialize(env, module) {
         const context = new Context({
-            fileName : fileName,
-            lines : lines,
+            fileName : module.fileName,
+            lines : module.lines(),
             output : env.output,
             variables : new Map(BUILTINS)
         });
 
-        const moduleInstance = new Instance(BUILTINS.get('Module'), context.variables, context);
-        context.variables.set(moduleName, moduleInstance);
+        const moduleInstance = new Instance(BUILTINS.get('Module'), context.variables, module);
+        context.variables.set(module.moduleName, moduleInstance);
 
         return context;
     }
