@@ -1,0 +1,39 @@
+from '/lib/math' import abs
+
+def queenss(n) {
+    def placeQueens(k) {
+       if k == 0 {
+           return [[]]
+       }
+
+       def collect(queens, collector) {
+           (range(1, n + 1).filter(column -> isSafe([k, column], queens))
+                           .map(column -> queens.concat([[k, column]]))
+                           .forEach(qs -> collector.add(qs)))
+       }       
+
+       collector = []
+       placeQueens(k - 1).forEach(queens -> collect(queens, collector))
+
+       return collector
+    }
+
+    return placeQueens(n)
+}
+
+def isSafe(queen, queens) {
+    return queens.all(q -> not inCheck(queen, q))
+}
+
+def inCheck(q1, q2) {
+    (return q1.get(0) == q2.get(0) or 
+            q1.get(1) == q2.get(1) or 
+            abs(q1.get(0) - q2.get(0)) == abs(q1.get(1) - q2.get(1))) 
+}
+
+def printQS(qs) {
+    qs.forEach(print)
+    println()
+}
+
+queenss(8).forEach(printQS)
