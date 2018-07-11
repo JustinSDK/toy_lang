@@ -148,31 +148,32 @@ class Module {
 }
 
 function mainWith(fileName, notImports, imports) {
-    const importerPromises = imports.map(tokenizableLine => {
-                                        const tokenables = tokenizableLine.tryTokenables('importAs');
-                                        if(tokenables.length !== 0) {
-                                            return tokenables;
-                                        }
-                                        return tokenizableLine.tryTokenables('fromImport');
-                                    })
-                                    .map(tokenables => {
-                                        const start = tokenables[0].value;
-                                        const importedModuleFile = moduleFilePath(fileName, `${tokenables[1].value}.toy`);
+    const importerPromises = 
+         imports.map(tokenizableLine => {
+                    const tokenables = tokenizableLine.tryTokenables('importAs');
+                    if(tokenables.length !== 0) {
+                        return tokenables;
+                    }
+                    return tokenizableLine.tryTokenables('fromImport');
+                })
+                .map(tokenables => {
+                    const start = tokenables[0].value;
+                    const importedModuleFile = moduleFilePath(fileName, `${tokenables[1].value}.toy`);
 
-                                        if(modules.has(importedModuleFile)) {
-                                            const module = modules.get(importedModuleFile);
-                                            return new Promise(
-                                                resolve => resolve(createModuleImporter(start, module, tokenables[2].value))
-                                            );  
-                                        }
+                    if(modules.has(importedModuleFile)) {
+                        const module = modules.get(importedModuleFile);
+                        return new Promise(
+                            resolve => resolve(createModuleImporter(start, module, tokenables[2].value))
+                        );  
+                    }
 
-                                        return environment.read(importedModuleFile).then(([path, code]) => {
-                                            const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
-                                            const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
-                                            modules.set(path, module);
-                                            return createModuleImporter(start, module, tokenables[2].value);                                                                                         
-                                        });
-                                    });
+                    return environment.read(importedModuleFile).then(([path, code]) => {
+                        const moduleName = path.replace('.toy', '').split('/').slice(-1)[0];
+                        const module = new Module(path, moduleName, tokenizer(code).tokenizableLines());
+                        modules.set(path, module);
+                        return createModuleImporter(start, module, tokenables[2].value);                                                                                         
+                    });
+                });
         
     Promise.all(importerPromises)
            .then(importers => new Module(fileName, 'main', notImports, importers).play())
