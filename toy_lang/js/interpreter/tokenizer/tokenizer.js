@@ -175,12 +175,27 @@ function splitByComma(input, x = '', acc = []) {
             return splitByComma(input.slice(token.length).trim(), '', acc.concat([x]));
         }  
         else {
+            if(REGEX.get('lambda').exec(token)) {
+                const arrowIdx = token.indexOf('->');
+                const lambda = token.substring(0, arrowIdx) + '->' +  lambdaBody(token.substring(arrowIdx + 2));
+                return splitByComma(input.slice(lambda.length).trim(), x + lambda + ' ', acc);
+            }
             return splitByComma(input.slice(token.length).trim(), x + token + ' ', acc);
         }
     }
     else {
         return [];
     }
+}
+
+function lambdaBody(input, body = '') {
+    const trimStarted = input.trimStart();
+    const space = ' '.repeat(input.length - trimStarted.length);
+    const matched = REGEX.get('expression').exec(trimStarted);
+    if(matched) {
+        return lambdaBody(trimStarted.substring(matched[0].length), body + space + matched[0]);
+    }
+    return body;
 }
 
 class Tokenable {
