@@ -6,16 +6,15 @@ def queenss(n) {
            return [[]]
        }
 
-       def collect(queens, collector) {
-           (range(1, n + 1).filter(column -> isSafe([k, column], queens))
-                           .map(column -> queens.concat([[k, column]]))
-                           .forEach(qs -> collector.add(qs)))
+       def collect(queens) {
+           addQs = (acc, qs) -> acc.concat([qs])
+           (return range(1, n + 1).filter(column -> isSafe([k, column], queens))
+                                  .map(column -> queens.concat([[k, column]]))
+                                  .reduce(addQs, []))
        }       
 
-       collector = []
-       placeQueens(k - 1).forEach(queens -> collect(queens, collector))
-
-       return collector
+       addQueens = (acc, queens) -> acc.concat(collect(queens))
+       return placeQueens(k - 1).reduce(addQueens, [])
     }
 
     return placeQueens(n)
