@@ -173,8 +173,16 @@ function splitByComma(input, x = '', acc = []) {
         const token = matched[1];
         if(token === ',') {
             return splitByComma(input.slice(token.length).trim(), '', acc.concat([x]));
-        } 
+        }  
         else {
+            if(token.includes('->')) {
+                const idx = token.indexOf('->');
+                const lambdaBody = token.substring(idx + 2).trim();
+                if(lambdaBody.includes(',') && !lambdaBody.includes('(')) {
+                    const lambda = token.substring(0, idx + 2) + lambdaBody.substring(0, lambdaBody.indexOf(','));
+                    return splitByComma(input.slice(lambda.length).trim(), x + token + ' ', acc);
+                }
+            }
             return splitByComma(input.slice(token.length).trim(), x + token + ' ', acc);
         }
     }
