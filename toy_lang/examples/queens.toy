@@ -7,14 +7,14 @@ def queenss(n) {
        }
 
        def collect(queens) {
-           addQs = (acc, qs) -> acc.concat([qs])
+           collectQs = (acc, qs) -> acc.concat([qs])
            (return range(1, n + 1).filter(column -> isSafe([k, column], queens))
                                   .map(column -> queens.concat([[k, column]]))
-                                  .reduce(addQs, []))
+                                  .reduce(collectQs, []))
        }       
 
-       addQueens = (acc, queens) -> acc.concat(collect(queens))
-       return placeQueens(k - 1).reduce(addQueens, [])
+       collectQueens = (acc, queens) -> acc.concat(collect(queens))
+       return placeQueens(k - 1).reduce(collectQueens, [])
     }
 
     return placeQueens(n)
