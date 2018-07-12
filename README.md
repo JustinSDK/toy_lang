@@ -12,7 +12,7 @@ Toy lang was started from a [gist](https://gist.github.com/JustinSDK/9c38136b901
 
 [Play It](https://openhome.cc/Gossip/Computation/toy_lang/)
 
-# Examples
+# Examples ([More examples](https://github.com/JustinSDK/toy_lang/tree/master/toy_lang/examples))
 
 - Hello World
 
