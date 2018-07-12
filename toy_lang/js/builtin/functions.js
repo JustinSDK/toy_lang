@@ -1,14 +1,12 @@
-import {Null, Primitive, Instance, Void, MethodCall} from './export.js';
+import {Null, Primitive, Instance, Void} from './export.js';
 
-import {PARAM1, PARAM2, func1, func2, func3, format} from './bases/func_bases.js';
+import {PARAM1, PARAM2, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 
 export {BUILTIN_FUNCTIONS};
 
 function print(context, v) {
-    const desc = v.hasProperty && v.hasProperty(context, 'toString') ?
-                     new MethodCall(v, 'toString').evaluate(context) : v;
-    context.output(desc.toString());
+    context.output(valueToString(context, v));
 }
 
 const Print = func1('print', {

@@ -1,7 +1,7 @@
 import {Native, Primitive, Void, Null, newInstance} from '../export.js';
 
 import {PARAM1, PARAM2, PARAM3, PARAM_LT1, PARAM_LT2, PARAM_LT3} from '../bases/func_bases.js';
-import {func0, func1, func2, func3} from '../bases/func_bases.js';
+import {func0, func1, func2, func3, valueToString} from '../bases/func_bases.js';
 import {methodPrimitive, methodVoid, methodSelf, methodNewSameType, self} from '../bases/class_bases.js';
 
 export {ListClass};
@@ -274,11 +274,8 @@ ListClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
             const arr = self(context).nativeValue();
-            return context.returned(
-                new Primitive(
-                    '[' + arr.map(elem => elem.toString(context)).join() + ']'
-                )
-            );
+            const toStr = arr.map(elem => valueToString(context, elem)).join();
+            return context.returned(new Primitive(`[${toStr}]`));
         }    
     })]
 ]);

@@ -1,8 +1,8 @@
-import {Func, Variable} from '../export.js';
+import {Func, Variable, MethodCall} from '../export.js';
 
 export {PARAM1, PARAM2, PARAM3, PARAM_LT0, PARAM_LT1, PARAM_LT2, PARAM_LT3};
 export {func, func0, func1, func2, func3};
-export {format};
+export {format, valueToString};
 
 const PARAM1 = Variable.of('p1');
 const PARAM2 = Variable.of('p2');
@@ -39,3 +39,10 @@ function format(template) {
         return typeof args[number] != 'undefined' ? args[number] : match;
     });
 }
+
+function valueToString(context, v) {
+    const desc = v.hasProperty && v.hasProperty(context, 'toString') ?
+                       new MethodCall(v, 'toString').evaluate(context) : v;
+    return desc.toString();
+}
+
