@@ -1,4 +1,4 @@
-exports = ['min', 'max', 'abs']
+exports = ['min', 'max', 'abs', 'sum']
 
 def min() {
     return arguments.sort().get(0)
@@ -10,4 +10,9 @@ def max() {
 
 def abs(n) {
     return -n if n < 0 else n
+}
+
+def sum(numbers) {
+    nums = numbers if isInstance(numbers, List) else arguments 
+    return nums.reduce((acc, n) -> acc + n, 0)
 }
