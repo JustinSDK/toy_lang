@@ -180,7 +180,7 @@ function splitByComma(input, x = '', acc = []) {
                 const lambdaBody = token.substring(idx + 2).trim();
                 if(lambdaBody.includes(',') && !lambdaBody.includes('(')) {
                     const lambda = token.substring(0, idx + 2) + lambdaBody.substring(0, lambdaBody.indexOf(','));
-                    return splitByComma(input.slice(lambda.length).trim(), x + token + ' ', acc);
+                    return splitByComma(input.slice(lambda.length + 1).trim(), x + lambda + ' ', acc);
                 }
             }
             return splitByComma(input.slice(token.length).trim(), x + token + ' ', acc);
