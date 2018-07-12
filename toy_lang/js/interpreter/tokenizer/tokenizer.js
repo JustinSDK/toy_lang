@@ -171,21 +171,21 @@ function splitByComma(input, x = '', acc = []) {
     const matched = REGEX.get('commaSeperated').exec(input);
     if(matched) {
         const token = matched[1];
-        if(token === ',') {
-            return splitByComma(input.slice(token.length).trim(), '', acc.concat([x]));
-        }  
-        else {
-            if(REGEX.get('lambda').exec(token)) {
-                const arrowIdx = token.indexOf('->');
-                const lambda = token.substring(0, arrowIdx) + '->' +  lambdaBody(token.substring(arrowIdx + 2));
-                return splitByComma(input.slice(lambda.length).trim(), x + lambda + ' ', acc);
-            }
-            return splitByComma(input.slice(token.length).trim(), x + token + ' ', acc);
-        }
+        return token === ',' ? splitByComma(input.slice(token.length).trim(), '', acc.concat([x])) :
+                               tokenBetweenComma(token, input, x, acc);
     }
     else {
         return [];
     }
+}
+
+function tokenBetweenComma(token, input, x, acc) {
+    if(REGEX.get('lambda').exec(token)) {
+        const arrowIdx = token.indexOf('->');
+        const lambda = token.substring(0, arrowIdx) + '->' +  lambdaBody(token.substring(arrowIdx + 2));
+        return splitByComma(input.slice(lambda.length).trim(), x + lambda + ' ', acc);
+    }
+    return splitByComma(input.slice(token.length).trim(), x + token + ' ', acc);
 }
 
 function lambdaBody(input, body = '') {
