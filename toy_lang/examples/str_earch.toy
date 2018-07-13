@@ -1,0 +1,32 @@
+SKIP_TABLE_SIZE = 256
+
+def table(skip, key) { 
+    n = key.length()
+    range(0, SKIP_TABLE_SIZE).forEach(k -> skip.set(k, n))
+    range(0, n - 1).forEach(k -> skip.set(key.charCodeAt(k), n - k - 1))
+} 
+
+def indexOf(skip, from, text, key) { 
+    index = from
+    while index < text.length() {
+        if text.substring(index - key.length() + 1, index + 1) == key {
+            return index - key.length() + 1
+        }
+        index += skip.get(text.charCodeAt(index))
+    }
+    return -1 
+} 
+
+text = input('字串：')
+key = input('關鍵字：')
+
+skip = range(0, SKIP_TABLE_SIZE)
+table(skip, key)
+
+p = indexOf(skip, key.length() - 1, text, key)
+while p != -1 {
+    println(text.substring(p, text.length()))
+    p = indexOf(skip, p + key.length() + 1, text, key)
+}
+    
+    
