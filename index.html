@@ -478,18 +478,8 @@ println(orz)</code></pre>
     <script type="module">
         import {Module} from './toy_lang/js/module.js';
 
-        function readFile(fileName) {
-            return fetch(fileName)
-                        .then(resp => {
-                            if(resp.ok) {
-                                return resp.text();
-                            }
-                            throw new Error(`GET ${fileName} ${resp.status} (${resp.statusText})`);
-                        })
-                        .then(code => [fileName, code]);
-        }
-        
         const TOY_MODUEL_PATH = 'toy_lang';
+        
         const ENVIRONMENT = {
             input(message) {
                 return prompt(message, '');
@@ -498,7 +488,16 @@ println(orz)</code></pre>
                 tty.textContent += value;
             },
             TOY_MODUEL_PATH,
-            readFile
+            readFile : function(fileName) {
+                return fetch(fileName)
+                            .then(resp => {
+                                if(resp.ok) {
+                                    return resp.text();
+                                }
+                                throw new Error(`GET ${fileName} ${resp.status} (${resp.statusText})`);
+                            })
+                            .then(code => [fileName, code]);
+            }
         };
 
         Module.initialize(ENVIRONMENT)
