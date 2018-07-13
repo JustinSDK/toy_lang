@@ -491,8 +491,8 @@ println(orz)</code></pre>
         
         const TOY_MODUEL_PATH = 'toy_lang';
         const ENVIRONMENT = {
-            input(message, defaultValue = '') {
-                return prompt(message, defaultValue);
+            input(message) {
+                return prompt(message, '');
             },
             output(value) {
                 tty.textContent += value;

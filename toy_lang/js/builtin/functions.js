@@ -15,6 +15,13 @@ const Print = func1('print', {
         return context.returned(Void);
     }
 });
+
+const Input = func1('input', {
+    evaluate(context) {
+        const text = context.input(PARAM1.evaluate(context).value);
+        return context.returned(new Primitive(text));
+    }
+});
  
 const HasValue = func1('hasValue', {
     evaluate(context) {
@@ -39,6 +46,7 @@ function funcEntry(clzOfLang, name, internalNode) {
 }
 
 const BUILTIN_FUNCTIONS = new Map([
+    funcEntry(FUNC_CLZ, 'input', Input),
     funcEntry(FUNC_CLZ, 'print', Print),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue)

@@ -113,6 +113,10 @@ class Context {
         return this;
     }
 
+    input(message) {
+        return environment.input(message);
+    }
+
     // For simple support for closure, the 'assign' method changes the state directly.
     assign(variable, value) {
         this.variables.set(variable, value);
