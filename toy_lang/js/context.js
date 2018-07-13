@@ -67,27 +67,30 @@ function changeFlowController(ctx, option) {
         fileName : ctx.fileName,
         lines : ctx.lines,
         parent : ctx.parent,
-        output : ctx.output,
         variables : ctx.variables,
         flowController : createFlowController(option)
     });
 }
 
+let environment;
+
 class Context { 
-    constructor({fileName, lines, output, parent, variables, flowController}) {
+    constructor({fileName, lines, parent, variables, flowController}) {
         this.fileName = fileName;
         this.lines = lines;
-        this.output = output;
         this.parent = parent || null;
         this.variables = variables || new Map();
         this.flowController = flowController || defaultFlowConrtoller;
     }
 
     static initialize(env, module) {
+        if(!environment) {
+            environment = env;
+        }
+
         const context = new Context({
             fileName : module.fileName,
             lines : module.lines(),
-            output : env.output,
             variables : new Map(BUILTINS)
         });
 
@@ -101,13 +104,12 @@ class Context {
         return new Context({
             fileName : this.fileName,
             lines : this.lines,
-            parent : this,
-            output : this.output
+            parent : this
         });
     }
 
     output(value) {
-        this.output(value);
+        environment.output(value);
         return this;
     }
 
