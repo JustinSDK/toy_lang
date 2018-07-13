@@ -48,7 +48,7 @@ class Module {
     static initialize(env) {
         environment = env;
         const builtinToy = 'toy_lang/lib/builtin.toy';
-        return env.read(builtinToy)
+        return env.readFile(builtinToy)
                   .then(([path, code]) => new Module(path, 'builtin', tokenizer(code).tokenizableLines()))
                   .then(module => module.moduleInstance())
                   .then(moduleInstance => {
@@ -178,7 +178,7 @@ function loadModule(modules, importedModuleFile, start, maybeName) {
     const moduleName = moduleNameFrom(importedModuleFile);
     modules.set(importedModuleFile, new Module(importedModuleFile, moduleName, null));
 
-    return environment.read(importedModuleFile).then(([path, code]) => {
+    return environment.readFile(importedModuleFile).then(([path, code]) => {
         const lines = tokenizer(code).tokenizableLines();
         const notImports = notImportTokenizableLines(lines);
         const imports = importTokenizableLines(lines);

@@ -478,7 +478,7 @@ println(orz)</code></pre>
     <script type="module">
         import {Module} from './toy_lang/js/module.js';
 
-        function read(fileName) {
+        function readFile(fileName) {
             return fetch(fileName)
                         .then(resp => {
                             if(resp.ok) {
@@ -495,7 +495,7 @@ println(orz)</code></pre>
                 tty.textContent += value;
             },
             TOY_MODUEL_PATH,
-            read
+            readFile
         };
 
         Module.initialize(ENVIRONMENT)
