@@ -1,0 +1,98 @@
+ROW = 10
+COLUMN = 10
+
+(DIRS = [
+    [-1, 0], [-1, 1], [0, 1],  [1, 1],
+    [1, 0],  [1, -1], [0, -1], [-1, -1]
+])
+
+def produce(current, next) {
+    (range(0, ROW).forEach(row -> 
+        range(0, COLUMN).forEach(column -> produceRC(row, column, current, next))
+    ))
+}
+
+def produceRC(row, column, current, next) {
+    switch neighbors(current, row, column) {
+        case 0, 1, 4
+            next.get(row).set(column, 0) 
+        case 2
+            next.get(row).set(column, current.get(row).get(column)) 
+        case 3
+            next.get(row).set(column, 1) 
+    }         
+}
+
+def neighbors(current, row, column) {
+    count = 0
+    i = 0
+    while i < 8 and count < 4 {
+        r = row + DIRS.get(i).get(0)
+        c = column + DIRS.get(i).get(1)
+        if r > -1 and r < ROW and c > -1 and c < COLUMN and current.get(r).get(c) {
+            count += 1
+        }
+        i += 1
+    }
+
+    return count
+} 
+
+def copy(from, to) {
+    (range(0, ROW).forEach(row -> 
+        range(0, COLUMN).forEach(column -> 
+            copyRC(from, to, row, column)
+        )
+    ))
+}  
+
+def copyRC(from, to, row, column) {
+    to.get(row).set(column, from.get(row).get(column))
+    from.get(row).set(column, 0)
+}
+
+def isDifferent(current, next) {
+    (return range(0, ROW)
+              .any(row -> isDiffByRow(current.get(row), next.get(row))))
+}  
+
+def isDiffByRow(currentRow, nextRow) {
+    (return range(0, COLUMN)
+              .any(column -> currentRow.get(column) != nextRow.get(column)))
+}
+
+def printCells(current) {
+    println('Status...')
+    current.forEach(printRow)
+    println()
+} 
+
+def printRow(row) {
+    row.forEach(column -> print('*' if column != 0 else '~'))
+    println()
+} 
+
+(current = [
+    [0, 1, 0, 1, 0, 0, 0, 0, 1, 1],
+    [0, 1, 0, 1, 0, 0, 0, 0, 1, 1],
+    [0, 1, 0, 1, 0, 0, 0, 0, 1, 1],
+    [0, 1, 1, 1, 0, 0, 1, 0, 1, 1],
+    [0, 1, 1, 1, 0, 1, 0, 0, 1, 1],
+    [0, 1, 0, 1, 1, 0, 0, 1, 1, 1],
+    [0, 1, 0, 1, 0, 1, 0, 0, 1, 1],
+    [0, 1, 0, 1, 0, 0, 1, 0, 1, 1],
+    [0, 1, 0, 1, 0, 1, 0, 1, 1, 1],
+    [0, 1, 0, 1, 1, 0, 0, 0, 1, 1]
+])
+
+next = range(0, ROW).map(_ -> range(0, COLUMN).fill(0))
+
+printCells(current)
+produce(current, next)
+
+while isDifferent(current, next) {
+    copy(next, current)
+    printCells(current)
+    produce(current, next)
+}
+   
