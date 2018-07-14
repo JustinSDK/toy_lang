@@ -18,8 +18,8 @@ def printRow(row) {
     }
 
     print(space((HEIGHT- row) * 3)) # indentation
-    range(0, row + 1).forEach(printNumber)
+    iterate(0, row + 1).forEach(printNumber)
     println()
 }
 
-range(0, HEIGHT).forEach(printRow)
+iterate(0, HEIGHT).forEach(printRow)

@@ -45,13 +45,13 @@ class Maze {
     }
 
     def printRow(i) {
-        (range(0, this.raw.get(i).length())
+        (iterate(0, this.raw.get(i).length())
               .forEach(j -> this.printSymbol(i, j)))
         println()
     }
 
     def print() {
-        range(0, this.raw.length()).forEach(this.printRow)
+        iterate(0, this.raw.length()).forEach(this.printRow)
     }
 }
 

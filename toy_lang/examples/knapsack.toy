@@ -13,8 +13,8 @@ class Fruit {
 }
 
 def knapsack(fruits, values, items, limit) {
-    (range(0, fruits.length()).forEach(i ->
-        range(fruits.get(i).weight, limit + 1).forEach(w -> 
+    (iterate(0, fruits.length()).forEach(i ->
+        iterate(fruits.get(i).weight, limit + 1).forEach(w -> 
             trySolution(i, w, fruits, values, limit)
         ) 
     ))

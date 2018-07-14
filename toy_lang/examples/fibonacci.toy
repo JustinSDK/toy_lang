@@ -5,4 +5,4 @@ def fib(n) {
     return fib(n - 1) + fib(n - 2)
 }
 
-range(0, 10).forEach(i -> println(fib(i)))
+iterate(0, 10).forEach(i -> println(fib(i)))

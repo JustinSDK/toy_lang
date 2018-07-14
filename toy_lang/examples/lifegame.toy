@@ -7,8 +7,8 @@ COLUMN = 10
 ])
 
 def produce(current, next) {
-    (range(0, ROW).forEach(row -> 
-        range(0, COLUMN).forEach(column -> produceRC(row, column, current, next))
+    (iterate(0, ROW).forEach(row -> 
+        iterate(0, COLUMN).forEach(column -> produceRC(row, column, current, next))
     ))
 }
 
@@ -39,8 +39,8 @@ def neighbors(current, row, column) {
 } 
 
 def copy(from, to) {
-    (range(0, ROW).forEach(row -> 
-        range(0, COLUMN).forEach(column -> 
+    (iterate(0, ROW).forEach(row -> 
+        iterate(0, COLUMN).forEach(column -> 
             copyRC(from, to, row, column)
         )
     ))

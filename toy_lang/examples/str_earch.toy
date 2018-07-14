@@ -2,8 +2,8 @@ SKIP_TABLE_SIZE = 256
 
 def table(skip, key) { 
     n = key.length()
-    range(0, SKIP_TABLE_SIZE).forEach(k -> skip.set(k, n))
-    range(0, n - 1).forEach(k -> skip.set(key.charCodeAt(k), n - k - 1))
+    iterate(0, SKIP_TABLE_SIZE).forEach(k -> skip.set(k, n))
+    iterate(0, n - 1).forEach(k -> skip.set(key.charCodeAt(k), n - k - 1))
 } 
 
 def indexOf(skip, from, text, key) { 
