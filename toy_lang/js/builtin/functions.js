@@ -68,7 +68,7 @@ const Format = func3('format', {
 const StringClz = BUILTIN_CLASSES.get('String');
 StringClz.setOwnProperty('format', new Instance(FUNC_CLZ, new Map(), Format));
 
-// Number
+// Number as namespace
 
 const ParseFloat = func1('parseFloat', {
     evaluate(context) {
@@ -92,6 +92,8 @@ NumberClz.setOwnProperty('MAX_SAFE_INTEGER', Primitive.of(Number.MAX_SAFE_INTEGE
 NumberClz.setOwnProperty('MIN_SAFE_INTEGER', Primitive.of(Number.MIN_SAFE_INTEGER));
 NumberClz.setOwnProperty('MAX_VALUE', Primitive.of(Number.MAX_VALUE));
 NumberClz.setOwnProperty('MIN_VALUE', Primitive.of(Number.MIN_VALUE));
+
+// List as namespace
 
 const ListCreate = func2('create', {
     evaluate(context) {
