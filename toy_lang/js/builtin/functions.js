@@ -2,6 +2,7 @@ import {Null, Primitive, Instance, Void} from './export.js';
 
 import {PARAM1, PARAM2, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
+import {ListClass} from './classes/list.js';
 
 export {BUILTIN_FUNCTIONS};
 
@@ -91,3 +92,15 @@ NumberClz.setOwnProperty('MAX_SAFE_INTEGER', Primitive.of(Number.MAX_SAFE_INTEGE
 NumberClz.setOwnProperty('MIN_SAFE_INTEGER', Primitive.of(Number.MIN_SAFE_INTEGER));
 NumberClz.setOwnProperty('MAX_VALUE', Primitive.of(Number.MAX_VALUE));
 NumberClz.setOwnProperty('MIN_VALUE', Primitive.of(Number.MIN_VALUE));
+
+const ListCreate = func2('create', {
+    evaluate(context) {
+        const length = PARAM1.evaluate(context).value;
+        const value = PARAM2.evaluate(context);
+        return context.returned(ListClass.newInstance(context, new Array(length).fill(value)));
+    }
+});
+
+BUILTIN_CLASSES.get('List').setOwnProperty('create', new Instance(FUNC_CLZ, new Map(), ListCreate));
+
+
