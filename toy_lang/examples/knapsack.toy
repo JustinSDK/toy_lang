@@ -1,0 +1,55 @@
+from '/lib/math' import min
+
+class Fruit {
+    def init(name, weight, price) {
+        this.name = name 
+        this.weight = weight
+        this.price = price
+    }
+
+    def toString() {
+         return '{{0}:{1}w:${2}}'.format(this.name, this.weight, this.price)
+    }
+}
+
+def knapsack(fruits, values, items, limit) {
+    (range(0, fruits.length()).forEach(i ->
+        range(fruits.get(i).weight, limit + 1).forEach(w -> 
+            trySolution(i, w, fruits, values, limit)
+        ) 
+    ))
+}
+
+def trySolution(i, w, fruits, values, limit) {
+    p = w - fruits.get(i).weight
+    newValue = values.get(p) + fruits.get(i).price 
+    if newValue > values.get(w) {
+         values.set(w, newValue)
+         items.set(w, i) 
+    }
+}
+
+(fruits = [
+    new Fruit('李子', 4, 4500),
+    new Fruit('蘋果', 5, 5700),
+    new Fruit('橘子', 2, 2250),
+    new Fruit('草莓', 1, 1100),
+    new Fruit('甜瓜', 6, 6700)
+]) 
+
+WEIGHT_LIMIT = 8
+
+items = range(0, WEIGHT_LIMIT + 1).fill(0)
+values = range(0, WEIGHT_LIMIT + 1).fill(0)
+
+knapsack(fruits, values, items, WEIGHT_LIMIT)
+
+min_weight = min(fruits.map(fruit -> fruit.weight))
+
+i = WEIGHT_LIMIT 
+while i >= min_weight {
+    fruit = fruits.get(items.get(i))
+    println(fruit)
+    i -= fruit.weight
+}
+println('${0}'.format(values.get(WEIGHT_LIMIT)))
