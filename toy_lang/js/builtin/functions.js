@@ -87,3 +87,7 @@ const ParseInt = func2('parseInt', {
 const NumberClz = BUILTIN_CLASSES.get('Number');
 NumberClz.setOwnProperty('parseFloat', new Instance(FUNC_CLZ, new Map(), ParseFloat));
 NumberClz.setOwnProperty('parseInt', new Instance(FUNC_CLZ, new Map(), ParseInt));
+NumberClz.setOwnProperty('MAX_SAFE_INTEGER', Primitive.of(Number.MAX_SAFE_INTEGER));
+NumberClz.setOwnProperty('MIN_SAFE_INTEGER', Primitive.of(Number.MIN_SAFE_INTEGER));
+NumberClz.setOwnProperty('MAX_VALUE', Primitive.of(Number.MAX_VALUE));
+NumberClz.setOwnProperty('MIN_VALUE', Primitive.of(Number.MIN_VALUE));
