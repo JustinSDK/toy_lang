@@ -39,8 +39,8 @@ def trySolution(i, w, fruits, values, limit) {
 
 WEIGHT_LIMIT = 8
 
-items = range(0, WEIGHT_LIMIT + 1).fill(0)
-values = range(0, WEIGHT_LIMIT + 1).fill(0)
+items = List.create(WEIGHT_LIMIT, 0)
+values = List.create(WEIGHT_LIMIT, 0)
 
 knapsack(fruits, values, items, WEIGHT_LIMIT)
 

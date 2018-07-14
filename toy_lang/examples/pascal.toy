@@ -6,7 +6,7 @@ def combi(r, n) {
 }
 
 def space(n) {
-    return range(0, n).fill('').join(' ')
+    return List.create(n, '').join(' ')
 }
 
 HEIGHT = 12

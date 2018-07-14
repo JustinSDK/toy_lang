@@ -85,7 +85,7 @@ def printRow(row) {
     [0, 1, 0, 1, 1, 0, 0, 0, 1, 1]
 ])
 
-next = range(0, ROW).map(_ -> range(0, COLUMN).fill(0))
+next = range(0, ROW).map(_ -> List.create(COLUMN, 0))
 
 printCells(current)
 produce(current, next)
