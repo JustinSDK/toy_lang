@@ -1,4 +1,4 @@
-exports = ['Exception', 'println', 'range', 'iterate', 'isInstance']
+exports = ['Exception', 'println', 'iterate', 'range', 'isInstance']
 
 class Exception(Traceable) {
     def init() {
@@ -11,19 +11,6 @@ def println(message) {
         print(message)
     }
     print('\n')
-}
-
-def range(start, stop, step) {
-    s = step if hasValue(step) else 1
-    len = Number.parseInt((stop - start) / s)
-
-    lt = []
-    i = 0
-    while i < len {
-        lt.add(i * s + start)
-        i += 1
-    }
-    return lt
 }
 
 def iterate(start, stop, step) {
@@ -49,6 +36,12 @@ def iterate(start, stop, step) {
     }
 
     return new Iter()
+}
+
+def range(start, stop, step) {
+    lt = []
+    iterate(start, stop, step).forEach(n -> lt.add(n))
+    return lt
 }
 
 def isSubType(clz, parentClz) {
