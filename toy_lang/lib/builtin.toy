@@ -1,4 +1,4 @@
-exports = ['Exception', 'println', 'range', 'isInstance']
+exports = ['Exception', 'println', 'range', 'iterate', 'isInstance']
 
 class Exception(Traceable) {
     def init() {
@@ -24,6 +24,31 @@ def range(start, stop, step) {
         i += 1
     }
     return lt
+}
+
+def iterate(start, stop, step) {
+    s = step if hasValue(step) else 1
+    n = start
+
+    class Iter {
+        def hasNext() {
+            return n + s <= stop
+        }
+
+        def next() {
+            v = n
+            nonlocal n += s
+            return v
+        }
+
+        def forEach(action) {
+            while this.hasNext() {
+                action(this.next())
+            }
+        }
+    }
+
+    return new Iter()
 }
 
 def isSubType(clz, parentClz) {
