@@ -4,7 +4,7 @@ const NESTED_PARENTHESES_LEVEL = 3;
 const NESTED_BRACKETS_LEVEL = 3; 
 
 const BOOLEAN_REGEX = /true|false/;
-const NUMBER_REGEX = /[0-9]+\.?[0-9]*/;
+const NUMBER_REGEX = /0[box][0-9A-F]+|[0-9]+\.?[0-9e+-]*/;
 const TEXT_REGEX = /'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
 const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
@@ -89,7 +89,7 @@ function orRegexs(...regexs) {
 
 const REGEX = new Map([
     ['boolean', new RegExp(`^(${BOOLEAN_REGEX.source})$`)],
-    ['number', new RegExp(`^${NUMBER_REGEX.source}$`)],
+    ['number', new RegExp(`^(${NUMBER_REGEX.source})$`)],
     ['text', new RegExp(`^${TEXT_REGEX.source}$`)],
     ['variable', new RegExp(`^${VARIABLE_REGEX.source}`)],
     ['fcall', new RegExp(`^${FUNCALL_REGEX.source}$`)],

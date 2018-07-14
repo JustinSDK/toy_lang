@@ -66,7 +66,18 @@ const OPERAND_PARSER = TokenableParser.orRules(
     }],
     ['number', {
         burst([numTokenable]) {
-            return Primitive.of(Number.parseFloat(numTokenable.value));
+            const value = numTokenable.value;
+            switch(value.slice(0, 2)) {
+                case '0b' :
+                    return Primitive.of(Number.parseInt(numTokenable.value.slice(2), 2));
+                case '0o' :
+                    return Primitive.of(Number.parseInt(numTokenable.value.slice(2), 8));
+                case '0x' :
+                    return Primitive.of(Number.parseInt(numTokenable.value.slice(2), 16));
+                default:
+                    return Primitive.of(Number.parseFloat(numTokenable.value));
+            }
+            
         }        
     }],
     ['boolean', {
