@@ -59,10 +59,15 @@ def isSubType(clz, parentClz) {
 }
 
 def isInstance(obj, type) {
-    if hasValue(obj) {
+    if hasValue(obj) and notPrimitive(obj) {
         clz = obj.class()
         return (clz == type) or isSubType(clz, type)
     }
     return false
+}
+
+primitives = ['number', 'string', 'boolean']
+def notPrimitive(v) {
+    return not primitives.includes(typeof(v))
 }
 
