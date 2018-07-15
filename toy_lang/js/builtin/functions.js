@@ -40,6 +40,22 @@ const NoValue = func1('noValue', {
     }
 });
 
+const TypeOf = func1('typeof', {
+    evaluate(context) {
+        const arg = PARAM1.evaluate(context);
+        if(arg.clzOfLang) {  // instances
+            return context.returned(
+                new Primitive(arg.clzNodeOfLang().name)
+            );
+        }
+         // primitives
+        return context.returned(
+            new Primitive(typeof(arg.value))
+        );
+
+    }
+});
+
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -50,7 +66,8 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'input', Input),
     funcEntry(FUNC_CLZ, 'print', Print),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
-    funcEntry(FUNC_CLZ, 'noValue', NoValue)
+    funcEntry(FUNC_CLZ, 'noValue', NoValue),
+    funcEntry(FUNC_CLZ, 'typeof', TypeOf)
 ]); 
 
 // static methods
