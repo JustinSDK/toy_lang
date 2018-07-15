@@ -13,10 +13,33 @@ def println(message) {
     print('\n')
 }
 
+def stopLambda(stop, step) {
+    if typeof(stop) == 'number' {
+        if noValue(step) or ((typeof(step) == 'number') and step > 0) {
+            return i -> i < stop
+        }
+        else {
+            return i -> i > stop 
+        }
+    }
+    return stop
+}
+
+def stepLambda(step) {
+    if noValue(step) {
+        return i -> i + 1
+    }
+
+    if typeof(step) == 'number' {
+        return i -> i + step
+    }
+    return step
+}
+
 def iterate(start, stop, step) {
     n = start
-    p = stop if isInstance(stop, Function) else (i -> i < stop)
-    s = step if isInstance(step, Function) else (i -> i + (step if hasValue(step) else 1))
+    p = stopLambda(stop, step)
+    s = stepLambda(step)
 
     class Iter {
         def hasNext() {
@@ -59,15 +82,10 @@ def isSubType(clz, parentClz) {
 }
 
 def isInstance(obj, type) {
-    if hasValue(obj) and notPrimitive(obj) {
+    if hasValue(obj) {
         clz = obj.class()
         return (clz == type) or isSubType(clz, type)
     }
     return false
-}
-
-primitives = ['number', 'string', 'boolean']
-def notPrimitive(v) {
-    return not primitives.includes(typeof(v))
 }
 
