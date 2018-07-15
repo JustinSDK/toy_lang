@@ -269,7 +269,7 @@ function concatExpr(lines) {
         if(lc !== rc) {
             const [line, i] = lineIdxParentheses(lines);
             const tokenable = new Tokenable('line', 
-                lines[0].lineNumber, line.trim().slice(1, -1)
+                lines[0].lineNumber, line.trim().slice(1, -1).trim()
             );
             return [tokenable].concat(concatExpr(lines.slice(i + 1)));
         }
