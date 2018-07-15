@@ -31,7 +31,7 @@ def hard(board, steps) {
 }
 
 def travel(start) {
-    board = range(0, 8).map(_ -> range(0, 8).map(_ -> 0))
+    board = range(0, 8).map(_ -> List.create(8, 0))
     board.get(start.x).set(start.y, 1) 
     
     current = start
