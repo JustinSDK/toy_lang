@@ -1,4 +1,4 @@
-import {Null, Primitive, Instance, Void} from './export.js';
+import {Null, Primitive, Instance, Void, ValueError} from './export.js';
 
 import {PARAM1, PARAM2, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
@@ -43,6 +43,10 @@ const NoValue = func1('noValue', {
 const TypeOf = func1('typeof', {
     evaluate(context) {
         const arg = PARAM1.evaluate(context);
+        if(arg === Null) {
+            throw new ValueError('undefined');
+        }
+
         if(arg.clzOfLang) {  // instances
             return context.returned(
                 new Primitive(arg.clzNodeOfLang().name)
