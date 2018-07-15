@@ -55,7 +55,7 @@ const BUILTIN_FUNCTIONS = new Map([
 
 // static methods
 
-// String
+// String as a namespace
 
 const Format = func3('format', {
     evaluate(context) {
@@ -68,7 +68,7 @@ const Format = func3('format', {
 const StringClz = BUILTIN_CLASSES.get('String');
 StringClz.setOwnProperty('format', new Instance(FUNC_CLZ, new Map(), Format));
 
-// Number as namespace
+// Number as a namespace
 
 const ParseFloat = func1('parseFloat', {
     evaluate(context) {
@@ -93,7 +93,7 @@ NumberClz.setOwnProperty('MIN_SAFE_INTEGER', Primitive.of(Number.MIN_SAFE_INTEGE
 NumberClz.setOwnProperty('MAX_VALUE', Primitive.of(Number.MAX_VALUE));
 NumberClz.setOwnProperty('MIN_VALUE', Primitive.of(Number.MIN_VALUE));
 
-// List as namespace
+// List as a namespace
 
 const ListCreate = func2('create', {
     evaluate(context) {
