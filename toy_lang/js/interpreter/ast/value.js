@@ -307,7 +307,7 @@ class Instance extends Value {
     }
 
     toString() {        
-        return `[${this.clzNodeOfLang().name} object]`;
+        return `<${this.clzNodeOfLang().name} object>`;
     }
 }
 

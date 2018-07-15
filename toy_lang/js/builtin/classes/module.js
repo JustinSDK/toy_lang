@@ -18,7 +18,7 @@ ModuleClass.methods = new Map([
         evaluate(context) {
             const clzNode = self(context).clzNodeOfLang();
             const ctxNode = selfInternalNode(context);
-            return context.returned(new Primitive(`[${clzNode.name} ${ctxNode.moduleName}]`));
+            return context.returned(new Primitive(`<${clzNode.name} ${ctxNode.moduleName}>`));
         }    
     })]
 ]);

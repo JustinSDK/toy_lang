@@ -37,7 +37,7 @@ ObjectClass.methods = new Map([
             );
         }    
     })],    
-    ['getOwnProperty', func1('geteOwnProperty', {
+    ['getOwnProperty', func1('getOwnProperty', {
         evaluate(context) {
             return context.returned(
                 self(context).getOwnProperty(PARAM1.evaluate(context).value)
@@ -60,7 +60,7 @@ ObjectClass.methods = new Map([
     ['toString', func0('toString', {
         evaluate(context) {
             const clzNode = self(context).clzNodeOfLang();
-            return context.returned(new Primitive(`[${clzNode.name} object]`));
+            return context.returned(new Primitive(`<${clzNode.name} object>`));
         }    
     })],
     ['class', func0('class', {

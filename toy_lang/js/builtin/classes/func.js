@@ -25,7 +25,7 @@ class FunctionClass {
             evaluate(context) {
                 const clzNode = self(context).clzNodeOfLang();
                 const fNode = selfInternalNode(context);
-                return context.returned(new Primitive(`[${clzNode.name} ${fNode.name}]`));
+                return context.returned(new Primitive(`<${clzNode.name} ${fNode.name}>`));
             }    
         });
     }
