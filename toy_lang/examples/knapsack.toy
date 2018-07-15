@@ -42,14 +42,15 @@ WEIGHT_LIMIT = 8
 items = List.create(WEIGHT_LIMIT, 0)
 values = List.create(WEIGHT_LIMIT, 0)
 
+def fruit(i) {
+    return fruits.get(items.get(i))
+}
+
 knapsack(fruits, values, items, WEIGHT_LIMIT)
 
 min_weight = min(fruits.map(fruit -> fruit.weight))
 
-i = WEIGHT_LIMIT 
-while i >= min_weight {
-    fruit = fruits.get(items.get(i))
-    println(fruit)
-    i -= fruit.weight
-}
+(iterate(WEIGHT_LIMIT, i -> i >= min_weight, i -> i - fruit(i).weight)
+     .forEach(i -> println(fruit(i))))
+
 println('${0}'.format(values.get(WEIGHT_LIMIT)))
