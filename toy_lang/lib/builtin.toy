@@ -14,17 +14,18 @@ def println(message) {
 }
 
 def iterate(start, stop, step) {
-    s = step if hasValue(step) else 1
     n = start
+    p = stop if isInstance(stop, Function) else (i -> i < stop)
+    s = step if isInstance(step, Function) else (i -> i + (step if hasValue(step) else 1))
 
     class Iter {
         def hasNext() {
-            return n + s <= stop
+            return p(n)
         }
 
         def next() {
             v = n
-            nonlocal n += s
+            nonlocal n = s(n)
             return v
         }
 
@@ -32,7 +33,7 @@ def iterate(start, stop, step) {
             while this.hasNext() {
                 action(this.next())
             }
-        }
+        }            
     }
 
     return new Iter()
@@ -58,7 +59,10 @@ def isSubType(clz, parentClz) {
 }
 
 def isInstance(obj, type) {
-    clz = obj.class()
-    return (clz == type) or isSubType(clz, type)
+    if hasValue(obj) {
+        clz = obj.class()
+        return (clz == type) or isSubType(clz, type)
+    }
+    return false
 }
 
