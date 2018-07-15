@@ -85,9 +85,23 @@ const ParseInt = func2('parseInt', {
     }
 });
 
+function numberIs(name) {
+    const funcName = `is${name}`;
+    return func1(funcName, {
+        evaluate(context) {
+            const value = PARAM1.evaluate(context).value;
+            return context.returned(Primitive.boolNode(Number[funcName](value)));
+        }
+    });
+}
+
 const NumberClz = BUILTIN_CLASSES.get('Number');
 NumberClz.setOwnProperty('parseFloat', new Instance(FUNC_CLZ, new Map(), ParseFloat));
 NumberClz.setOwnProperty('parseInt', new Instance(FUNC_CLZ, new Map(), ParseInt));
+NumberClz.setOwnProperty('isNaN', new Instance(FUNC_CLZ, new Map(), numberIs('NaN')));
+NumberClz.setOwnProperty('isFinite', new Instance(FUNC_CLZ, new Map(), numberIs('Finite')));
+NumberClz.setOwnProperty('isInteger', new Instance(FUNC_CLZ, new Map(), numberIs('Integer')));
+NumberClz.setOwnProperty('isSafeInteger', new Instance(FUNC_CLZ, new Map(), numberIs('SafeInteger')));
 
 // List as a namespace
 
