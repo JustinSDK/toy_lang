@@ -1,4 +1,4 @@
-exports = ['min', 'max', 'abs', 'sum']
+exports = ['min', 'max', 'abs', 'sum', 'Random', 'random']
 
 def min(numbers) {
     return numsOrArgs(numbers, arguments).sort().get(0)
@@ -18,4 +18,23 @@ def sum(numbers) {
 
 def numsOrArgs(nums, args) {
     return nums if isInstance(nums, List) else args 
+}
+
+modulus = 2147483647     # m
+multiplier = 1103515245  # a
+increment = 12345        # c
+
+class Random {
+    def init(seed) {
+        this.seed = seed if hasValue(seed) else (3447679086515839964 * currentTimeMillis())
+    }
+    
+    def next() {
+        this.seed = (multiplier * this.seed + increment) % modulus
+        return this.seed
+    }
+}
+
+def random() {
+    return ((new Random()).next()) / modulus
 }

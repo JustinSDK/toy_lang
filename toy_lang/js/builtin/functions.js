@@ -1,6 +1,6 @@
 import {Null, Primitive, Instance, Void, ValueError} from './export.js';
 
-import {PARAM1, PARAM2, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
+import {PARAM1, PARAM2, func0, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {ListClass} from './classes/list.js';
 
@@ -60,6 +60,15 @@ const TypeOf = func1('typeof', {
     }
 });
 
+const CurrentTimeMillis = func0('currentTimeMillis', {
+    evaluate(context) {
+        return context.returned(
+            new Primitive(Date.now())
+        );
+
+    }
+});
+
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -71,7 +80,8 @@ const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'print', Print),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue),
-    funcEntry(FUNC_CLZ, 'typeof', TypeOf)
+    funcEntry(FUNC_CLZ, 'typeof', TypeOf),
+    funcEntry(FUNC_CLZ, 'currentTimeMillis', CurrentTimeMillis)
 ]); 
 
 // static methods
