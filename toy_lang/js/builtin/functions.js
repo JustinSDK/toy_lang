@@ -44,7 +44,7 @@ const TypeOf = func1('typeof', {
     evaluate(context) {
         const arg = PARAM1.evaluate(context);
         if(arg === Null) {
-            throw new ValueError('undefined');
+            throw new ValueError('no assigned value');
         }
 
         if(arg.clzOfLang) {  // instances
