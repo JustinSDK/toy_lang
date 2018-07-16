@@ -314,8 +314,9 @@ function lineIdxParentheses(lines) {
         if(lines.length === i) {
             lines[0].syntaxErr('unable to match parentheses');
         }
-        
-        const parentheses = countParentheses(lines[i].value.split(''));
+        // string regex  /'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/
+        // ignore parentheses in string first
+        const parentheses = countParentheses(lines[i].value.replace(/'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/g, '').split(''));
         const leftPCount = parentheses[0] + lc;
         const rightPCount = parentheses[1] + rc;
         if(leftPCount === rightPCount) {
