@@ -212,6 +212,10 @@ function createModuleImporter(start, module, name) {
 }
 
 function moduleFilePath(src, target) {
+    if(target === 'this.toy') {
+        return `toy_lang/lib/this.toy`;
+    }
+
     return target.startsWith('/') ? 
                `${environment.TOY_MODUEL_PATH}${target}` : `${dir(src)}${target}`;
 }
