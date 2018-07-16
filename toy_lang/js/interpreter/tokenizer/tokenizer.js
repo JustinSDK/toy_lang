@@ -237,12 +237,27 @@ class Tokenable {
     }
 }
 
+/* 
+    Matching single line comments except in a string
+    ref: https://stackoverflow.com/questions/8446064/java-regex-find-oracle-single-line-comments-except-in-a-string
+
+    ^                    # match the start of the line
+    (                    # start match group 1
+    (?:                  #   start non-capturing group 1
+        (?!#|').         #     if there's no '#' or single quote ahead, match any char
+        |                #     OR
+        '(?:''|[^'])*'   #     match a string literal
+    )*                   #   end non-capturing group 1 and repeat it zero or more times
+    )                    # end match group 1
+    #.*$                 # match a comment all the way to the end of the line    
+*/
+
 class Tokenizer {
     constructor(code) {
         this.lines = concatExpr(
             code.split('\n')
                 // a comment starts with #
-                .map(line => line.replace(/(('.*#.*'[^#]*)*)(#.*)?$/, '$1')) // comment after a line
+                .map(line => line.replace(/^((?:(?!#|').|'(?:''|[^'])*')*)\s*#.*$/, '$1')) // comment after a line
                 .map(line => line.trim())
                 .map((line, idx) => new Tokenable('line', idx + 1, line))
                 .filter(tokenizableLine => tokenizableLine.value !== '' && !tokenizableLine.value.startsWith("#")) 
