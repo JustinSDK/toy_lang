@@ -54,8 +54,8 @@ const OPERAND_PARSER = TokenableParser.orRules(
         burst([textTokenable]) {
             return Primitive.of(textTokenable.value
                 .replace(/^\\r/, '\r')
+                .replace(/([^\\])\\r/g, '$1\r')                
                 .replace(/^\\n/, '\n')
-                .replace(/([^\\])\\r/g, '$1\r')
                 .replace(/([^\\])\\n/g, '$1\n')
                 .replace(/^\\t/, '\t')
                 .replace(/([^\\])\\t/g, '$1\t')
