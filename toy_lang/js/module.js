@@ -2,7 +2,6 @@
 import {LINE_PARSER} from './interpreter/line_parser.js';
 import {Tokenizer} from './interpreter/tokenizer/tokenizer.js';        
 import {Context} from './context.js';
-import {Instance} from './interpreter/ast/value.js';
 
 export {Module, ModuleImporter};
 
