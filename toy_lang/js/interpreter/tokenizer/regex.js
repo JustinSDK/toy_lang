@@ -5,7 +5,7 @@ const NESTED_BRACKETS_LEVEL = 3;
 
 const BOOLEAN_REGEX = /true|false/;
 const NUMBER_REGEX = /0[box][0-9A-F]+|[0-9]+\.?[0-9e+-]*/;
-const TEXT_REGEX = /'((?:\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
+const TEXT_REGEX = /'((?:[^'\\]|\\'|\\\\|\\r|\\n|\\t)*)'/;
 const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
