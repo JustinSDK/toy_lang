@@ -1,0 +1,54 @@
+def hanoi(n, a, b, c) {
+    if n == 1 {
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, c))
+        println('{0} to {1}'.format(b, c))
+        println('{0} to {1}'.format(b, c))
+    }
+    else {
+        hanoi(n - 1, a, b, c)
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, b))
+
+        hanoi(n - 1, c, b, a)
+        println('{0} to {1}'.format(b, c))
+        println('{0} to {1}'.format(b, c))
+        println('{0} to {1}'.format(b, c))
+        
+        hanoi(n - 1, a, b, c)
+    }
+}
+        
+        
+def three_colors_hanoi(n, a, b, c) {
+    if n == 1 {
+        println('{0} to {1}'.format(a, c))
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(c, a))
+        println('{0} to {1}'.format(b, c))
+    }
+    else {
+        hanoi(n - 1, a, b, c)
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, b))
+        println('{0} to {1}'.format(a, b))
+        
+        hanoi(n - 1, c, b, a)
+        println('{0} to {1}'.format(b, c))
+        println('{0} to {1}'.format(b, c))
+        println('{0} to {1}'.format(b, c))
+        
+        hanoi(n - 1, a, c, b)
+        println('{0} to {1}'.format(c, a))
+        
+        hanoi(n - 1, b, c, a)
+        println('{0} to {1}'.format(c, b))
+
+        three_colors_hanoi(n - 1, a, b, c)
+    }
+}
+        
+three_colors_hanoi(3, 'A', 'B', 'C')
