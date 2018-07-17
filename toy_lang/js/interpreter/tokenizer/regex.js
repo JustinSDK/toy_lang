@@ -39,6 +39,9 @@ const IIFE_REGEX = new RegExp(`\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_L
 
 const TERNARY_REGEX0 = new RegExp(`(${NESTING_PARENTHESES})\\s+if\\s+(${NESTING_PARENTHESES})\\s+else\\s+(${NESTING_PARENTHESES})`);
 
+const TERNARY_REGEX_BARE = new RegExp(`^${TERNARY_REGEX0.source}$`);
+const TERNARY_REGEX_PARENTHESES = new RegExp(`\\(${TERNARY_REGEX0.source}\\)`);
+
 const TERNARY_REGEX = new RegExp(`^${TERNARY_REGEX0.source}$|\\(${TERNARY_REGEX0.source}\\)`);
 
 const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source}|${TERNARY_REGEX.source})((${ARGUMENT_LT_REGEX.source})+))`);
@@ -112,7 +115,8 @@ const REGEX = new Map([
     ['throw', /^throw\s*(.*)$/],
     ['elemList', new RegExp(`^${NESTED_BRACKETS_REGEX.source}`)],
     ['break', /break/],
-    ['ternary', TERNARY_REGEX],
+    ['ternary-bare', TERNARY_REGEX_BARE],
+    ['ternary-parentheses', TERNARY_REGEX_PARENTHESES], 
     ['importAs', IMPORT_AS_REGEX],
     ['fromImport', FROM_IMPORT_REGEX]
 ]);

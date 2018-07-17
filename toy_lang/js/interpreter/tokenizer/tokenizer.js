@@ -114,13 +114,11 @@ const TOKEN_TESTERS = new Map([
         return matched ? matched : [];
     }],
     ['ternary', function(input) {
-        const matched = REGEX.get('ternary').exec(input);
+        const matched = REGEX.get('ternary-bare').exec(input) || REGEX.get('ternary-parentheses').exec(input);
         if(matched) {
-            if(input[0] === '(') {
-                return [matched[4], matched[5], matched[6]];
-            }
-            return [matched[1], matched[2], matched[3]]
+            return [matched[1], matched[2], matched[3]];
         }
+        
         return [];
     }]
 ]);
