@@ -9,11 +9,11 @@ const KEYWORDS = new Set(['if', 'else', 'while', 'def', 'return', 'and', 'or', '
 const TOKEN_TESTERS = new Map([
     ['importAs', function(input) {
         const matched = REGEX.get('importAs').exec(input);
-        return matched ? [matched[1], matched[2], matched[5]] : [];
+        return matched ? [matched[1], matched[2], matched[4]] : [];
     }],
     ['fromImport', function(input) {
         const matched = REGEX.get('fromImport').exec(input);
-        return matched ? [matched[1], matched[2], matched[5]] : [];
+        return matched ? [matched[1], matched[2], matched[4]] : [];
     }],
     ['text', function(input) {
         const matched = REGEX.get('text').exec(input);
@@ -33,14 +33,14 @@ const TOKEN_TESTERS = new Map([
     }],
     ['fcall', function(input) {
         const matched = REGEX.get('fcall').exec(input);
-        return matched ? [matched[2], matched[31]] : [];
+        return matched ? [matched[2], matched[9]] : [];
     }], 
     ['expression', function(input) {
         return expr_tokens(input);
     }],
     ['lambda', function(input) {
         const matched = REGEX.get('lambda').exec(input);
-        return matched ? [matched[8]].concat(
+        return matched ? [matched[5]].concat(
             matched[1].startsWith('(') ? 
                   matched[1].slice(1, -1).split(',').map(p => p.trim())
                   : [matched[1]]
@@ -48,7 +48,7 @@ const TOKEN_TESTERS = new Map([
     }], 
     ['iife', function(input) {
         const matched = REGEX.get('iife').exec(input);
-        return matched ? [matched[2], matched[15]] : [];
+        return matched ? [matched[1], matched[7]] : [];
     }], 
     ['func', function(input) {
         const matched = REGEX.get('func').exec(input);
@@ -117,9 +117,9 @@ const TOKEN_TESTERS = new Map([
         const matched = REGEX.get('ternary').exec(input);
         if(matched) {
             if(input[0] === '(') {
-                return [matched[15], matched[19], matched[23]];
+                return [matched[4], matched[5], matched[6]];
             }
-            return [matched[2], matched[6], matched[10]]
+            return [matched[1], matched[2], matched[3]]
         }
         return [];
     }]
@@ -171,7 +171,7 @@ function splitByComma(input, x = '', acc = []) {
     const matched = REGEX.get('commaSeperated').exec(input);
     if(matched) {
         const token = matched[1];
-        return token === ',' ? splitByComma(input.slice(token.length).trim(), '', acc.concat([x])) :
+        return token === ',' ? splitByComma(input.slice(token.length).trim(), '', acc.concat([x.trim()])) :
                                tokenBetweenComma(token, input, x, acc);
     }
     else {

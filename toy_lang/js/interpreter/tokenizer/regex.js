@@ -5,7 +5,7 @@ const NESTED_BRACKETS_LEVEL = 3;
 
 const BOOLEAN_REGEX = /true|false/;
 const NUMBER_REGEX = /0[box][0-9A-F]+|[0-9]+\.?[0-9e+-]*/;
-const TEXT_REGEX = /'((\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
+const TEXT_REGEX = /'((?:\\'|\\\\|\\r|\\n|\\t|[^'\\])*)'/;
 const VARIABLE_REGEX = /[a-zA-Z_]+[a-zA-Z_0-9]*/;
 const RELATION_REGEX = /==|!=|>=|>|<=|</;
 const LOGIC_REGEX = /and|or/;
@@ -24,24 +24,24 @@ function nestingParentheses(level) {
     if (level === 0) {
         return '[^()]*';
     }
-    return `([^()]|\\(${nestingParentheses(level - 1)}\\))*`;
+    return `(?:[^()]|\\(${nestingParentheses(level - 1)}\\))*`;
 }
 
 const NESTING_PARENTHESES = nestingParentheses(NESTED_PARENTHESES_LEVEL);
 
 const ARGUMENT_LT_REGEX = new RegExp(`\\((${NESTING_PARENTHESES})\\)`);
 
-const PARAM_LT_REGEX = new RegExp(`\\((((${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
+const PARAM_LT_REGEX = new RegExp(`\\(((?:(${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
 
-const LAMBDA_EXPR_REGEX = new RegExp(`((${PARAM_LT_REGEX.source})|(${VARIABLE_REGEX.source}))\\s*->\\s*(${NESTING_PARENTHESES})`);
+const LAMBDA_EXPR_REGEX = new RegExp(`((?:${PARAM_LT_REGEX.source})|(?:${VARIABLE_REGEX.source}))\\s*->\\s*(${NESTING_PARENTHESES})`);
 
-const IIFE_REGEX = new RegExp(`(\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_LT_REGEX.source})+))`);
+const IIFE_REGEX = new RegExp(`\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_LT_REGEX.source})+)`);
 
 const TERNARY_REGEX0 = new RegExp(`(${NESTING_PARENTHESES})\\s+if\\s+(${NESTING_PARENTHESES})\\s+else\\s+(${NESTING_PARENTHESES})`);
 
-const TERNARY_REGEX = new RegExp(`(^${TERNARY_REGEX0.source}$)|(\\(${TERNARY_REGEX0.source}\\))`);
+const TERNARY_REGEX = new RegExp(`^${TERNARY_REGEX0.source}$|\\(${TERNARY_REGEX0.source}\\)`);
 
-const FUNCALL_REGEX = new RegExp(`(((${VARIABLE_REGEX.source})|(${TERNARY_REGEX.source}))((${ARGUMENT_LT_REGEX.source})+))`);
+const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source}|${TERNARY_REGEX.source})((${ARGUMENT_LT_REGEX.source})+))`);
 
 function nestingBrackets(level) {
     if (level === 0) {
