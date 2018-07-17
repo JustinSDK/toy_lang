@@ -59,7 +59,7 @@ function nestingBrackets(level) {
     if (level === 0) {
         return '[^\\[\\]]*';
     }
-    return `([^\\[\\]]|\\[${nestingBrackets(level - 1)}\\])*`;  
+    return `(?:[^\\[\\]]|\\[${nestingBrackets(level - 1)}\\])*`;  
 }
 
 const NESTED_BRACKETS_REGEX = new RegExp(`\\[(${nestingBrackets(NESTED_BRACKETS_LEVEL)})\\]`);
