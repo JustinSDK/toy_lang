@@ -33,14 +33,14 @@ const TOKEN_TESTERS = new Map([
     }],
     ['fcall', function(input) {
         const matched = REGEX.get('fcall').exec(input);
-        return matched ? [matched[2], matched[9]] : [];
+        return matched ? [matched[2], matched[3]] : [];
     }], 
     ['expression', function(input) {
         return expr_tokens(input);
     }],
     ['lambda', function(input) {
         const matched = REGEX.get('lambda').exec(input);
-        return matched ? [matched[5]].concat(
+        return matched ? [matched[2]].concat(
             matched[1].startsWith('(') ? 
                   matched[1].slice(1, -1).split(',').map(p => p.trim())
                   : [matched[1]]
@@ -48,11 +48,11 @@ const TOKEN_TESTERS = new Map([
     }], 
     ['iife', function(input) {
         const matched = REGEX.get('iife').exec(input);
-        return matched ? [matched[1], matched[7]] : [];
+        return matched ? [matched[1], matched[4]] : [];
     }], 
     ['func', function(input) {
         const matched = REGEX.get('func').exec(input);
-        return [matched[1]].concat(matched[3] ? matched[3].split(/,\s*/) : []);
+        return [matched[1]].concat(matched[2] ? matched[2].split(/,\s*/) : []);
     }],
     ['variableAssign', function(input) {
         const matched = REGEX.get('variableAssign').exec(input);

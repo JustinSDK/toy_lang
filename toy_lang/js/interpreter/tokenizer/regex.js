@@ -31,20 +31,29 @@ const NESTING_PARENTHESES = nestingParentheses(NESTED_PARENTHESES_LEVEL);
 
 const ARGUMENT_LT_REGEX = new RegExp(`\\((${NESTING_PARENTHESES})\\)`);
 
-const PARAM_LT_REGEX = new RegExp(`\\(((?:(${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${VARIABLE_REGEX.source})?)\\)`);
+function param_lt_regex_capture(captureIt = true) {
+    const cmeta = captureIt ? '' : '?:';
+    return new RegExp(`\\((${cmeta}(?:(${cmeta}${VARIABLE_REGEX.source},\\s*)+${VARIABLE_REGEX.source})|(${cmeta}${VARIABLE_REGEX.source})?)\\)`);
+}
 
-const LAMBDA_EXPR_REGEX = new RegExp(`((?:${PARAM_LT_REGEX.source})|(?:${VARIABLE_REGEX.source}))\\s*->\\s*(${NESTING_PARENTHESES})`);
+const PARAM_LT_REGEX_NO_CAPTURE = param_lt_regex_capture(false);
+const LAMBDA_EXPR_REGEX = new RegExp(`(${PARAM_LT_REGEX_NO_CAPTURE.source}|${VARIABLE_REGEX.source})\\s*->\\s*(${NESTING_PARENTHESES})`);
 
 const IIFE_REGEX = new RegExp(`\\((${LAMBDA_EXPR_REGEX.source})\\)((${ARGUMENT_LT_REGEX.source})+)`);
 
-const TERNARY_REGEX0 = new RegExp(`(${NESTING_PARENTHESES})\\s+if\\s+(${NESTING_PARENTHESES})\\s+else\\s+(${NESTING_PARENTHESES})`);
+function ternary_regex_capture(captureIt = true) {
+    const cmeta = captureIt ? '' : '?:';
+    return new RegExp(`(${cmeta}${NESTING_PARENTHESES})\\s+if\\s+(${cmeta}${NESTING_PARENTHESES})\\s+else\\s+(${cmeta}${NESTING_PARENTHESES})`);
+}
 
+const TERNARY_REGEX0 = ternary_regex_capture();
 const TERNARY_REGEX_BARE = new RegExp(`^${TERNARY_REGEX0.source}$`);
 const TERNARY_REGEX_PARENTHESES = new RegExp(`\\(${TERNARY_REGEX0.source}\\)`);
 
-const TERNARY_REGEX = new RegExp(`^${TERNARY_REGEX0.source}$|\\(${TERNARY_REGEX0.source}\\)`);
+const TERNARY_REGEX_NO_CAPTURE0 = ternary_regex_capture(false);
+const TERNARY_REGEX_NO_CAPTURE = new RegExp(`^${TERNARY_REGEX_NO_CAPTURE0.source}$|\\(${TERNARY_REGEX_NO_CAPTURE0.source}\\)`);
 
-const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source}|${TERNARY_REGEX.source})((${ARGUMENT_LT_REGEX.source})+))`);
+const FUNCALL_REGEX = new RegExp(`((${VARIABLE_REGEX.source}|${TERNARY_REGEX_NO_CAPTURE.source})((${ARGUMENT_LT_REGEX.source})+))`);
 
 function nestingBrackets(level) {
     if (level === 0) {
@@ -59,7 +68,7 @@ const IMPORT_AS_REGEX = new RegExp(`^(import)\\s+${TEXT_REGEX.source}(\\s+as\\s+
 const FROM_IMPORT_REGEX = new RegExp(`^(from)\\s+${TEXT_REGEX.source}(\\s+import\\s+([*a-zA-Z_0-9]+))?$`);
 
 const EXPR_REGEX = orRegexs(
-    TERNARY_REGEX,    
+    TERNARY_REGEX_NO_CAPTURE,    
     NESTED_BRACKETS_REGEX,
     IIFE_REGEX,
     LAMBDA_EXPR_REGEX,
@@ -101,7 +110,7 @@ const REGEX = new Map([
     ['lambda', new RegExp(`^${LAMBDA_EXPR_REGEX.source}`)],
     ['iife', new RegExp(`^${IIFE_REGEX.source}$`)],
     ['commaSeperated', new RegExp(`^(${EXPR_REGEX.source}|(,))`)],
-    ['func', new RegExp(`^(${VARIABLE_REGEX.source})(${PARAM_LT_REGEX.source})?$`)],
+    ['func', new RegExp(`^(${VARIABLE_REGEX.source})(?:${param_lt_regex_capture().source})?$`)],
     ['cmd-arg', /^(def|class|if|while|switch)\s+([^{]*)\s+{$/],
     ['else', /^else\s+{$/],
     ['case', new RegExp(`^case\\s+(${CASE_REGEX.source}|((${CASE_REGEX.source},\\s*)+${CASE_REGEX.source}))$`)],
