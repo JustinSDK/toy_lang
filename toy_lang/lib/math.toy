@@ -54,10 +54,7 @@ def nthRoot(n, nth) {
         preX = x;
     }
          
-    if Number.isFinite(x) {
-        return x
-    }
-    return nthRoot(n, nth)
+    return x if Number.isFinite(x) else nthRoot(n, nth)
 }
 
 def pow(base, exponent) {
@@ -69,11 +66,6 @@ def pow(base, exponent) {
         return nthRoot(base, 1 / exponent)
     }
 
-    halfExp = Number.parseInt(exponent / 2)
-
-    if Number.parseInt(exponent % 2) == 0 {
-        return pow(base, halfExp) * pow(base, halfExp)
-    }
-
-    return base * pow(base, halfExp) * pow(base, halfExp)
+    halfP = pow(base, Number.parseInt(exponent / 2))
+    return (halfP * halfP) if (Number.parseInt(exponent % 2) == 0) else (base * halfP * halfP)
 }
