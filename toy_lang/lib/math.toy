@@ -38,8 +38,9 @@ class Random {
     }
 }
 
+randDefault = new Random()
 def random() {
-    return ((new Random()).nextInt()) / modulus
+    return randDefault.nextInt() / modulus
 }
 
 def nthRoot(n, nth) {
