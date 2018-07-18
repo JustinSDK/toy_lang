@@ -29,12 +29,12 @@ class Random {
         this.seed = seed if hasValue(seed) else (3447679086515839964 * currentTimeMillis())
     }
     
-    def next() {
+    def nextInt() {
         this.seed = (multiplier * this.seed + increment) % modulus
         return this.seed
     }
 }
 
 def random() {
-    return ((new Random()).next()) / modulus
+    return ((new Random()).nextInt()) / modulus
 }
