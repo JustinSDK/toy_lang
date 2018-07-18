@@ -10,7 +10,7 @@ export {LINE_PARSER};
 const LINE_PARSER = new ParseErrInterceptor({
     parse(tokenableLines) {
         if(tokenableLines.length === 0 || tokenableLines[0].value === '}' || 
-           tokenableLines[0].value.startsWith('case') || tokenableLines[0].value.startsWith('default')) {
+           tokenableLines[0].value.startsWith('case ') || tokenableLines[0].value === 'default') {
             return StmtSequence.EMPTY;
         }
 
