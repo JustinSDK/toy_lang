@@ -42,9 +42,31 @@ def random() {
     return ((new Random()).nextInt()) / modulus
 }
 
+def nthRoot(n, nth) {
+    eps = 0.0001
+    df = 2147483647
+
+    preX = ((new Random()).nextInt(101) + 1) % 10
+    x = 0.0  
+    while df > eps {
+        x = ((nth - 1.0) * preX + n / pow(preX, nth - 1)) / nth
+        df = abs(x - preX)
+        preX = x;
+    }
+         
+    if Number.isFinite(x) {
+        return x
+    }
+    return nthRoot(n, nth)
+}
+
 def pow(base, exponent) {
     if exponent == 0 {
         return 1
+    }
+
+    if exponent < 1 {
+        return nthRoot(base, 1 / exponent)
     }
 
     halfExp = Number.parseInt(exponent / 2)
