@@ -1,4 +1,4 @@
-exports = ['min', 'max', 'abs', 'sum', 'Random', 'random']
+exports = ['min', 'max', 'abs', 'sum', 'Random', 'random', 'pow']
 
 def min(numbers) {
     return numsOrArgs(numbers, arguments).sort().get(0)
@@ -40,4 +40,18 @@ class Random {
 
 def random() {
     return ((new Random()).nextInt()) / modulus
+}
+
+def pow(base, exponent) {
+    if exponent == 0 {
+        return 1
+    }
+
+    halfExp = Number.parseInt(exponent / 2)
+
+    if Number.parseInt(exponent % 2) == 0 {
+        return pow(base, halfExp) * pow(base, halfExp)
+    }
+
+    return base * pow(base, halfExp) * pow(base, halfExp)
 }
