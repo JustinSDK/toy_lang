@@ -29,8 +29,11 @@ class Random {
         this.seed = seed if hasValue(seed) else (3447679086515839964 * currentTimeMillis())
     }
     
-    def nextInt() {
+    def nextInt(n) {
         this.seed = (multiplier * this.seed + increment) % modulus
+        if hasValue(n) {
+            return Number.parseInt((this.seed / modulus) * n)
+        }
         return this.seed
     }
 }
