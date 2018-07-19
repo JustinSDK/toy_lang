@@ -1,0 +1,42 @@
+from '/lib/math' import pow
+N = 1000
+
+def sieve(primes, i) {
+    if primes.get(i) {
+        iterate(2, j -> j * i <= N).forEach(j -> primes.set(j * i, 0)) 
+    }
+}
+
+def sixPlus1Or5(primes) {
+    r = range(1, i -> 6 * i + 5 <= N)
+    r.forEach(i -> primes.set(6 * i + 1, 1))
+    r.forEach(i -> primes.set(6 * i + 5, 1))
+    if 6 * r.length() + 1 <= N { 
+        primes.set(6 * r.length() + 1, 1)
+    }
+}
+
+def sieveSixPlus1Or5(primes) {
+    r = range(0, i -> pow(6 * i + 5, 2) <= N)
+    r.forEach(i -> sieve(primes, 6 * i + 1))
+    r.forEach(i -> sieve(primes, 6 * i + 5))
+    n = r.length()
+    if pow(6 * n + 1, 2) <= N { 
+        sieve(primes, 6 * n + 1)
+    }  
+}
+
+def create() {
+    primes = List.create(N + 1, 0)
+    primes.set(2, 1)
+    primes.set(3, 1) 
+    primes.set(5, 1)
+
+    sixPlus1Or5(primes)
+    sieveSixPlus1Or5(primes)
+
+    return primes
+}
+
+primes = create()
+iterate(2, N).select(i -> primes.get(i)).forEach(i -> print('{0} '.format(i)))
