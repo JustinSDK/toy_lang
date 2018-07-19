@@ -75,13 +75,26 @@ function funcEntry(clzOfLang, name, internalNode) {
     return [name, new Instance(clzOfLang, new Map(), internalNode)];
 }
 
+const allowedNativeFunctions = {
+    'currentTimeMillis' :  new Instance(FUNC_CLZ, new Map(), CurrentTimeMillis)
+};
+
+const NativeFunction = func1('nativeFunction', {
+    evaluate(context) {
+        const fName = PARAM1.evaluate(context).value;
+        return context.returned(
+            allowedNativeFunctions[fName]
+        );
+    }
+});
+
 const BUILTIN_FUNCTIONS = new Map([
     funcEntry(FUNC_CLZ, 'input', Input),
     funcEntry(FUNC_CLZ, 'print', Print),
     funcEntry(FUNC_CLZ, 'hasValue', HasValue),
     funcEntry(FUNC_CLZ, 'noValue', NoValue),
     funcEntry(FUNC_CLZ, 'typeof', TypeOf),
-    funcEntry(FUNC_CLZ, 'currentTimeMillis', CurrentTimeMillis)
+    funcEntry(FUNC_CLZ, 'nativeFunction', NativeFunction)
 ]); 
 
 // static methods
