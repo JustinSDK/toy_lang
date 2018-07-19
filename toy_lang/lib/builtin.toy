@@ -56,7 +56,18 @@ def iterate(start, stop, step) {
             while this.hasNext() {
                 action(this.next())
             }
-        }            
+        }          
+
+        def select(predicate) {
+            lt = []
+            while this.hasNext() {
+                nx = this.next()
+                if predicate(nx) {
+                    lt.add(nx)
+                }
+            }
+            return lt
+        }  
     }
 
     return new Iter()

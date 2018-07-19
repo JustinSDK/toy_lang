@@ -2,8 +2,8 @@ from '/lib/math' import random
 from '/lib/math' import pow
 
 N = 50001
-(sum = range(0, N)
-         .filter(_ -> pow(random(), 2) + pow(random(), 2) < 1)
+(sum = iterate(0, N)
+         .select(_ -> pow(random(), 2) + pow(random(), 2) < 1)
          .length())
 
 println('PI = {0}'.format(4 * sum / (N - 1)))
