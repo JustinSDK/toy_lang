@@ -68,6 +68,12 @@ def iterate(start, stop, step) {
             }
             return lt
         }  
+
+        def collect(mapper) {
+            lt = []
+            this.forEach(elem -> lt.add(mapper(elem)))
+            return lt  
+        }
     }
 
     return new Iter()
