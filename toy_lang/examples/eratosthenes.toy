@@ -39,4 +39,4 @@ def create() {
 }
 
 primes = create()
-iterate(2, N).select(i -> primes.get(i)).forEach(i -> print('{0} '.format(i)))
+println(iterate(2, N).select(i -> primes.get(i)))
