@@ -1,0 +1,6 @@
+exports = ['currentTimeMillis']
+
+__currentTimeMillis = nativeFunction('currentTimeMillis')
+def currentTimeMillis() {
+    return __currentTimeMillis()
+}

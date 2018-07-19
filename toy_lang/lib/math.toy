@@ -1,3 +1,5 @@
+import 'sys'
+
 exports = ['min', 'max', 'abs', 'sum', 'Random', 'random', 'pow']
 
 def min(numbers) {
@@ -26,7 +28,7 @@ increment = 12345        # c
 
 class Random {
     def init(seed) {
-        this.seed = seed if hasValue(seed) else (3447679086515839964 * currentTimeMillis())
+        this.seed = seed if hasValue(seed) else (3447679086515839964 * sys.currentTimeMillis())
     }
     
     def nextInt(n) {
