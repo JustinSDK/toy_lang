@@ -76,7 +76,7 @@ function funcEntry(clzOfLang, name, internalNode) {
 }
 
 const allowedNativeFunctions = {
-    'currentTimeMillis' :  new Instance(FUNC_CLZ, new Map(), CurrentTimeMillis)
+    currentTimeMillis :  new Instance(FUNC_CLZ, new Map(), CurrentTimeMillis)
 };
 
 const NativeFunction = func1('nativeFunction', {
