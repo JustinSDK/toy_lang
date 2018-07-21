@@ -95,7 +95,7 @@ class Context {
         });
 
         const moduleInstance = new Instance(BUILTINS.get('Module'), context.variables, module);
-        context.variables.set(module.moduleName, moduleInstance);
+        context.variables.set('this', moduleInstance);
 
         return context;
     }

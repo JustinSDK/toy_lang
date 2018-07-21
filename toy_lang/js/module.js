@@ -108,7 +108,7 @@ class Module {
         );
 
         // exports
-        const instance = moduleContext.variables.get(this.moduleName);
+        const instance = moduleContext.variables.get('this');
         instance.properties = exportVariables;
 
         this.instance = instance;

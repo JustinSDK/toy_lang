@@ -1,11 +1,11 @@
 exports = ['currentTimeMillis', 'loadedModules']
 
-__currentTimeMillis = nativeFunction('currentTimeMillis', sys)
+__currentTimeMillis = nativeFunction('currentTimeMillis', this)
 def currentTimeMillis() {
     return __currentTimeMillis()
 }
 
-__loadedModules = nativeFunction('loadedModules', sys)
+__loadedModules = nativeFunction('loadedModules', this)
 def loadedModules() {
     return __loadedModules()
 }
