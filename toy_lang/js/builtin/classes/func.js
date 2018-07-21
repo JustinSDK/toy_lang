@@ -1,4 +1,4 @@
-import {Primitive, Null, Func, StmtSequence} from '../export.js';
+import {Primitive, Null, Func, StmtSequence} from '../dependence.js';
 
 import {PARAM1, PARAM2} from '../bases/func_bases.js';
 import {func0, func1, func2} from '../bases/func_bases.js';
