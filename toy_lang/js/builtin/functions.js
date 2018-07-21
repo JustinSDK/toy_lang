@@ -1,4 +1,4 @@
-import {Null, Primitive, Instance, Void, ValueError, loadedModules} from './export.js';
+import {Null, Primitive, Instance, Void, ValueError, ModuleError, loadedModules} from './export.js';
 import {PARAM1, PARAM2, func0, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {ListClass} from './classes/list.js';
@@ -87,16 +87,27 @@ function funcEntry(name, internalNode) {
 }
 
 const allowedNativeFunctions = {
-    currentTimeMillis :  funcInstance(CurrentTimeMillis),
-    loadedModules     :  funcInstance(LoadedModules)
+    currentTimeMillis : {
+        allowedModule : 'toy_lang/lib/sys.toy',
+        funcInstance  : funcInstance(CurrentTimeMillis)
+    },
+    loadedModules : {
+        allowedModule : 'toy_lang/lib/sys.toy',
+        funcInstance : funcInstance(LoadedModules)
+    }
 };
 
-const NativeFunction = func1('nativeFunction', {
+const NativeFunction = func2('nativeFunction', {
     evaluate(context) {
         const fName = PARAM1.evaluate(context).value;
-        return context.returned(
-            allowedNativeFunctions[fName]
-        );
+        const moduleFileName = PARAM2.evaluate(context).internalNode.fileName;
+        const allowedNativeFunction = allowedNativeFunctions[fName];
+        if(moduleFileName === allowedNativeFunction.allowedModule) {
+            return context.returned(
+                allowedNativeFunction.funcInstance
+            );
+        }
+        throw new ModuleError(`native call '${fName}' is not allowed in '${moduleFileName}'`);
     }
 });
 
