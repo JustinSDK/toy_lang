@@ -78,13 +78,17 @@ const LoadedModules = func0('loadedModules', {
 
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
-function funcEntry(clzOfLang, name, internalNode) {
-    return [name, new Instance(clzOfLang, new Map(), internalNode)];
+function funcInstance(internalNode) {
+    return new Instance(FUNC_CLZ, new Map(), internalNode);
+}
+
+function funcEntry(name, internalNode) {
+    return [name, funcInstance(internalNode)];
 }
 
 const allowedNativeFunctions = {
-    currentTimeMillis :  new Instance(FUNC_CLZ, new Map(), CurrentTimeMillis),
-    loadedModules     :  new Instance(FUNC_CLZ, new Map(), LoadedModules)
+    currentTimeMillis :  funcInstance(CurrentTimeMillis),
+    loadedModules     :  funcInstance(LoadedModules)
 };
 
 const NativeFunction = func1('nativeFunction', {
@@ -97,12 +101,12 @@ const NativeFunction = func1('nativeFunction', {
 });
 
 const BUILTIN_FUNCTIONS = new Map([
-    funcEntry(FUNC_CLZ, 'input', Input),
-    funcEntry(FUNC_CLZ, 'print', Print),
-    funcEntry(FUNC_CLZ, 'hasValue', HasValue),
-    funcEntry(FUNC_CLZ, 'noValue', NoValue),
-    funcEntry(FUNC_CLZ, 'typeof', TypeOf),
-    funcEntry(FUNC_CLZ, 'nativeFunction', NativeFunction)
+    funcEntry('input', Input),
+    funcEntry('print', Print),
+    funcEntry('hasValue', HasValue),
+    funcEntry('noValue', NoValue),
+    funcEntry('typeof', TypeOf),
+    funcEntry('nativeFunction', NativeFunction)
 ]); 
 
 // static methods
@@ -118,7 +122,7 @@ const Format = func3('format', {
 });
 
 const StringClz = BUILTIN_CLASSES.get('String');
-StringClz.setOwnProperty('format', new Instance(FUNC_CLZ, new Map(), Format));
+StringClz.setOwnProperty('format', funcInstance(Format));
 
 // Number as a namespace
 
@@ -148,12 +152,12 @@ function numberIs(name) {
 }
 
 const NumberClz = BUILTIN_CLASSES.get('Number');
-NumberClz.setOwnProperty('parseFloat', new Instance(FUNC_CLZ, new Map(), ParseFloat));
-NumberClz.setOwnProperty('parseInt', new Instance(FUNC_CLZ, new Map(), ParseInt));
-NumberClz.setOwnProperty('isNaN', new Instance(FUNC_CLZ, new Map(), numberIs('NaN')));
-NumberClz.setOwnProperty('isFinite', new Instance(FUNC_CLZ, new Map(), numberIs('Finite')));
-NumberClz.setOwnProperty('isInteger', new Instance(FUNC_CLZ, new Map(), numberIs('Integer')));
-NumberClz.setOwnProperty('isSafeInteger', new Instance(FUNC_CLZ, new Map(), numberIs('SafeInteger')));
+NumberClz.setOwnProperty('parseFloat', funcInstance(ParseFloat));
+NumberClz.setOwnProperty('parseInt', funcInstance(ParseInt));
+NumberClz.setOwnProperty('isNaN', funcInstance(numberIs('NaN')));
+NumberClz.setOwnProperty('isFinite', funcInstance(numberIs('Finite')));
+NumberClz.setOwnProperty('isInteger', funcInstance(numberIs('Integer')));
+NumberClz.setOwnProperty('isSafeInteger', funcInstance(numberIs('SafeInteger')));
 
 // List as a namespace
 
@@ -165,6 +169,6 @@ const ListCreate = func2('create', {
     }
 });
 
-BUILTIN_CLASSES.get('List').setOwnProperty('create', new Instance(FUNC_CLZ, new Map(), ListCreate));
+BUILTIN_CLASSES.get('List').setOwnProperty('create', funcInstance(ListCreate));
 
 
