@@ -64,8 +64,7 @@ class Module {
 
         if(imports.length !== 0) {
             Promise.all(importPromises(fileName, imports))
-                   .then(importers => new Module(fileName, moduleNameFrom(fileName), notImports, importers).play())
-                   .catch(err => environment.output(`${err.message}\n`));
+                   .then(importers => new Module(fileName, moduleNameFrom(fileName), notImports, importers).play());
         }
         else {
             new Module(fileName, moduleNameFrom(fileName), notImports).play();
@@ -188,8 +187,7 @@ function loadModule(modules, importedModuleFile, start, maybeName) {
                                module.notImports = notImports;
                                module.importers = importers;
                                return createModuleImporter(start, module, maybeName);   
-                          })
-                          .catch(err => environment.output(`${err.message}\n`));
+                          });
         }                      
         
         module.notImports = notImports;
