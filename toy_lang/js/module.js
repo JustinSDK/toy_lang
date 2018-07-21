@@ -52,6 +52,7 @@ class Module {
                   .then(moduleInstance => {
                       Array.from(moduleInstance.properties.entries())
                            .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
+                      loadedModules.set(builtinToy, moduleInstance);
                       return moduleInstance;
                   })
                   .catch(err => environment.output(`${err.message}\n`)); 
@@ -216,10 +217,10 @@ function moduleFilePath(src, target) {
     }
 
     return target.startsWith('/') ? 
-               `${environment.TOY_MODUEL_PATH}${target}` : `${dir(src)}${target}`;
+               `${environment.TOY_MODUEL_PATH}${target}` : `${parentDir(src)}${target}`;
 }
 
-function dir(fileName) {
+function parentDir(fileName) {
     return fileName.slice(0, fileName.lastIndexOf('/') + 1);
 }
 
