@@ -134,8 +134,8 @@ class Module {
         }
         catch(e) {
             environment.output(`\n${e}`);
-            if(e.strackTraceElements) {
-                printStackTrace(e.strackTraceElements);         
+            if(e.stackTraceElements) {
+                printStackTrace(e.stackTraceElements);         
             }
             throw e;
         }

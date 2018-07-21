@@ -178,13 +178,13 @@ function addTraceOrStmt(context, preStmtContext, lineNumber, stmt) {
 }
 
 function addStackTrace(context, e, strackTraceElement) {
-    if(!e.strackTraceElements) {
-        e.strackTraceElements = [strackTraceElement];
+    if(!e.stackTraceElements) {
+        e.stackTraceElements = [strackTraceElement];
         e.context = context;
     }
     if(e.context !== context) {
         e.context = context;
-        e.strackTraceElements.push(strackTraceElement);
+        e.stackTraceElements.push(strackTraceElement);
     }
 }
 
