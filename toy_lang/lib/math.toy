@@ -2,8 +2,6 @@ import 'sys'
 
 exports = ['min', 'max', 'abs', 'sum', 'Random', 'random', 'pow']
 
-nativeFunction('currentTimeMillis', this)
-
 def min(numbers) {
     return numsOrArgs(numbers, arguments).sort().get(0)
 }
