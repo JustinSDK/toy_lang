@@ -73,7 +73,6 @@ const LoadedModules = func0('loadedModules', {
         return context.returned(
             ListClass.newInstance(context, Array.from(loadedModules.keys()).map(key => new Primitive(key)))
         );
-
     }
 });
 
