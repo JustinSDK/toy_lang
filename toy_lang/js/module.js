@@ -54,8 +54,7 @@ class Module {
                            .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
                       loadedModules.set(builtinToy, moduleInstance);
                       return moduleInstance;
-                  })
-                  .catch(err => environment.output(`${err.message}\n`)); 
+                  });
     }
 
     static run(fileName, code) {
