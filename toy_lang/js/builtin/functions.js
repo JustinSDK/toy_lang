@@ -1,5 +1,4 @@
-import {Null, Primitive, Instance, Void, ValueError} from './export.js';
-
+import {Null, Primitive, Instance, Void, ValueError, loadedModules} from './export.js';
 import {PARAM1, PARAM2, func0, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {ListClass} from './classes/list.js';
@@ -69,6 +68,15 @@ const CurrentTimeMillis = func0('currentTimeMillis', {
     }
 });
 
+const LoadedModules = func0('loadedModules', {
+    evaluate(context) {
+        return context.returned(
+            ListClass.newInstance(context, Array.from(loadedModules.keys()).map(key => new Primitive(key)))
+        );
+
+    }
+});
+
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcEntry(clzOfLang, name, internalNode) {
@@ -76,7 +84,8 @@ function funcEntry(clzOfLang, name, internalNode) {
 }
 
 const allowedNativeFunctions = {
-    currentTimeMillis :  new Instance(FUNC_CLZ, new Map(), CurrentTimeMillis)
+    currentTimeMillis :  new Instance(FUNC_CLZ, new Map(), CurrentTimeMillis),
+    loadedModules     :  new Instance(FUNC_CLZ, new Map(), LoadedModules)
 };
 
 const NativeFunction = func1('nativeFunction', {

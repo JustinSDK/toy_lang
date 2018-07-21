@@ -1,9 +1,8 @@
-
 import {LINE_PARSER} from './interpreter/line_parser.js';
 import {Tokenizer} from './interpreter/tokenizer/tokenizer.js';        
 import {Context} from './context.js';
 
-export {Module, ModuleImporter};
+export {Module, ModuleImporter, loadedModules};
 
 class ModuleImporter {
     constructor(sourceModule, type = 'default', name) {
@@ -32,7 +31,7 @@ class ModuleImporter {
     }
 }
 
-const modules = new Map();
+const loadedModules = new Map();
 
 let environment;
 
@@ -153,10 +152,10 @@ function importPromises(fileName, imports) {
                       const maybeName = tokenables[2].value;
                       const importedModuleFile = moduleFilePath(fileName, `${modulePath}.toy`);
 
-                      if(modules.has(importedModuleFile)) {
-                          return checkModule(modules, importedModuleFile, start, maybeName);
+                      if(loadedModules.has(importedModuleFile)) {
+                          return checkModule(loadedModules, importedModuleFile, start, maybeName);
                       }
-                      return loadModule(modules, importedModuleFile, start, maybeName);
+                      return loadModule(loadedModules, importedModuleFile, start, maybeName);
                   });
 }
 
