@@ -232,32 +232,11 @@ class Try extends Stmt {
     evaluate(context) {
         const tryContext = this.tryStmt.evaluate(context);
         if(tryContext.thrownNode) {
-            const thrownValue = tryContext.thrownNode.value;
-            if(thrownValue.hasOwnProperty && thrownValue.hasOwnProperty('stackTraceElements')) {
-                pushStackTraceElements(context, tryContext, thrownValue);
-            }
-        
+            tryContext.thrownNode.pushStackTraceElementsIfTracable(context);
             return runCatch(context, this, thrownValue).deleteVariable(this.exceptionVar.name);
         }
         return context;
     }   
-}
-
-function pushStackTraceElements(context, tryContext, thrownValue) {
-    const stackTraceElements = thrownValue.getOwnProperty('stackTraceElements').nativeValue();
-    tryContext.thrownNode
-              .stackTraceElements
-              .map(elem => {
-                  return new Instance(
-                      context.lookUpVariable('Object'),
-                      new Map([
-                          ['fileName', new Primitive(elem.fileName)],
-                          ['lineNumber', new Primitive(elem.lineNumber)],
-                          ['statement', new Primitive(elem.statement)]
-                      ])
-                  );
-              })
-              .forEach(elem => stackTraceElements.push(elem));
 }
 
 function runCatch(context, tryNode, thrownValue) {
