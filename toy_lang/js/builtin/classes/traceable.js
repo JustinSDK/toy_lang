@@ -1,4 +1,4 @@
-import {Primitive, Void} from '../dependence.js';
+import {Primitive, Void} from '../imports.js';
 
 import {PARAM1} from '../bases/func_bases.js';
 import {func0, func1} from '../bases/func_bases.js';

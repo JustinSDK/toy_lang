@@ -1,4 +1,4 @@
-import {Native, Primitive, Class, Instance, Void, StmtSequence} from '../dependence.js';
+import {Native, Primitive, Class, Instance, Void, StmtSequence} from '../imports.js';
 
 import {PARAM_LT0} from './func_bases.js';
 import {func} from './func_bases.js';

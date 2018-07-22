@@ -1,4 +1,4 @@
-import {Null, Primitive, Instance, Void, ValueError, ModuleError, loadedModules} from './dependence.js';
+import {Null, Primitive, Instance, Void, ValueError, ModuleError, loadedModules} from './imports.js';
 import {PARAM1, PARAM2, func0, func1, func2, func3, format, valueToString} from './bases/func_bases.js';
 import {BUILTIN_CLASSES} from './classes.js';
 import {ListClass} from './classes/list.js';

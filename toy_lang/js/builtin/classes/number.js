@@ -1,4 +1,4 @@
-import {Primitive} from '../dependence.js';
+import {Primitive} from '../imports.js';
 
 export {NumberClass};
 
