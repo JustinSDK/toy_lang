@@ -233,7 +233,7 @@ class Try extends Stmt {
         const tryContext = this.tryStmt.evaluate(context);
         if(tryContext.thrownNode) {
             tryContext.thrownNode.pushStackTraceElementsIfTracable(context);
-            return runCatch(context, this, thrownValue).deleteVariable(this.exceptionVar.name);
+            return runCatch(context, this, tryContext.thrownNode.value).deleteVariable(this.exceptionVar.name);
         }
         return context;
     }   
