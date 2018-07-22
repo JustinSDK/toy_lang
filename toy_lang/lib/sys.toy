@@ -1,16 +1,22 @@
 exports = ['currentTimeMillis', 'loadedModules', 'unhandledExceptionHandler']
 
-__currentTimeMillis = nativeFunction('currentTimeMillis', this)
+__sys = this
+
+def native(funcName) {
+    return nativeFunction(funcName, __sys)
+}
+
+__currentTimeMillis = native('currentTimeMillis')
 def currentTimeMillis() {
     return __currentTimeMillis()
 }
 
-__loadedModules = nativeFunction('loadedModules', this)
+__loadedModules = native('loadedModules')
 def loadedModules() {
     return __loadedModules()
 }
 
-__unhandledExceptionHandler = nativeFunction('unhandledExceptionHandler', this)
+__unhandledExceptionHandler = native('unhandledExceptionHandler')
 def unhandledExceptionHandler(handler) {
     return __unhandledExceptionHandler(handler)
 }
