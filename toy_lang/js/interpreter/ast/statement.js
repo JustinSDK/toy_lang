@@ -1,4 +1,4 @@
-import {Thrown, Instance, Primitive} from './value.js';
+import {Thrown} from './value.js';
 
 export {Stmt, ExprWrapper, While, If, Switch, StmtSequence, Return, Throw, Try, Break};
 
