@@ -73,6 +73,7 @@ function changeFlowController(ctx, option) {
 }
 
 let environment;
+let unhandledExceptionHandler;
 
 class Context { 
     constructor({fileName, lines, parent, variables, flowController}) {
@@ -100,6 +101,13 @@ class Context {
         return context;
     }
 
+    unhandledExceptionHandler(handler) {
+        if(handler) {
+            unhandledExceptionHandler = handler;
+        }
+        return unhandledExceptionHandler;
+    }
+    
     childContext() {
         return new Context({
             fileName : this.fileName,

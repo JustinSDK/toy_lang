@@ -118,14 +118,20 @@ class Module {
             const ctx = ast.evaluate(context);
             const thrown = ctx.thrownNode;
             if(thrown !== null) {
-                const clzOfLang = thrown.value.clzOfLang;
-                if(clzOfLang && thrown.value.hasOwnProperty('name') && clzOfLang.internalNode.hasMethod(ctx, 'printStackTrace')) {
-                    ctx.output(`${thrown.value.getOwnProperty('name')}:`);
+                if(ctx.unhandledExceptionHandler()) {
+                    const fNode = ctx.unhandledExceptionHandler().internalNode;
+                    thrown.pushStackTraceElementsIfTracable(ctx);
+                    fNode.call(ctx, [thrown.value]);
+                } else {
+                    const clzOfLang = thrown.value.clzOfLang;
+                    if(clzOfLang && thrown.value.hasOwnProperty('name') && clzOfLang.internalNode.hasMethod(ctx, 'printStackTrace')) {
+                        ctx.output(`${thrown.value.getOwnProperty('name')}: ${thrown.value.getOwnProperty('message')}`);
+                    }
+                    else {
+                        ctx.output(`Thrown: ${thrown.value}`);
+                    }                    
+                    printStackTrace(thrown.stackTraceElements);
                 }
-                else {
-                    ctx.output(`Thrown: ${thrown.value}`);
-                }
-                printStackTrace(thrown.stackTraceElements);
                 return context;
             }
             return ctx;

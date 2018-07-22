@@ -76,6 +76,13 @@ const LoadedModules = func0('loadedModules', {
     }
 });
 
+const UnhandledExceptionHandler = func1('unhandledExceptionHandler', {
+    evaluate(context) {
+        context.unhandledExceptionHandler(PARAM1.evaluate(context));
+        return context.returned(Void);
+    }
+});
+
 const FUNC_CLZ = BUILTIN_CLASSES.get('Function');
 
 function funcInstance(internalNode) {
@@ -94,6 +101,10 @@ const allowedNativeFunctions = {
     loadedModules : {
         allowedModule : 'toy_lang/lib/sys.toy',
         funcInstance : funcInstance(LoadedModules)
+    },
+    unhandledExceptionHandler : {
+        allowedModule : 'toy_lang/lib/sys.toy',
+        funcInstance  : funcInstance(UnhandledExceptionHandler)
     }
 };
 

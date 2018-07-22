@@ -322,7 +322,31 @@ class Thrown extends Value {
         this.stackTraceElements.push(stackTraceElement);
     }
 
+    pushStackTraceElementsIfTracable(context) {
+        if(this.value.hasOwnProperty && this.value.hasOwnProperty('stackTraceElements')) {
+            pushStackTraceElements(context, this);
+        }
+    }
+
     toString() {
         return `${this.value}`;
     }
+}
+
+
+function pushStackTraceElements(context, thrownNode) {
+    const stackTraceElements = thrownNode.value.getOwnProperty('stackTraceElements').nativeValue();
+    thrownNode
+              .stackTraceElements
+              .map(elem => {
+                  return new Instance(
+                      context.lookUpVariable('Object'),
+                      new Map([
+                          ['fileName', new Primitive(elem.fileName)],
+                          ['lineNumber', new Primitive(elem.lineNumber)],
+                          ['statement', new Primitive(elem.statement)]
+                      ])
+                  );
+              })
+              .forEach(elem => stackTraceElements.push(elem));
 }
