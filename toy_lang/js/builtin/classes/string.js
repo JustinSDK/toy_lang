@@ -81,5 +81,5 @@ function hashCode(str) {
     }
 
     return str.split('').map(token => token.charCodeAt(0))
-                 .reduce((hash, chr) => (((hash << 5) - hash) + chr) | 0, 0);
-};
+                        .reduce((hash, chr) => (((hash << 5) - hash) + chr) | 0, 0);
+}
