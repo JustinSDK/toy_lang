@@ -66,5 +66,20 @@ StringClass.methods = new Map([
             const str = format.apply(undefined, [value].concat(args.map(arg => arg.value)));
             return context.returned(new Primitive(str));
         }    
+    })],
+    ['hashCode', func0('hashCode', {
+        evaluate(context) {
+            const value = self(context).nativeValue();
+            return context.returned(new Primitive(hashCode(value)));
+        }    
     })]
 ]);
+
+function hashCode(str) {
+    if (str.length === 0) {
+        return 0;
+    }
+
+    return str.split('').map(token => token.charCodeAt(0))
+                 .reduce((hash, chr) => (((hash << 5) - hash) + chr) | 0, 0);
+};
