@@ -482,7 +482,11 @@ println(orz)</code></pre>
         
         const ENVIRONMENT = {
             input(message) {
-                return prompt(message, '');
+                const msg = prompt(message, '');
+                if(msg) {
+                    return msg;
+                }
+                return '';
             },
             output(value) {
                 tty.textContent += value;
