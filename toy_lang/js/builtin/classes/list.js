@@ -69,7 +69,19 @@ ListClass.methods = new Map([
     ['toString', ListClass.method0Primitive('toString')],
     ['slice', ListClass.method2NewList('slice')],
     ['join', ListClass.method1Primitive('join')],
-    ['reverse', ListClass.method0Self('reverse')],       
+    ['reverse', ListClass.method0Self('reverse')],   
+    ['remove', func1('remove', {
+        evaluate(context) {
+            const instance = self(context);
+            const jsArray = instance.nativeValue();
+            const v = PARAM1.evaluate(context).value;
+            const idx = jsArray.findIndex(elem => elem.value === v);
+            if (idx != -1) {
+                jsArray.splice(idx, 1);
+            }
+            return context.returned(instance);
+        }    
+    })],        
     ['fill', func3('fill', {
         evaluate(context) {
             const instance = self(context);
