@@ -44,7 +44,7 @@ ObjectClass.methods = new Map([
             );
         }    
     })],    
-    ['setOwnProperty', func2('geteOwnProperty', {
+    ['setOwnProperty', func2('setOwnProperty', {
         evaluate(context) {
             const instance = self(context);
             instance.setOwnProperty(PARAM1.evaluate(context).value, PARAM2.evaluate(context))
