@@ -216,5 +216,6 @@ class Context {
 
     static setBuiltinModule(moduleInstance) {
         BUILTIN_MODULE_INSTANCE = moduleInstance;
+        moduleInstance.properties = BUILTINS;
     }
 }
