@@ -52,6 +52,7 @@ class Module {
                   .then(moduleInstance => {
                       Array.from(moduleInstance.properties.entries())
                            .forEach(entry => Context.addToBuiltins(entry[0], entry[1]));
+                      Context.setBuiltinModule(moduleInstance);
                       loadedModules.set(builtinToy, moduleInstance);
                       return moduleInstance;
                   });

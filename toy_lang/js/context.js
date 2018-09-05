@@ -10,6 +10,8 @@ const BUILTINS = new Map(
     )
 ); 
 
+let BUILTIN_MODULE_INSTANCE;
+
 const RUNTIME_CHECKER = {
     refErrIfNoValue(v, name) {
         if(!v) {
@@ -97,6 +99,7 @@ class Context {
 
         const moduleInstance = new Instance(BUILTINS.get('Module'), context.variables, module);
         context.variables.set('this', moduleInstance);
+        context.variables.set('builtin', BUILTIN_MODULE_INSTANCE);
 
         return context;
     }
@@ -209,5 +212,9 @@ class Context {
 
     static addToBuiltins(name, value) {
         BUILTINS.set(name, value);
+    }
+
+    static setBuiltinModule(moduleInstance) {
+        BUILTIN_MODULE_INSTANCE = moduleInstance;
     }
 }
